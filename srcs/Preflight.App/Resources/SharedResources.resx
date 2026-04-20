@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+
+  <!-- ═══ Common ══════════════════════════════════════════════ -->
+  <data name="Common.Back"><value>Back</value></data>
+  <data name="Common.BackToHome"><value>Back to home</value></data>
+  <data name="Common.Next"><value>Next</value></data>
+  <data name="Common.ComingInPhase3"><value>This section will be implemented in Phase 3 (Core XML generation).</value></data>
+
+  <!-- ═══ Footer ══════════════════════════════════════════════ -->
+  <data name="Footer.BuiltBy"><value>Built with 💙💛 by</value></data>
+
+  <!-- ═══ Theme switcher ═════════════════════════════════════ -->
+  <data name="Theme.System"><value>System</value></data>
+  <data name="Theme.Light"><value>Light</value></data>
+  <data name="Theme.Dark"><value>Dark</value></data>
+
+  <!-- ═══ Landing page ═══════════════════════════════════════ -->
+  <data name="Landing.Tagline"><value>Build your Windows answer file, visually - offline and instantly.</value></data>
+  <data name="Landing.Status"><value>🟧 Pre-alpha - the editor is under active development.</value></data>
+  <data name="Landing.Wizard.Title"><value>Wizard</value></data>
+  <data name="Landing.Wizard.Description"><value>Step-by-step guided setup. Answer one question at a time, or start from a preset.</value></data>
+  <data name="Landing.Wizard.Cta"><value>Get started</value></data>
+  <data name="Landing.Advanced.Title"><value>Advanced</value></data>
+  <data name="Landing.Advanced.Description"><value>Full manual control. Every option in one place, with a live XML preview.</value></data>
+  <data name="Landing.Advanced.Cta"><value>Open editor</value></data>
+  <data name="Landing.Docs.Title"><value>Docs</value></data>
+  <data name="Landing.Docs.Description"><value>Read-only reference for every autounattend.xml option, what it does and how.</value></data>
+  <data name="Landing.Docs.Cta"><value>Browse docs</value></data>
+  <data name="Landing.Import.Prompt"><value>Already have a config?</value></data>
+  <data name="Landing.Import.Button"><value>Import .xml</value></data>
+  <data name="Landing.Import.ComingSoon"><value>Importing existing .xml files is coming in a later phase.</value></data>
+
+  <!-- ═══ Wizard ══════════════════════════════════════════════ -->
+  <data name="Wizard.Title"><value>Wizard</value></data>
+  <data name="Wizard.Entry.Prompt"><value>Pick how you want to start.</value></data>
+  <data name="Wizard.Guided.Title"><value>Guided</value></data>
+  <data name="Wizard.Guided.Description"><value>Walks you through every decision with explanations along the way.</value></data>
+  <data name="Wizard.Guided.Cta"><value>Start guided</value></data>
+  <data name="Wizard.Guided.StepOf"><value>Step {0} of {1}</value></data>
+  <data name="Wizard.Guided.Finish"><value>Finish</value></data>
+  <data name="Wizard.Presets.Title"><value>Presets</value></data>
+  <data name="Wizard.Presets.Description"><value>Pick a ready-made template for a common scenario and tweak from there.</value></data>
+  <data name="Wizard.Presets.Cta"><value>Browse presets</value></data>
+  <data name="Wizard.Presets.Prompt"><value>Pick a template to populate your configuration.</value></data>
+  <data name="Wizard.Presets.Apply"><value>Use this preset</value></data>
+  <data name="Wizard.Review.Title"><value>Review configuration</value></data>
+  <data name="Wizard.Review.Subtitle"><value>Verify your settings before downloading the answer file.</value></data>
+  <data name="Wizard.Review.DownloadStub"><value>XML generation is coming in Phase 3 - the download button is disabled for now.</value></data>
+  <data name="Wizard.Review.Download"><value>Download autounattend.xml</value></data>
+
+  <!-- ═══ Wizard steps ═══════════════════════════════════════ -->
+  <data name="Step.Language.Title"><value>Region and language</value></data>
+  <data name="Step.Language.Description"><value>Pick the Windows display language and your country / region.</value></data>
+  <data name="Step.Disk.Title"><value>Disk partitioning</value></data>
+  <data name="Step.Disk.Description"><value>Choose how Windows Setup will partition the target drive (GPT / MBR, EFI size, recovery).</value></data>
+  <data name="Step.Users.Title"><value>User accounts</value></data>
+  <data name="Step.Users.Description"><value>Create the first account and choose the first-logon behavior.</value></data>
+  <data name="Step.Privacy.Title"><value>Privacy and telemetry</value></data>
+  <data name="Step.Privacy.Description"><value>Disable data collection and tune express-settings defaults.</value></data>
+  <data name="Step.Finish.Title"><value>All set</value></data>
+  <data name="Step.Finish.Description"><value>Head to the review screen to verify and download your autounattend.xml.</value></data>
+
+  <!-- ═══ Preset cards ═══════════════════════════════════════ -->
+  <data name="Preset.CleanHomePc.Name"><value>Clean Home PC</value></data>
+  <data name="Preset.CleanHomePc.Description"><value>Debloat, local account, GPT, en-US. For personal use without Microsoft account.</value></data>
+  <data name="Preset.VmProxmox.Name"><value>VM (Proxmox)</value></data>
+  <data name="Preset.VmProxmox.Description"><value>VirtIO drivers, QEMU guest agent, no bloatware. Ideal for Proxmox or KVM.</value></data>
+  <data name="Preset.Corporate.Name"><value>Corporate baseline</value></data>
+  <data name="Preset.Corporate.Description"><value>Pro edition, no first-logon, domain-ready placeholder, privacy-first defaults.</value></data>
+  <data name="Preset.Minimal.Name"><value>Minimal / Fast</value></data>
+  <data name="Preset.Minimal.Description"><value>The smallest possible answer file for the fastest unattended install.</value></data>
+
+  <!-- ═══ Review labels ══════════════════════════════════════ -->
+  <data name="Region.DisplayLanguage.Label"><value>Display language</value></data>
+  <data name="Region.HomeLocation.Label"><value>Home location</value></data>
+  <data name="Disk.Mode.Label"><value>Disk mode</value></data>
+  <data name="Disk.PartitionStyle.Label"><value>Partition style</value></data>
+  <data name="Edition.Edition.Label"><value>Windows edition</value></data>
+  <data name="Users.Count.Label"><value>Local accounts</value></data>
+  <data name="Privacy.Express.Label"><value>Express settings</value></data>
+  <data name="Bloatware.RemoveCount.Label"><value>Apps to remove</value></data>
+
+  <!-- ═══ Advanced mode ══════════════════════════════════════ -->
+  <data name="Advanced.Title"><value>Advanced editor</value></data>
+  <data name="Advanced.Subtitle"><value>All options in one place. Jump to a section on the left. Live XML preview on the right.</value></data>
+  <data name="Advanced.Preview.Title"><value>Live preview</value></data>
+  <data name="Advanced.Preview.Placeholder"><value>XML preview lands in Phase 3</value></data>
+  <data name="Advanced.Section.region"><value>🌍 Region &amp; language</value></data>
+  <data name="Advanced.Section.disk"><value>💽 Disk</value></data>
+  <data name="Advanced.Section.users"><value>👤 Users</value></data>
+  <data name="Advanced.Section.edition"><value>🪟 Windows edition</value></data>
+  <data name="Advanced.Section.privacy"><value>🔒 Privacy</value></data>
+  <data name="Advanced.Section.security"><value>🛡️ Security</value></data>
+  <data name="Advanced.Section.bloatware"><value>🧼 Bloatware</value></data>
+  <data name="Advanced.Section.tweaks"><value>🔧 System tweaks</value></data>
+  <data name="Advanced.Section.vm"><value>🖥️ Virtual machine</value></data>
+  <data name="Advanced.Section.network"><value>📡 Network</value></data>
+
+  <!-- ═══ Docs mode ══════════════════════════════════════════ -->
+  <data name="Docs.Title"><value>Documentation</value></data>
+  <data name="Docs.Subtitle"><value>Read-only reference for every autounattend.xml option covered by preflight.xml.</value></data>
+  <data name="Docs.BackToIndex"><value>All topics</value></data>
+  <data name="Docs.Entry.ComingSoon"><value>Detailed documentation for this topic is coming in a later phase.</value></data>
+  <data name="Docs.Entry.Unknown"><value>Unknown topic</value></data>
+  <data name="Docs.Entry.UnknownDescription"><value>The topic you requested does not exist.</value></data>
+  <data name="Docs.Topic.Region.Name"><value>Region &amp; language</value></data>
+  <data name="Docs.Topic.Region.Description"><value>Display language, input locale, home location, time zone.</value></data>
+  <data name="Docs.Topic.Disk.Name"><value>Disk partitioning</value></data>
+  <data name="Docs.Topic.Disk.Description"><value>GPT vs. MBR, EFI size, recovery partition, custom diskpart scripts.</value></data>
+  <data name="Docs.Topic.Users.Name"><value>User accounts</value></data>
+  <data name="Docs.Topic.Users.Description"><value>Local accounts, admin groups, first-logon behaviour, password policy.</value></data>
+  <data name="Docs.Topic.Edition.Name"><value>Windows edition</value></data>
+  <data name="Docs.Topic.Edition.Description"><value>Product keys, edition selection (Home / Pro / Enterprise / Education).</value></data>
+  <data name="Docs.Topic.Privacy.Name"><value>Privacy &amp; telemetry</value></data>
+  <data name="Docs.Topic.Privacy.Description"><value>Express settings, telemetry toggles, advertising ID, location services.</value></data>
+  <data name="Docs.Topic.Security.Name"><value>Security</value></data>
+  <data name="Docs.Topic.Security.Description"><value>UAC, Defender, SmartScreen, RDP, Windows 11 requirement bypass.</value></data>
+  <data name="Docs.Topic.Bloatware.Name"><value>Bloatware removal</value></data>
+  <data name="Docs.Topic.Bloatware.Description"><value>Remove preinstalled apps: Copilot, Cortana, Bing Search, Teams and more.</value></data>
+  <data name="Docs.Topic.Tweaks.Name"><value>System tweaks</value></data>
+  <data name="Docs.Topic.Tweaks.Description"><value>File Explorer, taskbar, start menu, visual effects, long paths.</value></data>
+  <data name="Docs.Topic.Vm.Name"><value>Virtual machine support</value></data>
+  <data name="Docs.Topic.Vm.Description"><value>VirtualBox Guest Additions, VMware Tools, VirtIO + QEMU agent, Parallels Tools.</value></data>
+
+  <!-- ═══ NotFound ════════════════════════════════════════════ -->
+  <data name="NotFound.Title"><value>Page not found</value></data>
+  <data name="NotFound.Message"><value>The page you are looking for does not exist.</value></data>
+  <data name="NotFound.GoHome"><value>Go to home</value></data>
+
+</root>

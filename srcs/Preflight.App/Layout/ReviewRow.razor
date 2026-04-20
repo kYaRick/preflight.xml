@@ -1,0 +1,13 @@
+@*
+  A single label/value row used on the wizard review screen.
+*@
+
+<FluentStack Orientation="Orientation.Horizontal" HorizontalGap="12">
+    <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold" Style="min-width: 240px;">@Label</FluentLabel>
+    <FluentLabel Typo="Typography.Body">@Value</FluentLabel>
+</FluentStack>
+
+@code {
+    [Parameter, EditorRequired] public string Label { get; set; } = "";
+    [Parameter, EditorRequired] public string Value { get; set; } = "";
+}

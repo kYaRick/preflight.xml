@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Questions & Discussions
+    url: https://github.com/kYaRick/preflight.xml/discussions
+    about: Ask questions, share ideas, or discuss usage here.
+  - name: 📖 Unattended Setup Reference
+    url: https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/
+    about: Official Microsoft documentation for autounattend.xml options.

@@ -1,0 +1,13 @@
+# 💖 Sponsorship links shown on the repo sidebar.
+# GitHub renders these as the "Sponsor" button.
+
+# 🇺🇦 Supporting Ukraine - defence & humanitarian funds.
+custom:
+  - "https://www.khartiiafoundation.com/" # 🛡️  Хартія - Kharchenko foundation
+  - "https://azov.one/fundraisers" # 🦅 Azov ONE - Azov brigade fundraisers
+
+
+# 🏦 Personal Monobank jar - uncomment and replace once you open one.
+#    e.g. https://send.monobank.ua/jar/XXXXXXXX
+
+# github: [kYaRick]

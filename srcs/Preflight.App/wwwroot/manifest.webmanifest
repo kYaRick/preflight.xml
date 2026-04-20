@@ -1,0 +1,29 @@
+{
+  "name": "preflight.xml",
+  "short_name": "preflight",
+  "description": "Visual builder for Windows autounattend.xml - offline, in your browser.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "lang": "en",
+  "background_color": "#ffffff",
+  "theme_color": "#0078d4",
+  "categories": ["productivity", "developer", "utilities"],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    }
+  ]
+}

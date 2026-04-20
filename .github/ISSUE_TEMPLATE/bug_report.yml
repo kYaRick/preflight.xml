@@ -1,0 +1,96 @@
+name: 🐛 Bug Report
+description: Something is broken or behaving unexpectedly
+title: "bug: <short summary>"
+labels: ["🐛 bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! 🙏
+        Please fill in the details below - the more context, the faster we can help.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: ✅ Preflight checks
+      options:
+        - label: I searched existing issues and this has not been reported
+          required: true
+        - label: I am using the latest version available
+          required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 📝 Description
+      description: What is the bug? A clear and concise explanation.
+      placeholder: When I click "Export", the XML file is empty.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 🔁 Steps to reproduce
+      placeholder: |
+        1. Go to '...'
+        2. Select '...'
+        3. Click '...'
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 🎯 Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 💥 Actual behavior
+      description: Include error messages, console output, or screenshots if possible.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: windows-version
+    attributes:
+      label: 🪟 Target Windows version
+      options:
+        - Windows 11 24H2
+        - Windows 11 23H2
+        - Windows 10 22H2
+        - Other / Multiple
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: 🌐 Browser & version
+      placeholder: "Chrome 130, Firefox 128, Edge 130, …"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 🚨 Severity
+      options:
+        - 🟢 Low - cosmetic or minor inconvenience
+        - 🟡 Medium - feature partially broken
+        - 🟠 High - feature completely broken
+        - 🔴 Critical - app crashes or data loss
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 💡 Additional context
+      description: Logs, screenshots, related issues - anything else useful.
+    validations:
+      required: false

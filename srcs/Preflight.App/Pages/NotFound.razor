@@ -1,0 +1,12 @@
+@page "/404"
+@inject IStringLocalizer<SharedResources> L
+
+<PageTitle>404 - preflight.xml</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" HorizontalGap="16" Style="padding: 48px 16px; max-width: 640px; margin: 0 auto; text-align: center;">
+    <FluentLabel Typo="Typography.PageTitle">🧭 @L["NotFound.Title"]</FluentLabel>
+    <FluentLabel Typo="Typography.Body">@L["NotFound.Message"]</FluentLabel>
+    <div>
+        <FluentAnchor Href="/" Appearance="Appearance.Accent">@L["NotFound.GoHome"]</FluentAnchor>
+    </div>
+</FluentStack>

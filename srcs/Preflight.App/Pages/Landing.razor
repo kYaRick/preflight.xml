@@ -1,0 +1,74 @@
+@page "/"
+@inject IStringLocalizer<SharedResources> L
+@inject NavigationManager Nav
+@inject ModeService Mode
+
+<PageTitle>preflight.xml</PageTitle>
+
+<div class="landing">
+
+    <FluentStack Orientation="Orientation.Vertical" HorizontalGap="12" Style="padding: 48px 16px 16px; text-align: center; max-width: 960px; margin: 0 auto;">
+        <FluentLabel Typo="Typography.PageTitle">✈️ preflight.xml</FluentLabel>
+        <FluentLabel Typo="Typography.Subject">@L["Landing.Tagline"]</FluentLabel>
+
+        <FluentMessageBar Intent="MessageIntent.Warning" Title="Pre-alpha" AllowDismiss="false" Style="margin-top: 12px;">
+            @L["Landing.Status"]
+        </FluentMessageBar>
+    </FluentStack>
+
+    <FluentGrid Spacing="3" Justify="JustifyContent.Center" Style="padding: 16px; max-width: 1200px; margin: 0 auto;">
+        <FluentGridItem xs="12" sm="12" md="4">
+            <ModeCard Icon="✈️"
+                      Title="@L["Landing.Wizard.Title"]"
+                      Description="@L["Landing.Wizard.Description"]"
+                      CtaLabel="@L["Landing.Wizard.Cta"]"
+                      OnSelect="GoToWizard" />
+        </FluentGridItem>
+        <FluentGridItem xs="12" sm="12" md="4">
+            <ModeCard Icon="⚙️"
+                      Title="@L["Landing.Advanced.Title"]"
+                      Description="@L["Landing.Advanced.Description"]"
+                      CtaLabel="@L["Landing.Advanced.Cta"]"
+                      OnSelect="GoToAdvanced" />
+        </FluentGridItem>
+        <FluentGridItem xs="12" sm="12" md="4">
+            <ModeCard Icon="📖"
+                      Title="@L["Landing.Docs.Title"]"
+                      Description="@L["Landing.Docs.Description"]"
+                      CtaLabel="@L["Landing.Docs.Cta"]"
+                      OnSelect="GoToDocs" />
+        </FluentGridItem>
+    </FluentGrid>
+
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 32px 16px;">
+        <FluentLabel Typo="Typography.Body">@L["Landing.Import.Prompt"]</FluentLabel>
+        <FluentButton Appearance="Appearance.Outline" OnClick="OnImportClicked">
+            📥 @L["Landing.Import.Button"]
+        </FluentButton>
+    </FluentStack>
+
+    @if (_showImportToast)
+    {
+        <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="true" OnDismiss="DismissImportToast" Style="max-width: 640px; margin: 0 auto;">
+            @L["Landing.Import.ComingSoon"]
+        </FluentMessageBar>
+    }
+
+</div>
+
+@code {
+    private bool _showImportToast;
+
+    private void GoToWizard() => GoTo(AppMode.Wizard, "/wizard");
+    private void GoToAdvanced() => GoTo(AppMode.Advanced, "/advanced");
+    private void GoToDocs() => GoTo(AppMode.Docs, "/docs");
+
+    private void GoTo(AppMode mode, string path)
+    {
+        Mode.SwitchMode(mode);
+        Nav.NavigateTo(path);
+    }
+
+    private void OnImportClicked() => _showImportToast = true;
+    private void DismissImportToast() => _showImportToast = false;
+}

@@ -1,0 +1,67 @@
+@page "/wizard/guided/{Step:int}"
+@inject IStringLocalizer<SharedResources> L
+@inject NavigationManager Nav
+@inject ModeService Mode
+
+<PageTitle>@L["Wizard.Guided.Title"] · Step @Step</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" HorizontalGap="24" Style="padding: 48px 16px; max-width: 720px; margin: 0 auto;">
+
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" VerticalAlignment="VerticalAlignment.Center">
+        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+            @(string.Format(L["Wizard.Guided.StepOf"].Value, Step, TotalSteps))
+        </FluentLabel>
+        <FluentSpacer />
+        <FluentProgress Value="@(Step * 100 / TotalSteps)" Width="200px" />
+    </FluentStack>
+
+    @switch (Step)
+    {
+        case 1:
+            <Step_Language />
+            break;
+        case 2:
+            <Step_Disk />
+            break;
+        case 3:
+            <Step_Users />
+            break;
+        case 4:
+            <Step_Privacy />
+            break;
+        case 5:
+            <Step_Finish />
+            break;
+        default:
+            <FluentMessageBar Intent="MessageIntent.Error">Unknown step.</FluentMessageBar>
+            break;
+    }
+
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8">
+        @if (Step > 1)
+        {
+            <FluentButton Appearance="Appearance.Outline" OnClick="Previous">← @L["Common.Back"]</FluentButton>
+        }
+        <FluentSpacer />
+        @if (Step < TotalSteps)
+        {
+            <FluentButton Appearance="Appearance.Accent" OnClick="Next">@L["Common.Next"] →</FluentButton>
+        }
+        else
+        {
+            <FluentButton Appearance="Appearance.Accent" OnClick='@(() => Nav.NavigateTo("/wizard/review"))'>
+                @L["Wizard.Guided.Finish"] →
+            </FluentButton>
+        }
+    </FluentStack>
+
+</FluentStack>
+
+@code {
+    private const int TotalSteps = 5;
+
+    [Parameter] public int Step { get; set; } = 1;
+
+    private void Previous() => Nav.NavigateTo($"/wizard/guided/{Step - 1}");
+    private void Next() => Nav.NavigateTo($"/wizard/guided/{Step + 1}");
+}

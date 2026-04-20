@@ -1,0 +1,78 @@
+@page "/advanced"
+@page "/advanced/{Section}"
+@inject IStringLocalizer<SharedResources> L
+@inject NavigationManager Nav
+@inject ModeService Mode
+
+<PageTitle>@L["Advanced.Title"] · preflight.xml</PageTitle>
+
+<div style="padding: 24px 16px; max-width: 1600px; margin: 0 auto;">
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
+        <FluentLabel Typo="Typography.PageTitle">⚙️ @L["Advanced.Title"]</FluentLabel>
+        <FluentSpacer />
+        <FluentAnchor Href="/" Appearance="Appearance.Outline">← @L["Common.BackToHome"]</FluentAnchor>
+    </FluentStack>
+
+    <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 24px 0;">@L["Advanced.Subtitle"]</FluentLabel>
+
+    <FluentGrid Spacing="3">
+
+        <!-- Left column: sections navigation -->
+        <FluentGridItem xs="12" md="3">
+            <FluentCard Style="padding: 8px; position: sticky; top: 16px;">
+                <FluentNavMenu>
+                    @foreach (var id in _sections)
+                    {
+                        <FluentNavLink Href="@($"/advanced/{id}")" Match="NavLinkMatch.All">
+                            @L[$"Advanced.Section.{id}"]
+                        </FluentNavLink>
+                    }
+                </FluentNavMenu>
+            </FluentCard>
+        </FluentGridItem>
+
+        <!-- Middle column: form -->
+        <FluentGridItem xs="12" md="6">
+            <FluentCard Style="padding: 24px; min-height: 400px;">
+                <FluentLabel Typo="Typography.H3">
+                    @L[$"Advanced.Section.{_activeSection}"]
+                </FluentLabel>
+                <div style="margin-top: 16px;">
+                    <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
+                        @L["Common.ComingInPhase3"]
+                    </FluentMessageBar>
+                </div>
+            </FluentCard>
+        </FluentGridItem>
+
+        <!-- Right column: live XML preview -->
+        <FluentGridItem xs="12" md="3">
+            <FluentCard Style="padding: 16px; position: sticky; top: 16px;">
+                <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@L["Advanced.Preview.Title"]</FluentLabel>
+                <pre style="margin-top: 8px; font-size: 12px; background: var(--neutral-layer-2); padding: 12px; border-radius: 4px; overflow: auto; max-height: 400px;"><code>&lt;!-- @L["Advanced.Preview.Placeholder"] --&gt;</code></pre>
+            </FluentCard>
+        </FluentGridItem>
+
+    </FluentGrid>
+</div>
+
+@code {
+    [Parameter] public string? Section { get; set; }
+
+    // Kept in sync with resource keys Advanced.Section.*
+    private static readonly string[] _sections =
+    [
+        "region", "disk", "users", "edition", "privacy",
+        "security", "bloatware", "tweaks", "vm", "network",
+    ];
+
+    private string _activeSection = "region";
+
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrWhiteSpace(Section) && _sections.Contains(Section))
+            _activeSection = Section;
+        else
+            _activeSection = "region";
+    }
+}

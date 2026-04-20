@@ -1,0 +1,41 @@
+@inject IStringLocalizer<SharedResources> L
+
+<FluentSelect TOption="string"
+              Value="@_current"
+              ValueChanged="OnChanged"
+              Width="160px"
+              aria-label="Theme">
+    <FluentOption Value="system">🖥️ @L["Theme.System"]</FluentOption>
+    <FluentOption Value="light">☀️ @L["Theme.Light"]</FluentOption>
+    <FluentOption Value="dark">🌙 @L["Theme.Dark"]</FluentOption>
+</FluentSelect>
+
+@code {
+    [Parameter] public DesignThemeModes Mode { get; set; } = DesignThemeModes.System;
+    [Parameter] public EventCallback<DesignThemeModes> ModeChanged { get; set; }
+
+    private string _current = "system";
+
+    protected override void OnParametersSet()
+    {
+        _current = Mode switch
+        {
+            DesignThemeModes.Light => "light",
+            DesignThemeModes.Dark => "dark",
+            _ => "system",
+        };
+    }
+
+    private async Task OnChanged(string value)
+    {
+        var next = value switch
+        {
+            "light" => DesignThemeModes.Light,
+            "dark" => DesignThemeModes.Dark,
+            _ => DesignThemeModes.System,
+        };
+
+        if (next != Mode)
+            await ModeChanged.InvokeAsync(next);
+    }
+}

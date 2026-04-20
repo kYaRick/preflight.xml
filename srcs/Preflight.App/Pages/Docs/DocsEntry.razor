@@ -1,0 +1,45 @@
+@page "/docs/{Slug}"
+@inject IStringLocalizer<SharedResources> L
+
+<PageTitle>@_name · @L["Docs.Title"]</PageTitle>
+
+<div style="padding: 24px 16px; max-width: 960px; margin: 0 auto;">
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
+        <FluentAnchor Href="/docs" Appearance="Appearance.Outline">← @L["Docs.BackToIndex"]</FluentAnchor>
+        <FluentSpacer />
+    </FluentStack>
+
+    <FluentLabel Typo="Typography.PageTitle" Style="margin-top: 16px;">@_icon @_name</FluentLabel>
+    <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 24px 0;">@_description</FluentLabel>
+
+    <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
+        @L["Docs.Entry.ComingSoon"]
+    </FluentMessageBar>
+</div>
+
+@code {
+    [Parameter] public string Slug { get; set; } = "";
+
+    private string _icon = "📖";
+    private string _name = "";
+    private string _description = "";
+
+    protected override void OnParametersSet()
+    {
+        (_icon, var nameKey, var descKey) = Slug switch
+        {
+            "region"    => ("🌍", "Docs.Topic.Region.Name",    "Docs.Topic.Region.Description"),
+            "disk"      => ("💽", "Docs.Topic.Disk.Name",      "Docs.Topic.Disk.Description"),
+            "users"     => ("👤", "Docs.Topic.Users.Name",     "Docs.Topic.Users.Description"),
+            "edition"   => ("🪟", "Docs.Topic.Edition.Name",   "Docs.Topic.Edition.Description"),
+            "privacy"   => ("🔒", "Docs.Topic.Privacy.Name",   "Docs.Topic.Privacy.Description"),
+            "security"  => ("🛡️", "Docs.Topic.Security.Name",  "Docs.Topic.Security.Description"),
+            "bloatware" => ("🧼", "Docs.Topic.Bloatware.Name", "Docs.Topic.Bloatware.Description"),
+            "tweaks"    => ("🔧", "Docs.Topic.Tweaks.Name",    "Docs.Topic.Tweaks.Description"),
+            "vm"        => ("🖥️", "Docs.Topic.Vm.Name",        "Docs.Topic.Vm.Description"),
+            _           => ("📄", "Docs.Entry.Unknown",        "Docs.Entry.UnknownDescription"),
+        };
+        _name = L[nameKey];
+        _description = L[descKey];
+    }
+}

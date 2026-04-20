@@ -1,0 +1,59 @@
+name: 🧪 CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: 🛠️  Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: 🔎 Detect .NET solution
+        id: detect
+        run: |
+          if compgen -G "srcs/**/*.csproj" > /dev/null; then
+            echo "has_project=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_project=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=No project::No .NET project found under srcs/. Skipping build."
+          fi
+
+      - name: ⚙️ Setup .NET
+        if: steps.detect.outputs.has_project == 'true'
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: 🏁 Install just
+        if: steps.detect.outputs.has_project == 'true'
+        uses: extractions/setup-just@v2
+
+      - name: 📦 Restore
+        if: steps.detect.outputs.has_project == 'true'
+        run: just restore
+
+      - name: ✅ Lint
+        if: steps.detect.outputs.has_project == 'true'
+        run: just lint
+
+      - name: 🛠️ Build
+        if: steps.detect.outputs.has_project == 'true'
+        run: just build
+
+      - name: 🧪 Test
+        if: steps.detect.outputs.has_project == 'true'
+        run: just test

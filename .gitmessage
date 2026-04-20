@@ -1,0 +1,43 @@
+
+# <type>(<scope>): <subject>
+#
+# ─────────────────────────────────────────────────────────────
+#  Conventional Commits - https://www.conventionalcommits.org
+# ─────────────────────────────────────────────────────────────
+#
+#  📦 Type
+#    feat      ✨ new feature
+#    fix       🐛 bug fix
+#    docs      📚 documentation only
+#    style     💎 formatting, no code change
+#    refactor  ♻️  code change, no feature / no fix
+#    perf      🚀 performance improvement
+#    test      🧪 adding or fixing tests
+#    build     🛠️  build system, dependencies
+#    ci        🤖 CI / CD configuration
+#    chore     🧹 maintenance, tooling
+#    revert    ⏪ revert a previous commit
+#
+#  🎯 Scope (optional)
+#    ui | xml | pwa | core | ci | docs | deps | config
+#
+#  ✍️  Subject
+#    • imperative mood ("add" not "added" / "adds")
+#    • no capital letter at start, no period at end
+#    • ≤ 50 characters
+#
+#  📝 Body (optional, wrap at 72 chars)
+#    Explain the *why*, not the *what*. Diff shows the what.
+#
+#  📎 Footer (optional)
+#    Refs:        #123
+#    Closes:      #456
+#    BREAKING CHANGE: describe the break
+#
+# ─────────────────────────────────────────────────────────────
+#  Examples
+# ─────────────────────────────────────────────────────────────
+#    feat(xml): add disk partitioning editor
+#    fix(ui): correct FluentNavMenu active state
+#    chore(deps): bump FluentUI to 4.11
+#    docs(readme): add deployment badge

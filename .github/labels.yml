@@ -1,0 +1,77 @@
+# 🏷️ Label palette for preflight.xml
+# Sync to GitHub with: https://github.com/marketplace/actions/github-labeler
+
+# ─── Type ───────────────────────────────────────────────────
+- name: "🐛 bug"
+  color: "d73a4a"
+  description: Something is broken
+
+- name: "✨ enhancement"
+  color: "a2eeef"
+  description: New feature or request
+
+- name: "🧩 option-missing"
+  color: "7057ff"
+  description: Unsupported autounattend.xml option
+
+- name: "📚 documentation"
+  color: "0075ca"
+  description: Documentation changes
+
+- name: "🧹 chore"
+  color: "cfd3d7"
+  description: Tooling, config, maintenance
+
+- name: "🤖 ci"
+  color: "1d76db"
+  description: CI / CD workflows
+
+- name: "📦 dependencies"
+  color: "0366d6"
+  description: Dependency updates
+
+- name: "💥 breaking"
+  color: "b60205"
+  description: Introduces breaking changes
+
+# ─── Workflow ───────────────────────────────────────────────
+- name: "triage"
+  color: "fbca04"
+  description: Needs review / categorization
+
+- name: "good first issue"
+  color: "7057ff"
+  description: Friendly starter task
+
+- name: "help wanted"
+  color: "008672"
+  description: Extra attention appreciated
+
+- name: "blocked"
+  color: "e11d21"
+  description: Blocked by an external factor
+
+- name: "wontfix"
+  color: "ffffff"
+  description: Will not be worked on
+
+- name: "duplicate"
+  color: "cccccc"
+  description: Already reported
+
+# ─── Priority ───────────────────────────────────────────────
+- name: "🔴 priority:critical"
+  color: "b60205"
+  description: Drop everything
+
+- name: "🟠 priority:high"
+  color: "d93f0b"
+  description: Important, schedule soon
+
+- name: "🟡 priority:medium"
+  color: "fbca04"
+  description: Normal priority
+
+- name: "🟢 priority:low"
+  color: "0e8a16"
+  description: Nice to have
