@@ -1,0 +1,9 @@
+@inject IStringLocalizer<SharedResources> L
+
+<FluentCard Style="padding: 24px;">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+        <FluentLabel Typo="Typography.H3">👤 @L["Step.Users.Title"]</FluentLabel>
+        <FluentLabel Typo="Typography.Body">@L["Step.Users.Description"]</FluentLabel>
+        <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">@L["Common.ComingInPhase3"]</FluentMessageBar>
+    </FluentStack>
+</FluentCard>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms</value></resheader>
+
+  <!-- ═══ Common ══════════════════════════════════════════════ -->
+  <data name="Common.Back"><value>Назад</value></data>
+  <data name="Common.BackToHome"><value>На головну</value></data>
+  <data name="Common.Next"><value>Далі</value></data>
+  <data name="Common.ComingInPhase3"><value>Цю секцію буде реалізовано у Phase 3 (генерація XML).</value></data>
+
+  <!-- ═══ Footer ══════════════════════════════════════════════ -->
+  <data name="Footer.BuiltBy"><value>Зроблено з 💙💛</value></data>
+
+  <!-- ═══ Theme switcher ═════════════════════════════════════ -->
+  <data name="Theme.System"><value>Системна</value></data>
+  <data name="Theme.Light"><value>Світла</value></data>
+  <data name="Theme.Dark"><value>Темна</value></data>
+
+  <!-- ═══ Landing page ═══════════════════════════════════════ -->
+  <data name="Landing.Tagline"><value>Збирай файл відповідей Windows візуально - офлайн і миттєво.</value></data>
+  <data name="Landing.Status"><value>🟧 Pre-alpha - редактор активно розробляється.</value></data>
+  <data name="Landing.Wizard.Title"><value>Майстер</value></data>
+  <data name="Landing.Wizard.Description"><value>Покрокове налаштування. Одне питання за раз або готовий шаблон на старт.</value></data>
+  <data name="Landing.Wizard.Cta"><value>Розпочати</value></data>
+  <data name="Landing.Advanced.Title"><value>Розширений</value></data>
+  <data name="Landing.Advanced.Description"><value>Повний ручний контроль. Усі опції в одному місці, з живим XML-превʼю.</value></data>
+  <data name="Landing.Advanced.Cta"><value>Відкрити редактор</value></data>
+  <data name="Landing.Docs.Title"><value>Довідка</value></data>
+  <data name="Landing.Docs.Description"><value>Довідник по кожній опції autounattend.xml - що робить і як налаштувати.</value></data>
+  <data name="Landing.Docs.Cta"><value>Переглянути</value></data>
+  <data name="Landing.Import.Prompt"><value>Вже маєш конфіг?</value></data>
+  <data name="Landing.Import.Button"><value>Імпорт .xml</value></data>
+  <data name="Landing.Import.ComingSoon"><value>Імпорт наявних .xml з'явиться у наступних фазах.</value></data>
+
+  <!-- ═══ Wizard ══════════════════════════════════════════════ -->
+  <data name="Wizard.Title"><value>Майстер</value></data>
+  <data name="Wizard.Entry.Prompt"><value>Обери, з чого почати.</value></data>
+  <data name="Wizard.Guided.Title"><value>Покроково</value></data>
+  <data name="Wizard.Guided.Description"><value>Проведе через кожне рішення з поясненнями по ходу.</value></data>
+  <data name="Wizard.Guided.Cta"><value>Почати покроково</value></data>
+  <data name="Wizard.Guided.StepOf"><value>Крок {0} з {1}</value></data>
+  <data name="Wizard.Guided.Finish"><value>Завершити</value></data>
+  <data name="Wizard.Presets.Title"><value>Шаблони</value></data>
+  <data name="Wizard.Presets.Description"><value>Візьми готовий шаблон для типового сценарію і доналаштуй.</value></data>
+  <data name="Wizard.Presets.Cta"><value>Переглянути шаблони</value></data>
+  <data name="Wizard.Presets.Prompt"><value>Обери шаблон для заповнення конфігурації.</value></data>
+  <data name="Wizard.Presets.Apply"><value>Використати цей</value></data>
+  <data name="Wizard.Review.Title"><value>Перевірка конфігурації</value></data>
+  <data name="Wizard.Review.Subtitle"><value>Переконайся в налаштуваннях перед завантаженням файлу відповідей.</value></data>
+  <data name="Wizard.Review.DownloadStub"><value>Генерація XML зʼявиться у Phase 3 - кнопка завантаження наразі вимкнена.</value></data>
+  <data name="Wizard.Review.Download"><value>Завантажити autounattend.xml</value></data>
+
+  <!-- ═══ Wizard steps ═══════════════════════════════════════ -->
+  <data name="Step.Language.Title"><value>Регіон і мова</value></data>
+  <data name="Step.Language.Description"><value>Обери мову інтерфейсу Windows і країну / регіон.</value></data>
+  <data name="Step.Disk.Title"><value>Розмітка диска</value></data>
+  <data name="Step.Disk.Description"><value>Обери, як Windows Setup розмітить цільовий диск (GPT / MBR, розмір EFI, recovery).</value></data>
+  <data name="Step.Users.Title"><value>Облікові записи</value></data>
+  <data name="Step.Users.Description"><value>Створи перший обліковий запис і обери поведінку першого входу.</value></data>
+  <data name="Step.Privacy.Title"><value>Приватність і телеметрія</value></data>
+  <data name="Step.Privacy.Description"><value>Вимкни збір даних і налаштуй параметри express settings.</value></data>
+  <data name="Step.Finish.Title"><value>Готово</value></data>
+  <data name="Step.Finish.Description"><value>Переходь на екран перевірки, щоб переглянути і завантажити autounattend.xml.</value></data>
+
+  <!-- ═══ Preset cards ═══════════════════════════════════════ -->
+  <data name="Preset.CleanHomePc.Name"><value>Чистий домашній ПК</value></data>
+  <data name="Preset.CleanHomePc.Description"><value>Без bloatware, локальний акаунт, GPT, en-US. Для особистого використання без Microsoft account.</value></data>
+  <data name="Preset.VmProxmox.Name"><value>ВМ (Proxmox)</value></data>
+  <data name="Preset.VmProxmox.Description"><value>VirtIO драйвери, QEMU guest agent, без bloatware. Ідеально для Proxmox або KVM.</value></data>
+  <data name="Preset.Corporate.Name"><value>Корпоративний шаблон</value></data>
+  <data name="Preset.Corporate.Description"><value>Pro-редакція, без першого входу, готовий до домену, privacy-first налаштування.</value></data>
+  <data name="Preset.Minimal.Name"><value>Мінімальний / швидкий</value></data>
+  <data name="Preset.Minimal.Description"><value>Найменший можливий файл відповідей для найшвидшої автоматичної інсталяції.</value></data>
+
+  <!-- ═══ Review labels ══════════════════════════════════════ -->
+  <data name="Region.DisplayLanguage.Label"><value>Мова інтерфейсу</value></data>
+  <data name="Region.HomeLocation.Label"><value>Країна / регіон</value></data>
+  <data name="Disk.Mode.Label"><value>Режим диска</value></data>
+  <data name="Disk.PartitionStyle.Label"><value>Стиль розмітки</value></data>
+  <data name="Edition.Edition.Label"><value>Редакція Windows</value></data>
+  <data name="Users.Count.Label"><value>Локальних акаунтів</value></data>
+  <data name="Privacy.Express.Label"><value>Express settings</value></data>
+  <data name="Bloatware.RemoveCount.Label"><value>Програм на видалення</value></data>
+
+  <!-- ═══ Advanced mode ══════════════════════════════════════ -->
+  <data name="Advanced.Title"><value>Розширений редактор</value></data>
+  <data name="Advanced.Subtitle"><value>Усі опції в одному місці. Секція - ліворуч. Живе XML-превʼю - праворуч.</value></data>
+  <data name="Advanced.Preview.Title"><value>Живе превʼю</value></data>
+  <data name="Advanced.Preview.Placeholder"><value>XML-превʼю зʼявиться у Phase 3</value></data>
+  <data name="Advanced.Section.region"><value>🌍 Регіон і мова</value></data>
+  <data name="Advanced.Section.disk"><value>💽 Диск</value></data>
+  <data name="Advanced.Section.users"><value>👤 Користувачі</value></data>
+  <data name="Advanced.Section.edition"><value>🪟 Редакція Windows</value></data>
+  <data name="Advanced.Section.privacy"><value>🔒 Приватність</value></data>
+  <data name="Advanced.Section.security"><value>🛡️ Безпека</value></data>
+  <data name="Advanced.Section.bloatware"><value>🧼 Bloatware</value></data>
+  <data name="Advanced.Section.tweaks"><value>🔧 Системні твіки</value></data>
+  <data name="Advanced.Section.vm"><value>🖥️ Віртуальна машина</value></data>
+  <data name="Advanced.Section.network"><value>📡 Мережа</value></data>
+
+  <!-- ═══ Docs mode ══════════════════════════════════════════ -->
+  <data name="Docs.Title"><value>Документація</value></data>
+  <data name="Docs.Subtitle"><value>Довідник по кожній опції autounattend.xml, яку підтримує preflight.xml.</value></data>
+  <data name="Docs.BackToIndex"><value>Всі теми</value></data>
+  <data name="Docs.Entry.ComingSoon"><value>Детальна документація по цій темі зʼявиться у наступних фазах.</value></data>
+  <data name="Docs.Entry.Unknown"><value>Невідома тема</value></data>
+  <data name="Docs.Entry.UnknownDescription"><value>Запитана тема не існує.</value></data>
+  <data name="Docs.Topic.Region.Name"><value>Регіон і мова</value></data>
+  <data name="Docs.Topic.Region.Description"><value>Мова інтерфейсу, input locale, країна, часовий пояс.</value></data>
+  <data name="Docs.Topic.Disk.Name"><value>Розмітка диска</value></data>
+  <data name="Docs.Topic.Disk.Description"><value>GPT проти MBR, розмір EFI, recovery-розділ, власні diskpart-скрипти.</value></data>
+  <data name="Docs.Topic.Users.Name"><value>Облікові записи</value></data>
+  <data name="Docs.Topic.Users.Description"><value>Локальні акаунти, групи, поведінка першого входу, політика паролів.</value></data>
+  <data name="Docs.Topic.Edition.Name"><value>Редакція Windows</value></data>
+  <data name="Docs.Topic.Edition.Description"><value>Ключі продукту, вибір редакції (Home / Pro / Enterprise / Education).</value></data>
+  <data name="Docs.Topic.Privacy.Name"><value>Приватність і телеметрія</value></data>
+  <data name="Docs.Topic.Privacy.Description"><value>Express settings, перемикачі телеметрії, advertising ID, геолокація.</value></data>
+  <data name="Docs.Topic.Security.Name"><value>Безпека</value></data>
+  <data name="Docs.Topic.Security.Description"><value>UAC, Defender, SmartScreen, RDP, обхід вимог Windows 11.</value></data>
+  <data name="Docs.Topic.Bloatware.Name"><value>Видалення bloatware</value></data>
+  <data name="Docs.Topic.Bloatware.Description"><value>Прибрати передвстановлене: Copilot, Cortana, Bing Search, Teams тощо.</value></data>
+  <data name="Docs.Topic.Tweaks.Name"><value>Системні твіки</value></data>
+  <data name="Docs.Topic.Tweaks.Description"><value>Провідник, панель задач, меню Пуск, візуальні ефекти, long paths.</value></data>
+  <data name="Docs.Topic.Vm.Name"><value>Підтримка віртуальних машин</value></data>
+  <data name="Docs.Topic.Vm.Description"><value>VirtualBox Guest Additions, VMware Tools, VirtIO + QEMU agent, Parallels Tools.</value></data>
+
+  <!-- ═══ NotFound ════════════════════════════════════════════ -->
+  <data name="NotFound.Title"><value>Сторінку не знайдено</value></data>
+  <data name="NotFound.Message"><value>Сторінка, яку ви шукаєте, не існує.</value></data>
+  <data name="NotFound.GoHome"><value>На головну</value></data>
+
+</root>

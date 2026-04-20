@@ -1,0 +1,25 @@
+@*
+  A clickable mode tile used on the landing page. Three of these sit side-by-side
+  representing Wizard / Advanced / Docs.
+*@
+
+<FluentCard Class="mode-card" @onclick="HandleClick" Style="cursor: pointer; height: 100%;">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" Style="padding: 24px; height: 100%;">
+        <div style="font-size: 48px; line-height: 1;">@Icon</div>
+        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@Title</FluentLabel>
+        <FluentLabel Typo="Typography.Body" Style="flex: 1;">@Description</FluentLabel>
+        <FluentButton Appearance="Appearance.Accent" OnClick="HandleClick">
+            @CtaLabel
+        </FluentButton>
+    </FluentStack>
+</FluentCard>
+
+@code {
+    [Parameter, EditorRequired] public string Icon { get; set; } = "";
+    [Parameter, EditorRequired] public string Title { get; set; } = "";
+    [Parameter, EditorRequired] public string Description { get; set; } = "";
+    [Parameter, EditorRequired] public string CtaLabel { get; set; } = "";
+    [Parameter] public EventCallback OnSelect { get; set; }
+
+    private Task HandleClick() => OnSelect.InvokeAsync();
+}

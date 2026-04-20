@@ -1,0 +1,113 @@
+# ─────────────────────────────────────────────────────────────
+#  .NET / Build output
+# ─────────────────────────────────────────────────────────────
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+[Ll]og/
+[Ll]ogs/
+publish/
+artifacts/
+BenchmarkDotNet.Artifacts/
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+.nuget/
+
+# Test results / coverage
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+coverage*.json
+coverage*.xml
+coverage*.info
+.coverage/
+
+# ─────────────────────────────────────────────────────────────
+#  Blazor / WebAssembly / PWA
+# ─────────────────────────────────────────────────────────────
+wwwroot/_framework/
+wwwroot/_content/
+wwwroot/service-worker-assets.js
+*.lib.module.js
+dist/
+
+# ─────────────────────────────────────────────────────────────
+#  Secrets & local config
+# ─────────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+*.secrets.json
+appsettings.Development.json
+appsettings.Local.json
+appsettings.local.json
+secrets.json
+
+# ─────────────────────────────────────────────────────────────
+#  IDE - Visual Studio
+# ─────────────────────────────────────────────────────────────
+.vs/
+*.user
+*.userosscache
+*.suo
+*.sln.docstates
+*.VisualState.xml
+*.userprefs
+
+# ─────────────────────────────────────────────────────────────
+#  IDE - JetBrains Rider / ReSharper
+# ─────────────────────────────────────────────────────────────
+.idea/
+*.sln.iml
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# ─────────────────────────────────────────────────────────────
+#  IDE - VS Code (keep shared config)
+# ─────────────────────────────────────────────────────────────
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+# ─────────────────────────────────────────────────────────────
+#  OS generated
+# ─────────────────────────────────────────────────────────────
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ─────────────────────────────────────────────────────────────
+#  Tooling / temp
+# ─────────────────────────────────────────────────────────────
+*.log
+*.tmp
+*.bak
+*.orig
+*.rej
+node_modules/
+
+# ─────────────────────────────────────────────────────────────
+#  AI assistants (local workspaces only - never commit)
+# ─────────────────────────────────────────────────────────────
+.ai/
+.agents/
+.claude/
+.cursor/
+.aider*
+.copilot/
+*.ai-cache

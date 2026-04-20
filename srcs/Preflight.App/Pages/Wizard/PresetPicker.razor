@@ -1,0 +1,44 @@
+@page "/wizard/presets"
+@inject IStringLocalizer<SharedResources> L
+@inject NavigationManager Nav
+@inject ModeService Mode
+@inject PresetService Presets
+
+<PageTitle>@L["Wizard.Presets.Title"] · preflight.xml</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" HorizontalGap="24" Style="padding: 48px 16px; max-width: 1080px; margin: 0 auto;">
+
+    <FluentLabel Typo="Typography.PageTitle">🎛️ @L["Wizard.Presets.Title"]</FluentLabel>
+    <FluentLabel Typo="Typography.Subject">@L["Wizard.Presets.Prompt"]</FluentLabel>
+
+    <FluentGrid Spacing="3">
+        @foreach (var preset in Presets.All)
+        {
+            <FluentGridItem xs="12" sm="6" md="6" lg="3">
+                <FluentCard Style="cursor: pointer; height: 100%;" @onclick="() => OnSelect(preset)">
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8" Style="padding: 20px; height: 100%;">
+                        <div style="font-size: 36px;">@preset.Icon</div>
+                        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@L[preset.NameKey]</FluentLabel>
+                        <FluentLabel Typo="Typography.Body" Style="flex: 1;">@L[preset.DescriptionKey]</FluentLabel>
+                        <FluentButton Appearance="Appearance.Accent" OnClick="() => OnSelect(preset)">
+                            @L["Wizard.Presets.Apply"]
+                        </FluentButton>
+                    </FluentStack>
+                </FluentCard>
+            </FluentGridItem>
+        }
+    </FluentGrid>
+
+    <div>
+        <FluentAnchor Href="/wizard" Appearance="Appearance.Hypertext">← @L["Common.Back"]</FluentAnchor>
+    </div>
+
+</FluentStack>
+
+@code {
+    private void OnSelect(Preset preset)
+    {
+        Mode.ApplyPreset(preset);
+        Nav.NavigateTo("/wizard/review");
+    }
+}

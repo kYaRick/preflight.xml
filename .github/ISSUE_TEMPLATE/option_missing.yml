@@ -1,0 +1,70 @@
+name: 🧩 Missing autounattend.xml option
+description: Report a Windows Setup option preflight.xml does not yet support
+title: "option: <name>"
+labels: ["🧩 option-missing", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help us cover more of the `autounattend.xml` schema. 🙌
+
+  - type: textarea
+    id: option
+    attributes:
+      label: 🧩 Which option is missing?
+      description: Name of the setting / component and what it does.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: windows-version
+    attributes:
+      label: 🪟 Windows version
+      options:
+        - Windows 11 only
+        - Windows 10 only
+        - Both Windows 10 and 11
+        - Not sure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: stage
+    attributes:
+      label: 🏷️ Configuration pass
+      description: Which Windows Setup pass does this option belong to?
+      options:
+        - windowsPE
+        - offlineServicing
+        - specialize
+        - generalize
+        - auditSystem
+        - auditUser
+        - oobeSystem
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: xml-snippet
+    attributes:
+      label: 📄 XML snippet
+      description: If you know the XML structure, paste it here.
+      render: xml
+    validations:
+      required: false
+
+  - type: input
+    id: docs-link
+    attributes:
+      label: 📚 Microsoft Docs reference
+      placeholder: "https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/..."
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 💡 Additional context
+    validations:
+      required: false

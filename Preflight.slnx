@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/srcs/">
+    <Project Path="srcs/Preflight.App/Preflight.App.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Preflight.Tests/Preflight.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,67 @@
+@inject IStringLocalizer<SharedResources> L
+@inject ModeService Mode
+
+<FluentCard Style="padding: 24px;">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="16">
+
+        <FluentLabel Typo="Typography.H3">🌍 @L["Step.Language.Title"]</FluentLabel>
+        <FluentLabel Typo="Typography.Body">@L["Step.Language.Description"]</FluentLabel>
+
+        <FluentSelect TOption="string"
+                      Label="@L["Region.DisplayLanguage.Label"]"
+                      Value="@Mode.Config.Region.DisplayLanguage"
+                      ValueChanged="v => { Mode.Config.Region.DisplayLanguage = v; Mode.NotifyConfigChanged(); }"
+                      Width="100%">
+            @foreach (var lang in _languages)
+            {
+                <FluentOption Value="@lang.Tag">@lang.Display</FluentOption>
+            }
+        </FluentSelect>
+
+        <FluentSelect TOption="string"
+                      Label="@L["Region.HomeLocation.Label"]"
+                      Value="@Mode.Config.Region.HomeLocation"
+                      ValueChanged="v => { Mode.Config.Region.HomeLocation = v; Mode.NotifyConfigChanged(); }"
+                      Width="100%">
+            @foreach (var loc in _locations)
+            {
+                <FluentOption Value="@loc.Code">@loc.Display</FluentOption>
+            }
+        </FluentSelect>
+
+    </FluentStack>
+</FluentCard>
+
+@code {
+    private record LangOption(string Tag, string Display);
+    private record LocOption(string Code, string Display);
+
+    // Starter subset - full 200+ list added in Phase 3.
+    private static readonly LangOption[] _languages =
+    [
+        new("en-US", "🇺🇸 English (United States)"),
+        new("en-GB", "🇬🇧 English (United Kingdom)"),
+        new("uk-UA", "🇺🇦 Українська"),
+        new("de-DE", "🇩🇪 Deutsch (Deutschland)"),
+        new("fr-FR", "🇫🇷 Français (France)"),
+        new("es-ES", "🇪🇸 Español (España)"),
+        new("it-IT", "🇮🇹 Italiano (Italia)"),
+        new("pl-PL", "🇵🇱 Polski (Polska)"),
+        new("pt-BR", "🇧🇷 Português (Brasil)"),
+        new("ja-JP", "🇯🇵 日本語"),
+    ];
+
+    private static readonly LocOption[] _locations =
+    [
+        new("US", "🇺🇸 United States"),
+        new("GB", "🇬🇧 United Kingdom"),
+        new("UA", "🇺🇦 Ukraine"),
+        new("DE", "🇩🇪 Germany"),
+        new("FR", "🇫🇷 France"),
+        new("ES", "🇪🇸 Spain"),
+        new("IT", "🇮🇹 Italy"),
+        new("PL", "🇵🇱 Poland"),
+        new("BR", "🇧🇷 Brazil"),
+        new("JP", "🇯🇵 Japan"),
+    ];
+}

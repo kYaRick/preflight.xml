@@ -1,0 +1,38 @@
+@page "/wizard/review"
+@inject IStringLocalizer<SharedResources> L
+@inject ModeService Mode
+@inject NavigationManager Nav
+
+<PageTitle>@L["Wizard.Review.Title"] · preflight.xml</PageTitle>
+
+<FluentStack Orientation="Orientation.Vertical" HorizontalGap="24" Style="padding: 48px 16px; max-width: 900px; margin: 0 auto;">
+
+    <FluentLabel Typo="Typography.PageTitle">📋 @L["Wizard.Review.Title"]</FluentLabel>
+    <FluentLabel Typo="Typography.Subject">@L["Wizard.Review.Subtitle"]</FluentLabel>
+
+    <FluentCard Style="padding: 24px;">
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+            <ReviewRow Label="@L["Region.DisplayLanguage.Label"]" Value="@Mode.Config.Region.DisplayLanguage" />
+            <ReviewRow Label="@L["Region.HomeLocation.Label"]" Value="@Mode.Config.Region.HomeLocation" />
+            <ReviewRow Label="@L["Disk.Mode.Label"]" Value="@Mode.Config.Disk.Mode.ToString()" />
+            <ReviewRow Label="@L["Disk.PartitionStyle.Label"]" Value="@Mode.Config.Disk.PartitionStyle.ToString()" />
+            <ReviewRow Label="@L["Edition.Edition.Label"]" Value="@Mode.Config.Edition.Edition.ToString()" />
+            <ReviewRow Label="@L["Users.Count.Label"]" Value="@Mode.Config.Users.Count.ToString()" />
+            <ReviewRow Label="@L["Privacy.Express.Label"]" Value="@Mode.Config.Privacy.ExpressSettings.ToString()" />
+            <ReviewRow Label="@L["Bloatware.RemoveCount.Label"]" Value="@Mode.Config.Bloatware.AppsToRemove.Count.ToString()" />
+        </FluentStack>
+    </FluentCard>
+
+    <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
+        @L["Wizard.Review.DownloadStub"]
+    </FluentMessageBar>
+
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8">
+        <FluentAnchor Href="/wizard" Appearance="Appearance.Outline">← @L["Common.Back"]</FluentAnchor>
+        <FluentSpacer />
+        <FluentButton Appearance="Appearance.Accent" Disabled="true">
+            ⬇️ @L["Wizard.Review.Download"]
+        </FluentButton>
+    </FluentStack>
+
+</FluentStack>
