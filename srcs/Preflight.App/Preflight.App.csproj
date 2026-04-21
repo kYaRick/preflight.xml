@@ -13,7 +13,11 @@
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Localization" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" />
-    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" />
+    <!-- NOTE: FluentUI Icons package NOT referenced on purpose.
+         It ships ~100+ MB of separate WASM assemblies (Filled/Regular/Light variants)
+         which Blazor tries to download on startup, making boot hang in dev and
+         ballooning the production bundle. We use emojis for iconography instead. -->
+    <!-- <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" /> -->
   </ItemGroup>
 
   <ItemGroup>

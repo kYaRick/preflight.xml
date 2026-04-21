@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "css": {
+      "source": "mindrally/skills",
+      "sourceType": "github",
+      "computedHash": "5c7eb0aebe0bf60b466ae6794ed5f071d6f6f858aee508beb1e902b9a502811d"
+    },
+    "css-animation-creator": {
+      "source": "onewave-ai/claude-skills",
+      "sourceType": "github",
+      "computedHash": "283c7911f3e72b0a04a0606278d0941c2a2e984c809e7961944e89dd562b68da"
+    }
+  }
+}

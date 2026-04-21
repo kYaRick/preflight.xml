@@ -1,0 +1,186 @@
+@* Ctrl+K / Cmd+K command palette. Pure Blazor + custom dialog so it
+   inherits the pf-* palette and plays well with Fluent chrome. *@
+@inject NavigationManager Nav
+@inject IStringLocalizer<SharedResources> L
+@inject PresetService Presets
+@inject ModeService Mode
+@inject CultureService Culture
+@inject IJSRuntime JS
+
+<div class="pf-overlay @(Open ? "is-open" : null)" @onclick="CloseOnBackdrop" aria-hidden="@(Open ? "false" : "true")">
+    <div class="pf-palette" role="dialog" aria-modal="true" aria-label="@L["Palette.Title"]" @onclick:stopPropagation="true">
+
+        <div class="pf-palette__input-row">
+            <span class="pf-palette__prefix" aria-hidden="true">⌘</span>
+            <input @ref="_input"
+                   type="text"
+                   class="pf-palette__input"
+                   placeholder="@L["Palette.Placeholder"]"
+                   value="@_query"
+                   @oninput="OnQueryInput"
+                   @onkeydown="OnKeyDown" />
+            <kbd class="pf-palette__hint">Esc</kbd>
+        </div>
+
+        <ul class="pf-palette__list" role="listbox">
+            @if (_filtered.Count == 0)
+            {
+                <li class="pf-palette__empty">@L["Palette.NoResults"]</li>
+            }
+            else
+            {
+                @for (var i = 0; i < _filtered.Count; i++)
+                {
+                    var idx = i;
+                    var cmd = _filtered[idx];
+                    <li class="pf-palette__item @(idx == _selected ? "is-selected" : null)"
+                        role="option"
+                        aria-selected="@((idx == _selected).ToString().ToLowerInvariant())"
+                        @onclick="() => Execute(cmd)"
+                        @onmouseenter="() => _selected = idx">
+                        <span class="pf-palette__icon" aria-hidden="true">@cmd.Icon</span>
+                        <div class="pf-palette__text">
+                            <div class="pf-palette__label">@cmd.Label</div>
+                            @if (!string.IsNullOrEmpty(cmd.Hint))
+                            {
+                                <div class="pf-palette__hint-text">@cmd.Hint</div>
+                            }
+                        </div>
+                        <span class="pf-palette__group">@cmd.Group</span>
+                    </li>
+                }
+            }
+        </ul>
+
+        <div class="pf-palette__footer">
+            <span><kbd>↑↓</kbd> @L["Palette.Navigate"]</span>
+            <span><kbd>⏎</kbd> @L["Palette.Select"]</span>
+            <span><kbd>Esc</kbd> @L["Palette.Close"]</span>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
+
+    private string _query = "";
+    private int _selected;
+    private ElementReference _input;
+    private List<Command> _allCommands = new();
+    private List<Command> _filtered = new();
+
+    protected override void OnParametersSet()
+    {
+        if (Open && _allCommands.Count == 0)
+            BuildCommands();
+        ApplyFilter();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Open)
+        {
+            // Defer focus so the dialog is in the DOM + painted before we steal focus.
+            await Task.Delay(50);
+            try { await _input.FocusAsync(); } catch { /* pre-mount */ }
+        }
+    }
+
+    private void BuildCommands()
+    {
+        _allCommands =
+        [
+            new("🏠", L["Palette.Cmd.Home"], "/", L["Nav"], Hint: "/"),
+            new("✈️", L["Palette.Cmd.Wizard"], "/wizard", L["Nav"], Hint: "/wizard"),
+            new("⚙️", L["Palette.Cmd.Advanced"], "/advanced", L["Nav"], Hint: "/advanced"),
+            new("📖", L["Palette.Cmd.Docs"], "/docs", L["Nav"], Hint: "/docs"),
+            new("🎛️", L["Palette.Cmd.Presets"], "/wizard/presets", L["Nav"], Hint: "/wizard/presets"),
+            new("📋", L["Palette.Cmd.Review"], "/wizard/review", L["Nav"], Hint: "/wizard/review"),
+
+            .. Presets.All.Select(p => new Command(p.Icon, L[p.NameKey], null, L["Palette.Group.Preset"],
+                Hint: L[p.DescriptionKey], Action: () => { Mode.ApplyPreset(p); Nav.NavigateTo("/wizard/review"); return Task.CompletedTask; })),
+
+            new("🌞", L["Palette.Cmd.ThemeLight"], null, L["Palette.Group.Theme"],
+                Action: () => ApplyThemeAsync("light")),
+            new("🌙", L["Palette.Cmd.ThemeDark"], null, L["Palette.Group.Theme"],
+                Action: () => ApplyThemeAsync("dark")),
+            new("🖥️", L["Palette.Cmd.ThemeSystem"], null, L["Palette.Group.Theme"],
+                Action: () => ApplyThemeAsync("system")),
+
+            new("🇬🇧", L["Language.English"], null, L["Palette.Group.Language"],
+                Action: () => Culture.SetAsync("en")),
+            new("🇺🇦", L["Language.Ukrainian"], null, L["Palette.Group.Language"],
+                Action: () => Culture.SetAsync("uk")),
+        ];
+    }
+
+    private Task ApplyThemeAsync(string token) => JS.InvokeVoidAsync("preflightTheme.set", token).AsTask();
+
+    private void ApplyFilter()
+    {
+        var q = _query.Trim().ToLowerInvariant();
+        _filtered = string.IsNullOrEmpty(q)
+            ? _allCommands.ToList()
+            : _allCommands.Where(c =>
+                c.Label.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                (c.Hint?.Contains(q, StringComparison.OrdinalIgnoreCase) ?? false) ||
+                c.Group.Contains(q, StringComparison.OrdinalIgnoreCase))
+              .ToList();
+        if (_selected >= _filtered.Count) _selected = 0;
+    }
+
+    private void OnQueryInput(ChangeEventArgs e)
+    {
+        _query = e.Value?.ToString() ?? "";
+        _selected = 0;
+        ApplyFilter();
+    }
+
+    private async Task OnKeyDown(KeyboardEventArgs e)
+    {
+        switch (e.Key)
+        {
+            case "ArrowDown":
+                _selected = Math.Min(_selected + 1, _filtered.Count - 1);
+                break;
+            case "ArrowUp":
+                _selected = Math.Max(_selected - 1, 0);
+                break;
+            case "Enter":
+                if (_selected >= 0 && _selected < _filtered.Count)
+                    await Execute(_filtered[_selected]);
+                break;
+            case "Escape":
+                await Close();
+                break;
+        }
+    }
+
+    private async Task Execute(Command cmd)
+    {
+        if (cmd.Action is not null)
+            await cmd.Action();
+        else if (!string.IsNullOrEmpty(cmd.Href))
+            Nav.NavigateTo(cmd.Href);
+
+        await Close();
+    }
+
+    private async Task CloseOnBackdrop(MouseEventArgs _) => await Close();
+
+    private async Task Close()
+    {
+        _query = "";
+        _selected = 0;
+        await OpenChanged.InvokeAsync(false);
+    }
+
+    private sealed record Command(
+        string Icon,
+        string Label,
+        string? Href,
+        string Group,
+        string? Hint = null,
+        Func<Task>? Action = null);
+}

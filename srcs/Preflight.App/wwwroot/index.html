@@ -9,6 +9,11 @@
     <base href="/" />
     <link rel="preload" id="webassembly" />
 
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
     <!-- Fluent UI -->
     <link href="_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css" rel="stylesheet" />
 
@@ -24,17 +29,34 @@
 
     <script type="importmap"></script>
 
-    <!-- Culture helper: read/write preferred UI culture -->
+    <!-- Theme + culture + keyboard helpers (must load before first paint). -->
+    <script src="js/theme.js"></script>
     <script src="js/culture.js"></script>
+    <script src="js/keyboard.js"></script>
+
+    <!-- Apply persisted theme to <html> BEFORE CSS paints, so the loading
+         screen matches the user's choice even before Blazor boots. -->
+    <script>
+        window.preflightTheme.apply(window.preflightTheme.get());
+    </script>
 </head>
 
 <body>
     <div id="app">
-        <svg class="loading-progress">
-            <circle r="40%" cx="50%" cy="50%" />
-            <circle r="40%" cx="50%" cy="50%" />
-        </svg>
-        <div class="loading-progress-text"></div>
+        <div class="preflight-loader" aria-label="Loading preflight.xml">
+            <svg class="runway-wave" width="400" height="60" viewBox="0 0 400 60" aria-hidden="true">
+                <defs>
+                    <linearGradient id="runwayGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#6d28d9" />
+                        <stop offset="100%" stop-color="#a855f7" />
+                    </linearGradient>
+                </defs>
+                <path class="runway-track" d="M 0 30 Q 50 5, 100 30 T 200 30 T 300 30 T 400 30" />
+                <path class="runway-trail" d="M 0 30 Q 50 5, 100 30 T 200 30 T 300 30 T 400 30" pathLength="100" />
+            </svg>
+            <div class="plane" aria-hidden="true">✈️</div>
+            <div class="runway-status"></div>
+        </div>
     </div>
 
     <div id="blazor-error-ui">
