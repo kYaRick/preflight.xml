@@ -1,15 +1,32 @@
 @inject CultureService Culture
+@inject IStringLocalizer<SharedResources> L
+@inject IJSRuntime JS
 
-<FluentSelect TOption="string"
-              Value="@_current"
-              ValueChanged="OnChanged"
-              Width="120px"
-              aria-label="Language">
-    <FluentOption Value="en">🇬🇧 English</FluentOption>
-    <FluentOption Value="uk">🇺🇦 Українська</FluentOption>
-</FluentSelect>
+<div class="pf-switcher" role="group" aria-label="@L["Language.Label"]">
+    <div class="pf-switcher__indicator"></div>
+    @foreach (var opt in _options)
+    {
+        <button type="button"
+                class="pf-switcher__btn @(opt.Code == _current ? "is-active" : null)"
+                title="@L[opt.LabelKey]"
+                aria-label="@L[opt.LabelKey]"
+                aria-pressed="@((opt.Code == _current).ToString().ToLowerInvariant())"
+                @onclick="() => OnSelect(opt.Code)">
+            <span class="pf-switcher__icon" aria-hidden="true">@opt.Flag</span>
+            <span>@L[opt.LabelKey]</span>
+        </button>
+    }
+</div>
 
 @code {
+    private sealed record Option(string Code, string Flag, string LabelKey);
+
+    private static readonly Option[] _options =
+    [
+        new("en", "🇬🇧", "Language.English"),
+        new("uk", "🇺🇦", "Language.Ukrainian"),
+    ];
+
     private string _current = "en";
 
     protected override void OnInitialized()
@@ -17,10 +34,16 @@
         _current = CultureService.Current.TwoLetterISOLanguageName;
     }
 
-    private async Task OnChanged(string value)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (string.IsNullOrEmpty(value) || value == _current) return;
-        _current = value;
-        await Culture.SetAsync(value);
+        // One global pass keeps every switcher in sync (and auto-reruns on resize).
+        await JS.InvokeVoidAsync("preflightUI.alignIndicators");
+    }
+
+    private async Task OnSelect(string code)
+    {
+        if (code == _current) return;
+        _current = code;
+        await Culture.SetAsync(code);
     }
 }

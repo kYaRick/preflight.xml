@@ -7,14 +7,19 @@
 
 <div class="landing">
 
-    <FluentStack Orientation="Orientation.Vertical" HorizontalGap="12" Style="padding: 48px 16px 16px; text-align: center; max-width: 960px; margin: 0 auto;">
-        <FluentLabel Typo="Typography.PageTitle">✈️ preflight.xml</FluentLabel>
-        <FluentLabel Typo="Typography.Subject">@L["Landing.Tagline"]</FluentLabel>
-
-        <FluentMessageBar Intent="MessageIntent.Warning" Title="Pre-alpha" AllowDismiss="false" Style="margin-top: 12px;">
-            @L["Landing.Status"]
-        </FluentMessageBar>
-    </FluentStack>
+    <div style="padding: 72px 16px 24px; text-align: center; max-width: 960px; margin: 0 auto;">
+        <h1 class="pf-hero-title" style="font-size: clamp(2.25rem, 4.5vw, 3.5rem); font-weight: 700; margin: 0 0 0.75rem; font-family: var(--pf-font-sans);">
+            ✈️ preflight.xml
+        </h1>
+        <p style="font-size: clamp(1rem, 1.4vw, 1.1875rem); color: var(--pf-text-muted); margin: 0 auto; max-width: 640px; line-height: 1.5;">
+            @L["Landing.Tagline"]
+        </p>
+        <div style="margin-top: 1.5rem;">
+            <FluentMessageBar Intent="MessageIntent.Warning" Title="Pre-alpha" AllowDismiss="false">
+                @L["Landing.Status"]
+            </FluentMessageBar>
+        </div>
+    </div>
 
     <FluentGrid Spacing="3" Justify="JustifyContent.Center" Style="padding: 16px; max-width: 1200px; margin: 0 auto;">
         <FluentGridItem xs="12" sm="12" md="4">
@@ -43,7 +48,8 @@
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 32px 16px;">
         <FluentLabel Typo="Typography.Body">@L["Landing.Import.Prompt"]</FluentLabel>
         <FluentButton Appearance="Appearance.Outline" OnClick="OnImportClicked">
-            📥 @L["Landing.Import.Button"]
+            <span class="pf-btn-icon">@((MarkupString)ImportIconSvg)</span>
+            @L["Landing.Import.Button"]
         </FluentButton>
     </FluentStack>
 
@@ -58,6 +64,16 @@
 
 @code {
     private bool _showImportToast;
+
+    // Monochrome import icon - a document with a down-arrow entering it.
+    // Replaces 📥 emoji that renders inconsistently across Windows / fonts.
+    private const string ImportIconSvg =
+        @"<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>
+            <path d='M14 3v4a1 1 0 0 0 1 1h4' />
+            <path d='M17 21H7a2 2 0 0 1 -2 -2V5a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z' />
+            <path d='M12 11v6' />
+            <path d='M9.5 14.5l2.5 2.5 2.5 -2.5' />
+          </svg>";
 
     private void GoToWizard() => GoTo(AppMode.Wizard, "/wizard");
     private void GoToAdvanced() => GoTo(AppMode.Advanced, "/advanced");

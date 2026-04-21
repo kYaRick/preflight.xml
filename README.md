@@ -13,7 +13,6 @@
 
 </div>
 
----
 
 ## 🧭 What is this?
 
@@ -21,7 +20,6 @@
 
 > 📖 About the file format - see the [Unattended Windows Setup Reference](https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/) from Microsoft.
 
----
 
 ## 🎯 Planned features
 
@@ -36,8 +34,6 @@
 - 📴 Full offline support via PWA
 - 🌍 i18n-ready UI
 
----
-
 ## 🧱 Tech stack
 
 | Layer        | Choice                                    |
@@ -47,7 +43,6 @@
 | Hosting      | GitHub Pages (static, no backend)         |
 | Distribution | Installable PWA, fully offline-capable    |
 
----
 
 ## 🚀 Getting started
 
@@ -90,6 +85,15 @@ Run `just` with no arguments to see the full list. Most common ones:
 
 ---
 
+## 🇺🇦 Stand with Ukraine
+
+This project is built by a Ukrainian developer during an ongoing war. If you use `preflight.xml` and want to give back, please consider supporting the people actually defending Europe's eastern border:
+
+- 🛡️ **[Хартія - Kharchenko Foundation](https://www.khartiiafoundation.com/)** - equipment, medical aid and training for Ukraine's defenders
+- 🦅 **[Azov ONE](https://azov.one/fundraisers)** - fundraising hub for Azov brigade units on the front line
+
+Any contribution matters.
+
 ## 🤝 Contributing
 
 Contributions are welcome once the app scaffold lands. Before opening a PR:
@@ -98,19 +102,13 @@ Contributions are welcome once the app scaffold lands. Before opening a PR:
 2. Follow [Conventional Commits](https://www.conventionalcommits.org/) - see [`.gitmessage`](.gitmessage)
 3. Keep diffs focused and small
 
----
-
-## 🇺🇦 Stand with Ukraine
-
-This project is built by a Ukrainian developer during an ongoing war. If you use `preflight.xml` and want to give back, please consider supporting the people actually defending Europe's eastern border:
-
-- 🛡️ **[Хартія - Kharchenko Foundation](https://www.khartiiafoundation.com/)** - equipment, medical aid and training for Ukraine's defenders
-- 🦅 **[Azov ONE](https://azov.one/fundraisers)** - fundraising hub for Azov brigade units on the front line
-
-Any contribution matters. 💙💛
-
----
-
 ## 📜 License
 
 Released under the [MIT License](LICENSE) © [kYaRick](https://github.com/kYaRick).
+
+---
+
+<div align="center">
+  <sub>✨ Made with love to 💛Ukraine💙</sub>
+</div>
+

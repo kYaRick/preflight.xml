@@ -1,41 +1,73 @@
 @inject IStringLocalizer<SharedResources> L
+@inject IJSRuntime JS
 
-<FluentSelect TOption="string"
-              Value="@_current"
-              ValueChanged="OnChanged"
-              Width="160px"
-              aria-label="Theme">
-    <FluentOption Value="system">🖥️ @L["Theme.System"]</FluentOption>
-    <FluentOption Value="light">☀️ @L["Theme.Light"]</FluentOption>
-    <FluentOption Value="dark">🌙 @L["Theme.Dark"]</FluentOption>
-</FluentSelect>
+<div class="pf-switcher pf-switcher--icon" role="group" aria-label="@L["Theme.System"]">
+    <div class="pf-switcher__indicator"></div>
+    @foreach (var opt in _options)
+    {
+        <button type="button"
+                class="pf-switcher__btn @(opt.Mode == Mode ? "is-active" : null)"
+                title="@L[opt.LabelKey]"
+                aria-label="@L[opt.LabelKey]"
+                aria-pressed="@((opt.Mode == Mode).ToString().ToLowerInvariant())"
+                @onclick="() => OnSelect(opt.Mode)">
+            <span class="pf-switcher__icon" aria-hidden="true">@((MarkupString)opt.SvgPath)</span>
+            <span class="pf-switcher__sr">@L[opt.LabelKey]</span>
+        </button>
+    }
+</div>
 
 @code {
     [Parameter] public DesignThemeModes Mode { get; set; } = DesignThemeModes.System;
     [Parameter] public EventCallback<DesignThemeModes> ModeChanged { get; set; }
 
-    private string _current = "system";
+    // Monochrome SVG icons - 1.6px stroke, currentColor so they tint
+    // with .pf-switcher__btn text color (muted/accent/active state).
+    private const string IconSystem =
+        @"<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'>
+            <rect x='3' y='4' width='18' height='12' rx='2'/>
+            <path d='M9 20h6M12 16v4'/>
+          </svg>";
 
-    protected override void OnParametersSet()
+    private const string IconSun =
+        @"<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'>
+            <circle cx='12' cy='12' r='4'/>
+            <path d='M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41'/>
+          </svg>";
+
+    private const string IconMoon =
+        @"<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'>
+            <path d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'/>
+          </svg>";
+
+    private sealed record Option(DesignThemeModes Mode, string SvgPath, string LabelKey);
+
+    private static readonly Option[] _options =
+    [
+        new(DesignThemeModes.System, IconSystem, "Theme.System"),
+        new(DesignThemeModes.Light,  IconSun,    "Theme.Light"),
+        new(DesignThemeModes.Dark,   IconMoon,   "Theme.Dark"),
+    ];
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        _current = Mode switch
-        {
-            DesignThemeModes.Light => "light",
-            DesignThemeModes.Dark => "dark",
-            _ => "system",
-        };
+        // Single global pass updates all pills (.pf-switcher) in one rAF.
+        // Keeps theme + language indicators in sync through resize / font-swap.
+        await JS.InvokeVoidAsync("preflightUI.alignIndicators");
     }
 
-    private async Task OnChanged(string value)
+    private async Task OnSelect(DesignThemeModes next)
     {
-        var next = value switch
+        if (next == Mode) return;
+
+        var token = next switch
         {
-            "light" => DesignThemeModes.Light,
-            "dark" => DesignThemeModes.Dark,
-            _ => DesignThemeModes.System,
+            DesignThemeModes.Light => "light",
+            DesignThemeModes.Dark  => "dark",
+            _                      => "system",
         };
 
-        if (next != Mode)
-            await ModeChanged.InvokeAsync(next);
+        await JS.InvokeVoidAsync("preflightTheme.set", token);
+        await ModeChanged.InvokeAsync(next);
     }
 }

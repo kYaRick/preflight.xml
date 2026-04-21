@@ -34,7 +34,7 @@
                 @foreach (var topic in _topics)
                 {
                     <FluentGridItem xs="12" sm="6" lg="4">
-                        <FluentCard Style="padding: 20px; cursor: pointer; height: 100%;"
+                        <FluentCard Class="pf-card--interactive" Style="padding: 20px; height: 100%;"
                                     @onclick="() => GoToTopic(topic.Slug)">
                             <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
                                 <div style="font-size: 32px;">@topic.Icon</div>

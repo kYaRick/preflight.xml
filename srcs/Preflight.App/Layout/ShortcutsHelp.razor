@@ -1,0 +1,46 @@
+@* Help overlay triggered by `?` - compact list of keyboard shortcuts. *@
+@inject IStringLocalizer<SharedResources> L
+
+<div class="pf-overlay @(Open ? "is-open" : null)" @onclick="CloseOnBackdrop" aria-hidden="@(Open ? "false" : "true")">
+    <div class="pf-help" role="dialog" aria-modal="true" aria-label="@L["Help.Title"]" @onclick:stopPropagation="true">
+
+        <div class="pf-help__header">
+            <span class="pf-help__title">⌨️ @L["Help.Title"]</span>
+            <button type="button" class="pf-help__close" aria-label="@L["Help.Close"]" @onclick="Close">✕</button>
+        </div>
+
+        <ul class="pf-help__list">
+            @foreach (var item in _shortcuts)
+            {
+                <li class="pf-help__item">
+                    <div class="pf-help__keys">
+                        @foreach (var k in item.Keys)
+                        {
+                            <kbd>@k</kbd>
+                        }
+                    </div>
+                    <span class="pf-help__label">@L[item.LabelKey]</span>
+                </li>
+            }
+        </ul>
+
+        <div class="pf-help__footer">@L["Help.Footer"]</div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
+
+    private sealed record Shortcut(string[] Keys, string LabelKey);
+
+    private static readonly Shortcut[] _shortcuts =
+    [
+        new(new[] { "Ctrl/⌘", "K" }, "Help.Shortcut.Palette"),
+        new(new[] { "?" },            "Help.Shortcut.This"),
+        new(new[] { "Esc" },          "Help.Shortcut.Close"),
+    ];
+
+    private async Task CloseOnBackdrop(MouseEventArgs _) => await Close();
+    private async Task Close() => await OpenChanged.InvokeAsync(false);
+}

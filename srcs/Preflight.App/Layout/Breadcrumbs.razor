@@ -1,0 +1,97 @@
+@* Compact breadcrumbs shown in the header between the logo and switchers.
+   Computed from NavigationManager.Uri on every location change. *@
+@implements IDisposable
+@inject NavigationManager Nav
+@inject IStringLocalizer<SharedResources> L
+
+@if (_crumbs.Count > 0)
+{
+    <nav class="pf-breadcrumbs" aria-label="Breadcrumb">
+        @for (var i = 0; i < _crumbs.Count; i++)
+        {
+            var crumb = _crumbs[i];
+            var isLast = i == _crumbs.Count - 1;
+            if (i > 0)
+            {
+                <span class="pf-breadcrumbs__sep" aria-hidden="true">›</span>
+            }
+            @if (isLast || crumb.Href is null)
+            {
+                <span class="pf-breadcrumbs__current">@crumb.Label</span>
+            }
+            else
+            {
+                <a class="pf-breadcrumbs__link" href="@crumb.Href">@crumb.Label</a>
+            }
+        }
+    </nav>
+}
+
+@code {
+    private readonly List<Crumb> _crumbs = new();
+
+    protected override void OnInitialized()
+    {
+        Nav.LocationChanged += OnLocationChanged;
+        Rebuild(Nav.Uri);
+    }
+
+    public void Dispose() => Nav.LocationChanged -= OnLocationChanged;
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        Rebuild(e.Location);
+        StateHasChanged();
+    }
+
+    private void Rebuild(string uri)
+    {
+        _crumbs.Clear();
+        var relative = Nav.ToBaseRelativePath(uri).Split('?')[0];
+        var segments = relative.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length == 0) return; // Landing, no crumbs
+
+        var root = segments[0].ToLowerInvariant();
+        switch (root)
+        {
+            case "wizard":
+                _crumbs.Add(new Crumb(L["Wizard.Title"], "/wizard"));
+                if (segments.Length >= 2)
+                {
+                    var sub = segments[1].ToLowerInvariant();
+                    if (sub == "guided")
+                    {
+                        _crumbs.Add(new Crumb(L["Wizard.Guided.Title"], "/wizard/guided/1"));
+                        if (segments.Length >= 3 && int.TryParse(segments[2], out var step))
+                        {
+                            _crumbs.Add(new Crumb($"{L["Common.Step"]} {step}", null));
+                        }
+                    }
+                    else if (sub == "presets") _crumbs.Add(new Crumb(L["Wizard.Presets.Title"], null));
+                    else if (sub == "review")  _crumbs.Add(new Crumb(L["Wizard.Review.Title"], null));
+                }
+                break;
+
+            case "advanced":
+                _crumbs.Add(new Crumb(L["Advanced.Title"], "/advanced"));
+                if (segments.Length >= 2)
+                {
+                    var section = segments[1].ToLowerInvariant();
+                    _crumbs.Add(new Crumb(L[$"Advanced.Section.{section}"], null));
+                }
+                break;
+
+            case "docs":
+                _crumbs.Add(new Crumb(L["Docs.Title"], "/docs"));
+                if (segments.Length >= 2)
+                {
+                    var topic = segments[1].ToLowerInvariant();
+                    var key = "Docs.Topic." + char.ToUpperInvariant(topic[0]) + topic[1..] + ".Name";
+                    _crumbs.Add(new Crumb(L[key], null));
+                }
+                break;
+        }
+    }
+
+    private sealed record Crumb(string Label, string? Href);
+}

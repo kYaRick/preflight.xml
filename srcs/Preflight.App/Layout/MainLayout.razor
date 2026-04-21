@@ -1,37 +1,114 @@
 @inherits LayoutComponentBase
+@implements IAsyncDisposable
 @inject IStringLocalizer<SharedResources> L
+@inject IJSRuntime JS
 
-<FluentDesignTheme @bind-Mode="_themeMode" StorageName="preflight.theme" />
+<FluentDesignTheme Mode="_themeMode" CustomColor="#6366f1" />
 
 <FluentLayout>
     <FluentHeader>
-        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" Style="width: 100%;">
-            <FluentLabel Typo="Typography.H4">✈️ preflight.xml</FluentLabel>
+        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="12" Style="width: 100%;">
+            <a href="/" class="pf-brand" aria-label="preflight.xml home" title="preflight.xml">
+                ✈️
+            </a>
+            <Breadcrumbs />
             <FluentSpacer />
-            <ThemeSwitcher @bind-Mode="_themeMode" />
+            <button type="button" class="pf-icon-btn" title="@L["Palette.Title"] (Ctrl+K)" @onclick="() => _paletteOpen = true">
+                <span aria-hidden="true">⌘K</span>
+                <span class="pf-switcher__sr">@L["Palette.Title"]</span>
+            </button>
+            <ThemeSwitcher Mode="_themeMode" ModeChanged="OnThemeChanged" />
             <LanguageSwitcher />
         </FluentStack>
     </FluentHeader>
 
-    <FluentStack Class="main" Orientation="Orientation.Horizontal" Width="100%">
-        <FluentBodyContent Class="body-content">
-            <div class="content">
-                @Body
-            </div>
-        </FluentBodyContent>
-    </FluentStack>
+    <FluentBodyContent>
+        @Body
+    </FluentBodyContent>
 
     <FluentFooter>
-        <FluentLabel Typo="Typography.Body">
-            @L["Footer.BuiltBy"]
-            <FluentAnchor Href="https://github.com/kYaRick/preflight.xml" Appearance="Appearance.Hypertext" Target="_blank">
-                kYaRick
-            </FluentAnchor>
-            · MIT
-        </FluentLabel>
+        <div class="pf-footer-line">
+            <span>@L["Footer.BuiltBy"]</span>
+            <a class="pf-author" href="https://github.com/kYaRick" target="_blank" rel="noopener">
+                @((MarkupString)GitHubSvg)
+                <span>kYaRick</span>
+            </a>
+            <span class="pf-footer-sep">·</span>
+            <a class="pf-footer-link" href="https://github.com/kYaRick/preflight.xml/blob/main/LICENSE" target="_blank" rel="noopener">MIT</a>
+        </div>
     </FluentFooter>
 </FluentLayout>
 
+<CommandPalette Open="_paletteOpen" OpenChanged="v => _paletteOpen = v" />
+<ShortcutsHelp Open="_helpOpen" OpenChanged="v => _helpOpen = v" />
+
 @code {
     private DesignThemeModes _themeMode = DesignThemeModes.System;
+    private bool _paletteOpen;
+    private bool _helpOpen;
+    private DotNetObjectReference<MainLayout>? _selfRef;
+
+    // GitHub mark - single-path 16x16 Octocat silhouette.
+    // Fill uses currentColor so the chip can theme it.
+    private const string GitHubSvg =
+        @"<svg width='14' height='14' viewBox='0 0 16 16' fill='currentColor' aria-hidden='true'>
+            <path d='M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z'/>
+          </svg>";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        // Register keyboard shortcuts
+        _selfRef = DotNetObjectReference.Create(this);
+        await JS.InvokeVoidAsync("preflightKeyboard.register", _selfRef);
+
+        // Sync theme from storage
+        var token = await JS.InvokeAsync<string>("preflightTheme.get");
+        var next = token switch
+        {
+            "light" => DesignThemeModes.Light,
+            "dark"  => DesignThemeModes.Dark,
+            _       => DesignThemeModes.System,
+        };
+        if (next != _themeMode)
+        {
+            _themeMode = next;
+            StateHasChanged();
+        }
+    }
+
+    [JSInvokable]
+    public void OnShortcut(string id)
+    {
+        switch (id)
+        {
+            case "palette":
+                _paletteOpen = !_paletteOpen;
+                _helpOpen = false;
+                StateHasChanged();
+                break;
+            case "help":
+                _helpOpen = !_helpOpen;
+                _paletteOpen = false;
+                StateHasChanged();
+                break;
+            case "escape":
+                if (_paletteOpen || _helpOpen)
+                {
+                    _paletteOpen = false;
+                    _helpOpen = false;
+                    StateHasChanged();
+                }
+                break;
+        }
+    }
+
+    private void OnThemeChanged(DesignThemeModes mode) => _themeMode = mode;
+
+    public async ValueTask DisposeAsync()
+    {
+        try { await JS.InvokeVoidAsync("preflightKeyboard.unregister"); } catch { /* page unload */ }
+        _selfRef?.Dispose();
+    }
 }
