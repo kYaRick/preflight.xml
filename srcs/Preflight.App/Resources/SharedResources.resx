@@ -402,6 +402,21 @@
   <data name="Advanced.Section.network">
     <value>📡 Network</value>
   </data>
+  <data name="Advanced.Section.processor-archs">
+    <value>🧩 Processor architectures</value>
+  </data>
+  <data name="Advanced.Section.setup-settings">
+    <value>🛠️ Setup settings</value>
+  </data>
+  <data name="Advanced.Section.computer-name">
+    <value>🏷️ Computer name</value>
+  </data>
+  <data name="Advanced.Section.compact-os">
+    <value>📦 Compact OS</value>
+  </data>
+  <data name="Advanced.Section.time-zone">
+    <value>🕒 Time zone</value>
+  </data>
 
   <!-- ═══ Docs mode ══════════════════════════════════════════ -->
   <data name="Docs.Title">
@@ -486,6 +501,142 @@
   </data>
   <data name="NotFound.GoHome">
     <value>Go to home</value>
+  </data>
+
+  <!-- ═══ Region cluster: processor architectures ════════════ -->
+  <data name="Section.processor-archs.Subtitle">
+    <value>Which CPU architectures the generated autounattend.xml targets.</value>
+  </data>
+  <data name="ProcessorArchs.Architectures.Label">
+    <value>Target architectures</value>
+  </data>
+  <data name="ProcessorArchs.Architectures.Description">
+    <value>Pick every architecture the answer file should be valid for. Schneegans duplicates the component entries per architecture, so at least one must stay selected.</value>
+  </data>
+  <data name="ProcessorArchs.X86.Label">
+    <value>x86 (32-bit)</value>
+  </data>
+  <data name="ProcessorArchs.Amd64.Label">
+    <value>amd64 (x64, 64-bit)</value>
+  </data>
+  <data name="ProcessorArchs.Arm64.Label">
+    <value>arm64</value>
+  </data>
+
+  <!-- ═══ Region cluster: setup settings ══════════════════════ -->
+  <data name="Section.setup-settings.Subtitle">
+    <value>Install-time toggles that bypass OOBE checks and hide parts of Setup.</value>
+  </data>
+  <data name="Setup.BypassRequirementsCheck.Label">
+    <value>Bypass Windows 11 requirements check</value>
+  </data>
+  <data name="Setup.BypassRequirementsCheck.Description">
+    <value>Disables the TPM, Secure Boot, and RAM checks so Windows 11 can install on unsupported hardware. Your device may miss updates.</value>
+  </data>
+  <data name="Setup.BypassNetworkCheck.Label">
+    <value>Bypass OOBE network requirement</value>
+  </data>
+  <data name="Setup.BypassNetworkCheck.Description">
+    <value>Sets BypassNRO so Windows 11 setup accepts a local account without a live internet connection.</value>
+  </data>
+  <data name="Setup.UseConfigurationSet.Label">
+    <value>Use ConfigurationSet</value>
+  </data>
+  <data name="Setup.UseConfigurationSet.Description">
+    <value>Writes the generated scripts as a ConfigurationSet next to autounattend.xml instead of embedding them.</value>
+  </data>
+  <data name="Setup.HidePowerShellWindows.Label">
+    <value>Hide PowerShell windows</value>
+  </data>
+  <data name="Setup.HidePowerShellWindows.Description">
+    <value>Runs the generated PowerShell helpers with -WindowStyle Hidden so they don't flash on screen during first logon.</value>
+  </data>
+  <data name="Setup.KeepSensitiveFiles.Label">
+    <value>Keep sensitive files</value>
+  </data>
+  <data name="Setup.KeepSensitiveFiles.Description">
+    <value>By default preflight.xml deletes autounattend.xml and any embedded scripts after setup completes. Enabling this leaves them in place for inspection - dangerous if the file contains plaintext passwords.</value>
+  </data>
+  <data name="Setup.UseNarrator.Label">
+    <value>Enable Narrator during Setup</value>
+  </data>
+  <data name="Setup.UseNarrator.Description">
+    <value>Starts Windows Narrator while Setup is running so the install is accessible without a screen.</value>
+  </data>
+
+  <!-- ═══ Region cluster: computer name ═══════════════════════ -->
+  <data name="Section.computer-name.Subtitle">
+    <value>How the installed machine picks its NetBIOS name.</value>
+  </data>
+  <data name="ComputerName.Mode.Label">
+    <value>Name source</value>
+  </data>
+  <data name="ComputerName.Mode.Description">
+    <value>Random lets Windows generate a name. Manual fixes one. Script runs a PowerShell snippet that echoes the name on stdout.</value>
+  </data>
+  <data name="ComputerName.Mode.Random">
+    <value>Random (Windows picks)</value>
+  </data>
+  <data name="ComputerName.Mode.Manual">
+    <value>Manual</value>
+  </data>
+  <data name="ComputerName.Mode.Script">
+    <value>PowerShell script</value>
+  </data>
+  <data name="ComputerName.Custom.Label">
+    <value>Computer name</value>
+  </data>
+  <data name="ComputerName.Custom.Description">
+    <value>NetBIOS rules: 1-15 characters, no whitespace or punctuation, cannot be all digits.</value>
+  </data>
+  <data name="ComputerName.Script.Label">
+    <value>PowerShell script</value>
+  </data>
+  <data name="ComputerName.Script.Description">
+    <value>The script runs during specialize and must print exactly one valid computer name on stdout.</value>
+  </data>
+
+  <!-- ═══ Region cluster: compact OS ══════════════════════════ -->
+  <data name="Section.compact-os.Subtitle">
+    <value>Whether Windows keeps its system files in the compressed WIMBOOT layout.</value>
+  </data>
+  <data name="CompactOs.Mode.Label">
+    <value>Compact OS</value>
+  </data>
+  <data name="CompactOs.Mode.Description">
+    <value>Default lets Windows decide based on the target disk size. Enabled forces compression (smaller install, slightly higher CPU on file reads). Disabled never compresses.</value>
+  </data>
+  <data name="CompactOs.Mode.Default">
+    <value>Default (let Windows decide)</value>
+  </data>
+  <data name="CompactOs.Mode.Enabled">
+    <value>Enabled (always compress)</value>
+  </data>
+  <data name="CompactOs.Mode.Disabled">
+    <value>Disabled (never compress)</value>
+  </data>
+
+  <!-- ═══ Region cluster: time zone ═══════════════════════════ -->
+  <data name="Section.time-zone.Subtitle">
+    <value>Which time zone the installed machine starts in.</value>
+  </data>
+  <data name="TimeZone.Mode.Label">
+    <value>Time-zone source</value>
+  </data>
+  <data name="TimeZone.Mode.Description">
+    <value>Implicit lets Windows detect the time zone from the network. Explicit pins a specific zone into the answer file.</value>
+  </data>
+  <data name="TimeZone.Mode.Implicit">
+    <value>Implicit (Windows decides)</value>
+  </data>
+  <data name="TimeZone.Mode.Explicit">
+    <value>Explicit</value>
+  </data>
+  <data name="TimeZone.Zone.Label">
+    <value>Time zone</value>
+  </data>
+  <data name="TimeZone.Zone.Description">
+    <value>Windows time-zone identifier, e.g. "Pacific Standard Time".</value>
   </data>
 
 </root>

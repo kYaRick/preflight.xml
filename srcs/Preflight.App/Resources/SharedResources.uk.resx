@@ -404,6 +404,21 @@
   <data name="Advanced.Section.network">
     <value>📡 Мережа</value>
   </data>
+  <data name="Advanced.Section.processor-archs">
+    <value>🧩 Архітектури процесора</value>
+  </data>
+  <data name="Advanced.Section.setup-settings">
+    <value>🛠️ Налаштування Setup</value>
+  </data>
+  <data name="Advanced.Section.computer-name">
+    <value>🏷️ Ім'я комп'ютера</value>
+  </data>
+  <data name="Advanced.Section.compact-os">
+    <value>📦 Compact OS</value>
+  </data>
+  <data name="Advanced.Section.time-zone">
+    <value>🕒 Часовий пояс</value>
+  </data>
 
   <!-- ═══ Docs mode ══════════════════════════════════════════ -->
   <data name="Docs.Title">
@@ -488,6 +503,142 @@
   </data>
   <data name="NotFound.GoHome">
     <value>На головну</value>
+  </data>
+
+  <!-- ═══ Region cluster: processor architectures ════════════ -->
+  <data name="Section.processor-archs.Subtitle">
+    <value>Архітектури CPU, для яких генерується autounattend.xml.</value>
+  </data>
+  <data name="ProcessorArchs.Architectures.Label">
+    <value>Цільові архітектури</value>
+  </data>
+  <data name="ProcessorArchs.Architectures.Description">
+    <value>Оберіть всі архітектури, для яких файл відповіді має бути дійсним. Schneegans дублює компоненти для кожної обраної архітектури, тож принаймні одна має бути обраною.</value>
+  </data>
+  <data name="ProcessorArchs.X86.Label">
+    <value>x86 (32-біт)</value>
+  </data>
+  <data name="ProcessorArchs.Amd64.Label">
+    <value>amd64 (x64, 64-біт)</value>
+  </data>
+  <data name="ProcessorArchs.Arm64.Label">
+    <value>arm64</value>
+  </data>
+
+  <!-- ═══ Region cluster: setup settings ══════════════════════ -->
+  <data name="Section.setup-settings.Subtitle">
+    <value>Перемикачі, що впливають на встановлення: обхід перевірок OOBE, приховування вікон Setup.</value>
+  </data>
+  <data name="Setup.BypassRequirementsCheck.Label">
+    <value>Обійти перевірку вимог Windows 11</value>
+  </data>
+  <data name="Setup.BypassRequirementsCheck.Description">
+    <value>Вимикає перевірки TPM, Secure Boot і RAM, щоб Windows 11 встановилася на непідтримуване залізо. Пристрій може не отримувати оновлення.</value>
+  </data>
+  <data name="Setup.BypassNetworkCheck.Label">
+    <value>Обійти вимогу мережі в OOBE</value>
+  </data>
+  <data name="Setup.BypassNetworkCheck.Description">
+    <value>Встановлює BypassNRO, щоб Setup приймав локальний обліковий запис без активного інтернет-підключення.</value>
+  </data>
+  <data name="Setup.UseConfigurationSet.Label">
+    <value>Використовувати ConfigurationSet</value>
+  </data>
+  <data name="Setup.UseConfigurationSet.Description">
+    <value>Зберігає згенеровані скрипти як ConfigurationSet поряд із autounattend.xml замість вбудовування.</value>
+  </data>
+  <data name="Setup.HidePowerShellWindows.Label">
+    <value>Ховати вікна PowerShell</value>
+  </data>
+  <data name="Setup.HidePowerShellWindows.Description">
+    <value>Запускає згенеровані допоміжні PowerShell-скрипти з -WindowStyle Hidden, щоб вони не блимали під час першого входу.</value>
+  </data>
+  <data name="Setup.KeepSensitiveFiles.Label">
+    <value>Зберігати конфіденційні файли</value>
+  </data>
+  <data name="Setup.KeepSensitiveFiles.Description">
+    <value>За замовчуванням preflight.xml видаляє autounattend.xml і вбудовані скрипти після завершення установки. Увімкнення цього параметра залишає їх на місці - небезпечно, якщо файл містить паролі у відкритому вигляді.</value>
+  </data>
+  <data name="Setup.UseNarrator.Label">
+    <value>Увімкнути Екранний диктор під час Setup</value>
+  </data>
+  <data name="Setup.UseNarrator.Description">
+    <value>Запускає Екранний диктор Windows під час установки, щоб зробити її доступною без зорового контакту з екраном.</value>
+  </data>
+
+  <!-- ═══ Region cluster: computer name ═══════════════════════ -->
+  <data name="Section.computer-name.Subtitle">
+    <value>Як встановлена машина отримує своє NetBIOS-ім'я.</value>
+  </data>
+  <data name="ComputerName.Mode.Label">
+    <value>Джерело імені</value>
+  </data>
+  <data name="ComputerName.Mode.Description">
+    <value>Random - Windows генерує ім'я. Manual - задає конкретне. Script - запускає PowerShell-фрагмент, який виводить ім'я на stdout.</value>
+  </data>
+  <data name="ComputerName.Mode.Random">
+    <value>Випадкове (обирає Windows)</value>
+  </data>
+  <data name="ComputerName.Mode.Manual">
+    <value>Вручну</value>
+  </data>
+  <data name="ComputerName.Mode.Script">
+    <value>Скрипт PowerShell</value>
+  </data>
+  <data name="ComputerName.Custom.Label">
+    <value>Ім'я комп'ютера</value>
+  </data>
+  <data name="ComputerName.Custom.Description">
+    <value>Правила NetBIOS: 1-15 символів, без пробілів і розділових знаків, не лише цифри.</value>
+  </data>
+  <data name="ComputerName.Script.Label">
+    <value>Скрипт PowerShell</value>
+  </data>
+  <data name="ComputerName.Script.Description">
+    <value>Скрипт виконується на етапі specialize і має вивести рівно одне дійсне ім'я на stdout.</value>
+  </data>
+
+  <!-- ═══ Region cluster: compact OS ══════════════════════════ -->
+  <data name="Section.compact-os.Subtitle">
+    <value>Чи тримає Windows системні файли у стиснутому WIMBOOT-форматі.</value>
+  </data>
+  <data name="CompactOs.Mode.Label">
+    <value>Compact OS</value>
+  </data>
+  <data name="CompactOs.Mode.Description">
+    <value>Default - Windows сама вирішує за розміром цільового диску. Enabled - завжди стискає (менше місця, трохи вище CPU при читанні). Disabled - ніколи не стискає.</value>
+  </data>
+  <data name="CompactOs.Mode.Default">
+    <value>За замовчуванням (вирішує Windows)</value>
+  </data>
+  <data name="CompactOs.Mode.Enabled">
+    <value>Увімкнено (завжди стискати)</value>
+  </data>
+  <data name="CompactOs.Mode.Disabled">
+    <value>Вимкнено (ніколи не стискати)</value>
+  </data>
+
+  <!-- ═══ Region cluster: time zone ═══════════════════════════ -->
+  <data name="Section.time-zone.Subtitle">
+    <value>Часовий пояс, з якого стартує встановлена машина.</value>
+  </data>
+  <data name="TimeZone.Mode.Label">
+    <value>Джерело часового поясу</value>
+  </data>
+  <data name="TimeZone.Mode.Description">
+    <value>Implicit - Windows визначає часовий пояс за мережею. Explicit - фіксує конкретний пояс у файлі відповідей.</value>
+  </data>
+  <data name="TimeZone.Mode.Implicit">
+    <value>Неявно (визначає Windows)</value>
+  </data>
+  <data name="TimeZone.Mode.Explicit">
+    <value>Явно</value>
+  </data>
+  <data name="TimeZone.Zone.Label">
+    <value>Часовий пояс</value>
+  </data>
+  <data name="TimeZone.Zone.Description">
+    <value>Ідентифікатор часового поясу Windows, напр. "Pacific Standard Time".</value>
   </data>
 
 </root>

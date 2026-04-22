@@ -54,6 +54,16 @@ public sealed class UnattendXmlBuilder
         AccountSettings = MapAccounts(ui.Users, ui.FirstLogon),
         EditionSettings = MapEdition(ui.Edition),
         Bloatwares = MapBloatware(ui.Bloatware),
+        ProcessorArchitectures = MapProcessorArchs(ui.ProcessorArchs),
+        BypassRequirementsCheck = ui.Setup.BypassRequirementsCheck,
+        BypassNetworkCheck = ui.Setup.BypassNetworkCheck,
+        UseConfigurationSet = ui.Setup.UseConfigurationSet,
+        HidePowerShellWindows = ui.Setup.HidePowerShellWindows,
+        KeepSensitiveFiles = ui.Setup.KeepSensitiveFiles,
+        UseNarrator = ui.Setup.UseNarrator,
+        ComputerNameSettings = MapComputerName(ui.ComputerName),
+        CompactOsMode = MapCompactOs(ui.CompactOs),
+        TimeZoneSettings = MapTimeZone(ui.TimeZoneSettings),
     };
 
     private ILanguageSettings MapLanguage(RegionSettings region)
@@ -158,6 +168,58 @@ public sealed class UnattendXmlBuilder
             .Where(b => b is not null)
             .Select(b => b!)
             .ToImmutableList();
+    }
+
+    // ─── Region cluster (processor archs / setup / computer name / compact OS / time zone) ──
+
+    private static ImmutableHashSet<ProcessorArchitecture> MapProcessorArchs(ProcessorArchSettings s)
+    {
+        var set = ImmutableHashSet.CreateBuilder<ProcessorArchitecture>();
+        if (s.X86) set.Add(ProcessorArchitecture.x86);
+        if (s.Amd64) set.Add(ProcessorArchitecture.amd64);
+        if (s.Arm64) set.Add(ProcessorArchitecture.arm64);
+        // Schneegans throws if the set is empty - fall back to amd64-only so the preview
+        // still renders while the user re-checks one of the boxes.
+        if (set.Count == 0) set.Add(ProcessorArchitecture.amd64);
+        return set.ToImmutable();
+    }
+
+    private static IComputerNameSettings MapComputerName(ComputerNameSettings s) => s.Mode switch
+    {
+        ComputerNameMode.Manual when !string.IsNullOrWhiteSpace(s.CustomName)
+            => SafeCustomComputerName(s.CustomName!),
+        ComputerNameMode.Script when !string.IsNullOrWhiteSpace(s.Script)
+            => new ScriptComputerNameSettings(s.Script!),
+        // Random is the default; blank Manual / Script inputs also fall back to random so
+        // the preview doesn't throw while the user is mid-typing.
+        _ => new RandomComputerNameSettings(),
+    };
+
+    private static IComputerNameSettings SafeCustomComputerName(string name)
+    {
+        // CustomComputerNameSettings validates the name in its constructor and throws for
+        // whitespace / punctuation / over-15-char / all-digit inputs. Catch that so the
+        // preview shows an XML comment instead of blanking.
+        try { return new CustomComputerNameSettings(name); }
+        catch (ConfigurationException) { return new RandomComputerNameSettings(); }
+    }
+
+    private static CompactOsModes MapCompactOs(CompactOsSettings s) => s.Mode switch
+    {
+        CompactOsMode.Enabled => CompactOsModes.Always,
+        CompactOsMode.Disabled => CompactOsModes.Never,
+        _ => CompactOsModes.Default,
+    };
+
+    private ITimeZoneSettings MapTimeZone(TimeZoneSettings s)
+    {
+        if (s.Mode != TimeZoneMode.Explicit || string.IsNullOrWhiteSpace(s.ExplicitId))
+            return new ImplicitTimeZoneSettings();
+
+        var zone = TryLookup<TimeOffset>(s.ExplicitId);
+        return zone is null
+            ? new ImplicitTimeZoneSettings()
+            : new ExplicitTimeZoneSettings(zone);
     }
 
     // ─── Lookup helper ──────────────────────────────────────────────
