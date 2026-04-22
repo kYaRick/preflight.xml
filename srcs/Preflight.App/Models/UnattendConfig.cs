@@ -12,6 +12,7 @@ public sealed class UnattendConfig
     public WindowsEditionSettings Edition { get; init; } = new();
     public List<UserAccount> Users { get; init; } = [];
     public FirstLogonSettings FirstLogon { get; init; } = new();
+    public AccountSecuritySettings AccountSecurity { get; init; } = new();
     public PrivacySettings Privacy { get; init; } = new();
     public SecuritySettings Security { get; init; } = new();
     public BloatwareSettings Bloatware { get; init; } = new();
@@ -120,7 +121,13 @@ public enum AccountGroup
 public sealed class FirstLogonSettings
 {
     public FirstLogonMode Mode { get; set; } = FirstLogonMode.FirstAdminAccount;
+    /// <summary>Password used for the built-in Administrator when <see cref="Mode"/> is <see cref="FirstLogonMode.BuiltInAdministrator"/>.</summary>
+    public string? BuiltInAdminPassword { get; set; }
     public bool ObscurePasswordsWithBase64 { get; set; } = true;
+    /// <summary>When true (and no local accounts are declared), the generator uses Microsoft-account interactive setup.</summary>
+    public bool PromptForMicrosoftAccount { get; set; }
+    /// <summary>When true (and no local accounts are declared), the generator uses local-account interactive setup (hiding MSA screens).</summary>
+    public bool PromptForLocalAccount { get; set; }
 }
 
 public enum FirstLogonMode
@@ -128,6 +135,39 @@ public enum FirstLogonMode
     FirstAdminAccount,
     BuiltInAdministrator,
     DoNotLogon,
+}
+
+/// <summary>
+/// Password expiration and account-lockout policy exposed in the Users section.
+/// Maps one-to-one to schneegans' IPasswordExpirationSettings / ILockoutSettings.
+/// </summary>
+public sealed class AccountSecuritySettings
+{
+    public PasswordExpirationMode PasswordExpiration { get; set; } = PasswordExpirationMode.Default;
+    /// <summary>Max password age in days when <see cref="PasswordExpiration"/> is <see cref="PasswordExpirationMode.Custom"/>. Valid range 1-999.</summary>
+    public int PasswordExpirationDays { get; set; } = 42;
+
+    public LockoutMode Lockout { get; set; } = LockoutMode.Default;
+    /// <summary>Threshold (0-999) when <see cref="Lockout"/> is <see cref="LockoutMode.Custom"/>.</summary>
+    public int LockoutAttempts { get; set; } = 10;
+    /// <summary>Observation window in minutes (1-99999). Must be &lt;= <see cref="LockoutUnlockMinutes"/>.</summary>
+    public int LockoutWindowMinutes { get; set; } = 10;
+    /// <summary>Lockout duration in minutes (1-99999).</summary>
+    public int LockoutUnlockMinutes { get; set; } = 10;
+}
+
+public enum PasswordExpirationMode
+{
+    Default,
+    Never,
+    Custom,
+}
+
+public enum LockoutMode
+{
+    Default,
+    Disabled,
+    Custom,
 }
 
 // ─── Privacy ─────────────────────────────────────────────────────
