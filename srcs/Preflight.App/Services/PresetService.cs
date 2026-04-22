@@ -55,7 +55,7 @@ public sealed class PresetService
 
     private static UnattendConfig BuildCleanHomePc() => new()
     {
-        Region = { DisplayLanguage = "en-US", InputLanguage = "en-US", HomeLocation = "US" },
+        Region = { DisplayLanguage = "en-US", InputLanguage = "en-US", HomeLocation = "244" },
         Disk = { Mode = DiskMode.AutoWipe, PartitionStyle = PartitionStyle.Gpt, EspSizeMb = 300 },
         Edition = { KeyMode = ProductKeyMode.Generic, Edition = WindowsEdition.Home },
         Users =
@@ -89,7 +89,7 @@ public sealed class PresetService
 
     private static UnattendConfig BuildVmProxmox() => new()
     {
-        Region = { DisplayLanguage = "en-US", HomeLocation = "US" },
+        Region = { DisplayLanguage = "en-US", HomeLocation = "244" },
         Disk = { Mode = DiskMode.AutoWipe, PartitionStyle = PartitionStyle.Gpt },
         Edition = { KeyMode = ProductKeyMode.Generic, Edition = WindowsEdition.Pro },
         Users =
@@ -106,7 +106,7 @@ public sealed class PresetService
 
     private static UnattendConfig BuildCorporateBaseline() => new()
     {
-        Region = { DisplayLanguage = "en-US", HomeLocation = "US" },
+        Region = { DisplayLanguage = "en-US", HomeLocation = "244" },
         Disk = { Mode = DiskMode.AutoWipe, PartitionStyle = PartitionStyle.Gpt },
         Edition = { KeyMode = ProductKeyMode.Interactive, Edition = WindowsEdition.Pro },
         FirstLogon = { Mode = FirstLogonMode.DoNotLogon },
@@ -117,7 +117,7 @@ public sealed class PresetService
 
     private static UnattendConfig BuildMinimalFast() => new()
     {
-        Region = { DisplayLanguage = "en-US", HomeLocation = "US" },
+        Region = { DisplayLanguage = "en-US", HomeLocation = "244" },
         Disk = { Mode = DiskMode.Interactive, PartitionStyle = PartitionStyle.Gpt },
         Edition = { KeyMode = ProductKeyMode.Generic, Edition = WindowsEdition.Home },
         FirstLogon = { Mode = FirstLogonMode.FirstAdminAccount },

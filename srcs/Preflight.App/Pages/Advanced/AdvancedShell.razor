@@ -1,8 +1,11 @@
 @page "/advanced"
 @page "/advanced/{Section}"
+@implements IDisposable
 @inject IStringLocalizer<SharedResources> L
 @inject NavigationManager Nav
 @inject ModeService Mode
+@inject UnattendXmlBuilder XmlBuilder
+@inject IJSRuntime JS
 
 <PageTitle>@L["Advanced.Title"] · preflight.xml</PageTitle>
 
@@ -33,28 +36,97 @@
 
         <!-- Middle column: form -->
         <FluentGridItem xs="12" md="6">
-            <FluentCard Style="padding: 24px; min-height: 400px;">
-                <FluentLabel Typo="Typography.H3">
-                    @L[$"Advanced.Section.{_activeSection}"]
-                </FluentLabel>
-                <div style="margin-top: 16px;">
-                    <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
-                        @L["Common.ComingInPhase3"]
-                    </FluentMessageBar>
-                </div>
+            <FluentCard Style="padding: 24px;">
+                @if (_activeSection == "region")
+                {
+                    <SectionView Section="@RegionSection.Definition" ViewMode="SectionView.SectionMode.Advanced" />
+                }
+                else
+                {
+                    <FluentLabel Typo="Typography.H3">@L[$"Advanced.Section.{_activeSection}"]</FluentLabel>
+                    <div style="margin-top: 16px;">
+                        <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
+                            @L["Common.ComingInPhase3"]
+                        </FluentMessageBar>
+                    </div>
+                }
             </FluentCard>
         </FluentGridItem>
 
         <!-- Right column: live XML preview -->
         <FluentGridItem xs="12" md="3">
-            <FluentCard Style="padding: 16px; position: sticky; top: 16px;">
-                <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@L["Advanced.Preview.Title"]</FluentLabel>
-                <pre style="margin-top: 8px; font-size: 12px; background: var(--neutral-layer-2); padding: 12px; border-radius: 4px; overflow: auto; max-height: 400px;"><code>&lt;!-- @L["Advanced.Preview.Placeholder"] --&gt;</code></pre>
+            <FluentCard Style="padding: 14px; position: sticky; top: 16px;">
+                <div class="pf-xml-panel">
+                    <div class="pf-xml-toolbar">
+                        <span class="pf-xml-toolbar__title">@L["Advanced.Preview.Title"]</span>
+                        <span class="pf-xml-toolbar__meta" title="@L["Advanced.Preview.LinesTooltip"]">@_xmlLineCount @L["Advanced.Preview.Lines"]</span>
+                        <div class="pf-xml-toolbar__actions">
+                            <button type="button"
+                                    class="pf-xml-iconbtn @(_justCopied ? "is-copied" : null)"
+                                    title="@(_justCopied ? L["Advanced.Preview.Copied"] : L["Advanced.Preview.Copy"])"
+                                    aria-label="@(_justCopied ? L["Advanced.Preview.Copied"] : L["Advanced.Preview.Copy"])"
+                                    @onclick="CopyXml">
+                                @(_justCopied ? CheckIcon : CopyIcon)
+                            </button>
+                            <button type="button"
+                                    class="pf-xml-iconbtn"
+                                    title="@L["Advanced.Preview.Download"]"
+                                    aria-label="@L["Advanced.Preview.Download"]"
+                                    @onclick="DownloadXml">
+                                @DownloadIcon
+                            </button>
+                            <button type="button"
+                                    class="pf-xml-iconbtn"
+                                    title="@L["Advanced.Preview.Expand"]"
+                                    aria-label="@L["Advanced.Preview.Expand"]"
+                                    @onclick="OpenExpanded">
+                                @ExpandIcon
+                            </button>
+                        </div>
+                    </div>
+                    <pre class="pf-xml-code language-markup"><code class="language-markup" @ref="_codeEl"></code></pre>
+                </div>
             </FluentCard>
         </FluentGridItem>
 
     </FluentGrid>
 </div>
+
+@if (_expanded)
+{
+    <div class="pf-overlay pf-xml-modal is-open" @ref="_modalOverlay" @onclick="CloseExpanded" role="presentation">
+        <div class="pf-xml-dialog" role="dialog" aria-modal="true" aria-label="@L["Advanced.Preview.Title"]" @onclick:stopPropagation="true">
+            <div class="pf-xml-dialog__header">
+                <span class="pf-xml-dialog__title">@L["Advanced.Preview.Title"] — autounattend.xml</span>
+                <span class="pf-xml-toolbar__meta" title="@L["Advanced.Preview.LinesTooltip"]">@_xmlLineCount @L["Advanced.Preview.Lines"]</span>
+                <div class="pf-xml-dialog__actions">
+                    <button type="button"
+                            class="pf-xml-iconbtn @(_justCopied ? "is-copied" : null)"
+                            title="@(_justCopied ? L["Advanced.Preview.Copied"] : L["Advanced.Preview.Copy"])"
+                            aria-label="@(_justCopied ? L["Advanced.Preview.Copied"] : L["Advanced.Preview.Copy"])"
+                            @onclick="CopyXml">
+                        @(_justCopied ? CheckIcon : CopyIcon)
+                    </button>
+                    <button type="button"
+                            class="pf-xml-iconbtn"
+                            title="@L["Advanced.Preview.Download"]"
+                            aria-label="@L["Advanced.Preview.Download"]"
+                            @onclick="DownloadXml">
+                        @DownloadIcon
+                    </button>
+                    <button type="button"
+                            class="pf-xml-iconbtn"
+                            title="@L["Advanced.Preview.Close"]"
+                            aria-label="@L["Advanced.Preview.Close"]"
+                            @onclick="CloseExpanded">
+                        @CloseIcon
+                    </button>
+                </div>
+            </div>
+            <pre class="pf-xml-code language-markup"><code class="language-markup" @ref="_modalCodeEl"></code></pre>
+        </div>
+    </div>
+}
 
 @code {
     [Parameter] public string? Section { get; set; }
@@ -67,6 +139,24 @@
     ];
 
     private string _activeSection = "region";
+    private string _xmlPreview = string.Empty;
+    private int _xmlLineCount;
+    private bool _expanded;
+    private bool _justCopied;
+
+    // Gated flag so OnAfterRender only re-runs Prism when the XML actually
+    // changed or the modal just opened — not on every unrelated re-render.
+    private bool _needsHighlight = true;
+
+    private ElementReference _codeEl;
+    private ElementReference _modalCodeEl;
+    private ElementReference _modalOverlay;
+
+    protected override void OnInitialized()
+    {
+        Mode.StateChanged += RebuildPreview;
+        RebuildPreview();
+    }
 
     protected override void OnParametersSet()
     {
@@ -75,4 +165,96 @@
         else
             _activeSection = "region";
     }
+
+    private void RebuildPreview()
+    {
+        try { _xmlPreview = XmlBuilder.Build(Mode.Config); }
+        catch (Exception ex) { _xmlPreview = $"<!-- {ex.Message} -->"; }
+
+        _xmlLineCount = CountLines(_xmlPreview);
+        _needsHighlight = true;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private static int CountLines(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return 0;
+        var n = 1;
+        for (var i = 0; i < s.Length; i++)
+            if (s[i] == '\n') n++;
+        return n;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_needsHighlight && !firstRender) return;
+        _needsHighlight = false;
+
+        await JS.InvokeVoidAsync("preflightPrism.highlight", _codeEl, _xmlPreview);
+        if (_expanded)
+        {
+            // Lift the overlay out of the .pf-page-enter stacking context so it
+            // renders above the sticky header. Idempotent — safe to call every
+            // render while the modal is open.
+            try { await JS.InvokeVoidAsync("preflightPortal.attach", _modalOverlay); }
+            catch { /* ref not yet attached — will retry on next render */ }
+
+            await JS.InvokeVoidAsync("preflightPrism.highlight", _modalCodeEl, _xmlPreview);
+        }
+    }
+
+    private void OpenExpanded()
+    {
+        _expanded = true;
+        _needsHighlight = true;
+    }
+
+    private async Task CloseExpanded()
+    {
+        // Snap the overlay back to its original Blazor-owned parent BEFORE the
+        // @if flips false — otherwise Blazor's diff can't locate the node to
+        // remove it (we moved it to <body> via preflightPortal.attach).
+        try { await JS.InvokeVoidAsync("preflightPortal.detach", _modalOverlay); }
+        catch { /* already gone — ignore */ }
+        _expanded = false;
+    }
+
+    private async Task CopyXml()
+    {
+        try { await JS.InvokeAsync<bool>("preflightFiles.copyText", _xmlPreview); }
+        catch (JSException) { /* clipboard refused (non-HTTPS, permissions) — no-op */ }
+
+        _justCopied = true;
+        StateHasChanged();
+        _ = Task.Delay(1500).ContinueWith(_ =>
+        {
+            _justCopied = false;
+            InvokeAsync(StateHasChanged);
+        });
+    }
+
+    private async Task DownloadXml()
+    {
+        await JS.InvokeVoidAsync("preflightFiles.download", "autounattend.xml", _xmlPreview, "application/xml");
+    }
+
+    // Inline stroke SVGs — inherit colour via currentColor, sized to 14px
+    // by the button rule (.pf-xml-iconbtn svg). Static MarkupString so the
+    // markup isn't re-parsed on every render.
+    private static readonly MarkupString CopyIcon = new(
+        "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><rect x='9' y='9' width='13' height='13' rx='2' ry='2'></rect><path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'></path></svg>");
+
+    private static readonly MarkupString CheckIcon = new(
+        "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><polyline points='20 6 9 17 4 12'></polyline></svg>");
+
+    private static readonly MarkupString DownloadIcon = new(
+        "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4'></path><polyline points='7 10 12 15 17 10'></polyline><line x1='12' y1='15' x2='12' y2='3'></line></svg>");
+
+    private static readonly MarkupString ExpandIcon = new(
+        "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><polyline points='15 3 21 3 21 9'></polyline><polyline points='9 21 3 21 3 15'></polyline><line x1='21' y1='3' x2='14' y2='10'></line><line x1='3' y1='21' x2='10' y2='14'></line></svg>");
+
+    private static readonly MarkupString CloseIcon = new(
+        "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><line x1='18' y1='6' x2='6' y2='18'></line><line x1='6' y1='6' x2='18' y2='18'></line></svg>");
+
+    public void Dispose() => Mode.StateChanged -= RebuildPreview;
 }

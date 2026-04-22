@@ -22,17 +22,26 @@
     <link href="Preflight.App.styles.css" rel="stylesheet" />
 
     <!-- PWA -->
-    <link rel="icon" type="image/png" href="favicon.png" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="favicon.png" sizes="32x32" />
     <link href="manifest.webmanifest" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
 
     <script type="importmap"></script>
 
+    <!-- Syntax highlighter for the Advanced XML preview. Core + markup (XML/HTML)
+         is bundled in the default build; no extra language scripts needed. The
+         token colours themselves are overridden in css/app.css to match the
+         pf-* palette, so no prism theme CSS is pulled from the CDN. -->
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" defer></script>
+
     <!-- Theme + culture + keyboard helpers (must load before first paint). -->
     <script src="js/theme.js"></script>
     <script src="js/culture.js"></script>
     <script src="js/keyboard.js"></script>
+    <script src="js/files.js"></script>
+    <script src="js/prism-helper.js"></script>
 
     <!-- Apply persisted theme to <html> BEFORE CSS paints, so the loading
          screen matches the user's choice even before Blazor boots. -->
@@ -42,22 +51,39 @@
 </head>
 
 <body>
-    <div id="app">
-        <div class="preflight-loader" aria-label="Loading preflight.xml">
+    <!-- Loading overlay lives OUTSIDE #app so Blazor's mount doesn't tear
+         it down mid-animation. It stays on top of the freshly-rendered
+         app until BOTH conditions are met:
+           1. Blazor has actually mounted (.layout exists)
+           2. A minimum display window has elapsed (so the plane always
+              gets to complete one full flight cycle even on cache hits). -->
+    <div id="loading-overlay" aria-label="Loading preflight.xml">
+        <div class="preflight-loader">
             <svg class="runway-wave" width="400" height="60" viewBox="0 0 400 60" aria-hidden="true">
                 <defs>
                     <linearGradient id="runwayGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                         <stop offset="0%" stop-color="#6d28d9" />
                         <stop offset="100%" stop-color="#a855f7" />
                     </linearGradient>
+                    <linearGradient id="planeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#a855f7" />
+                        <stop offset="100%" stop-color="#6d28d9" />
+                    </linearGradient>
                 </defs>
                 <path class="runway-track" d="M 0 30 Q 50 5, 100 30 T 200 30 T 300 30 T 400 30" />
                 <path class="runway-trail" d="M 0 30 Q 50 5, 100 30 T 200 30 T 300 30 T 400 30" pathLength="100" />
             </svg>
-            <div class="plane" aria-hidden="true">✈️</div>
+            <!-- Inline SVG airplane, gradient-filled. Always visible, no
+                 background-clip:text quirks across browsers/themes. -->
+            <svg class="plane" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="url(#planeGradient)"
+                      d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1l3.5 1v-1.5L13 19v-5.5z" />
+            </svg>
             <div class="runway-status"></div>
         </div>
     </div>
+
+    <div id="app"></div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
@@ -66,7 +92,34 @@
     </div>
 
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
-    <script>navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });</script>
+    <script>
+        navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });
+
+        // Guarantee the loader stays visible long enough for one full flight
+        // cycle (~2.4s), then fade it out once Blazor has actually mounted.
+        // Uses setInterval (not rAF) so the check fires even if the tab is
+        // temporarily hidden - otherwise the overlay could stay up forever.
+        (() => {
+            const overlay = document.getElementById('loading-overlay');
+            if (!overlay) return;
+            const MIN_DISPLAY_MS = 2400;
+            const started = Date.now();
+
+            const handle = setInterval(() => {
+                const blazorReady = !!document.querySelector('.layout');
+                const minElapsed = Date.now() - started >= MIN_DISPLAY_MS;
+                if (blazorReady && minElapsed) {
+                    clearInterval(handle);
+                    overlay.classList.add('is-done');
+                    // Trigger the first page-enter animation AFTER the loader
+                    // starts fading. Without this, the page-enter would run
+                    // silently underneath the loader and be invisible.
+                    window.preflightNav?.replayPageAnim?.();
+                    setTimeout(() => overlay.remove(), 500);
+                }
+            }, 120);
+        })();
+    </script>
 </body>
 
 </html>

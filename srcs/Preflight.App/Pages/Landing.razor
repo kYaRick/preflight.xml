@@ -45,11 +45,10 @@
         </FluentGridItem>
     </FluentGrid>
 
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 32px 16px;">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="10" HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 32px 16px; text-align: center;">
         <FluentLabel Typo="Typography.Body">@L["Landing.Import.Prompt"]</FluentLabel>
         <FluentButton Appearance="Appearance.Outline" OnClick="OnImportClicked">
-            <span class="pf-btn-icon">@((MarkupString)ImportIconSvg)</span>
-            @L["Landing.Import.Button"]
+            📥 @L["Landing.Import.Button"]
         </FluentButton>
     </FluentStack>
 
@@ -64,16 +63,6 @@
 
 @code {
     private bool _showImportToast;
-
-    // Monochrome import icon - a document with a down-arrow entering it.
-    // Replaces 📥 emoji that renders inconsistently across Windows / fonts.
-    private const string ImportIconSvg =
-        @"<svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'>
-            <path d='M14 3v4a1 1 0 0 0 1 1h4' />
-            <path d='M17 21H7a2 2 0 0 1 -2 -2V5a2 2 0 0 1 2 -2h7l5 5v11a2 2 0 0 1 -2 2z' />
-            <path d='M12 11v6' />
-            <path d='M9.5 14.5l2.5 2.5 2.5 -2.5' />
-          </svg>";
 
     private void GoToWizard() => GoTo(AppMode.Wizard, "/wizard");
     private void GoToAdvanced() => GoTo(AppMode.Advanced, "/advanced");

@@ -6,6 +6,7 @@ namespace Preflight.App.Models;
 /// </summary>
 public sealed class UnattendConfig
 {
+    public TargetOs TargetOs { get; set; } = TargetOs.Windows11;
     public RegionSettings Region { get; init; } = new();
     public DiskSettings Disk { get; init; } = new();
     public WindowsEditionSettings Edition { get; init; } = new();
@@ -20,13 +21,21 @@ public sealed class UnattendConfig
     public PersonalizationSettings Personalization { get; init; } = new();
 }
 
+public enum TargetOs
+{
+    Windows10,
+    Windows11,
+    Both,
+}
+
 // ─── Region / language ──────────────────────────────────────────
 
 public sealed class RegionSettings
 {
     public string DisplayLanguage { get; set; } = "en-US";
     public string InputLanguage { get; set; } = "en-US";
-    public string HomeLocation { get; set; } = "US";
+    // Microsoft "geo ID" numeric string (see geo-ids.json). 244 = United States.
+    public string HomeLocation { get; set; } = "244";
     public string? TimeZone { get; set; } // null = auto-detect
 }
 

@@ -23,6 +23,7 @@ builder.Services.AddFluentUIComponents();
 builder.Services.AddScoped<CultureService>();
 builder.Services.AddSingleton<ModeService>();
 builder.Services.AddSingleton<PresetService>();
+builder.Services.AddSingleton<UnattendXmlBuilder>();
 
 var host = builder.Build();
 

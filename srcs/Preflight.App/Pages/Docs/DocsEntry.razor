@@ -3,7 +3,7 @@
 
 <PageTitle>@_name · @L["Docs.Title"]</PageTitle>
 
-<div style="padding: 24px 16px; max-width: 960px; margin: 0 auto;">
+<div class="pf-docs-entry" style="padding: 24px 16px; max-width: 960px; margin: 0 auto;">
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
         <FluentAnchor Href="/docs" Appearance="Appearance.Outline">← @L["Docs.BackToIndex"]</FluentAnchor>
         <FluentSpacer />
@@ -12,9 +12,16 @@
     <FluentLabel Typo="Typography.PageTitle" Style="margin-top: 16px;">@_icon @_name</FluentLabel>
     <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 24px 0;">@_description</FluentLabel>
 
-    <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
-        @L["Docs.Entry.ComingSoon"]
-    </FluentMessageBar>
+    @if (_section is not null)
+    {
+        <SectionView Section="@_section" ViewMode="SectionView.SectionMode.Docs" ShowHeader="false" />
+    }
+    else
+    {
+        <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
+            @L["Docs.Entry.ComingSoon"]
+        </FluentMessageBar>
+    }
 </div>
 
 @code {
@@ -23,9 +30,16 @@
     private string _icon = "📖";
     private string _name = "";
     private string _description = "";
+    private SectionDefinition? _section;
 
     protected override void OnParametersSet()
     {
+        _section = Slug switch
+        {
+            "region" => RegionSection.Definition,
+            _ => null,
+        };
+
         (_icon, var nameKey, var descKey) = Slug switch
         {
             "region"    => ("🌍", "Docs.Topic.Region.Name",    "Docs.Topic.Region.Description"),
