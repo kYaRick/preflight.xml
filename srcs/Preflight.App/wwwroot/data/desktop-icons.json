@@ -1,0 +1,15 @@
+[
+  { "Id": "Music", "DisplayName": "Music" },
+  { "Id": "ThisPC", "DisplayName": "This PC" },
+  { "Id": "Downloads", "DisplayName": "Downloads" },
+  { "Id": "Pictures", "DisplayName": "Pictures" },
+  { "Id": "ControlPanel", "DisplayName": "Control Panel" },
+  { "Id": "UserFiles", "DisplayName": "User's Files" },
+  { "Id": "RecycleBin", "DisplayName": "Recycle bin" },
+  { "Id": "Videos", "DisplayName": "Videos" },
+  { "Id": "Documents", "DisplayName": "Documents" },
+  { "Id": "Desktop", "DisplayName": "Desktop" },
+  { "Id": "Gallery", "DisplayName": "Gallery" },
+  { "Id": "Network", "DisplayName": "Network" },
+  { "Id": "Home", "DisplayName": "Home" }
+]
