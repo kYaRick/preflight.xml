@@ -8,6 +8,16 @@ public enum OptionKind
     Text,
     /// <summary>Boolean checkbox. <see cref="OptionDefinition.GetString"/> / <see cref="OptionDefinition.SetString"/> are ignored; use <see cref="OptionDefinition.GetBool"/> / <see cref="OptionDefinition.SetBool"/>.</summary>
     Checkbox,
+    /// <summary>Single-select radio group; values come from <see cref="OptionDefinition.InlineValues"/>. Uses GetString/SetString.</summary>
+    Radio,
+    /// <summary>Multi-line text input bound to a <see cref="string"/>. Uses GetString/SetString.</summary>
+    Textarea,
+    /// <summary>
+    /// Set of independent boolean checkboxes sharing a single label. Each child item is listed in
+    /// <see cref="OptionDefinition.CheckboxItems"/> with its own getter/setter. Parent GetBool/SetBool
+    /// are ignored.
+    /// </summary>
+    CheckboxGroup,
 }
 
 /// <summary>
@@ -33,13 +43,16 @@ public sealed record OptionDefinition
 
     public required OptionKind Kind { get; init; }
 
-    // ─── Value source (Dropdown only) ─────────────────────────────
+    // ─── Value source (Dropdown / Radio) ──────────────────────────
 
     /// <summary>When non-null, the view fetches this JSON path from <c>wwwroot/</c> and maps <c>{Id, DisplayName}</c> into dropdown options.</summary>
     public string? JsonSource { get; init; }
 
-    /// <summary>Inline value list for small dropdowns where a JSON file would be overkill.</summary>
+    /// <summary>Inline value list for small dropdowns or radio groups.</summary>
     public IReadOnlyList<OptionValue>? InlineValues { get; init; }
+
+    /// <summary>Children for <see cref="OptionKind.CheckboxGroup"/>: each one is an independent bool toggle.</summary>
+    public IReadOnlyList<CheckboxItem>? CheckboxItems { get; init; }
 
     // ─── Binding (strongly-typed for the two kinds we ship in 3a) ─
 
@@ -50,5 +63,15 @@ public sealed record OptionDefinition
     public Action<UnattendConfig, bool>? SetBool { get; init; }
 }
 
-/// <summary>A single entry in an inline dropdown option list.</summary>
+/// <summary>A single entry in an inline dropdown / radio option list.</summary>
 public sealed record OptionValue(string Value, string DisplayKey);
+
+/// <summary>
+/// One boolean toggle inside a <see cref="OptionKind.CheckboxGroup"/>. Rendered as a child
+/// checkbox under the parent option's label.
+/// </summary>
+public sealed record CheckboxItem(
+    string Id,
+    string LabelKey,
+    Func<UnattendConfig, bool> Get,
+    Action<UnattendConfig, bool> Set);
