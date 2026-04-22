@@ -42,6 +42,10 @@
                 {
                     <SectionView Section="@RegionSection.Definition" ViewMode="SectionView.SectionMode.Advanced" />
                 }
+                else if (_activeSection == "users")
+                {
+                    <UsersSection />
+                }
                 else
                 {
                     <FluentLabel Typo="Typography.H3">@L[$"Advanced.Section.{_activeSection}"]</FluentLabel>

@@ -3,19 +3,15 @@ using Preflight.App.Models;
 namespace Preflight.App.Content.Sections;
 
 /// <summary>
-/// User accounts section - owns the list of local accounts, first-logon mode,
-/// password expiration, and account-lockout policy. Unlike simple sections
-/// driven by <see cref="OptionDefinition"/> lists, the Advanced view for users
-/// is a hand-rolled Razor component (<c>UsersSection.razor</c>) because it needs
-/// a table-with-add/remove + several conditional sub-forms that don't fit the
-/// one-control-per-option shape.
+/// Static registry-side metadata for the user-accounts section. The editable
+/// surface is a hand-rolled Razor component (<c>UsersSection.razor</c>) because
+/// the controls (dynamic account table + conditional sub-forms) don't fit the
+/// one-control-per-option shape used by <see cref="OptionDefinition"/>.
 ///
-/// The <see cref="Definition"/> still exists so the section can be discovered by
-/// <c>SectionRegistry</c> and rendered in read-only Docs mode; in Docs the empty
-/// <see cref="SectionDefinition.Options"/> list means only the title + intro
-/// markdown are shown.
+/// This class sits next to the component rather than inside it so the compiler
+/// doesn't try to merge a static class with the generated component partial.
 /// </summary>
-public static class UsersSection
+public static class UsersSectionDefinition
 {
     public static readonly SectionDefinition Definition = new()
     {

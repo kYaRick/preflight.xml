@@ -17,7 +17,7 @@ public static class SectionRegistry
     private static readonly Dictionary<string, SectionDefinition> _byId = new(StringComparer.Ordinal)
     {
         [Sections.RegionSection.Definition.Id] = Sections.RegionSection.Definition,
-        [Sections.UsersSection.Definition.Id] = Sections.UsersSection.Definition,
+        [Sections.UsersSectionDefinition.Definition.Id] = Sections.UsersSectionDefinition.Definition,
     };
 
     public static IReadOnlyCollection<SectionDefinition> All => _byId.Values;

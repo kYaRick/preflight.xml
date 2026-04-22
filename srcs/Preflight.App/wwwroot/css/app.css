@@ -2111,3 +2111,281 @@ html.theme-dark .pf-xml-code .token.namespace {
         transform: none !important;
     }
 }
+
+/* ─── Users section ──────────────────────────────────────────
+   The Users form is hand-rolled (table + conditional sub-forms)
+   rather than driven by OptionDefinition, so its controls need
+   their own themed styles. Everything below inherits from the
+   existing --pf-* variables so light / dark switch for free. */
+.pf-users {
+    gap: 1rem;
+}
+
+.pf-users__block {
+    gap: 0.85rem;
+}
+
+.pf-users__table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+    background: var(--pf-surface);
+}
+
+.pf-users__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    color: var(--pf-text);
+}
+
+.pf-users__table th {
+    text-align: left;
+    padding: 0.625rem 0.75rem;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    color: var(--pf-text-muted);
+    background: var(--pf-surface-2);
+    border-bottom: 1px solid var(--pf-border);
+    letter-spacing: 0.02em;
+}
+
+.pf-users__table td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--pf-border);
+    vertical-align: middle;
+}
+
+.pf-users__table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.pf-users__table-actions {
+    width: 2.5rem;
+    text-align: right;
+}
+
+.pf-users__input,
+.pf-users__select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.45rem 0.625rem;
+    background: var(--pf-surface);
+    color: var(--pf-text);
+    border: 1px solid var(--pf-border-strong);
+    border-radius: var(--pf-radius-sm);
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    transition: border-color 0.15s var(--pf-ease),
+        box-shadow 0.15s var(--pf-ease);
+}
+
+.pf-users__input:focus,
+.pf-users__select:focus {
+    outline: none;
+    border-color: var(--pf-accent);
+    box-shadow: 0 0 0 3px var(--pf-accent-ring);
+}
+
+.pf-users__input--number {
+    max-width: 12rem;
+}
+
+.pf-users__password {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.pf-users__password .pf-users__input {
+    flex: 1 1 auto;
+    font-family: var(--pf-font-mono);
+    letter-spacing: 0.04em;
+}
+
+.pf-users__icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    background: transparent;
+    color: var(--pf-text-muted);
+    border: 1px solid transparent;
+    border-radius: var(--pf-radius-sm);
+    cursor: pointer;
+    transition: color 0.15s var(--pf-ease),
+        background-color 0.15s var(--pf-ease),
+        border-color 0.15s var(--pf-ease);
+}
+
+.pf-users__icon-btn:hover {
+    color: var(--pf-accent-strong);
+    background: var(--pf-accent-soft);
+    border-color: var(--pf-card-border);
+}
+
+.pf-users__icon-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--pf-accent-ring);
+}
+
+.pf-users__icon-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.pf-users__icon-btn--danger:hover {
+    color: #dc2626;
+    background: rgba(220, 38, 38, 0.1);
+    border-color: rgba(220, 38, 38, 0.28);
+}
+
+.pf-users__add {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.95rem;
+    background: var(--pf-accent-soft);
+    color: var(--pf-accent-strong);
+    border: 1px solid var(--pf-card-border);
+    border-radius: var(--pf-radius-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.15s var(--pf-ease),
+        border-color 0.15s var(--pf-ease),
+        transform 0.1s var(--pf-ease);
+}
+
+.pf-users__add:hover {
+    background: var(--pf-accent);
+    color: #fff;
+    border-color: var(--pf-accent);
+}
+
+.pf-users__add:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--pf-accent-ring);
+}
+
+.pf-users__add:active {
+    transform: translateY(1px);
+}
+
+.pf-users__empty {
+    padding: 0.85rem 1rem;
+    background: var(--pf-surface-2);
+    color: var(--pf-text-muted);
+    border: 1px dashed var(--pf-border-strong);
+    border-radius: var(--pf-radius-md);
+    font-size: 0.9rem;
+}
+
+.pf-users__radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+}
+
+.pf-users__radio,
+.pf-users__checkbox {
+    display: inline-flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    color: var(--pf-text);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.pf-users__radio input,
+.pf-users__checkbox input {
+    margin-top: 0.2rem;
+    accent-color: var(--pf-accent);
+    cursor: pointer;
+}
+
+.pf-users__checkbox {
+    align-items: flex-start;
+}
+
+.pf-users__checkbox small {
+    display: block;
+    margin-top: 0.15rem;
+    color: var(--pf-text-muted);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+}
+
+.pf-users__sub-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 0.25rem;
+}
+
+.pf-users__sub-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--pf-text-muted);
+    letter-spacing: 0.01em;
+}
+
+.pf-users__hint {
+    color: var(--pf-text-muted);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+}
+
+.pf-users__warning {
+    padding: 0.75rem 0.95rem;
+    background: rgba(234, 88, 12, 0.08);
+    color: #b45309;
+    border: 1px solid rgba(234, 88, 12, 0.35);
+    border-radius: var(--pf-radius-md);
+    font-size: 0.875rem;
+    line-height: 1.55;
+}
+
+@media (prefers-color-scheme: dark) {
+    .pf-users__warning {
+        color: #fbbf24;
+        background: rgba(234, 179, 8, 0.1);
+        border-color: rgba(234, 179, 8, 0.35);
+    }
+
+    .pf-users__icon-btn--danger:hover {
+        color: #f87171;
+        background: rgba(248, 113, 113, 0.15);
+        border-color: rgba(248, 113, 113, 0.35);
+    }
+}
+
+[data-theme="dark"] .pf-users__warning {
+    color: #fbbf24;
+    background: rgba(234, 179, 8, 0.1);
+    border-color: rgba(234, 179, 8, 0.35);
+}
+
+[data-theme="dark"] .pf-users__icon-btn--danger:hover {
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.15);
+    border-color: rgba(248, 113, 113, 0.35);
+}
+
+@media (max-width: 780px) {
+    .pf-users__table th,
+    .pf-users__table td {
+        padding: 0.45rem 0.45rem;
+    }
+
+    .pf-users__radio-group {
+        flex-direction: column;
+    }
+}
