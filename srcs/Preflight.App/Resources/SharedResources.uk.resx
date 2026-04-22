@@ -330,6 +330,134 @@
   <data name="Users.Count.Label">
     <value>Локальних акаунтів</value>
   </data>
+
+  <!-- ═══ Users section (Advanced) ═══════════════════════════ -->
+  <data name="Section.users.Subtitle">
+    <value>Локальні акаунти, поведінка першого входу, термін дії паролів і політика блокування.</value>
+  </data>
+  <data name="Users.Accounts.Title">
+    <value>Локальні акаунти</value>
+  </data>
+  <data name="Users.Accounts.Description">
+    <value>Створи один або більше локальних акаунтів. Принаймні один має бути адміністратором, крім випадку входу вбудованим Administrator.</value>
+  </data>
+  <data name="Users.Accounts.Add">
+    <value>Додати акаунт</value>
+  </data>
+  <data name="Users.Accounts.Remove">
+    <value>Видалити</value>
+  </data>
+  <data name="Users.Accounts.Empty">
+    <value>Акаунти не задані. Windows Setup запитає під час першого завантаження.</value>
+  </data>
+  <data name="Users.Account.Username">
+    <value>Імʼя користувача</value>
+  </data>
+  <data name="Users.Account.DisplayName">
+    <value>Відображуване імʼя</value>
+  </data>
+  <data name="Users.Account.Password">
+    <value>Пароль</value>
+  </data>
+  <data name="Users.Account.Group">
+    <value>Група</value>
+  </data>
+  <data name="Users.Account.Group.Admin">
+    <value>Адміністратор</value>
+  </data>
+  <data name="Users.Account.Group.User">
+    <value>Звичайний користувач</value>
+  </data>
+  <data name="Users.Account.ShowPassword">
+    <value>Показати пароль</value>
+  </data>
+  <data name="Users.Account.HidePassword">
+    <value>Сховати пароль</value>
+  </data>
+
+  <data name="Users.FirstLogon.Title">
+    <value>Перший вхід</value>
+  </data>
+  <data name="Users.FirstLogon.Description">
+    <value>Який акаунт Windows автоматично увійде при першому завантаженні.</value>
+  </data>
+  <data name="Users.FirstLogon.FirstAdmin">
+    <value>Перший адмін-акаунт згори</value>
+  </data>
+  <data name="Users.FirstLogon.BuiltIn">
+    <value>Вбудований Administrator</value>
+  </data>
+  <data name="Users.FirstLogon.DoNotLogon">
+    <value>Не входити автоматично</value>
+  </data>
+  <data name="Users.FirstLogon.BuiltInPassword">
+    <value>Пароль вбудованого Administrator</value>
+  </data>
+  <data name="Users.FirstLogon.Obscure">
+    <value>Обфускувати паролі через Base64</value>
+  </data>
+  <data name="Users.FirstLogon.Obscure.Description">
+    <value>Windows Setup приймає слабку обфускацію паролів у XML. Це ховає їх від випадкового погляду - але не від будь-кого, хто відкриє файл у декодері.</value>
+  </data>
+  <data name="Users.FirstLogon.PromptMsa">
+    <value>Запитати Microsoft-акаунт при першому запуску</value>
+  </data>
+  <data name="Users.FirstLogon.PromptLocal">
+    <value>Запитати локальний акаунт при першому запуску</value>
+  </data>
+  <data name="Users.FirstLogon.PromptHint">
+    <value>Застосовуються лише коли ви не оголосили жодного локального акаунту вище.</value>
+  </data>
+
+  <data name="Users.Expiration.Title">
+    <value>Термін дії паролів</value>
+  </data>
+  <data name="Users.Expiration.Description">
+    <value>Через скільки днів Windows просить користувача змінити пароль.</value>
+  </data>
+  <data name="Users.Expiration.Default">
+    <value>За замовчуванням (42 дні)</value>
+  </data>
+  <data name="Users.Expiration.Never">
+    <value>Не закінчується</value>
+  </data>
+  <data name="Users.Expiration.Custom">
+    <value>Власне значення</value>
+  </data>
+  <data name="Users.Expiration.Days">
+    <value>Днів (1 - 999)</value>
+  </data>
+
+  <data name="Users.Lockout.Title">
+    <value>Політика блокування акаунта</value>
+  </data>
+  <data name="Users.Lockout.Description">
+    <value>Як Windows реагує на повторні невдалі спроби входу.</value>
+  </data>
+  <data name="Users.Lockout.Default">
+    <value>За замовчуванням</value>
+  </data>
+  <data name="Users.Lockout.Disabled">
+    <value>Вимкнено</value>
+  </data>
+  <data name="Users.Lockout.Custom">
+    <value>Власне значення</value>
+  </data>
+  <data name="Users.Lockout.Disabled.Warning">
+    <value>Вимкнення блокування акаунта дозволяє зловмиснику перебирати паролі нескінченно. Використовуй лише на ізольованих системах.</value>
+  </data>
+  <data name="Users.Lockout.Attempts">
+    <value>Невдалих спроб до блокування (0 - 999)</value>
+  </data>
+  <data name="Users.Lockout.Window">
+    <value>Вікно спостереження (хвилини, 1 - 99999)</value>
+  </data>
+  <data name="Users.Lockout.Unlock">
+    <value>Тривалість блокування (хвилини, 1 - 99999)</value>
+  </data>
+  <data name="Users.Lockout.WindowHint">
+    <value>Вікно спостереження має бути менше або дорівнювати тривалості блокування.</value>
+  </data>
   <data name="Privacy.Express.Label">
     <value>Express settings</value>
   </data>

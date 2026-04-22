@@ -328,6 +328,134 @@
   <data name="Users.Count.Label">
     <value>Local accounts</value>
   </data>
+
+  <!-- ═══ Users section (Advanced) ═══════════════════════════ -->
+  <data name="Section.users.Subtitle">
+    <value>Local accounts, first-logon behaviour, password expiration and lockout policy.</value>
+  </data>
+  <data name="Users.Accounts.Title">
+    <value>Local accounts</value>
+  </data>
+  <data name="Users.Accounts.Description">
+    <value>Create one or more local accounts. At least one must be an Administrator unless first-logon uses the built-in Administrator.</value>
+  </data>
+  <data name="Users.Accounts.Add">
+    <value>Add account</value>
+  </data>
+  <data name="Users.Accounts.Remove">
+    <value>Remove</value>
+  </data>
+  <data name="Users.Accounts.Empty">
+    <value>No accounts defined. Windows Setup will prompt on first boot.</value>
+  </data>
+  <data name="Users.Account.Username">
+    <value>Username</value>
+  </data>
+  <data name="Users.Account.DisplayName">
+    <value>Display name</value>
+  </data>
+  <data name="Users.Account.Password">
+    <value>Password</value>
+  </data>
+  <data name="Users.Account.Group">
+    <value>Group</value>
+  </data>
+  <data name="Users.Account.Group.Admin">
+    <value>Administrator</value>
+  </data>
+  <data name="Users.Account.Group.User">
+    <value>Standard user</value>
+  </data>
+  <data name="Users.Account.ShowPassword">
+    <value>Show password</value>
+  </data>
+  <data name="Users.Account.HidePassword">
+    <value>Hide password</value>
+  </data>
+
+  <data name="Users.FirstLogon.Title">
+    <value>First logon</value>
+  </data>
+  <data name="Users.FirstLogon.Description">
+    <value>Which account Windows logs into automatically on first boot after install.</value>
+  </data>
+  <data name="Users.FirstLogon.FirstAdmin">
+    <value>First administrator account above</value>
+  </data>
+  <data name="Users.FirstLogon.BuiltIn">
+    <value>Built-in Administrator</value>
+  </data>
+  <data name="Users.FirstLogon.DoNotLogon">
+    <value>Do not auto-logon</value>
+  </data>
+  <data name="Users.FirstLogon.BuiltInPassword">
+    <value>Built-in Administrator password</value>
+  </data>
+  <data name="Users.FirstLogon.Obscure">
+    <value>Obscure passwords with Base64</value>
+  </data>
+  <data name="Users.FirstLogon.Obscure.Description">
+    <value>Windows Setup accepts a weak obfuscation for passwords stored in the XML. This hides them from a casual glance - not from anyone who opens the file in a decoder.</value>
+  </data>
+  <data name="Users.FirstLogon.PromptMsa">
+    <value>Prompt for a Microsoft account on first boot</value>
+  </data>
+  <data name="Users.FirstLogon.PromptLocal">
+    <value>Prompt for a local account on first boot</value>
+  </data>
+  <data name="Users.FirstLogon.PromptHint">
+    <value>These only apply when you haven't declared any local accounts above.</value>
+  </data>
+
+  <data name="Users.Expiration.Title">
+    <value>Password expiration</value>
+  </data>
+  <data name="Users.Expiration.Description">
+    <value>How many days before Windows asks the user to change their password.</value>
+  </data>
+  <data name="Users.Expiration.Default">
+    <value>Default (42 days)</value>
+  </data>
+  <data name="Users.Expiration.Never">
+    <value>Never expire</value>
+  </data>
+  <data name="Users.Expiration.Custom">
+    <value>Custom</value>
+  </data>
+  <data name="Users.Expiration.Days">
+    <value>Days (1 - 999)</value>
+  </data>
+
+  <data name="Users.Lockout.Title">
+    <value>Account lockout policy</value>
+  </data>
+  <data name="Users.Lockout.Description">
+    <value>How Windows responds to repeated failed logon attempts.</value>
+  </data>
+  <data name="Users.Lockout.Default">
+    <value>Default</value>
+  </data>
+  <data name="Users.Lockout.Disabled">
+    <value>Disabled</value>
+  </data>
+  <data name="Users.Lockout.Custom">
+    <value>Custom</value>
+  </data>
+  <data name="Users.Lockout.Disabled.Warning">
+    <value>Disabling account lockout lets an attacker try unlimited passwords. Only use this on isolated systems.</value>
+  </data>
+  <data name="Users.Lockout.Attempts">
+    <value>Failed attempts before lockout (0 - 999)</value>
+  </data>
+  <data name="Users.Lockout.Window">
+    <value>Observation window (minutes, 1 - 99999)</value>
+  </data>
+  <data name="Users.Lockout.Unlock">
+    <value>Lockout duration (minutes, 1 - 99999)</value>
+  </data>
+  <data name="Users.Lockout.WindowHint">
+    <value>The observation window must be less than or equal to the lockout duration.</value>
+  </data>
   <data name="Privacy.Express.Label">
     <value>Express settings</value>
   </data>

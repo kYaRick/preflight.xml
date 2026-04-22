@@ -52,6 +52,8 @@ public sealed class UnattendXmlBuilder
     {
         LanguageSettings = MapLanguage(ui.Region),
         AccountSettings = MapAccounts(ui.Users, ui.FirstLogon),
+        LockoutSettings = MapLockout(ui.AccountSecurity),
+        PasswordExpirationSettings = MapPasswordExpiration(ui.AccountSecurity),
         EditionSettings = MapEdition(ui.Edition),
         Bloatwares = MapBloatware(ui.Bloatware),
     };
@@ -85,11 +87,26 @@ public sealed class UnattendXmlBuilder
 
     private static IAccountSettings MapAccounts(List<UserAccount> users, FirstLogonSettings firstLogon)
     {
-        // Empty list / no admin → defer to Windows Setup so we don't throw from the
-        // UnattendedAccountSettings constructor's "must have one admin" guard.
         var named = users.Where(u => !string.IsNullOrWhiteSpace(u.Name)).ToList();
-        if (named.Count == 0 || !named.Any(u => u.Group == AccountGroup.Administrators))
-            return new InteractiveLocalAccountSettings();
+
+        // Built-in administrator auto-logon is a special case: schneegans allows zero
+        // declared accounts because Windows Setup will log straight into the built-in
+        // Administrator user using the supplied password.
+        var usingBuiltin = firstLogon.Mode == FirstLogonMode.BuiltInAdministrator;
+
+        // Empty list / no admin → the UnattendedAccountSettings constructor enforces
+        // "must have at least one administrator" (unless the auto-logon is builtin).
+        // Instead of throwing, fall back to an interactive account-setup path so the
+        // preview still renders. Which interactive flavor depends on the user's
+        // explicit "prompt" checkboxes - local wins if both are set.
+        if (named.Count == 0 && !usingBuiltin)
+        {
+            return PickInteractive(firstLogon);
+        }
+        if (named.Count > 0 && !named.Any(u => u.Group == AccountGroup.Administrators) && !usingBuiltin)
+        {
+            return PickInteractive(firstLogon);
+        }
 
         var accounts = named
             .Select(u => new Account(
@@ -104,12 +121,63 @@ public sealed class UnattendXmlBuilder
         IAutoLogonSettings autoLogon = firstLogon.Mode switch
         {
             FirstLogonMode.FirstAdminAccount => new OwnAutoLogonSettings(),
-            FirstLogonMode.BuiltInAdministrator => new BuiltinAutoLogonSettings(string.Empty),
+            FirstLogonMode.BuiltInAdministrator => new BuiltinAutoLogonSettings(firstLogon.BuiltInAdminPassword ?? string.Empty),
             FirstLogonMode.DoNotLogon => new NoneAutoLogonSettings(),
             _ => new NoneAutoLogonSettings(),
         };
 
         return new UnattendedAccountSettings(accounts, autoLogon, firstLogon.ObscurePasswordsWithBase64);
+    }
+
+    /// <summary>
+    /// When the UI has no admin / no accounts, pick an interactive flavor. Local-prompt
+    /// takes precedence (it hides the MSA screens); MSA-prompt is the plain interactive
+    /// flow; if neither box is checked we still default to local-account since that's the
+    /// safer assumption for a debloat-oriented tool.
+    /// </summary>
+    private static IAccountSettings PickInteractive(FirstLogonSettings firstLogon)
+    {
+        if (firstLogon.PromptForLocalAccount) return new InteractiveLocalAccountSettings();
+        if (firstLogon.PromptForMicrosoftAccount) return new InteractiveMicrosoftAccountSettings();
+        return new InteractiveLocalAccountSettings();
+    }
+
+    private static ILockoutSettings MapLockout(AccountSecuritySettings sec) => sec.Lockout switch
+    {
+        LockoutMode.Disabled => new DisableLockoutSettings(),
+        LockoutMode.Custom => SafeCustomLockout(sec),
+        _ => new DefaultLockoutSettings(),
+    };
+
+    private static ILockoutSettings SafeCustomLockout(AccountSecuritySettings sec)
+    {
+        // Schneegans' CustomLockoutSettings throws on out-of-range or window>duration.
+        // Swallow here and fall back to defaults so the preview explains what's wrong via
+        // the outer Build()'s try/catch rather than blanking the whole document.
+        try
+        {
+            return new CustomLockoutSettings(
+                lockoutThreshold: sec.LockoutAttempts,
+                lockoutDuration: sec.LockoutUnlockMinutes,
+                lockoutWindow: sec.LockoutWindowMinutes);
+        }
+        catch (ConfigurationException)
+        {
+            return new DefaultLockoutSettings();
+        }
+    }
+
+    private static IPasswordExpirationSettings MapPasswordExpiration(AccountSecuritySettings sec) => sec.PasswordExpiration switch
+    {
+        PasswordExpirationMode.Never => new UnlimitedPasswordExpirationSettings(),
+        PasswordExpirationMode.Custom => SafeCustomExpiration(sec.PasswordExpirationDays),
+        _ => new DefaultPasswordExpirationSettings(),
+    };
+
+    private static IPasswordExpirationSettings SafeCustomExpiration(int days)
+    {
+        try { return new CustomPasswordExpirationSettings(days); }
+        catch (ConfigurationException) { return new DefaultPasswordExpirationSettings(); }
     }
 
     private IEditionSettings MapEdition(WindowsEditionSettings edition) => edition.KeyMode switch
