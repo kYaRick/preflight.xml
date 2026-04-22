@@ -2,6 +2,7 @@
 @implements IAsyncDisposable
 @inject IStringLocalizer<SharedResources> L
 @inject IJSRuntime JS
+@inject NavigationManager Nav
 
 <FluentDesignTheme Mode="_themeMode" CustomColor="#6366f1" />
 
@@ -9,7 +10,7 @@
     <FluentHeader>
         <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="12" Style="width: 100%;">
             <a href="/" class="pf-brand" aria-label="preflight.xml home" title="preflight.xml">
-                ✈️
+                <span class="pf-brand-glyph">✈️</span>
             </a>
             <Breadcrumbs />
             <FluentSpacer />
@@ -23,7 +24,9 @@
     </FluentHeader>
 
     <FluentBodyContent>
-        @Body
+        <div class="pf-page">
+            @Body
+        </div>
     </FluentBodyContent>
 
     <FluentFooter>
@@ -47,6 +50,11 @@
     private bool _paletteOpen;
     private bool _helpOpen;
     private DotNetObjectReference<MainLayout>? _selfRef;
+    private bool _pendingRouteAnimation;
+
+    // Track location to know when a real navigation happened. We keep the
+    // listener for future hooks (analytics, scroll restoration, etc.).
+    private string _lastLocation = string.Empty;
 
     // GitHub mark - single-path 16x16 Octocat silhouette.
     // Fill uses currentColor so the chip can theme it.
@@ -55,26 +63,47 @@
             <path d='M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z'/>
           </svg>";
 
+    protected override void OnInitialized()
+    {
+        _lastLocation = Nav.Uri;
+        Nav.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        _pendingRouteAnimation = e.Location != _lastLocation;
+        _lastLocation = e.Location;
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (!firstRender) return;
-
-        // Register keyboard shortcuts
-        _selfRef = DotNetObjectReference.Create(this);
-        await JS.InvokeVoidAsync("preflightKeyboard.register", _selfRef);
-
-        // Sync theme from storage
-        var token = await JS.InvokeAsync<string>("preflightTheme.get");
-        var next = token switch
+        if (firstRender)
         {
-            "light" => DesignThemeModes.Light,
-            "dark"  => DesignThemeModes.Dark,
-            _       => DesignThemeModes.System,
-        };
-        if (next != _themeMode)
+            // Register keyboard shortcuts
+            _selfRef = DotNetObjectReference.Create(this);
+            await JS.InvokeVoidAsync("preflightKeyboard.register", _selfRef);
+
+            // Sync theme from storage
+            var token = await JS.InvokeAsync<string>("preflightTheme.get");
+            var next = token switch
+            {
+                "light" => DesignThemeModes.Light,
+                "dark"  => DesignThemeModes.Dark,
+                _       => DesignThemeModes.System,
+            };
+            if (next != _themeMode)
+            {
+                _themeMode = next;
+                StateHasChanged();
+            }
+
+            return;
+        }
+
+        if (_pendingRouteAnimation)
         {
-            _themeMode = next;
-            StateHasChanged();
+            _pendingRouteAnimation = false;
+            await JS.InvokeVoidAsync("preflightNav.replayRouteAnim");
         }
     }
 
@@ -108,6 +137,7 @@
 
     public async ValueTask DisposeAsync()
     {
+        Nav.LocationChanged -= OnLocationChanged;
         try { await JS.InvokeVoidAsync("preflightKeyboard.unregister"); } catch { /* page unload */ }
         _selfRef?.Dispose();
     }

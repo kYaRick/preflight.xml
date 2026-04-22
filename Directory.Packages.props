@@ -24,6 +24,10 @@
         <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.12.1" />
     </ItemGroup>
 
+    <ItemGroup Label="Content rendering">
+        <PackageVersion Include="Markdig" Version="0.38.0" />
+    </ItemGroup>
+
     <ItemGroup Label="Testing">
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
         <PackageVersion Include="bunit" Version="1.32.7" />

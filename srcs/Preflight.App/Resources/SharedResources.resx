@@ -292,8 +292,29 @@
   <data name="Region.DisplayLanguage.Label">
     <value>Display language</value>
   </data>
+  <data name="Region.DisplayLanguage.Description">
+    <value>The language Windows uses for its UI: Settings, File Explorer, dialogs. Setup looks for a matching language pack in the install image.</value>
+  </data>
+  <data name="Region.InputLanguage.Label">
+    <value>Input language (keyboard)</value>
+  </data>
+  <data name="Region.InputLanguage.Description">
+    <value>The keyboard layout active on first boot. Independent of the display language — a user in Germany might want English UI with a German keyboard.</value>
+  </data>
   <data name="Region.HomeLocation.Label">
     <value>Home location</value>
+  </data>
+  <data name="Region.HomeLocation.Description">
+    <value>Country / region code used for date, currency, and measurement formatting, plus region-aware features like the Microsoft Store.</value>
+  </data>
+  <data name="Section.region.Subtitle">
+    <value>Language, keyboard, and regional formatting Windows applies on first boot.</value>
+  </data>
+  <data name="Section.LearnMore">
+    <value>Learn more ↗</value>
+  </data>
+  <data name="Section.Docs.Link">
+    <value>Read in Docs →</value>
   </data>
   <data name="Disk.Mode.Label">
     <value>Disk mode</value>
@@ -326,6 +347,27 @@
   </data>
   <data name="Advanced.Preview.Placeholder">
     <value>XML preview lands in Phase 3</value>
+  </data>
+  <data name="Advanced.Preview.Copy">
+    <value>Copy to clipboard</value>
+  </data>
+  <data name="Advanced.Preview.Download">
+    <value>Download autounattend.xml</value>
+  </data>
+  <data name="Advanced.Preview.Expand">
+    <value>Expand preview</value>
+  </data>
+  <data name="Advanced.Preview.Close">
+    <value>Close preview</value>
+  </data>
+  <data name="Advanced.Preview.Copied">
+    <value>Copied!</value>
+  </data>
+  <data name="Advanced.Preview.Lines">
+    <value>lines</value>
+  </data>
+  <data name="Advanced.Preview.LinesTooltip">
+    <value>Line count in generated XML</value>
   </data>
   <data name="Advanced.Section.region">
     <value>🌍 Region &amp; language</value>

@@ -26,4 +26,8 @@
     <Using Include="Bunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Fixtures\autounattend.xsd" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

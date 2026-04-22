@@ -5,103 +5,109 @@
 
 :root {
     /* ─── Brand + accent (indigo → violet) ──────────────────── */
-    --pf-accent:          #6366f1; /* indigo-500 */
-    --pf-accent-strong:   #4f46e5; /* indigo-600 */
-    --pf-accent-soft:     #eef2ff;
-    --pf-accent-ring:     rgba(99, 102, 241, 0.22);
+    --pf-accent: #6366f1;
+    /* indigo-500 */
+    --pf-accent-strong: #4f46e5;
+    /* indigo-600 */
+    --pf-accent-soft: #eef2ff;
+    --pf-accent-ring: rgba(99, 102, 241, 0.22);
     --pf-accent-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-    --pf-accent-rgb:      99, 102, 241;
+    --pf-accent-rgb: 99, 102, 241;
 
     /* ─── Surface (light) ──────────────────────────────────── */
-    --pf-bg:              #f6f7fb;
-    --pf-bg-rgb:          246, 247, 251;
-    --pf-surface:         #ffffff;
-    --pf-surface-2:       #f1f5f9;
-    --pf-border:          rgba(15, 23, 42, 0.08);
-    --pf-border-strong:   rgba(15, 23, 42, 0.14);
+    --pf-bg: #f6f7fb;
+    --pf-bg-rgb: 246, 247, 251;
+    --pf-surface: #ffffff;
+    --pf-surface-2: #f1f5f9;
+    --pf-border: rgba(15, 23, 42, 0.08);
+    --pf-border-strong: rgba(15, 23, 42, 0.14);
 
     /* ─── Text (light) ─────────────────────────────────────── */
-    --pf-text:            #0f172a;
-    --pf-text-muted:      #475569;
-    --pf-text-subtle:     #94a3b8;
+    --pf-text: #0f172a;
+    --pf-text-muted: #475569;
+    --pf-text-subtle: #94a3b8;
 
     /* ─── Cards (light) ────────────────────────────────────── */
-    --pf-card-bg:         linear-gradient(155deg,
-                              rgba(99, 102, 241, 0.04) 0%,
-                              rgba(255, 255, 255, 0.92) 55%,
-                              rgba(139, 92, 246, 0.03) 100%);
-    --pf-card-border:     rgba(99, 102, 241, 0.14);
+    --pf-card-bg: linear-gradient(155deg,
+            rgba(99, 102, 241, 0.04) 0%,
+            rgba(255, 255, 255, 0.92) 55%,
+            rgba(139, 92, 246, 0.03) 100%);
+    --pf-card-border: rgba(99, 102, 241, 0.14);
     --pf-card-border-hover: rgba(139, 92, 246, 0.38);
-    --pf-card-shadow:     0 4px 20px rgba(15, 23, 42, 0.05),
-                          0 1px 2px rgba(15, 23, 42, 0.04);
+    --pf-card-shadow: 0 4px 20px rgba(15, 23, 42, 0.05),
+        0 1px 2px rgba(15, 23, 42, 0.04);
     --pf-card-shadow-hover: 0 12px 40px rgba(99, 102, 241, 0.18),
-                            0 2px 6px rgba(15, 23, 42, 0.06);
-    --pf-card-highlight:  inset 0 1px 0 rgba(255, 255, 255, 0.9);
+        0 2px 6px rgba(15, 23, 42, 0.06);
+    --pf-card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
     /* ─── Glass chrome ─────────────────────────────────────── */
-    --pf-chrome-bg:       rgba(241, 245, 249, 0.9);   /* slate-100 with slight transparency */
-    --pf-chrome-border:   rgba(15, 23, 42, 0.12);
-    --pf-chrome-inset:    rgba(15, 23, 42, 0.03);     /* subtle visible tint for switcher pills */
+    --pf-chrome-bg: rgba(241, 245, 249, 0.9);
+    /* slate-100 with slight transparency */
+    --pf-chrome-border: rgba(15, 23, 42, 0.12);
+    --pf-chrome-inset: rgba(15, 23, 42, 0.03);
+    /* subtle visible tint for switcher pills */
 
     /* ─── Modals (palette / help) - solid surface, no gradient */
-    --pf-modal-bg:        rgba(255, 255, 255, 0.96);
-    --pf-modal-border:    rgba(15, 23, 42, 0.1);
+    --pf-modal-bg: rgba(255, 255, 255, 0.96);
+    --pf-modal-border: rgba(15, 23, 42, 0.1);
 
     /* ─── Typography ───────────────────────────────────────── */
-    --pf-font-sans:       'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
-    --pf-font-mono:       'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
+    --pf-font-sans: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --pf-font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
 
     /* ─── Radius / motion ──────────────────────────────────── */
-    --pf-radius-sm:       8px;
-    --pf-radius-md:       12px;
-    --pf-radius-lg:       18px;
-    --pf-radius-pill:     999px;
-    --pf-ease:            cubic-bezier(0.4, 0, 0.2, 1);
-    --pf-ease-out:        cubic-bezier(0.16, 1, 0.3, 1);
+    --pf-radius-sm: 8px;
+    --pf-radius-md: 12px;
+    --pf-radius-lg: 18px;
+    --pf-radius-pill: 999px;
+    --pf-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --pf-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ─── Dark (system preference) ─────────────────────────────── */
 @media (prefers-color-scheme: dark) {
     :root:not(.theme-light) {
-        --pf-accent:          #8b5cf6; /* violet-500 */
-        --pf-accent-strong:   #7c3aed; /* violet-600 */
-        --pf-accent-soft:     rgba(139, 92, 246, 0.14);
-        --pf-accent-ring:     rgba(139, 92, 246, 0.4);
+        --pf-accent: #8b5cf6;
+        /* violet-500 */
+        --pf-accent-strong: #7c3aed;
+        /* violet-600 */
+        --pf-accent-soft: rgba(139, 92, 246, 0.14);
+        --pf-accent-ring: rgba(139, 92, 246, 0.4);
         --pf-accent-gradient: linear-gradient(135deg, #6d28d9 0%, #a855f7 100%);
-        --pf-accent-rgb:      139, 92, 246;
+        --pf-accent-rgb: 139, 92, 246;
 
-        --pf-bg:              #0a0b14;
-        --pf-bg-rgb:          10, 11, 20;
-        --pf-surface:         #111526;
-        --pf-surface-2:       #1a1f35;
-        --pf-border:          rgba(139, 92, 246, 0.14);
-        --pf-border-strong:   rgba(139, 92, 246, 0.26);
+        --pf-bg: #151627;
+        --pf-bg-rgb: 21, 22, 39;
+        --pf-surface: #1c1f36;
+        --pf-surface-2: #242845;
+        --pf-border: rgba(139, 92, 246, 0.18);
+        --pf-border-strong: rgba(139, 92, 246, 0.32);
 
-        --pf-text:            #e8ecf4;
-        --pf-text-muted:      #9ca3b4;
-        --pf-text-subtle:     #6b7285;
+        --pf-text: #eef1f8;
+        --pf-text-muted: #b4bac8;
+        --pf-text-subtle: #7c849a;
 
-        --pf-card-bg:         linear-gradient(155deg,
-                                  rgba(139, 92, 246, 0.06) 0%,
-                                  rgba(17, 21, 38, 0.95) 55%,
-                                  rgba(168, 85, 247, 0.04) 100%);
-        --pf-card-border:     rgba(139, 92, 246, 0.18);
-        --pf-card-border-hover: rgba(168, 85, 247, 0.55);
-        --pf-card-shadow:     0 8px 32px rgba(0, 0, 0, 0.4),
-                              0 2px 8px rgba(0, 0, 0, 0.3);
-        --pf-card-shadow-hover: 0 20px 60px rgba(139, 92, 246, 0.35),
-                                0 4px 12px rgba(0, 0, 0, 0.5);
-        --pf-card-highlight:  inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        --pf-card-bg: linear-gradient(155deg,
+                rgba(139, 92, 246, 0.08) 0%,
+                rgba(28, 31, 54, 0.95) 55%,
+                rgba(168, 85, 247, 0.05) 100%);
+        --pf-card-border: rgba(139, 92, 246, 0.22);
+        --pf-card-border-hover: rgba(168, 85, 247, 0.6);
+        --pf-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+            0 2px 8px rgba(0, 0, 0, 0.2);
+        --pf-card-shadow-hover: 0 20px 60px rgba(139, 92, 246, 0.38),
+            0 4px 12px rgba(0, 0, 0, 0.4);
+        --pf-card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
-        --pf-chrome-bg:       rgba(26, 31, 53, 0.9);
-        --pf-chrome-border:   rgba(139, 92, 246, 0.22);
-        --pf-chrome-inset:    rgba(139, 92, 246, 0.08);
+        --pf-chrome-bg: rgba(36, 40, 69, 0.92);
+        --pf-chrome-border: rgba(139, 92, 246, 0.26);
+        --pf-chrome-inset: rgba(139, 92, 246, 0.1);
 
-        --pf-modal-bg:        rgba(20, 23, 44, 0.96);
-        --pf-modal-border:    rgba(139, 92, 246, 0.2);
+        --pf-modal-bg: rgba(28, 31, 54, 0.97);
+        --pf-modal-border: rgba(139, 92, 246, 0.24);
 
-        --accent-fill-rest:   #7c3aed;
-        --accent-fill-hover:  #6d28d9;
+        --accent-fill-rest: #7c3aed;
+        --accent-fill-hover: #6d28d9;
         --accent-fill-active: #5b21b6;
         --accent-foreground-rest: #c4b5fd;
     }
@@ -109,45 +115,45 @@
 
 /* ─── Explicit user override (bootstrap script) ────────────── */
 html.theme-dark {
-    --pf-accent:          #8b5cf6;
-    --pf-accent-strong:   #7c3aed;
-    --pf-accent-soft:     rgba(139, 92, 246, 0.14);
-    --pf-accent-ring:     rgba(139, 92, 246, 0.4);
+    --pf-accent: #8b5cf6;
+    --pf-accent-strong: #7c3aed;
+    --pf-accent-soft: rgba(139, 92, 246, 0.14);
+    --pf-accent-ring: rgba(139, 92, 246, 0.4);
     --pf-accent-gradient: linear-gradient(135deg, #6d28d9 0%, #a855f7 100%);
-    --pf-accent-rgb:      139, 92, 246;
+    --pf-accent-rgb: 139, 92, 246;
 
-    --pf-bg:              #0a0b14;
-    --pf-bg-rgb:          10, 11, 20;
-    --pf-surface:         #111526;
-    --pf-surface-2:       #1a1f35;
-    --pf-border:          rgba(139, 92, 246, 0.14);
-    --pf-border-strong:   rgba(139, 92, 246, 0.26);
+    --pf-bg: #151627;
+    --pf-bg-rgb: 21, 22, 39;
+    --pf-surface: #1c1f36;
+    --pf-surface-2: #242845;
+    --pf-border: rgba(139, 92, 246, 0.18);
+    --pf-border-strong: rgba(139, 92, 246, 0.32);
 
-    --pf-text:            #e8ecf4;
-    --pf-text-muted:      #9ca3b4;
-    --pf-text-subtle:     #6b7285;
+    --pf-text: #eef1f8;
+    --pf-text-muted: #b4bac8;
+    --pf-text-subtle: #7c849a;
 
-    --pf-card-bg:         linear-gradient(155deg,
-                              rgba(139, 92, 246, 0.06) 0%,
-                              rgba(17, 21, 38, 0.95) 55%,
-                              rgba(168, 85, 247, 0.04) 100%);
-    --pf-card-border:     rgba(139, 92, 246, 0.18);
-    --pf-card-border-hover: rgba(168, 85, 247, 0.55);
-    --pf-card-shadow:     0 8px 32px rgba(0, 0, 0, 0.4),
-                          0 2px 8px rgba(0, 0, 0, 0.3);
-    --pf-card-shadow-hover: 0 20px 60px rgba(139, 92, 246, 0.35),
-                            0 4px 12px rgba(0, 0, 0, 0.5);
-    --pf-card-highlight:  inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    --pf-card-bg: linear-gradient(155deg,
+            rgba(139, 92, 246, 0.08) 0%,
+            rgba(28, 31, 54, 0.95) 55%,
+            rgba(168, 85, 247, 0.05) 100%);
+    --pf-card-border: rgba(139, 92, 246, 0.22);
+    --pf-card-border-hover: rgba(168, 85, 247, 0.6);
+    --pf-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+        0 2px 8px rgba(0, 0, 0, 0.2);
+    --pf-card-shadow-hover: 0 20px 60px rgba(139, 92, 246, 0.38),
+        0 4px 12px rgba(0, 0, 0, 0.4);
+    --pf-card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
-    --pf-chrome-bg:       rgba(26, 31, 53, 0.9);
-    --pf-chrome-border:   rgba(139, 92, 246, 0.22);
-    --pf-chrome-inset:    rgba(139, 92, 246, 0.08);
+    --pf-chrome-bg: rgba(36, 40, 69, 0.92);
+    --pf-chrome-border: rgba(139, 92, 246, 0.26);
+    --pf-chrome-inset: rgba(139, 92, 246, 0.1);
 
-    --pf-modal-bg:        rgba(20, 23, 44, 0.96);
-    --pf-modal-border:    rgba(139, 92, 246, 0.2);
+    --pf-modal-bg: rgba(28, 31, 54, 0.97);
+    --pf-modal-border: rgba(139, 92, 246, 0.24);
 
-    --accent-fill-rest:   #7c3aed;
-    --accent-fill-hover:  #6d28d9;
+    --accent-fill-rest: #7c3aed;
+    --accent-fill-hover: #6d28d9;
     --accent-fill-active: #5b21b6;
     --accent-foreground-rest: #c4b5fd;
 }
@@ -157,7 +163,8 @@ html.theme-light {
 }
 
 /* ─── Document + texture ──────────────────────────────────── */
-html, body {
+html,
+body {
     height: 100%;
     margin: 0;
     font-family: var(--pf-font-sans);
@@ -199,7 +206,9 @@ body::after {
     mix-blend-mode: overlay;
 }
 
-html.theme-dark body::after { opacity: 0.04; }
+html.theme-dark body::after {
+    opacity: 0.04;
+}
 
 #app {
     min-height: 100vh;
@@ -224,7 +233,7 @@ html.theme-dark body::after { opacity: 0.04; }
 }
 
 /* Header island - glass card anchored at the top with gutters */
-.layout > .header,
+.layout>.header,
 fluent-header.header {
     position: sticky;
     top: 12px;
@@ -243,16 +252,68 @@ fluent-header.header {
     z-index: 50;
 }
 
-.layout > .body-content {
-    padding: 24px 0;  /* breathing room between the header island and page content */
+.layout>.body-content {
+    padding: 24px 0;
+    /* breathing room between the header island and page content */
     max-width: min(1400px, 100%);
     width: 100%;
     justify-self: center;
 }
 
+/* ─── Page transition ─────────────────────────────────────────
+   The page-enter animation is driven by Web Animations API in
+   js/theme.js (preflightNav.replayPageAnim). We use WAAPI instead
+   of CSS keyframes because CSS animations get neutralized by the
+   browser's reduced-motion emulation in headless/automated test
+   contexts; WAAPI runs in every environment and honors the real
+   user preference via matchMedia inside the JS. */
+
+/* ─── Theme crossfade ─────────────────────────────────────────
+   Two layers stack on top of each other when the user toggles
+   light ↔ dark:
+
+   1. CSS transitions below, gated by `<html class="theme-
+      transitioning">` (added by js/theme.js for ~500ms around the
+      swap). Works in every browser and covers FluentDesignTheme's
+      separate re-paint. This is the reliable baseline.
+
+   2. View Transitions API (Chromium/Safari) — a full-viewport
+      crossfade on top of #1. Graceful no-op in Firefox. */
+
+html.theme-transitioning body,
+html.theme-transitioning .layout>.header,
+html.theme-transitioning .layout>.footer,
+html.theme-transitioning fluent-header,
+html.theme-transitioning fluent-footer,
+html.theme-transitioning fluent-card,
+html.theme-transitioning .pf-switcher,
+html.theme-transitioning .pf-switcher__btn,
+html.theme-transitioning .pf-icon-btn,
+html.theme-transitioning .fluent-nav-link,
+html.theme-transitioning .fluent-messagebar,
+html.theme-transitioning .pf-palette,
+html.theme-transitioning .pf-help,
+html.theme-transitioning .pf-hero-title {
+    transition:
+        background-color 0.4s var(--pf-ease),
+        background 0.4s var(--pf-ease),
+        color 0.4s var(--pf-ease),
+        border-color 0.4s var(--pf-ease),
+        box-shadow 0.4s var(--pf-ease) !important;
+}
+
+/* Tunes the default VT root crossfade used by theme toggles in
+    js/theme.js. Route changes use a post-render WAAPI animation instead,
+    so Blazor keeps full ownership of navigation. */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 0.42s;
+    animation-timing-function: var(--pf-ease);
+}
+
 /* Footer - deliberately quiet: no island chrome, just muted text
    centered at the bottom of the viewport. Draws no focus. */
-.layout > .footer,
+.layout>.footer,
 fluent-footer.footer {
     margin: 0 !important;
     padding: 0.625rem 1rem !important;
@@ -300,10 +361,9 @@ fluent-card.pf-card--interactive::before {
     position: absolute;
     inset: -1px;
     border-radius: inherit;
-    background: radial-gradient(
-        circle at 20% 0%,
-        rgba(var(--pf-accent-rgb), 0.08) 0%,
-        transparent 50%);
+    background: radial-gradient(circle at 20% 0%,
+            rgba(var(--pf-accent-rgb), 0.08) 0%,
+            transparent 50%);
     opacity: 0;
     transition: opacity 0.35s var(--pf-ease);
     pointer-events: none;
@@ -317,7 +377,9 @@ fluent-card.pf-card--interactive:hover {
         var(--pf-card-shadow-hover) !important;
 }
 
-fluent-card.pf-card--interactive:hover::before { opacity: 1; }
+fluent-card.pf-card--interactive:hover::before {
+    opacity: 1;
+}
 
 /* Fluent message bars - thematic restyle so warnings/info/errors
    speak the pf-* palette instead of Fluent's orange/blue defaults.
@@ -346,70 +408,125 @@ fluent-card.pf-card--interactive:hover::before { opacity: 1; }
     border-left: 3px solid var(--pf-success) !important;
 }
 
-.fluent-messagebar-icon { color: var(--pf-warn); }
-.fluent-messagebar.intent-info .fluent-messagebar-icon { color: var(--pf-accent); }
-.fluent-messagebar.intent-error .fluent-messagebar-icon { color: var(--pf-danger); }
-.fluent-messagebar.intent-success .fluent-messagebar-icon { color: var(--pf-success); }
+.fluent-messagebar-icon {
+    color: var(--pf-warn);
+}
 
-/* Fluent nav menu (Advanced + Docs sidebars) - restyle as modern
-   accent-tinted pill list. Fluent renders:
-     .fluent-nav-menu > .fluent-nav-item > a.fluent-nav-link */
-.fluent-nav-menu {
-    background: transparent !important;
+.fluent-messagebar.intent-info .fluent-messagebar-icon {
+    color: var(--pf-accent);
+}
+
+.fluent-messagebar.intent-error .fluent-messagebar-icon {
+    color: var(--pf-danger);
+}
+
+.fluent-messagebar.intent-success .fluent-messagebar-icon {
+    color: var(--pf-success);
+}
+
+/* Fluent nav menu (Advanced + Docs sidebars) - restyle as clear
+   solid-surface pill list. Previously we tried transparent bg which
+   let the card gradient leak through looking "stripey". Giving each
+   link a solid subtle surface makes them read as clear buttons. */
+
+/* Nuke every background/shadow inside the menu - we re-enable only
+   what we want explicitly below, avoiding Blazor-scoped leaks. */
+.fluent-nav-menu,
+.fluent-nav-menu *,
+.fluent-nav-menu *::before,
+.fluent-nav-menu *::after {
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+
+.fluent-nav-menu,
+.fluent-nav-menu.fluent-nav-menu {
     border: 0 !important;
-    padding: 0.25rem !important;
+    padding: 0 !important;
+    margin: 0 !important;
     display: flex !important;
-    flex-direction: column;
-    gap: 2px;
+    flex-direction: column !important;
+    gap: 2px !important;
 }
 
-.fluent-nav-item {
-    background: transparent !important;
+.fluent-nav-item,
+.fluent-nav-item.fluent-nav-item {
     border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: 0 !important;
 }
 
-.fluent-nav-link {
+.fluent-nav-link,
+.fluent-nav-link.fluent-nav-link,
+a.fluent-nav-link {
     display: flex !important;
     align-items: center !important;
-    gap: 0.5rem !important;
-    padding: 0.5rem 0.75rem !important;
-    border-radius: var(--pf-radius-md) !important;
+    gap: 0.4rem !important;
+    padding: 0.25rem 0.5rem !important;
+    /* really compact */
+    margin: 0 !important;
+    border-radius: var(--pf-radius-sm) !important;
     color: var(--pf-text-muted) !important;
     font-family: var(--pf-font-sans) !important;
-    font-size: 0.875rem !important;
+    font-size: 0.75rem !important;
+    /* 12px - sidebar scale */
+    line-height: 1.3 !important;
     font-weight: 500 !important;
     text-decoration: none !important;
-    border: 1px solid transparent !important;
-    background: transparent !important;
+    border: 1px solid var(--pf-border) !important;
+    background-color: var(--pf-surface-2) !important;
+    outline: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    position: relative;
+    overflow: hidden;
     transition:
-        background 0.18s var(--pf-ease),
-        color 0.18s var(--pf-ease),
-        border-color 0.18s var(--pf-ease),
-        transform 0.18s var(--pf-ease) !important;
+        background-color 0.15s var(--pf-ease),
+        color 0.15s var(--pf-ease),
+        border-color 0.15s var(--pf-ease),
+        box-shadow 0.2s var(--pf-ease),
+        transform 0.15s var(--pf-ease) !important;
 }
 
-.fluent-nav-link:hover {
-    background: var(--pf-chrome-inset) !important;
+.fluent-nav-link:hover,
+a.fluent-nav-link:hover {
+    background-color: var(--pf-chrome-bg) !important;
     color: var(--pf-text) !important;
-    border-color: var(--pf-chrome-border) !important;
-    transform: translateX(2px);
+    border-color: var(--pf-accent) !important;
+    /* crisp accent edge on hover */
+    box-shadow:
+        0 0 0 1px var(--pf-accent-ring),
+        0 4px 12px rgba(var(--pf-accent-rgb), 0.22) !important;
+    transform: translateX(3px);
 }
 
 .fluent-nav-link.active,
 .fluent-nav-link[aria-current],
-.fluent-nav-link[aria-current="page"] {
-    background: var(--pf-accent-soft) !important;
+.fluent-nav-link[aria-current="page"],
+a.fluent-nav-link.active {
+    background-color: var(--pf-accent-soft) !important;
     color: var(--pf-accent) !important;
     border-color: var(--pf-accent-ring) !important;
     font-weight: 600 !important;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset;
 }
 
-.fluent-nav-text {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+.fluent-nav-icon {
+    display: none !important;
+    /* Fluent-reserved icon slot is empty */
+}
+
+.fluent-nav-text,
+.fluent-nav-text.fluent-nav-text {
+    flex: 1 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    color: inherit !important;
+    font: inherit !important;
 }
 
 /* Primary CTA buttons - premium gradient with lift on hover */
@@ -440,39 +557,47 @@ fluent-button[appearance="accent"]:active::part(control) {
     filter: brightness(0.96);
 }
 
-/* ─── Brand logo (gradient-filled glyph, no wordmark) ───────
-   Compact 36px square that shows only the ✈️ emoji on top of
-   the accent gradient. Theme-adaptive via --pf-accent-gradient. */
+/* ─── Brand logo (gradient-filled airplane glyph) ─────────────
+   The ✈ char uses variation selector U+FE0E (text presentation)
+   so the browser renders it as an outlined shape - which makes
+   `background-clip: text` work and the airplane takes the hero-
+   title gradient (slate text → indigo/violet accent).
+   No pill bg - cleaner, the shape IS the logo. */
 .pf-brand {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    width: 40px;
-    height: 40px;
-    border-radius: var(--pf-radius-md);
-    background: var(--pf-accent-gradient);
-    color: #ffffff;
-    font-size: 1.25rem;
+    width: 44px;
+    height: 44px;
+    font-size: 1.75rem;
     line-height: 1;
     text-decoration: none;
-    overflow: hidden;
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.25),
-        0 2px 10px var(--pf-accent-ring);
-    transition: box-shadow 0.25s var(--pf-ease), transform 0.2s var(--pf-ease);
+    transition: transform 0.2s var(--pf-ease);
 }
 
 .pf-brand:hover {
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.35),
-        0 4px 16px var(--pf-accent-ring);
-    transform: translateY(-1px);
+    transform: scale(1.08);
 }
 
 .pf-brand:focus-visible {
     outline: 2px solid var(--pf-accent-ring);
-    outline-offset: 3px;
+    outline-offset: 4px;
+    border-radius: var(--pf-radius-md);
+}
+
+/* Same gradient-clip-text trick as .pf-hero-title - the ✈️ emoji is
+   rendered by the browser as a clipped shape filled with our gradient. */
+.pf-brand-glyph {
+    background: linear-gradient(135deg,
+            var(--pf-text) 0%,
+            var(--pf-accent) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    filter: drop-shadow(0 2px 10px var(--pf-accent-ring));
+    line-height: 1;
 }
 
 /* Monochrome SVG inside the brand pill - inherits the white color from .pf-brand. */
@@ -499,7 +624,10 @@ fluent-button[appearance="accent"]:active::part(control) {
     line-height: 1.4;
 }
 
-.pf-footer-sep  { opacity: 0.5; user-select: none; }
+.pf-footer-sep {
+    opacity: 0.5;
+    user-select: none;
+}
 
 /* Author - plain inline link. Tiny GitHub mark before the name,
    no background or border. Accent colour reveals only on hover. */
@@ -518,8 +646,14 @@ fluent-button[appearance="accent"]:active::part(control) {
     transition: opacity 0.2s var(--pf-ease), color 0.2s var(--pf-ease);
 }
 
-.pf-author:hover { color: var(--pf-accent); }
-.pf-author:hover svg { opacity: 1; color: var(--pf-accent); }
+.pf-author:hover {
+    color: var(--pf-accent);
+}
+
+.pf-author:hover svg {
+    opacity: 1;
+    color: var(--pf-accent);
+}
 
 .pf-author:focus-visible,
 .pf-footer-link:focus-visible {
@@ -536,7 +670,9 @@ fluent-button[appearance="accent"]:active::part(control) {
     transition: color 0.2s var(--pf-ease);
 }
 
-.pf-footer-link:hover { color: var(--pf-accent); }
+.pf-footer-link:hover {
+    color: var(--pf-accent);
+}
 
 /* ─── Modernized Fluent outline/hypertext buttons ───────────
    Glass pills that play nice with the new palette. */
@@ -573,7 +709,10 @@ fluent-anchor[appearance="outline"]:hover::part(control) {
     vertical-align: -0.15em;
 }
 
-.pf-btn-icon svg { display: block; color: currentColor; }
+.pf-btn-icon svg {
+    display: block;
+    color: currentColor;
+}
 
 /* Hypertext anchors - minimal, accent on hover only */
 fluent-anchor[appearance="hypertext"] {
@@ -607,9 +746,13 @@ fluent-anchor[appearance="hypertext"]:hover {
     transition: color 0.2s var(--pf-ease);
 }
 
-.pf-breadcrumbs__link:hover { color: var(--pf-accent); }
+.pf-breadcrumbs__link:hover {
+    color: var(--pf-accent);
+}
 
-.pf-breadcrumbs__current { color: var(--pf-text); }
+.pf-breadcrumbs__current {
+    color: var(--pf-text);
+}
 
 .pf-breadcrumbs__sep {
     color: var(--pf-text-subtle);
@@ -686,8 +829,15 @@ fluent-anchor[appearance="hypertext"]:hover {
 }
 
 @keyframes paletteIn {
-    from { opacity: 0; transform: translateY(-8px) scale(0.98); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
+    from {
+        opacity: 0;
+        transform: translateY(-8px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .pf-palette__input-row {
@@ -717,7 +867,9 @@ fluent-anchor[appearance="hypertext"]:hover {
     min-width: 0;
 }
 
-.pf-palette__input::placeholder { color: var(--pf-text-subtle); }
+.pf-palette__input::placeholder {
+    color: var(--pf-text-subtle);
+}
 
 .pf-palette__hint {
     background: var(--pf-surface-2);
@@ -758,9 +910,16 @@ fluent-anchor[appearance="hypertext"]:hover {
     color: var(--pf-accent);
 }
 
-.pf-palette__icon { font-size: 1.25rem; line-height: 1; flex-shrink: 0; }
+.pf-palette__icon {
+    font-size: 1.25rem;
+    line-height: 1;
+    flex-shrink: 0;
+}
 
-.pf-palette__text { flex: 1; min-width: 0; }
+.pf-palette__text {
+    flex: 1;
+    min-width: 0;
+}
 
 .pf-palette__label {
     font-size: 0.875rem;
@@ -878,9 +1037,15 @@ fluent-anchor[appearance="hypertext"]:hover {
     color: var(--pf-text);
 }
 
-.pf-help__item:hover { background: var(--pf-surface-2); border-radius: var(--pf-radius-sm); }
+.pf-help__item:hover {
+    background: var(--pf-surface-2);
+    border-radius: var(--pf-radius-sm);
+}
 
-.pf-help__keys { display: inline-flex; gap: 0.25rem; }
+.pf-help__keys {
+    display: inline-flex;
+    gap: 0.25rem;
+}
 
 .pf-help__keys kbd,
 .pf-palette__footer kbd {
@@ -894,7 +1059,9 @@ fluent-anchor[appearance="hypertext"]:hover {
     line-height: 1;
 }
 
-.pf-help__label { color: var(--pf-text-muted); }
+.pf-help__label {
+    color: var(--pf-text-muted);
+}
 
 .pf-help__footer {
     padding: 0.625rem 1rem;
@@ -902,6 +1069,246 @@ fluent-anchor[appearance="hypertext"]:hover {
     text-align: center;
     font-size: 0.75rem;
     color: var(--pf-text-subtle);
+}
+
+/* ─── Section content (Docs + Advanced) ─────────────────────
+   Shared shell for reusable config sections. Docs pages hide the
+   internal header and lean on the outer page heading; Advanced keeps
+   the local title/subtitle above the live controls. 
+   
+   NOTE: sections contain dropdowns (FluentSelect) which need to escape
+   card boundaries; we set overflow: visible and ensure parent cards
+   and grids don't clip content. */
+.pf-section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    overflow: visible;
+}
+
+.pf-section__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--pf-border);
+}
+
+.pf-section__title {
+    margin: 0;
+    font-size: clamp(1.5rem, 2vw, 1.875rem);
+    line-height: 1.1;
+    font-weight: 700;
+    color: var(--pf-text);
+    letter-spacing: -0.02em;
+}
+
+.pf-section__subtitle {
+    margin: 0;
+    max-width: 68ch;
+    color: var(--pf-text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.pf-section__docs-link {
+    align-self: flex-start;
+    color: var(--pf-accent);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s var(--pf-ease);
+}
+
+.pf-section__docs-link:hover {
+    color: var(--pf-accent-strong);
+}
+
+.pf-section__intro {
+    padding: 1.25rem 1.375rem;
+    background: var(--pf-card-bg);
+    border: 1px solid var(--pf-card-border);
+    border-radius: var(--pf-radius-lg);
+    box-shadow: var(--pf-card-highlight), var(--pf-card-shadow);
+}
+
+.pf-section__intro> :first-child,
+.pf-section__intro p:first-child,
+.pf-section__intro h1:first-child,
+.pf-section__intro h2:first-child,
+.pf-section__intro h3:first-child {
+    margin-top: 0;
+}
+
+.pf-section__intro> :last-child {
+    margin-bottom: 0;
+}
+
+.pf-section__intro h1,
+.pf-section__intro h2,
+.pf-section__intro h3,
+.pf-section__intro h4 {
+    margin: 1.5rem 0 0.75rem;
+    color: var(--pf-text);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+}
+
+.pf-section__intro h2 {
+    font-size: clamp(1.25rem, 1.5vw, 1.5rem);
+}
+
+.pf-section__intro h3 {
+    font-size: 1.0625rem;
+}
+
+.pf-section__intro p,
+.pf-section__intro li {
+    color: var(--pf-text-muted);
+    font-size: 0.975rem;
+    line-height: 1.75;
+}
+
+.pf-section__intro p {
+    margin: 0.75rem 0;
+}
+
+.pf-section__intro ul,
+.pf-section__intro ol {
+    margin: 0.875rem 0;
+    padding-left: 1.3rem;
+}
+
+.pf-section__intro li+li {
+    margin-top: 0.55rem;
+}
+
+.pf-section__intro strong {
+    color: var(--pf-text);
+    font-weight: 700;
+}
+
+.pf-section__intro code {
+    font-family: var(--pf-font-mono);
+    font-size: 0.9em;
+    padding: 0.14rem 0.34rem;
+    border-radius: 6px;
+    color: var(--pf-accent-strong);
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+}
+
+.pf-section__options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    overflow: visible;
+}
+
+.pf-option {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem 1.125rem;
+    background: var(--pf-card-bg);
+    border: 1px solid var(--pf-card-border);
+    border-radius: var(--pf-radius-lg);
+    box-shadow: var(--pf-card-highlight), var(--pf-card-shadow);
+    position: relative;
+    overflow: visible;
+}
+
+.pf-option__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.pf-option__label {
+    margin: 0;
+    color: var(--pf-text);
+    font-size: 1rem;
+    line-height: 1.4;
+    font-weight: 700;
+}
+
+.pf-option__learn-more {
+    flex: 0 0 auto;
+    color: var(--pf-accent);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.pf-option__learn-more:hover {
+    color: var(--pf-accent-strong);
+}
+
+.pf-option__description {
+    margin: 0;
+    color: var(--pf-text-muted);
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+.pf-docs-entry>.pf-section {
+    margin-top: 0.5rem;
+}
+
+/* Advanced page layout: allow all content to flow naturally */
+fluent-grid,
+fluent-grid-item,
+fluent-card {
+    overflow: visible !important;
+}
+
+/* ─── FluentSelect dropdown sizing ───────────────────────────
+   Limit dropdown height and add scrollbar for long option lists.
+   Primary path: FluentSelect shadow parts.
+   Fallback path: global role="listbox" selector. */
+fluent-select.pf-select::part(listbox) {
+    max-height: 240px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+fluent-select.pf-select::part(positioning-region) {
+    max-height: 240px;
+}
+
+[role="listbox"] {
+    max-height: 240px;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+}
+
+/* Smooth scrolling for dropdown options */
+[role="listbox"]::-webkit-scrollbar {
+    width: 8px;
+}
+
+[role="listbox"]::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+[role="listbox"]::-webkit-scrollbar-thumb {
+    background: var(--pf-border-strong);
+    border-radius: 4px;
+}
+
+[role="listbox"]::-webkit-scrollbar-thumb:hover {
+    background: var(--pf-text-muted);
+}
+
+@media (max-width: 700px) {
+    .pf-option__head {
+        flex-direction: column;
+    }
+
+    .pf-option__learn-more {
+        white-space: normal;
+    }
 }
 
 /* ─── Compact segmented switcher ─────────────────────────────
@@ -927,7 +1334,8 @@ fluent-anchor[appearance="hypertext"]:hover {
     bottom: 4px;
     left: 0;
     width: 0;
-    opacity: 0;           /* JS fades it in after first measurement */
+    opacity: 0;
+    /* JS fades it in after first measurement */
     background: var(--pf-accent-gradient);
     border-radius: var(--pf-radius-pill);
     box-shadow:
@@ -998,8 +1406,10 @@ fluent-anchor[appearance="hypertext"]:hover {
 
 .pf-switcher__sr {
     position: absolute;
-    width: 1px; height: 1px;
-    padding: 0; margin: -1px;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
     overflow: hidden;
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
@@ -1016,8 +1426,8 @@ fluent-anchor[appearance="hypertext"]:hover {
       nav, keep a soft ring for `:focus-visible` (keyboard-only). */
 .pf-hero-title {
     background: linear-gradient(135deg,
-        var(--pf-text) 0%,
-        var(--pf-accent) 100%);
+            var(--pf-text) 0%,
+            var(--pf-accent) 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1043,16 +1453,34 @@ fluent-anchor[appearance="hypertext"]:hover {
 }
 
 /* ─── Loading screen - wavy flight path ───────────────────
-   SVG draws a sine-like curve; the airplane emoji follows the
-   exact same path via CSS `offset-path`, with `offset-distance`
-   tied to Blazor's --blazor-load-percentage. As the runway fills
-   the plane surfs the wave instead of marching along a straight bar. */
+   Lives in #loading-overlay (outside #app) so Blazor's mount
+   doesn't tear it down mid-animation. Index.html keeps it visible
+   until Blazor boots + MIN_DISPLAY_MS elapses, then fades. */
+
+#loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--pf-bg);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease, visibility 0.5s;
+}
+
+#loading-overlay.is-done {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
 
 .preflight-loader {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
+    transform: none;
+    top: auto;
+    left: auto;
     /* Fixed geometry so the SVG wave (400x60 viewBox) and the plane's
        pixel-based offset-path share the same coordinate space. On
        narrow phones scale the whole loader uniformly. */
@@ -1083,42 +1511,87 @@ fluent-anchor[appearance="hypertext"]:hover {
 .runway-track {
     stroke: var(--pf-border-strong);
     stroke-width: 2;
-    opacity: 0.6;
+    opacity: 0;
+    /* fades in smoothly */
+    animation: trackFadeIn 0.5s ease-out 0.1s forwards;
 }
 
-/* The trail reveals gradually up to the plane's current progress.
-   pathLength=100 lets us use a simple 0-100 dashoffset scale matched
-   to --blazor-load-percentage (already a % value). */
+@keyframes trackFadeIn {
+    to {
+        opacity: 0.25;
+    }
+
+    /* subtle guide line */
+}
+
+/* Progressive fill trail (0 → 100% one-shot). It's a status bar - once
+   it reaches the end, stays there. `forwards` fill-mode pins the end state
+   even after the animation completes, through the overlay fade-out. */
 .runway-trail {
     stroke: url(#runwayGradient);
-    stroke-width: 2.5;
+    stroke-width: 3;
     stroke-dasharray: 100;
-    stroke-dashoffset: calc(100 - (var(--blazor-load-percentage, 0%) / 1%));
-    transition: stroke-dashoffset 0.3s var(--pf-ease-out);
-    filter: drop-shadow(0 0 6px var(--pf-accent-ring));
+    stroke-dashoffset: 100;
+    /* initial: nothing drawn */
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 8px var(--pf-accent));
+    animation: trailFly 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes trailFly {
+    to {
+        stroke-dashoffset: 0;
+    }
+
+    /* fully drawn */
 }
 
 /* Plane follows the EXACT same path the SVG drew. Both use the 400x60
    coordinate space, so at 100% offset-distance the plane lands on the
-   right-most crest. offset-rotate: auto tilts the plane with tangent. */
+   right-most crest. offset-rotate: auto tilts the plane with tangent.
+   Inline SVG with gradient fill - bulletproof visibility across themes. */
 .plane {
     position: absolute;
     top: 20px;
     left: 0;
-    font-size: 1.5rem;
-    line-height: 1;
-    display: inline-block;
-    width: auto;
-    height: auto;
+    width: 28px;
+    height: 28px;
+    display: block;
     pointer-events: none;
 
     offset-path: path("M 0 30 Q 50 5, 100 30 T 200 30 T 300 30 T 400 30");
-    offset-distance: var(--blazor-load-percentage, 0%);
-    offset-rotate: auto 0deg;
+    /* SVG plane is drawn nose-up (local -Y). +90deg rotates it CW so the
+       nose points along the tangent direction (nose-forward flight). */
+    offset-rotate: auto 90deg;
     offset-anchor: center;
 
-    transition: offset-distance 0.3s var(--pf-ease-out);
-    filter: drop-shadow(0 2px 10px var(--pf-accent-ring));
+    /* One-shot forward flight in sync with `trailFly`. `forwards` fill-mode
+       pins the plane at 100% when done, matching the full status bar. */
+    animation:
+        planeFly 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards,
+        planePulse 1.8s ease-in-out infinite;
+}
+
+@keyframes planeFly {
+    from {
+        offset-distance: 0%;
+    }
+
+    to {
+        offset-distance: 100%;
+    }
+}
+
+@keyframes planePulse {
+
+    0%,
+    100% {
+        filter: drop-shadow(0 0 8px var(--pf-accent));
+    }
+
+    50% {
+        filter: drop-shadow(0 0 16px var(--pf-accent));
+    }
 }
 
 .runway-status {
@@ -1134,7 +1607,9 @@ fluent-anchor[appearance="hypertext"]:hover {
     min-height: 1em;
 }
 
-.runway-status:after { content: var(--blazor-load-percentage-text, "Preparing the runway…"); }
+.runway-status:after {
+    content: var(--blazor-load-percentage-text, "Preparing the runway…");
+}
 
 /* ─── Error banner ─────────────────────────────────────── */
 #blazor-error-ui {
@@ -1158,39 +1633,369 @@ fluent-anchor[appearance="hypertext"]:hover {
     top: 0.5rem;
 }
 
+/* ─── XML live preview (Advanced page sidebar) ─────────────
+   A compact code surface with an accent-bordered left edge and a
+   dedicated toolbar. Three icon buttons (copy / download / expand)
+   replace the old mixed-appearance FluentButtons so the chrome reads
+   as a single component instead of a stealth/accent collision. */
+.pf-xml-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pf-xml-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 32px;
+    flex-wrap: wrap;
+}
+
+.pf-xml-toolbar__title {
+    font-weight: 600;
+    font-size: 0.8125rem;
+    color: var(--pf-text);
+    letter-spacing: 0.01em;
+}
+
+.pf-xml-toolbar__meta {
+    font-family: var(--pf-font-mono);
+    font-size: 0.6875rem;
+    color: var(--pf-text-subtle);
+    padding: 0.125rem 0.4rem;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-sm);
+    white-space: nowrap;
+}
+
+.pf-xml-toolbar__actions {
+    margin-left: auto;
+    display: inline-flex;
+    gap: 4px;
+}
+
+.pf-xml-iconbtn {
+    appearance: none;
+    -webkit-appearance: none;
+    background: var(--pf-chrome-bg);
+    border: 1px solid var(--pf-border-strong);
+    color: var(--pf-text-muted);
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border-radius: var(--pf-radius-sm);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    transition:
+        color 0.15s var(--pf-ease),
+        border-color 0.15s var(--pf-ease),
+        background 0.15s var(--pf-ease),
+        transform 0.15s var(--pf-ease),
+        box-shadow 0.2s var(--pf-ease);
+}
+
+.pf-xml-iconbtn:hover {
+    color: var(--pf-accent);
+    border-color: var(--pf-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--pf-accent-ring);
+}
+
+.pf-xml-iconbtn:active {
+    transform: translateY(0);
+}
+
+.pf-xml-iconbtn:focus-visible {
+    outline: 2px solid var(--pf-accent-ring);
+    outline-offset: 2px;
+}
+
+.pf-xml-iconbtn.is-copied {
+    color: var(--pf-accent);
+    border-color: var(--pf-accent);
+    background: var(--pf-accent-soft);
+}
+
+.pf-xml-iconbtn svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+    color: currentColor;
+}
+
+/* Code surface — sidebar variant. Left accent border ties it visually to
+   the app palette; monospace with relaxed leading makes deep trees legible. */
+.pf-xml-code {
+    margin: 0;
+    padding: 12px 14px;
+    font-family: var(--pf-font-mono);
+    font-size: 11.5px;
+    line-height: 1.55;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-left: 3px solid var(--pf-accent);
+    border-radius: var(--pf-radius-md);
+    overflow: auto;
+    max-height: 520px;
+    white-space: pre;
+    color: var(--pf-text);
+    tab-size: 2;
+}
+
+.pf-xml-code code {
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    color: inherit;
+    background: transparent;
+    text-shadow: none;
+}
+
+.pf-xml-code::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.pf-xml-code::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.pf-xml-code::-webkit-scrollbar-thumb {
+    background: var(--pf-border-strong);
+    border-radius: 5px;
+    border: 2px solid var(--pf-surface-2);
+}
+
+.pf-xml-code::-webkit-scrollbar-thumb:hover {
+    background: var(--pf-accent);
+}
+
+/* ─── Prism token theme (scoped to .pf-xml-code) ──────────
+   We don't pull Prism's default CSS — it targets token classes with
+   generic greens/blues that fight the indigo/violet palette. Instead
+   we paint each token in a palette-native colour. Scoping to
+   .pf-xml-code keeps this from leaking onto <code> elsewhere. */
+.pf-xml-code .token.comment,
+.pf-xml-code .token.prolog,
+.pf-xml-code .token.cdata {
+    color: var(--pf-text-subtle);
+    font-style: italic;
+}
+
+.pf-xml-code .token.doctype {
+    color: var(--pf-text-muted);
+    font-weight: 500;
+}
+
+.pf-xml-code .token.punctuation {
+    color: var(--pf-text-muted);
+}
+
+/* Light theme: indigo tag / fuchsia attr / burnt-orange value — works against
+   a white/slate surface. Dark theme: the sidebar's card background carries a
+   violet tint, so the indigo/violet tag colour that worked on light blends
+   into the chrome and becomes unreadable. We shift to three distinct hues
+   (cool sky for tags, warm amber for attr-names, soft green for strings) so
+   every token stands off the violet surface regardless of theme. */
+.pf-xml-code .token.tag {
+    color: var(--pf-accent-strong);
+    font-weight: 500;
+}
+
+html.theme-dark .pf-xml-code .token.tag {
+    color: #7dd3fc;
+}
+
+/* sky-300 */
+
+.pf-xml-code .token.tag .token.punctuation {
+    color: var(--pf-accent);
+    opacity: 0.75;
+}
+
+html.theme-dark .pf-xml-code .token.tag .token.punctuation {
+    color: #7dd3fc;
+    opacity: 0.55;
+}
+
+.pf-xml-code .token.attr-name {
+    color: #c026d3;
+}
+
+/* fuchsia-600 */
+html.theme-dark .pf-xml-code .token.attr-name {
+    color: #fbbf24;
+}
+
+/* amber-400 */
+
+.pf-xml-code .token.attr-value,
+.pf-xml-code .token.string {
+    color: #c2410c;
+    /* orange-700 */
+}
+
+html.theme-dark .pf-xml-code .token.attr-value,
+html.theme-dark .pf-xml-code .token.string {
+    color: #86efac;
+    /* green-300 */
+}
+
+.pf-xml-code .token.attr-value .token.punctuation {
+    color: inherit;
+    opacity: 0.55;
+}
+
+.pf-xml-code .token.entity,
+.pf-xml-code .token.namespace {
+    color: var(--pf-accent);
+}
+
+html.theme-dark .pf-xml-code .token.entity,
+html.theme-dark .pf-xml-code .token.namespace {
+    color: #f472b6;
+    /* pink-400 */
+}
+
+/* ─── XML expand modal ────────────────────────────────────
+   Overlay uses the shared .pf-overlay backdrop-blur, then centres a
+   wide dialog (up to 1200px) that takes most of the viewport so a
+   large autounattend.xml can actually breathe. */
+.pf-xml-modal.pf-overlay {
+    align-items: center;
+    padding: 4vh 4vw;
+}
+
+.pf-xml-dialog {
+    width: min(1200px, 100%);
+    max-height: 92vh;
+    background: var(--pf-modal-bg);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--pf-modal-border);
+    border-radius: var(--pf-radius-lg);
+    box-shadow:
+        var(--pf-card-highlight),
+        0 32px 90px rgba(0, 0, 0, 0.35),
+        0 0 100px var(--pf-accent-ring);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: paletteIn 0.2s var(--pf-ease-out);
+}
+
+.pf-xml-dialog__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--pf-border);
+}
+
+.pf-xml-dialog__title {
+    font-weight: 600;
+    font-size: 0.9375rem;
+    color: var(--pf-text);
+}
+
+.pf-xml-dialog__actions {
+    margin-left: auto;
+    display: inline-flex;
+    gap: 4px;
+}
+
+.pf-xml-dialog .pf-xml-code {
+    margin: 14px;
+    max-height: none;
+    flex: 1;
+    min-height: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    border-left-width: 4px;
+}
+
 /* ─── Responsive tweaks ────────────────────────────────── */
 @media (max-width: 820px) {
-    .pf-breadcrumbs { display: none; }
-    .pf-icon-btn { padding: 0.375rem 0.5rem; }
+    .pf-breadcrumbs {
+        display: none;
+    }
+
+    .pf-icon-btn {
+        padding: 0.375rem 0.5rem;
+    }
 }
 
 @media (max-width: 600px) {
+
     /* Hide language labels - just flags on tight mobile header */
-    .pf-switcher:not(.pf-switcher--icon) .pf-switcher__btn > span:not(.pf-switcher__icon) {
+    .pf-switcher:not(.pf-switcher--icon) .pf-switcher__btn>span:not(.pf-switcher__icon) {
         display: none;
     }
+
     .pf-switcher:not(.pf-switcher--icon) .pf-switcher__btn {
         padding: 0.375rem 0.5rem;
     }
+
     .layout {
         padding: 6px !important;
         gap: 6px !important;
     }
-    .layout > .header {
+
+    .layout>.header {
         top: 6px !important;
         padding: 0 0.75rem !important;
     }
 }
 
 @media (max-width: 420px) {
-    .pf-icon-btn { display: none; }  /* Ctrl+K shortcut still works via kbd */
+    .pf-icon-btn {
+        display: none;
+    }
+
+    /* Ctrl+K shortcut still works via kbd */
 }
 
-/* ─── Motion reduction ─────────────────────────────────── */
+/* ─── Motion reduction ───────────────────────────────────
+   WAI guidance: kill decorative/hover motion but keep progress
+   indicators visible. A user with reduced-motion preference still
+   expects to see the loading spinner / plane - just not flashy
+   card-lifts or transform transitions.
+   Explicit opt-in list instead of a universal `*` rule so the
+   loader animations survive. */
 @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
+
+    fluent-card.pf-card--interactive,
+    fluent-card.pf-card--interactive::before,
+    fluent-button[appearance="accent"]::part(control),
+    .pf-switcher__indicator,
+    .pf-switcher__btn,
+    .fluent-nav-link,
+    .pf-brand,
+    .pf-author,
+    .pf-footer-link {
         transition-duration: 0.01ms !important;
+    }
+
+    /* Page-enter is driven by WAAPI in js/theme.js and downgrades to a
+       plain opacity fade when matchMedia reports reduce=true. No CSS
+       rule is needed here.
+
+       Theme crossfade on colored properties is motion-free — it stays
+       on for reduced-motion users. View Transitions (which do a paint
+       snapshot crossfade, still motion-free) also stay on. */
+
+    fluent-card.pf-card--interactive:hover {
+        transform: none !important;
+    }
+
+    .pf-brand:hover,
+    fluent-button[appearance="accent"]:hover::part(control),
+    .fluent-nav-link:hover {
+        transform: none !important;
     }
 }

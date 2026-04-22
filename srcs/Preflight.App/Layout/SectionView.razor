@@ -1,0 +1,230 @@
+@using System.Globalization
+@using System.Net.Http.Json
+@using Markdig
+@using Preflight.App.Models
+@inject HttpClient Http
+@inject IStringLocalizer<SharedResources> L
+@inject NavigationManager Nav
+@implements IDisposable
+
+<div class="pf-section @(ViewMode == SectionMode.Docs ? "pf-section--docs" : "pf-section--advanced")">
+
+    @if (ShowHeader)
+    {
+        <header class="pf-section__head">
+            <h2 class="pf-section__title">@L[Section.TitleKey]</h2>
+            <p class="pf-section__subtitle">@L[Section.SubtitleKey]</p>
+            @if (ViewMode == SectionMode.Advanced)
+            {
+                <a class="pf-section__docs-link" href="@($"/docs/{Section.Id}")">@L["Section.Docs.Link"]</a>
+            }
+        </header>
+    }
+
+    @if (ViewMode == SectionMode.Docs && _introHtml is not null)
+    {
+        <section class="pf-section__intro">
+            @((MarkupString)_introHtml)
+        </section>
+    }
+
+    <section class="pf-section__options">
+        @foreach (var option in _filteredOptions)
+        {
+            <div id="@option.Id" class="pf-option">
+                <div class="pf-option__head">
+                    <label class="pf-option__label" for="@($"opt-{option.Id}")">@L[option.LabelKey]</label>
+                    @if (!string.IsNullOrEmpty(option.LearnMoreUrl))
+                    {
+                        <a class="pf-option__learn-more" href="@option.LearnMoreUrl" target="_blank" rel="noopener">@L["Section.LearnMore"]</a>
+                    }
+                </div>
+
+                @if (option.DescriptionKey is not null
+                     && (ViewMode == SectionMode.Docs || option.ShowDescriptionInAdvanced))
+                {
+                    <p class="pf-option__description">@L[option.DescriptionKey]</p>
+                }
+
+                @if (ViewMode == SectionMode.Advanced)
+                {
+                    @RenderControl(option)
+                }
+            </div>
+        }
+    </section>
+</div>
+
+@code {
+    public enum SectionMode { Docs, Advanced }
+
+    [Parameter, EditorRequired] public SectionDefinition Section { get; set; } = default!;
+    [Parameter] public SectionMode ViewMode { get; set; } = SectionMode.Advanced;
+    [Parameter] public bool ShowHeader { get; set; } = true;
+    /// <summary>If non-null, restrict rendering to options whose Id matches (used by Wizard steps).</summary>
+    [Parameter] public string[]? OptionIds { get; set; }
+
+    private string? _introHtml;
+    private IReadOnlyList<OptionDefinition> _filteredOptions = [];
+    private readonly Dictionary<string, IReadOnlyList<DataEntry>> _jsonCache = new(StringComparer.Ordinal);
+
+    private record DataEntry(string Id, string DisplayName);
+
+    private string? _lastLoadedSectionId;
+
+    protected override void OnInitialized()
+    {
+        if (ViewMode == SectionMode.Advanced)
+            ModeSvc.StateChanged += OnConfigChanged;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _filteredOptions = OptionIds is null
+            ? Section.Options
+            : Section.Options.Where(o => OptionIds.Contains(o.Id, StringComparer.Ordinal)).ToArray();
+
+        // Only hit HTTP when the section actually changes; parameter-set fires on every
+        // re-render (including after every config mutation), and reloading the same JSON
+        // on each keystroke is pure waste.
+        if (_lastLoadedSectionId != Section.Id)
+        {
+            _lastLoadedSectionId = Section.Id;
+            await LoadAsync();
+        }
+    }
+
+    // ─── helpers ────────────────────────────────────────────────────
+
+    // ModeService is injected under the name `Mode`, which collides with our enum alias.
+    // Use an explicit getter via DI rather than renaming the parameter (the parameter name
+    // is part of the component's public API via <SectionView Mode="..." />).
+    [Inject] private ModeService ModeSvc { get; set; } = default!;
+
+    private async Task LoadAsync()
+    {
+        _introHtml = await TryRenderMarkdownAsync(Section.IntroMarkdownPath);
+
+        foreach (var option in _filteredOptions.Where(o => o.JsonSource is not null))
+        {
+            if (_jsonCache.ContainsKey(option.JsonSource!)) continue;
+            try
+            {
+                var entries = await Http.GetFromJsonAsync<List<DataEntry>>(option.JsonSource!);
+                if (entries is not null) _jsonCache[option.JsonSource!] = entries;
+            }
+            catch (Exception) { _jsonCache[option.JsonSource!] = []; }
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task<string?> TryRenderMarkdownAsync(string pathTemplate)
+    {
+        var locale = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName; // "en" / "uk"
+        var path = pathTemplate.Replace("{locale}", locale, StringComparison.Ordinal);
+        try
+        {
+            var md = await Http.GetStringAsync(path);
+            return Markdown.ToHtml(md);
+        }
+        catch (HttpRequestException)
+        {
+            if (locale != "en")
+            {
+                try
+                {
+                    var fallback = await Http.GetStringAsync(pathTemplate.Replace("{locale}", "en", StringComparison.Ordinal));
+                    return Markdown.ToHtml(fallback);
+                }
+                catch (HttpRequestException) { /* no content — fine, intro is optional */ }
+            }
+            return null;
+        }
+    }
+
+    private void OnConfigChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        if (ViewMode == SectionMode.Advanced)
+            ModeSvc.StateChanged -= OnConfigChanged;
+    }
+
+    // ─── control rendering ─────────────────────────────────────────
+
+    private RenderFragment RenderControl(OptionDefinition option) => builder =>
+    {
+        switch (option.Kind)
+        {
+            case OptionKind.Dropdown:
+                RenderDropdown(builder, option);
+                break;
+            case OptionKind.Text:
+                RenderTextInput(builder, option);
+                break;
+            case OptionKind.Checkbox:
+                RenderCheckbox(builder, option);
+                break;
+        }
+    };
+
+    private void RenderDropdown(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
+    {
+        var currentValue = option.GetString?.Invoke(ModeSvc.Config) ?? "";
+        var entries = option.JsonSource is not null && _jsonCache.TryGetValue(option.JsonSource, out var cached)
+            ? cached
+            : option.InlineValues?.Select(v => new DataEntry(v.Value, L[v.DisplayKey])).ToList() as IReadOnlyList<DataEntry>
+              ?? [];
+
+        var i = 0;
+        builder.OpenComponent<FluentSelect<string>>(i++);
+        builder.AddAttribute(i++, "Class", "pf-select");
+        builder.AddAttribute(i++, "Value", currentValue);
+        builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<string>(this, v =>
+        {
+            option.SetString?.Invoke(ModeSvc.Config, v);
+            ModeSvc.NotifyConfigChanged();
+        }));
+        builder.AddAttribute(i++, "Width", "100%");
+        builder.AddAttribute(i++, "ChildContent", (RenderFragment)(child =>
+        {
+            var idx = 0;
+            foreach (var entry in entries)
+            {
+                child.OpenComponent<FluentOption<string>>(idx++);
+                child.AddAttribute(idx++, "Value", entry.Id);
+                child.AddAttribute(idx++, "Selected", entry.Id == currentValue);
+                child.AddAttribute(idx++, "ChildContent", (RenderFragment)(c => c.AddContent(0, entry.DisplayName)));
+                child.CloseComponent();
+            }
+        }));
+        builder.CloseComponent();
+    }
+
+    private void RenderTextInput(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
+    {
+        var i = 0;
+        builder.OpenComponent<FluentTextField>(i++);
+        builder.AddAttribute(i++, "Value", option.GetString?.Invoke(ModeSvc.Config));
+        builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<string>(this, v =>
+        {
+            option.SetString?.Invoke(ModeSvc.Config, v);
+            ModeSvc.NotifyConfigChanged();
+        }));
+        builder.CloseComponent();
+    }
+
+    private void RenderCheckbox(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
+    {
+        var i = 0;
+        builder.OpenComponent<FluentCheckbox>(i++);
+        builder.AddAttribute(i++, "Value", option.GetBool?.Invoke(ModeSvc.Config) ?? false);
+        builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<bool>(this, v =>
+        {
+            option.SetBool?.Invoke(ModeSvc.Config, v);
+            ModeSvc.NotifyConfigChanged();
+        }));
+        builder.CloseComponent();
+    }
+}

@@ -11,12 +11,12 @@
 
     <FluentGrid Spacing="3" Justify="JustifyContent.Center" Style="margin-top: 16px;">
         <FluentGridItem xs="12" sm="6">
-            <FluentCard Class="pf-card--interactive" Style="height: 100%;" @onclick='@(() => Nav.NavigateTo("/wizard/guided/1"))'>
+            <FluentCard Class="pf-card--interactive" Style="height: 100%; cursor: pointer;" @onclick='@(() => Nav.NavigateTo("/wizard/guided/1"))'>
                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="8" Style="padding: 24px;">
                     <div style="font-size: 40px;">🧭</div>
                     <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@L["Wizard.Guided.Title"]</FluentLabel>
                     <FluentLabel Typo="Typography.Body">@L["Wizard.Guided.Description"]</FluentLabel>
-                    <FluentButton Appearance="Appearance.Accent" OnClick='@(() => Nav.NavigateTo("/wizard/guided/1"))'>
+                    <FluentButton Appearance="Appearance.Accent" Style="pointer-events: none;">
                         @L["Wizard.Guided.Cta"]
                     </FluentButton>
                 </FluentStack>
@@ -24,12 +24,12 @@
         </FluentGridItem>
 
         <FluentGridItem xs="12" sm="6">
-            <FluentCard Class="pf-card--interactive" Style="height: 100%;" @onclick='@(() => Nav.NavigateTo("/wizard/presets"))'>
+            <FluentCard Class="pf-card--interactive" Style="height: 100%; cursor: pointer;" @onclick='@(() => Nav.NavigateTo("/wizard/presets"))'>
                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="8" Style="padding: 24px;">
                     <div style="font-size: 40px;">🎛️</div>
                     <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@L["Wizard.Presets.Title"]</FluentLabel>
                     <FluentLabel Typo="Typography.Body">@L["Wizard.Presets.Description"]</FluentLabel>
-                    <FluentButton Appearance="Appearance.Accent" OnClick='@(() => Nav.NavigateTo("/wizard/presets"))'>
+                    <FluentButton Appearance="Appearance.Accent" Style="pointer-events: none;">
                         @L["Wizard.Presets.Cta"]
                     </FluentButton>
                 </FluentStack>
@@ -38,7 +38,7 @@
     </FluentGrid>
 
     <div>
-        <FluentAnchor Href="/" Appearance="Appearance.Hypertext">← @L["Common.BackToHome"]</FluentAnchor>
+        <FluentAnchor Href="/" Appearance="Appearance.Outline">← @L["Common.BackToHome"]</FluentAnchor>
     </div>
 
 </FluentStack>
