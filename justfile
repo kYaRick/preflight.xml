@@ -72,18 +72,6 @@ publish:
     sed -i 's|<base href="/" />|<base href="/{{GH_PATH}}/" />|' {{OUT_DIR}}/wwwroot/index.html
     @echo "✅ published to {{OUT_DIR}}/wwwroot"
 
-# ─── reference data sync ─────────────────────────────────────
-
-# 🔄 sync bundled lookup data from deps/schneegans-reference/
-#    Run after `git submodule update --remote` to refresh the in-app JSON tables.
-sync-data:
-    @echo "🔄 syncing reference data from deps/schneegans-reference/…"
-    cp deps/schneegans-reference/resource/WindowsEdition.json srcs/Preflight.App/wwwroot/data/editions.json
-    cp deps/schneegans-reference/resource/ImageLanguage.json  srcs/Preflight.App/wwwroot/data/locales.json
-    cp deps/schneegans-reference/resource/TimeOffset.json     srcs/Preflight.App/wwwroot/data/timezones.json
-    cp deps/schneegans-reference/resource/GeoId.json          srcs/Preflight.App/wwwroot/data/geo-ids.json
-    @echo "✅ synced — review diffs in srcs/Preflight.App/wwwroot/data/ before committing"
-
 # ─── maintenance ─────────────────────────────────────────────
 
 # 🧹 remove all build artifacts

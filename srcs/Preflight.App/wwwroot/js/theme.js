@@ -62,7 +62,7 @@ window.preflightUI = (() => {
   };
 })();
 
-// Page-enter animation — driven by Web Animations API, not CSS.
+// Page-enter animation - driven by Web Animations API, not CSS.
 // WAAPI animations run even when the browser's CSS engine is in reduced-
 // motion mode (e.g. automated test runners force it on) because WAAPI
 // animations are independent of the @media (prefers-reduced-motion) CSS
@@ -84,7 +84,7 @@ window.preflightNav = (() => {
     });
   };
 
-  // First-paint animation only — called once by index.html after the
+  // First-paint animation only - called once by index.html after the
   // loading overlay starts fading. Not used for SPA navigation (the
   // app should navigate normally; route-level view transitions were
   // removed because the history monkey-patch could desync Blazor's
@@ -249,11 +249,11 @@ window.preflightNav = (() => {
     },
 
     // User-initiated theme change: animated path. Layers two mechanisms:
-    //   1. <html class="theme-transitioning"> for ~500ms — opts every
+    //   1. <html class="theme-transitioning"> for ~500ms - opts every
     //      themed surface into CSS transitions on bg/color/border. Works
     //      in every browser, and covers FluentDesignTheme's separate
     //      re-paint (which runs outside the View Transition).
-    //   2. document.startViewTransition() (Chromium/Safari) — adds a
+    //   2. document.startViewTransition() (Chromium/Safari) - adds a
     //      full-viewport crossfade on top of #1.
     // Both are skipped for prefers-reduced-motion.
     set: (mode) => {
@@ -270,7 +270,7 @@ window.preflightNav = (() => {
       animateThemeSwap(mode);
     },
 
-    // Raw apply — no animation. Used by the inline boot script in
+    // Raw apply - no animation. Used by the inline boot script in
     // index.html to set the stored theme before first paint.
     apply: (mode) => applyThemeState(mode),
   };

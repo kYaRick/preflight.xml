@@ -34,8 +34,9 @@
             </FluentCard>
         </FluentGridItem>
 
-        <!-- Middle column: form -->
-        <FluentGridItem xs="12" md="6">
+        <!-- Main column: form (9/12 - the XML preview moved to a FAB+modal,
+             so the form gets the space schneegans-parity controls actually need). -->
+        <FluentGridItem xs="12" md="9">
             <FluentCard Style="padding: 24px;">
                 @if (_activeSection == "region")
                 {
@@ -53,51 +54,28 @@
             </FluentCard>
         </FluentGridItem>
 
-        <!-- Right column: live XML preview -->
-        <FluentGridItem xs="12" md="3">
-            <FluentCard Style="padding: 14px; position: sticky; top: 16px;">
-                <div class="pf-xml-panel">
-                    <div class="pf-xml-toolbar">
-                        <span class="pf-xml-toolbar__title">@L["Advanced.Preview.Title"]</span>
-                        <span class="pf-xml-toolbar__meta" title="@L["Advanced.Preview.LinesTooltip"]">@_xmlLineCount @L["Advanced.Preview.Lines"]</span>
-                        <div class="pf-xml-toolbar__actions">
-                            <button type="button"
-                                    class="pf-xml-iconbtn @(_justCopied ? "is-copied" : null)"
-                                    title="@(_justCopied ? L["Advanced.Preview.Copied"] : L["Advanced.Preview.Copy"])"
-                                    aria-label="@(_justCopied ? L["Advanced.Preview.Copied"] : L["Advanced.Preview.Copy"])"
-                                    @onclick="CopyXml">
-                                @(_justCopied ? CheckIcon : CopyIcon)
-                            </button>
-                            <button type="button"
-                                    class="pf-xml-iconbtn"
-                                    title="@L["Advanced.Preview.Download"]"
-                                    aria-label="@L["Advanced.Preview.Download"]"
-                                    @onclick="DownloadXml">
-                                @DownloadIcon
-                            </button>
-                            <button type="button"
-                                    class="pf-xml-iconbtn"
-                                    title="@L["Advanced.Preview.Expand"]"
-                                    aria-label="@L["Advanced.Preview.Expand"]"
-                                    @onclick="OpenExpanded">
-                                @ExpandIcon
-                            </button>
-                        </div>
-                    </div>
-                    <pre class="pf-xml-code language-markup"><code class="language-markup" @ref="_codeEl"></code></pre>
-                </div>
-            </FluentCard>
-        </FluentGridItem>
-
     </FluentGrid>
 </div>
+
+<!-- Floating XML-preview button - sticky to the viewport, one click opens the
+     existing full-width modal. Pulses briefly when the XML rebuilds so the
+     user notices a fresh diff is available. -->
+<button type="button"
+        class="pf-xml-fab @(_fabPulsing ? "is-pulsing" : null)"
+        title="@($"{L["Advanced.Preview.Title"]} - {L["Advanced.Preview.Open"]} (Ctrl+Shift+X)")"
+        aria-label="@L["Advanced.Preview.Open"]"
+        @onclick="OpenExpanded">
+    <span class="pf-xml-fab__icon" aria-hidden="true">@EyeIcon</span>
+    <span class="pf-xml-fab__label">XML</span>
+    <span class="pf-xml-fab__count" title="@L["Advanced.Preview.LinesTooltip"]">@_xmlLineCount</span>
+</button>
 
 @if (_expanded)
 {
     <div class="pf-overlay pf-xml-modal is-open" @ref="_modalOverlay" @onclick="CloseExpanded" role="presentation">
         <div class="pf-xml-dialog" role="dialog" aria-modal="true" aria-label="@L["Advanced.Preview.Title"]" @onclick:stopPropagation="true">
             <div class="pf-xml-dialog__header">
-                <span class="pf-xml-dialog__title">@L["Advanced.Preview.Title"] — autounattend.xml</span>
+                <span class="pf-xml-dialog__title">@L["Advanced.Preview.Title"] - autounattend.xml</span>
                 <span class="pf-xml-toolbar__meta" title="@L["Advanced.Preview.LinesTooltip"]">@_xmlLineCount @L["Advanced.Preview.Lines"]</span>
                 <div class="pf-xml-dialog__actions">
                     <button type="button"
@@ -143,14 +121,17 @@
     private int _xmlLineCount;
     private bool _expanded;
     private bool _justCopied;
+    private bool _fabPulsing;
 
     // Gated flag so OnAfterRender only re-runs Prism when the XML actually
-    // changed or the modal just opened — not on every unrelated re-render.
+    // changed or the modal just opened - not on every unrelated re-render.
     private bool _needsHighlight = true;
 
-    private ElementReference _codeEl;
     private ElementReference _modalCodeEl;
     private ElementReference _modalOverlay;
+
+    private DotNetObjectReference<AdvancedShell>? _selfRef;
+    private CancellationTokenSource? _pulseCts;
 
     protected override void OnInitialized()
     {
@@ -173,7 +154,25 @@
 
         _xmlLineCount = CountLines(_xmlPreview);
         _needsHighlight = true;
+        TriggerFabPulse();
         InvokeAsync(StateHasChanged);
+    }
+
+    // Short CSS pulse signalling the XML rebuilt after a config change. The
+    // .is-pulsing class is added for ~0.9s (matches the CSS animation) and any
+    // re-trigger while still pulsing restarts the timer via CancellationToken.
+    private void TriggerFabPulse()
+    {
+        _pulseCts?.Cancel();
+        _pulseCts = new CancellationTokenSource();
+        var token = _pulseCts.Token;
+        _fabPulsing = true;
+        _ = Task.Delay(900, token).ContinueWith(t =>
+        {
+            if (t.IsCanceled) return;
+            _fabPulsing = false;
+            InvokeAsync(StateHasChanged);
+        }, TaskScheduler.Default);
     }
 
     private static int CountLines(string s)
@@ -187,20 +186,40 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            // Page-local keyboard listener — only active while AdvancedShell is
+            // mounted. Ctrl/Cmd+Shift+X opens the XML modal.
+            _selfRef = DotNetObjectReference.Create(this);
+            try { await JS.InvokeVoidAsync("preflightAdvancedShortcuts.register", _selfRef); }
+            catch (JSException) { /* JS module not loaded yet — retried implicitly via next shortcut register */ }
+        }
+
         if (!_needsHighlight && !firstRender) return;
         _needsHighlight = false;
 
-        await JS.InvokeVoidAsync("preflightPrism.highlight", _codeEl, _xmlPreview);
+        // The sidebar preview was removed (FAB + modal replace it); only re-run
+        // Prism on the modal code element, and only when the modal is open.
         if (_expanded)
         {
             // Lift the overlay out of the .pf-page-enter stacking context so it
-            // renders above the sticky header. Idempotent — safe to call every
+            // renders above the sticky header. Idempotent - safe to call every
             // render while the modal is open.
             try { await JS.InvokeVoidAsync("preflightPortal.attach", _modalOverlay); }
-            catch { /* ref not yet attached — will retry on next render */ }
+            catch { /* ref not yet attached - will retry on next render */ }
 
             await JS.InvokeVoidAsync("preflightPrism.highlight", _modalCodeEl, _xmlPreview);
         }
+    }
+
+    [JSInvokable]
+    public void OnShortcut(string id)
+    {
+        if (id != "xml-preview") return;
+        // Toggle on repeat press so power users can open/close without reaching
+        // for the mouse.
+        if (_expanded) _ = CloseExpanded();
+        else { OpenExpanded(); StateHasChanged(); }
     }
 
     private void OpenExpanded()
@@ -212,17 +231,17 @@
     private async Task CloseExpanded()
     {
         // Snap the overlay back to its original Blazor-owned parent BEFORE the
-        // @if flips false — otherwise Blazor's diff can't locate the node to
+        // @if flips false - otherwise Blazor's diff can't locate the node to
         // remove it (we moved it to <body> via preflightPortal.attach).
         try { await JS.InvokeVoidAsync("preflightPortal.detach", _modalOverlay); }
-        catch { /* already gone — ignore */ }
+        catch { /* already gone - ignore */ }
         _expanded = false;
     }
 
     private async Task CopyXml()
     {
         try { await JS.InvokeAsync<bool>("preflightFiles.copyText", _xmlPreview); }
-        catch (JSException) { /* clipboard refused (non-HTTPS, permissions) — no-op */ }
+        catch (JSException) { /* clipboard refused (non-HTTPS, permissions) - no-op */ }
 
         _justCopied = true;
         StateHasChanged();
@@ -238,7 +257,7 @@
         await JS.InvokeVoidAsync("preflightFiles.download", "autounattend.xml", _xmlPreview, "application/xml");
     }
 
-    // Inline stroke SVGs — inherit colour via currentColor, sized to 14px
+    // Inline stroke SVGs - inherit colour via currentColor, sized to 14px
     // by the button rule (.pf-xml-iconbtn svg). Static MarkupString so the
     // markup isn't re-parsed on every render.
     private static readonly MarkupString CopyIcon = new(
@@ -256,5 +275,16 @@
     private static readonly MarkupString CloseIcon = new(
         "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><line x1='18' y1='6' x2='6' y2='18'></line><line x1='6' y1='6' x2='18' y2='18'></line></svg>");
 
-    public void Dispose() => Mode.StateChanged -= RebuildPreview;
+    private static readonly MarkupString EyeIcon = new(
+        "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'></path><circle cx='12' cy='12' r='3'></circle></svg>");
+
+    public void Dispose()
+    {
+        Mode.StateChanged -= RebuildPreview;
+        _pulseCts?.Cancel();
+        _pulseCts?.Dispose();
+        try { _ = JS.InvokeVoidAsync("preflightAdvancedShortcuts.unregister"); }
+        catch { /* page unload - ignore */ }
+        _selfRef?.Dispose();
+    }
 }

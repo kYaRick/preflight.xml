@@ -16,7 +16,7 @@ public enum OptionKind
 /// </summary>
 public sealed record OptionDefinition
 {
-    /// <summary>Stable within a section — e.g. <c>display-lang</c>. Used for anchor links from Advanced → Docs.</summary>
+    /// <summary>Stable within a section - e.g. <c>display-lang</c>. Used for anchor links from Advanced → Docs.</summary>
     public required string Id { get; init; }
 
     /// <summary>Resource key for the option label shown next to the control.</summary>

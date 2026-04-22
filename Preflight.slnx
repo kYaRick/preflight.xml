@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/srcs/">
     <Project Path="srcs/Preflight.App/Preflight.App.csproj" />
+    <Project Path="srcs/Preflight.Unattend/Preflight.Unattend.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Preflight.Tests/Preflight.Tests.csproj" />

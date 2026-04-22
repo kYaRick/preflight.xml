@@ -3,7 +3,7 @@ using Preflight.App.Models;
 namespace Preflight.App.Content.Sections;
 
 /// <summary>
-/// Region & language — the first vertical slice. Defines which options exist, where their
+/// Region & language - the first vertical slice. Defines which options exist, where their
 /// values come from, and how they're read/written on <see cref="UnattendConfig"/>.
 /// Rendered identically by <c>/docs/region</c> (read-only) and <c>/advanced/region</c> (editable);
 /// wizard steps pick subsets of <see cref="Definition.Options"/>.

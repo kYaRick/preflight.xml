@@ -299,7 +299,7 @@
     <value>Input language (keyboard)</value>
   </data>
   <data name="Region.InputLanguage.Description">
-    <value>The keyboard layout active on first boot. Independent of the display language — a user in Germany might want English UI with a German keyboard.</value>
+    <value>The keyboard layout active on first boot. Independent of the display language - a user in Germany might want English UI with a German keyboard.</value>
   </data>
   <data name="Region.HomeLocation.Label">
     <value>Home location</value>
@@ -340,7 +340,7 @@
     <value>Advanced editor</value>
   </data>
   <data name="Advanced.Subtitle">
-    <value>All options in one place. Jump to a section on the left. Live XML preview on the right.</value>
+    <value>Full manual control. All options in one place. Press Ctrl+Shift+X or the floating button to preview the XML.</value>
   </data>
   <data name="Advanced.Preview.Title">
     <value>Live preview</value>
@@ -368,6 +368,9 @@
   </data>
   <data name="Advanced.Preview.LinesTooltip">
     <value>Line count in generated XML</value>
+  </data>
+  <data name="Advanced.Preview.Open">
+    <value>Open XML preview</value>
   </data>
   <data name="Advanced.Section.region">
     <value>🌍 Region &amp; language</value>

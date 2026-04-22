@@ -12,9 +12,8 @@ cschneegans/unattend-generator
   Copyright (c) 2024-2025 Christoph Schneegans
   Licensed under the MIT License. See LICENSES/schneegans-MIT.txt.
   Source: https://github.com/cschneegans/unattend-generator
-  Used as a reference implementation and data source (autounattend.xsd,
-  UserLocale.json, GeoId.json, TimeOffset.json, WindowsEdition.json,
-  Bloatware.json, KeyboardIdentifier.json, Component.json, and others).
-  Vendored via git submodule at deps/schneegans-reference/ — not compiled
-  into the preflight.xml binary. Data files synced into wwwroot/data/ via
-  `just sync-data`.
+  Vendored into srcs/Preflight.Unattend/ - compiled into the
+  preflight.xml binary as the XML generation engine. Source files
+  kept as close to upstream as practical so diffs remain reviewable
+  when syncing new releases; a copy of the upstream LICENSE is
+  preserved at srcs/Preflight.Unattend/LICENSE.txt.

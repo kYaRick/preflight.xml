@@ -137,7 +137,7 @@
                     var fallback = await Http.GetStringAsync(pathTemplate.Replace("{locale}", "en", StringComparison.Ordinal));
                     return Markdown.ToHtml(fallback);
                 }
-                catch (HttpRequestException) { /* no content — fine, intro is optional */ }
+                catch (HttpRequestException) { /* no content - fine, intro is optional */ }
             }
             return null;
         }
