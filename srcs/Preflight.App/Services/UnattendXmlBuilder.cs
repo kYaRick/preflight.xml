@@ -5,6 +5,12 @@ using Schneegans.Unattend;
 // Our UnattendConfig and Schneegans.Unattend both declare WindowsEdition - alias
 // the library type so the adapter can reference both without ambiguity.
 using SchneegansEdition = Schneegans.Unattend.WindowsEdition;
+// Same trick for the shell-cluster models: the UI enum names shadow schneegans' canonical
+// types (TaskbarSearchMode, Effect, DesktopIcon, StartFolder, HideModes). Aliasing the UI
+// side keeps the mapper readable without forcing the UI code into awkward full-qualification.
+using UiExplorerHide = Preflight.App.Models.ExplorerHideFiles;
+using UiTaskbarSearch = Preflight.App.Models.TaskbarSearchMode;
+using UiVisualEffect = Preflight.App.Models.VisualEffect;
 
 namespace Preflight.App.Services;
 
@@ -48,13 +54,160 @@ public sealed class UnattendXmlBuilder
 
     // ─── Mapping ────────────────────────────────────────────────────
 
-    private Configuration MapToConfiguration(UnattendConfig ui) => Configuration.Default with
+    private Configuration MapToConfiguration(UnattendConfig ui)
     {
-        LanguageSettings = MapLanguage(ui.Region),
-        AccountSettings = MapAccounts(ui.Users, ui.FirstLogon),
-        EditionSettings = MapEdition(ui.Edition),
-        Bloatwares = MapBloatware(ui.Bloatware),
+        var baseCfg = Configuration.Default with
+        {
+            LanguageSettings = MapLanguage(ui.Region),
+            AccountSettings = MapAccounts(ui.Users, ui.FirstLogon),
+            EditionSettings = MapEdition(ui.Edition),
+            Bloatwares = MapBloatware(ui.Bloatware),
+        };
+
+        // Shell cluster (Phase B). Each Map* helper returns a Configuration mutated with the
+        // relevant fields; applied in order so later ones see the earlier values (none of
+        // them currently overlap, but ordering is cheap insurance).
+        baseCfg = MapExplorer(baseCfg, ui.Explorer);
+        baseCfg = MapStartMenu(baseCfg, ui.StartMenu);
+        baseCfg = MapVisualEffects(baseCfg, ui.VisualEffects);
+        baseCfg = MapDesktopIcons(baseCfg, ui.DesktopIcons);
+        baseCfg = MapStartFolders(baseCfg, ui.StartFolders);
+        return baseCfg;
+    }
+
+    // ─── Shell cluster mappers ──────────────────────────────────────
+
+    private static Configuration MapExplorer(Configuration cfg, ExplorerSettings ui) => cfg with
+    {
+        ClassicContextMenu = ui.ClassicContextMenu,
+        ShowFileExtensions = ui.ShowFileExtensions,
+        HideInfoTip = ui.HideInfoTip,
+        LaunchToThisPC = ui.LaunchToThisPC,
+        ShowEndTask = ui.ShowEndTask,
+        HideFiles = ui.HideFiles switch
+        {
+            UiExplorerHide.ShowAll => HideModes.None,
+            UiExplorerHide.OsOnly => HideModes.HiddenSystem,
+            _ => HideModes.Hidden,
+        },
     };
+
+    private static Configuration MapStartMenu(Configuration cfg, StartMenuSettings ui) => cfg with
+    {
+        TaskbarSearch = ui.TaskbarSearch switch
+        {
+            UiTaskbarSearch.Hide => Schneegans.Unattend.TaskbarSearchMode.Hide,
+            UiTaskbarSearch.Icon => Schneegans.Unattend.TaskbarSearchMode.Icon,
+            UiTaskbarSearch.Label => Schneegans.Unattend.TaskbarSearchMode.Label,
+            _ => Schneegans.Unattend.TaskbarSearchMode.Box,
+        },
+        DisableWidgets = ui.DisableWidgets,
+        LeftTaskbar = ui.LeftTaskbar,
+        HideTaskViewButton = ui.HideTaskViewButton,
+        ShowAllTrayIcons = ui.ShowAllTrayIcons,
+        DisableBingResults = ui.DisableBingResults,
+        TaskbarIcons = ui.TaskbarIcons switch
+        {
+            TaskbarIconsMode.RemoveAll => new EmptyTaskbarIcons(),
+            // An empty / null payload falls back to Default: the Custom variant's ctor does
+            // schema validation inside schneegans and we'd rather defer the error until the
+            // user actually types something, rather than error the whole preview immediately.
+            TaskbarIconsMode.CustomXml when !string.IsNullOrWhiteSpace(ui.TaskbarIconsXml)
+                => new CustomTaskbarIcons(ui.TaskbarIconsXml!),
+            _ => new DefaultTaskbarIcons(),
+        },
+        StartTilesSettings = ui.StartTiles switch
+        {
+            StartTilesMode.RemoveAll => new EmptyStartTilesSettings(),
+            StartTilesMode.CustomXml when !string.IsNullOrWhiteSpace(ui.StartTilesXml)
+                => new CustomStartTilesSettings(ui.StartTilesXml!),
+            _ => new DefaultStartTilesSettings(),
+        },
+        StartPinsSettings = ui.StartPins switch
+        {
+            StartPinsMode.RemoveAll => new EmptyStartPinsSettings(),
+            StartPinsMode.CustomJson when !string.IsNullOrWhiteSpace(ui.StartPinsJson)
+                => new CustomStartPinsSettings(ui.StartPinsJson!),
+            _ => new DefaultStartPinsSettings(),
+        },
+    };
+
+    private static Configuration MapVisualEffects(Configuration cfg, VisualEffectsSettings ui) => cfg with
+    {
+        Effects = ui.Preset switch
+        {
+            VisualEffectsPreset.BestAppearance => new BestAppearanceEffects(),
+            VisualEffectsPreset.BestPerformance => new BestPerformanceEffects(),
+            VisualEffectsPreset.Custom => BuildCustomEffects(ui.CustomEffects),
+            _ => new DefaultEffects(),
+        },
+    };
+
+    // Materialize the UI dictionary into the schneegans ImmutableDictionary<Effect, bool>.
+    // Any effect missing from the UI dictionary defaults to false - the mapping is a direct
+    // parse because UI and schneegans enums share identical names. Concrete Dictionary
+    // parameter (not IDictionary) to satisfy CA1859 - the settings object always uses it.
+    private static CustomEffects BuildCustomEffects(Dictionary<UiVisualEffect, bool> ui)
+    {
+        var builder = ImmutableDictionary.CreateBuilder<Effect, bool>();
+        foreach (var effect in Enum.GetValues<Effect>())
+        {
+            if (Enum.TryParse<UiVisualEffect>(effect.ToString(), out var uiEffect)
+                && ui.TryGetValue(uiEffect, out var v))
+            {
+                builder[effect] = v;
+            }
+            else
+            {
+                builder[effect] = false;
+            }
+        }
+        return new CustomEffects(builder.ToImmutable());
+    }
+
+    private Configuration MapDesktopIcons(Configuration cfg, DesktopIconSettings ui) => cfg with
+    {
+        DeleteEdgeDesktopIcon = ui.DeleteEdgeDesktopIcon,
+        DesktopIcons = ui.Mode switch
+        {
+            DesktopIconMode.Specific => BuildCustomDesktopIcons(ui.VisibleIcons),
+            _ => new DefaultDesktopIconSettings(),
+        },
+    };
+
+    // Concrete return type keeps CA1859 happy; callers assign into an IDesktopIconSettings slot
+    // on the Configuration record, so covariance is unaffected.
+    private CustomDesktopIconSettings BuildCustomDesktopIcons(HashSet<string> visible)
+    {
+        // Load every known icon; mark the ones the user picked as true, the rest false.
+        // Unknown ids in the config are skipped - matches the bloatware pattern so stale
+        // presets don't blow up the preview.
+        var dict = new Dictionary<DesktopIcon, bool>();
+        foreach (var icon in _generator.DesktopIcons.Values)
+        {
+            dict[icon] = visible.Contains(icon.Id);
+        }
+        return new CustomDesktopIconSettings(dict);
+    }
+
+    private Configuration MapStartFolders(Configuration cfg, StartFolderSettings ui) => cfg with
+    {
+        StartFolderSettings = ui.Mode switch
+        {
+            StartFolderMode.Specific => BuildCustomStartFolders(ui.VisibleFolders),
+            _ => new DefaultStartFolderSettings(),
+        },
+    };
+
+    private CustomStartFolderSettings BuildCustomStartFolders(HashSet<string> visible)
+    {
+        var dict = new Dictionary<StartFolder, bool>();
+        foreach (var folder in _generator.StartFolders.Values)
+        {
+            dict[folder] = visible.Contains(folder.Id);
+        }
+        return new CustomStartFolderSettings(dict);
+    }
 
     private ILanguageSettings MapLanguage(RegionSettings region)
     {

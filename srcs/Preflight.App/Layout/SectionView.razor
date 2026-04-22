@@ -166,6 +166,12 @@
             case OptionKind.Checkbox:
                 RenderCheckbox(builder, option);
                 break;
+            case OptionKind.Radio:
+                RenderRadioGroup(builder, option);
+                break;
+            case OptionKind.Textarea:
+                RenderTextarea(builder, option);
+                break;
         }
     };
 
@@ -223,6 +229,51 @@
         builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<bool>(this, v =>
         {
             option.SetBool?.Invoke(ModeSvc.Config, v);
+            ModeSvc.NotifyConfigChanged();
+        }));
+        builder.CloseComponent();
+    }
+
+    // Radio-group rendered as stacked FluentRadio items. InlineValues are required; a missing list
+    // would mean no options to pick, which is a developer error worth surfacing as an empty row.
+    private void RenderRadioGroup(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
+    {
+        var currentValue = option.GetString?.Invoke(ModeSvc.Config) ?? "";
+        var values = option.InlineValues ?? [];
+
+        var i = 0;
+        builder.OpenComponent<FluentRadioGroup<string>>(i++);
+        builder.AddAttribute(i++, "Name", $"opt-{option.Id}");
+        builder.AddAttribute(i++, "Value", currentValue);
+        builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<string>(this, v =>
+        {
+            option.SetString?.Invoke(ModeSvc.Config, v);
+            ModeSvc.NotifyConfigChanged();
+        }));
+        builder.AddAttribute(i++, "ChildContent", (RenderFragment)(child =>
+        {
+            var idx = 0;
+            foreach (var v in values)
+            {
+                child.OpenComponent<FluentRadio<string>>(idx++);
+                child.AddAttribute(idx++, "Value", v.Value);
+                child.AddAttribute(idx++, "ChildContent", (RenderFragment)(c => c.AddContent(0, (string)L[v.DisplayKey])));
+                child.CloseComponent();
+            }
+        }));
+        builder.CloseComponent();
+    }
+
+    private void RenderTextarea(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
+    {
+        var i = 0;
+        builder.OpenComponent<FluentTextArea>(i++);
+        builder.AddAttribute(i++, "Value", option.GetString?.Invoke(ModeSvc.Config));
+        builder.AddAttribute(i++, "Rows", 6);
+        builder.AddAttribute(i++, "Style", "width: 100%; min-height: 8rem; font-family: var(--monospace-font-family);");
+        builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<string>(this, v =>
+        {
+            option.SetString?.Invoke(ModeSvc.Config, v);
             ModeSvc.NotifyConfigChanged();
         }));
         builder.CloseComponent();

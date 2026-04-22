@@ -490,4 +490,315 @@
     <value>На головну</value>
   </data>
 
+  <!-- ═══ Фаза B · Кластер оболонки ═══════════════════════════ -->
+  <data name="Advanced.Section.explorer">
+    <value>📁 Провідник</value>
+  </data>
+  <data name="Advanced.Section.start-menu">
+    <value>🧭 Меню «Пуск» і панель завдань</value>
+  </data>
+  <data name="Advanced.Section.visual-effects">
+    <value>✨ Візуальні ефекти</value>
+  </data>
+  <data name="Advanced.Section.desktop-icons">
+    <value>🖥️ Значки робочого столу</value>
+  </data>
+  <data name="Advanced.Section.folders-start">
+    <value>📂 Теки меню «Пуск»</value>
+  </data>
+
+  <data name="Section.explorer.Subtitle">
+    <value>Налаштування Провідника: контекстне меню, приховані файли, розширення, підказки.</value>
+  </data>
+  <data name="Section.start-menu.Subtitle">
+    <value>Вирівнювання панелі завдань, пошук, віджети, значки трея, елементи «Пуск».</value>
+  </data>
+  <data name="Section.visual-effects.Subtitle">
+    <value>Пресет продуктивності та індивідуальні перемикачі анімацій і тіней.</value>
+  </data>
+  <data name="Section.desktop-icons.Subtitle">
+    <value>Оберіть, які вбудовані значки відображати на робочому столі.</value>
+  </data>
+  <data name="Section.folders-start.Subtitle">
+    <value>Windows 11: керування теками швидкого доступу біля кнопки живлення.</value>
+  </data>
+
+  <data name="Explorer.HideFiles.Label">
+    <value>Приховані файли</value>
+  </data>
+  <data name="Explorer.HideFiles.Description">
+    <value>Керує тим, що Windows показує за замовчуванням - лише звичайні файли, з прихованими, або всі разом із системними.</value>
+  </data>
+  <data name="Explorer.HideFiles.Hidden">
+    <value>Приховувати приховані та системні файли (за замовчуванням)</value>
+  </data>
+  <data name="Explorer.HideFiles.OsOnly">
+    <value>Показувати приховані, але приховувати системні</value>
+  </data>
+  <data name="Explorer.HideFiles.ShowAll">
+    <value>Показувати все, включно зі системними файлами</value>
+  </data>
+  <data name="Explorer.ClassicContextMenu.Label">
+    <value>Повернути класичне контекстне меню</value>
+  </data>
+  <data name="Explorer.ClassicContextMenu.Description">
+    <value>Прибирає крок «Показати додаткові параметри» з Windows 11 і повертає повне меню у стилі Windows 10.</value>
+  </data>
+  <data name="Explorer.ShowFileExtensions.Label">
+    <value>Завжди показувати розширення файлів</value>
+  </data>
+  <data name="Explorer.ShowFileExtensions.Description">
+    <value>Вимикає приховування відомих розширень - радимо всім, хто відкриває файли з інтернету.</value>
+  </data>
+  <data name="Explorer.HideInfoTip.Label">
+    <value>Приховати підказки про файли</value>
+  </data>
+  <data name="Explorer.HideInfoTip.Description">
+    <value>Забороняє Провіднику показувати підказку при наведенні на файл або теку.</value>
+  </data>
+  <data name="Explorer.LaunchToThisPC.Label">
+    <value>Відкривати Провідник на «Цей ПК»</value>
+  </data>
+  <data name="Explorer.LaunchToThisPC.Description">
+    <value>Показує диски та теки користувача при запуску замість стандартного «Головна» / «Швидкий доступ».</value>
+  </data>
+  <data name="Explorer.ShowEndTask.Label">
+    <value>Показувати «Завершити завдання» у контекстному меню панелі</value>
+  </data>
+  <data name="Explorer.ShowEndTask.Description">
+    <value>Вмикає можливість Windows 11 примусово закривати вікно з його значка на панелі завдань.</value>
+  </data>
+
+  <data name="StartMenu.TaskbarSearch.Label">
+    <value>Пошук на панелі завдань</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Description">
+    <value>Керує тим, чи і як відображати поле пошуку біля кнопки «Пуск».</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Hide">
+    <value>Повністю приховати пошук</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Icon">
+    <value>Лише значок</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Box">
+    <value>Повноцінне поле пошуку</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Label_">
+    <value>Значок із підписом</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.Label">
+    <value>Закріплені значки на панелі</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.Description">
+    <value>За замовчуванням - розкладка Microsoft; «Видалити всі» - нічого; «XML» - ваш LayoutModificationTemplate.</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.Default">
+    <value>Залишити стандартні</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.RemoveAll">
+    <value>Видалити всі значки</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.CustomXml">
+    <value>Вказати свою розкладку (XML)</value>
+  </data>
+  <data name="StartMenu.TaskbarIconsXml.Label">
+    <value>Користувацький XML для панелі</value>
+  </data>
+  <data name="StartMenu.TaskbarIconsXml.Description">
+    <value>Вставте фрагмент LayoutModificationTemplate. Він вбудовується дослівно та застосовується політикою.</value>
+  </data>
+  <data name="StartMenu.DisableWidgets.Label">
+    <value>Вимкнути Віджети</value>
+  </data>
+  <data name="StartMenu.DisableWidgets.Description">
+    <value>Вимикає кнопку «Віджети» та політику «Новини й інтереси».</value>
+  </data>
+  <data name="StartMenu.LeftTaskbar.Label">
+    <value>Вирівняти панель завдань ліворуч</value>
+  </data>
+  <data name="StartMenu.LeftTaskbar.Description">
+    <value>Повертає звичне Windows 10-вирівнювання замість центрованої панелі Windows 11.</value>
+  </data>
+  <data name="StartMenu.HideTaskViewButton.Label">
+    <value>Приховати кнопку «Подання завдань»</value>
+  </data>
+  <data name="StartMenu.HideTaskViewButton.Description">
+    <value>Ховає кнопку віртуальних робочих столів поруч із «Пуск».</value>
+  </data>
+  <data name="StartMenu.ShowAllTrayIcons.Label">
+    <value>Показувати всі значки трея</value>
+  </data>
+  <data name="StartMenu.ShowAllTrayIcons.Description">
+    <value>Розгортає область переповнення системного трея, щоб усі значки залишалися видимими.</value>
+  </data>
+  <data name="StartMenu.DisableBingResults.Label">
+    <value>Вимкнути результати Bing у пошуку</value>
+  </data>
+  <data name="StartMenu.DisableBingResults.Description">
+    <value>Забороняє меню «Пуск» надсилати запити до Bing і показувати веб-пропозиції.</value>
+  </data>
+  <data name="StartMenu.StartTiles.Label">
+    <value>Плитки меню «Пуск»</value>
+  </data>
+  <data name="StartMenu.StartTiles.Description">
+    <value>Стандартно - стандартна сітка; «Видалити всі» - порожній LayoutModification; «XML» - ваш файл.</value>
+  </data>
+  <data name="StartMenu.StartTiles.Default">
+    <value>Залишити стандартні</value>
+  </data>
+  <data name="StartMenu.StartTiles.RemoveAll">
+    <value>Видалити всі плитки</value>
+  </data>
+  <data name="StartMenu.StartTiles.CustomXml">
+    <value>Вказати свою розкладку (XML)</value>
+  </data>
+  <data name="StartMenu.StartTilesXml.Label">
+    <value>Користувацький XML плиток «Пуск»</value>
+  </data>
+  <data name="StartMenu.StartTilesXml.Description">
+    <value>Вставте фрагмент LayoutModificationTemplate для LayoutModification.xml стандартного профілю.</value>
+  </data>
+  <data name="StartMenu.StartPins.Label">
+    <value>Закріплені в «Пуск»</value>
+  </data>
+  <data name="StartMenu.StartPins.Description">
+    <value>Стандартно - налаштування Microsoft; «Видалити всі» - порожній список; «JSON» - ваш Start2 JSON.</value>
+  </data>
+  <data name="StartMenu.StartPins.Default">
+    <value>Залишити стандартні</value>
+  </data>
+  <data name="StartMenu.StartPins.RemoveAll">
+    <value>Видалити всі закріплені</value>
+  </data>
+  <data name="StartMenu.StartPins.CustomJson">
+    <value>Вказати свій список (JSON)</value>
+  </data>
+  <data name="StartMenu.StartPinsJson.Label">
+    <value>Користувацький JSON закріплених</value>
+  </data>
+  <data name="StartMenu.StartPinsJson.Description">
+    <value>Вставте вміст Start2 JSON для Windows 11 (наприклад, з Export-StartLayout).</value>
+  </data>
+
+  <data name="VisualEffects.Preset.Label">
+    <value>Пресет продуктивності</value>
+  </data>
+  <data name="VisualEffects.Preset.Description">
+    <value>Відповідає пресетам «Параметри продуктивності». «Користувацький» відкриває 17 окремих перемикачів.</value>
+  </data>
+  <data name="VisualEffects.Preset.Default">
+    <value>На розсуд Windows</value>
+  </data>
+  <data name="VisualEffects.Preset.BestAppearance">
+    <value>Максимальний вигляд (все увімкнено)</value>
+  </data>
+  <data name="VisualEffects.Preset.BestPerformance">
+    <value>Максимальна продуктивність (все вимкнено)</value>
+  </data>
+  <data name="VisualEffects.Preset.Custom">
+    <value>Користувацький - обирати кожен ефект окремо</value>
+  </data>
+  <data name="VisualEffects.CustomEffects.Label">
+    <value>Окремі візуальні ефекти</value>
+  </data>
+  <data name="VisualEffects.CustomEffects.Description">
+    <value>Вмикайте або вимикайте кожен ефект незалежно. Застосовується лише коли пресет «Користувацький».</value>
+  </data>
+  <data name="VisualEffects.Effect.ControlAnimations">
+    <value>Анімація елементів керування всередині вікон</value>
+  </data>
+  <data name="VisualEffects.Effect.AnimateMinMax">
+    <value>Анімація згортання та розгортання вікон</value>
+  </data>
+  <data name="VisualEffects.Effect.TaskbarAnimations">
+    <value>Анімації на панелі завдань</value>
+  </data>
+  <data name="VisualEffects.Effect.DWMAeroPeekEnabled">
+    <value>Увімкнути Peek</value>
+  </data>
+  <data name="VisualEffects.Effect.MenuAnimation">
+    <value>Плавна поява меню</value>
+  </data>
+  <data name="VisualEffects.Effect.TooltipAnimation">
+    <value>Плавна поява підказок</value>
+  </data>
+  <data name="VisualEffects.Effect.SelectionFade">
+    <value>Згасання пунктів меню після вибору</value>
+  </data>
+  <data name="VisualEffects.Effect.DWMSaveThumbnailEnabled">
+    <value>Зберігати ескізи панелі завдань</value>
+  </data>
+  <data name="VisualEffects.Effect.CursorShadow">
+    <value>Тінь під вказівником миші</value>
+  </data>
+  <data name="VisualEffects.Effect.ListviewShadow">
+    <value>Тінь під вікнами</value>
+  </data>
+  <data name="VisualEffects.Effect.ThumbnailsOrIcon">
+    <value>Показувати мініатюри замість значків</value>
+  </data>
+  <data name="VisualEffects.Effect.ListviewAlphaSelect">
+    <value>Напівпрозорий прямокутник виділення</value>
+  </data>
+  <data name="VisualEffects.Effect.DragFullWindows">
+    <value>Показувати вміст вікна під час перетягування</value>
+  </data>
+  <data name="VisualEffects.Effect.ComboBoxAnimation">
+    <value>Плавне розгортання випадних списків</value>
+  </data>
+  <data name="VisualEffects.Effect.FontSmoothing">
+    <value>Згладжування екранних шрифтів</value>
+  </data>
+  <data name="VisualEffects.Effect.ListBoxSmoothScrolling">
+    <value>Плавна прокрутка списків</value>
+  </data>
+  <data name="VisualEffects.Effect.DropShadow">
+    <value>Тінь для підписів значків на робочому столі</value>
+  </data>
+
+  <data name="DesktopIcons.Mode.Label">
+    <value>Режим значків робочого столу</value>
+  </data>
+  <data name="DesktopIcons.Mode.Description">
+    <value>Стандартно - на розсуд Windows; «Вибіркові» - ви самі обираєте, які значки показувати.</value>
+  </data>
+  <data name="DesktopIcons.Mode.Default">
+    <value>Використовувати стандартні</value>
+  </data>
+  <data name="DesktopIcons.Mode.Specific">
+    <value>Обрати конкретні значки</value>
+  </data>
+  <data name="DesktopIcons.VisibleIcons.Label">
+    <value>Видимі значки робочого столу</value>
+  </data>
+  <data name="DesktopIcons.VisibleIcons.Description">
+    <value>Позначте кожен значок, який має бути на робочому столі. Решта ховаються для всіх нових користувачів.</value>
+  </data>
+  <data name="DesktopIcons.DeleteEdge.Label">
+    <value>Видалити значок Microsoft Edge з робочого столу</value>
+  </data>
+  <data name="DesktopIcons.DeleteEdge.Description">
+    <value>Прибирає ярлик Microsoft Edge, який Windows створює на робочому столі кожного користувача.</value>
+  </data>
+
+  <data name="StartFolders.Mode.Label">
+    <value>Теки меню «Пуск» (Windows 11)</value>
+  </data>
+  <data name="StartFolders.Mode.Description">
+    <value>Windows 11 показує теки швидкого доступу біля кнопки живлення. Стандартно - як у Windows; «Вибіркові» - ваш власний перелік.</value>
+  </data>
+  <data name="StartFolders.Mode.Default">
+    <value>Використовувати стандартні</value>
+  </data>
+  <data name="StartFolders.Mode.Specific">
+    <value>Обрати конкретні теки</value>
+  </data>
+  <data name="StartFolders.VisibleFolders.Label">
+    <value>Видимі теки «Пуск»</value>
+  </data>
+  <data name="StartFolders.VisibleFolders.Description">
+    <value>Позначте кожну теку, яку слід показувати біля кнопки живлення в меню «Пуск».</value>
+  </data>
+
 </root>

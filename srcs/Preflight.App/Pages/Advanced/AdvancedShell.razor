@@ -38,9 +38,40 @@
              so the form gets the space schneegans-parity controls actually need). -->
         <FluentGridItem xs="12" md="9">
             <FluentCard Style="padding: 24px;">
-                @if (_activeSection == "region")
+                @{
+                    // Phase B shell cluster: start-menu / visual-effects / desktop-icons /
+                    // folders-start need a companion razor for reveal/JSON-sourced controls.
+                    // Everything else with a registry entry routes through SectionView;
+                    // anything left over stays on the "coming in Phase 3" stub message.
+                    var def = SectionRegistry.TryGet(_activeSection);
+                }
+                @if (_activeSection == "start-menu")
                 {
-                    <SectionView Section="@RegionSection.Definition" ViewMode="SectionView.SectionMode.Advanced" />
+                    <FluentLabel Typo="Typography.H3">@L[$"Advanced.Section.{_activeSection}"]</FluentLabel>
+                    <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 16px 0;">@L[$"Section.{_activeSection}.Subtitle"]</FluentLabel>
+                    <StartMenuAdvanced />
+                }
+                else if (_activeSection == "visual-effects")
+                {
+                    <FluentLabel Typo="Typography.H3">@L[$"Advanced.Section.{_activeSection}"]</FluentLabel>
+                    <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 16px 0;">@L[$"Section.{_activeSection}.Subtitle"]</FluentLabel>
+                    <VisualEffectsAdvanced />
+                }
+                else if (_activeSection == "desktop-icons")
+                {
+                    <FluentLabel Typo="Typography.H3">@L[$"Advanced.Section.{_activeSection}"]</FluentLabel>
+                    <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 16px 0;">@L[$"Section.{_activeSection}.Subtitle"]</FluentLabel>
+                    <DesktopIconsAdvanced />
+                }
+                else if (_activeSection == "folders-start")
+                {
+                    <FluentLabel Typo="Typography.H3">@L[$"Advanced.Section.{_activeSection}"]</FluentLabel>
+                    <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 16px 0;">@L[$"Section.{_activeSection}.Subtitle"]</FluentLabel>
+                    <StartFoldersAdvanced />
+                }
+                else if (def is not null)
+                {
+                    <SectionView Section="@def" ViewMode="SectionView.SectionMode.Advanced" />
                 }
                 else
                 {
@@ -109,12 +140,9 @@
 @code {
     [Parameter] public string? Section { get; set; }
 
-    // Kept in sync with resource keys Advanced.Section.*
-    private static readonly string[] _sections =
-    [
-        "region", "disk", "users", "edition", "privacy",
-        "security", "bloatware", "tweaks", "vm", "network",
-    ];
+    // Nav menu is driven by the central registry so adding a section to SectionRegistry.AllSectionIds
+    // (and a matching Advanced.Section.<id> resx key) automatically lights up here.
+    private static readonly string[] _sections = [.. SectionRegistry.AllSectionIds];
 
     private string _activeSection = "region";
     private string _xmlPreview = string.Empty;

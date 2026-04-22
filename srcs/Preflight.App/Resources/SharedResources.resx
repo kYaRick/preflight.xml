@@ -488,4 +488,322 @@
     <value>Go to home</value>
   </data>
 
+  <!-- ═══ Phase B · Shell cluster ════════════════════════════ -->
+  <!-- Advanced nav labels -->
+  <data name="Advanced.Section.explorer">
+    <value>📁 File Explorer</value>
+  </data>
+  <data name="Advanced.Section.start-menu">
+    <value>🧭 Start menu &amp; taskbar</value>
+  </data>
+  <data name="Advanced.Section.visual-effects">
+    <value>✨ Visual effects</value>
+  </data>
+  <data name="Advanced.Section.desktop-icons">
+    <value>🖥️ Desktop icons</value>
+  </data>
+  <data name="Advanced.Section.folders-start">
+    <value>📂 Start menu folders</value>
+  </data>
+
+  <!-- Section subtitles -->
+  <data name="Section.explorer.Subtitle">
+    <value>File Explorer defaults: context menu, hidden files, extensions, info tips.</value>
+  </data>
+  <data name="Section.start-menu.Subtitle">
+    <value>Taskbar alignment, search, widgets, tray icons, Start menu pins and tiles.</value>
+  </data>
+  <data name="Section.visual-effects.Subtitle">
+    <value>Windows performance preset and per-effect overrides for animations and shadows.</value>
+  </data>
+  <data name="Section.desktop-icons.Subtitle">
+    <value>Choose which built-in desktop icons are visible to new users.</value>
+  </data>
+  <data name="Section.folders-start.Subtitle">
+    <value>Windows 11: toggle quick-access folders shown next to the power button.</value>
+  </data>
+
+  <!-- Explorer options -->
+  <data name="Explorer.HideFiles.Label">
+    <value>Hidden files</value>
+  </data>
+  <data name="Explorer.HideFiles.Description">
+    <value>Controls what Windows shows by default - regular files only, plus hidden files, or including protected system files.</value>
+  </data>
+  <data name="Explorer.HideFiles.Hidden">
+    <value>Hide hidden and system files (Windows default)</value>
+  </data>
+  <data name="Explorer.HideFiles.OsOnly">
+    <value>Show hidden files, keep system files hidden</value>
+  </data>
+  <data name="Explorer.HideFiles.ShowAll">
+    <value>Show everything, including protected system files</value>
+  </data>
+  <data name="Explorer.ClassicContextMenu.Label">
+    <value>Restore classic right-click menu</value>
+  </data>
+  <data name="Explorer.ClassicContextMenu.Description">
+    <value>Removes the Windows 11 "Show more options" step and brings back the full Windows 10-style context menu.</value>
+  </data>
+  <data name="Explorer.ShowFileExtensions.Label">
+    <value>Always show file extensions</value>
+  </data>
+  <data name="Explorer.ShowFileExtensions.Description">
+    <value>Disables the default "hide extensions for known file types" behaviour - recommended for anyone who opens files from the internet.</value>
+  </data>
+  <data name="Explorer.HideInfoTip.Label">
+    <value>Hide file info tooltips</value>
+  </data>
+  <data name="Explorer.HideInfoTip.Description">
+    <value>Stops Explorer from showing a tooltip when hovering over files or folders.</value>
+  </data>
+  <data name="Explorer.LaunchToThisPC.Label">
+    <value>Open File Explorer to "This PC"</value>
+  </data>
+  <data name="Explorer.LaunchToThisPC.Description">
+    <value>Shows drives and user folders on launch instead of the default Quick Access / Home view.</value>
+  </data>
+  <data name="Explorer.ShowEndTask.Label">
+    <value>Show "End task" in the taskbar right-click menu</value>
+  </data>
+  <data name="Explorer.ShowEndTask.Description">
+    <value>Enables the Windows 11 developer-mode shortcut to force-quit a window directly from its taskbar entry.</value>
+  </data>
+
+  <!-- Start menu options -->
+  <data name="StartMenu.TaskbarSearch.Label">
+    <value>Taskbar search</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Description">
+    <value>Controls whether and how the Start menu search is surfaced next to the Start button.</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Hide">
+    <value>Hide search entirely</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Icon">
+    <value>Show as an icon only</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Box">
+    <value>Show as a full search box</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Label_">
+    <value>Show as an icon with a label</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.Label">
+    <value>Pinned taskbar icons</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.Description">
+    <value>Default keeps Microsoft's Win11 layout; "Remove all" pins nothing; "Custom XML" lets you supply a LayoutModificationTemplate.</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.Default">
+    <value>Keep Windows defaults</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.RemoveAll">
+    <value>Remove all pinned icons</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.CustomXml">
+    <value>Provide a custom layout (XML)</value>
+  </data>
+  <data name="StartMenu.TaskbarIconsXml.Label">
+    <value>Custom taskbar layout XML</value>
+  </data>
+  <data name="StartMenu.TaskbarIconsXml.Description">
+    <value>Paste a LayoutModificationTemplate fragment. It's embedded verbatim and enforced via policy.</value>
+  </data>
+  <data name="StartMenu.DisableWidgets.Label">
+    <value>Disable Widgets</value>
+  </data>
+  <data name="StartMenu.DisableWidgets.Description">
+    <value>Turns off the Widgets button and the News and interests policy.</value>
+  </data>
+  <data name="StartMenu.LeftTaskbar.Label">
+    <value>Left-align the taskbar</value>
+  </data>
+  <data name="StartMenu.LeftTaskbar.Description">
+    <value>Reverts the Windows 11 centered taskbar layout to the familiar Windows 10 left alignment.</value>
+  </data>
+  <data name="StartMenu.HideTaskViewButton.Label">
+    <value>Hide the Task View button</value>
+  </data>
+  <data name="StartMenu.HideTaskViewButton.Description">
+    <value>Hides the virtual-desktops button next to the Start menu.</value>
+  </data>
+  <data name="StartMenu.ShowAllTrayIcons.Label">
+    <value>Show all tray icons</value>
+  </data>
+  <data name="StartMenu.ShowAllTrayIcons.Description">
+    <value>Expands the system-tray overflow so every running app icon stays visible.</value>
+  </data>
+  <data name="StartMenu.DisableBingResults.Label">
+    <value>Disable Bing results in Start search</value>
+  </data>
+  <data name="StartMenu.DisableBingResults.Description">
+    <value>Prevents Start menu search from sending queries to Bing and rendering web suggestions.</value>
+  </data>
+  <data name="StartMenu.StartTiles.Label">
+    <value>Start menu tiles</value>
+  </data>
+  <data name="StartMenu.StartTiles.Description">
+    <value>Default keeps the Win11 default grid; "Remove all" ships an empty LayoutModification; "Custom XML" accepts your own.</value>
+  </data>
+  <data name="StartMenu.StartTiles.Default">
+    <value>Keep Windows defaults</value>
+  </data>
+  <data name="StartMenu.StartTiles.RemoveAll">
+    <value>Remove all tiles</value>
+  </data>
+  <data name="StartMenu.StartTiles.CustomXml">
+    <value>Provide a custom layout (XML)</value>
+  </data>
+  <data name="StartMenu.StartTilesXml.Label">
+    <value>Custom Start tiles XML</value>
+  </data>
+  <data name="StartMenu.StartTilesXml.Description">
+    <value>Paste a LayoutModificationTemplate fragment for C:\Users\Default\AppData\Local\Microsoft\Windows\Shell\LayoutModification.xml.</value>
+  </data>
+  <data name="StartMenu.StartPins.Label">
+    <value>Start menu pins</value>
+  </data>
+  <data name="StartMenu.StartPins.Description">
+    <value>Default keeps Microsoft's defaults; "Remove all" clears the pinned list; "Custom JSON" applies a Windows 11 start2 JSON.</value>
+  </data>
+  <data name="StartMenu.StartPins.Default">
+    <value>Keep Windows defaults</value>
+  </data>
+  <data name="StartMenu.StartPins.RemoveAll">
+    <value>Remove all pinned apps</value>
+  </data>
+  <data name="StartMenu.StartPins.CustomJson">
+    <value>Provide a custom pin list (JSON)</value>
+  </data>
+  <data name="StartMenu.StartPinsJson.Label">
+    <value>Custom Start pins JSON</value>
+  </data>
+  <data name="StartMenu.StartPinsJson.Description">
+    <value>Paste the contents of a Windows 11 Start2 JSON (e.g. from Export-StartLayout).</value>
+  </data>
+
+  <!-- Visual effects -->
+  <data name="VisualEffects.Preset.Label">
+    <value>Performance preset</value>
+  </data>
+  <data name="VisualEffects.Preset.Description">
+    <value>Matches the Windows "Performance Options" presets. "Custom" unlocks the 17 individual toggles below.</value>
+  </data>
+  <data name="VisualEffects.Preset.Default">
+    <value>Let Windows choose</value>
+  </data>
+  <data name="VisualEffects.Preset.BestAppearance">
+    <value>Adjust for best appearance (all on)</value>
+  </data>
+  <data name="VisualEffects.Preset.BestPerformance">
+    <value>Adjust for best performance (all off)</value>
+  </data>
+  <data name="VisualEffects.Preset.Custom">
+    <value>Custom - pick each effect individually</value>
+  </data>
+  <data name="VisualEffects.CustomEffects.Label">
+    <value>Individual visual effects</value>
+  </data>
+  <data name="VisualEffects.CustomEffects.Description">
+    <value>Enable or disable each effect independently. Only applied when the preset above is set to "Custom".</value>
+  </data>
+  <data name="VisualEffects.Effect.ControlAnimations">
+    <value>Animate controls and elements inside windows</value>
+  </data>
+  <data name="VisualEffects.Effect.AnimateMinMax">
+    <value>Animate windows when minimizing and maximizing</value>
+  </data>
+  <data name="VisualEffects.Effect.TaskbarAnimations">
+    <value>Animations in the taskbar</value>
+  </data>
+  <data name="VisualEffects.Effect.DWMAeroPeekEnabled">
+    <value>Enable Peek</value>
+  </data>
+  <data name="VisualEffects.Effect.MenuAnimation">
+    <value>Fade or slide menus into view</value>
+  </data>
+  <data name="VisualEffects.Effect.TooltipAnimation">
+    <value>Fade or slide ToolTips into view</value>
+  </data>
+  <data name="VisualEffects.Effect.SelectionFade">
+    <value>Fade out menu items after clicking</value>
+  </data>
+  <data name="VisualEffects.Effect.DWMSaveThumbnailEnabled">
+    <value>Save taskbar thumbnail previews</value>
+  </data>
+  <data name="VisualEffects.Effect.CursorShadow">
+    <value>Show shadows under mouse pointer</value>
+  </data>
+  <data name="VisualEffects.Effect.ListviewShadow">
+    <value>Show shadows under windows</value>
+  </data>
+  <data name="VisualEffects.Effect.ThumbnailsOrIcon">
+    <value>Show thumbnails instead of icons</value>
+  </data>
+  <data name="VisualEffects.Effect.ListviewAlphaSelect">
+    <value>Show translucent selection rectangle</value>
+  </data>
+  <data name="VisualEffects.Effect.DragFullWindows">
+    <value>Show window contents while dragging</value>
+  </data>
+  <data name="VisualEffects.Effect.ComboBoxAnimation">
+    <value>Slide open combo boxes</value>
+  </data>
+  <data name="VisualEffects.Effect.FontSmoothing">
+    <value>Smooth edges of screen fonts</value>
+  </data>
+  <data name="VisualEffects.Effect.ListBoxSmoothScrolling">
+    <value>Smooth-scroll list boxes</value>
+  </data>
+  <data name="VisualEffects.Effect.DropShadow">
+    <value>Use drop shadows for icon labels on the desktop</value>
+  </data>
+
+  <!-- Desktop icons -->
+  <data name="DesktopIcons.Mode.Label">
+    <value>Desktop icon mode</value>
+  </data>
+  <data name="DesktopIcons.Mode.Description">
+    <value>Default defers to Windows; "Specific" lets you pick exactly which built-in icons are visible.</value>
+  </data>
+  <data name="DesktopIcons.Mode.Default">
+    <value>Use Windows defaults</value>
+  </data>
+  <data name="DesktopIcons.Mode.Specific">
+    <value>Pick specific icons</value>
+  </data>
+  <data name="DesktopIcons.VisibleIcons.Label">
+    <value>Visible desktop icons</value>
+  </data>
+  <data name="DesktopIcons.VisibleIcons.Description">
+    <value>Check each icon you want visible on the desktop. Unchecked icons are hidden for every new user.</value>
+  </data>
+  <data name="DesktopIcons.DeleteEdge.Label">
+    <value>Delete the Microsoft Edge desktop icon</value>
+  </data>
+  <data name="DesktopIcons.DeleteEdge.Description">
+    <value>Removes the Microsoft Edge shortcut that Setup drops onto every user's desktop.</value>
+  </data>
+
+  <!-- Start menu folders -->
+  <data name="StartFolders.Mode.Label">
+    <value>Start menu folders (Windows 11)</value>
+  </data>
+  <data name="StartFolders.Mode.Description">
+    <value>Windows 11 shows quick-access folders next to the power button. Default defers to Windows; "Specific" pins exactly the folders you pick.</value>
+  </data>
+  <data name="StartFolders.Mode.Default">
+    <value>Use Windows defaults</value>
+  </data>
+  <data name="StartFolders.Mode.Specific">
+    <value>Pick specific folders</value>
+  </data>
+  <data name="StartFolders.VisibleFolders.Label">
+    <value>Visible Start menu folders</value>
+  </data>
+  <data name="StartFolders.VisibleFolders.Description">
+    <value>Check each folder you want shown next to the power button on the Start menu.</value>
+  </data>
+
 </root>

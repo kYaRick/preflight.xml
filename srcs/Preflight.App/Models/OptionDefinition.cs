@@ -8,6 +8,10 @@ public enum OptionKind
     Text,
     /// <summary>Boolean checkbox. <see cref="OptionDefinition.GetString"/> / <see cref="OptionDefinition.SetString"/> are ignored; use <see cref="OptionDefinition.GetBool"/> / <see cref="OptionDefinition.SetBool"/>.</summary>
     Checkbox,
+    /// <summary>Radio-button group (single-select). Values come from <see cref="OptionDefinition.InlineValues"/>.</summary>
+    Radio,
+    /// <summary>Multi-line text input bound to a <see cref="string"/>. Same binding contract as <see cref="Text"/>.</summary>
+    Textarea,
 }
 
 /// <summary>
