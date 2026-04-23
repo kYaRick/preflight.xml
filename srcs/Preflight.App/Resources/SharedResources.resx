@@ -399,8 +399,258 @@
   <data name="Advanced.Section.vm">
     <value>🖥️ Virtual machine</value>
   </data>
+  <data name="Advanced.Section.vm-support">
+    <value>🖥️ Virtual machine</value>
+  </data>
+  <data name="Advanced.Section.express-settings">
+    <value>✨ Express settings</value>
+  </data>
+  <data name="Advanced.Section.lock-keys">
+    <value>⌨️ Lock keys</value>
+  </data>
+  <data name="Advanced.Section.sticky-keys">
+    <value>♿ Sticky keys</value>
+  </data>
   <data name="Advanced.Section.network">
     <value>📡 Network</value>
+  </data>
+
+  <!-- ═══ System tweaks section ═══════════════════════════════ -->
+  <data name="Section.tweaks.Subtitle">
+    <value>Registry-level polish applied at first boot: Explorer defaults, Edge behaviour, performance tweaks.</value>
+  </data>
+  <data name="Tweaks.Group.Shell">
+    <value>File Explorer and shell</value>
+  </data>
+  <data name="Tweaks.Group.System">
+    <value>System and performance</value>
+  </data>
+  <data name="Tweaks.Group.Edge">
+    <value>Microsoft Edge</value>
+  </data>
+  <data name="Tweaks.ShowFileExtensions.Label">
+    <value>Show file extensions in Explorer</value>
+  </data>
+  <data name="Tweaks.ShowAllTrayIcons.Label">
+    <value>Show all icons in the notification area</value>
+  </data>
+  <data name="Tweaks.HideTaskViewButton.Label">
+    <value>Hide the Task View button from the taskbar</value>
+  </data>
+  <data name="Tweaks.ClassicContextMenu.Label">
+    <value>Restore the classic (Windows 10) context menu</value>
+  </data>
+  <data name="Tweaks.LeftTaskbar.Label">
+    <value>Left-align taskbar icons</value>
+  </data>
+  <data name="Tweaks.LaunchToThisPC.Label">
+    <value>Open File Explorer to "This PC"</value>
+  </data>
+  <data name="Tweaks.ShowEndTask.Label">
+    <value>Enable "End task" in the taskbar right-click menu</value>
+  </data>
+  <data name="Tweaks.HideInfoTip.Label">
+    <value>Hide Explorer tooltips for files and folders</value>
+  </data>
+  <data name="Tweaks.EnableLongPaths.Label">
+    <value>Enable Win32 long paths (&gt; 260 chars)</value>
+  </data>
+  <data name="Tweaks.HardenSystemDriveAcl.Label">
+    <value>Harden the C:\ ACL (remove Authenticated Users)</value>
+  </data>
+  <data name="Tweaks.DeleteJunctions.Label">
+    <value>Delete legacy user-profile junctions</value>
+  </data>
+  <data name="Tweaks.AllowPowerShellScripts.Label">
+    <value>Set PowerShell execution policy to RemoteSigned</value>
+  </data>
+  <data name="Tweaks.DisableLastAccess.Label">
+    <value>Disable NTFS "last access" timestamps</value>
+  </data>
+  <data name="Tweaks.PreventAutomaticReboot.Label">
+    <value>Prevent automatic reboot after Windows Update</value>
+  </data>
+  <data name="Tweaks.DisableFastStartup.Label">
+    <value>Disable Fast Startup (hiberboot)</value>
+  </data>
+  <data name="Tweaks.DisableSystemRestore.Label">
+    <value>Disable System Restore</value>
+  </data>
+  <data name="Tweaks.TurnOffSystemSounds.Label">
+    <value>Turn off all system sounds</value>
+  </data>
+  <data name="Tweaks.DisableAppSuggestions.Label">
+    <value>Disable suggested apps and ads in Start</value>
+  </data>
+  <data name="Tweaks.DisableWidgets.Label">
+    <value>Disable the Widgets board</value>
+  </data>
+  <data name="Tweaks.DisableWindowsUpdate.Label">
+    <value>Pause Windows Update (scheduled task)</value>
+  </data>
+  <data name="Tweaks.DisablePointerPrecision.Label">
+    <value>Disable "Enhance pointer precision" (mouse acceleration)</value>
+  </data>
+  <data name="Tweaks.DeleteWindowsOld.Label">
+    <value>Delete C:\Windows.old after first logon</value>
+  </data>
+  <data name="Tweaks.DisableBingResults.Label">
+    <value>Hide Bing search results in the Start menu</value>
+  </data>
+  <data name="Tweaks.PreventDeviceEncryption.Label">
+    <value>Prevent automatic BitLocker device encryption</value>
+  </data>
+  <data name="Tweaks.DisableCoreIsolation.Label">
+    <value>Disable Core Isolation / Memory Integrity</value>
+  </data>
+  <data name="Tweaks.DisableAutomaticRestartSignOn.Label">
+    <value>Disable automatic sign-in after a restart</value>
+  </data>
+  <data name="Tweaks.DisableWpbt.Label">
+    <value>Disable Windows Platform Binary Table execution</value>
+  </data>
+  <data name="Tweaks.HideEdgeFre.Label">
+    <value>Hide Edge's first-run experience</value>
+  </data>
+  <data name="Tweaks.DisableEdgeStartupBoost.Label">
+    <value>Disable Edge startup boost</value>
+  </data>
+  <data name="Tweaks.MakeEdgeUninstallable.Label">
+    <value>Make Microsoft Edge uninstallable</value>
+  </data>
+  <data name="Tweaks.DeleteEdgeDesktopIcon.Label">
+    <value>Delete Edge desktop shortcut</value>
+  </data>
+
+  <!-- ═══ VM support section ══════════════════════════════════ -->
+  <data name="Section.vm-support.Subtitle">
+    <value>Install guest tools automatically when the target is a virtual machine.</value>
+  </data>
+  <data name="VmSupport.VirtualBoxGuestAdditions.Label">
+    <value>Install VirtualBox Guest Additions</value>
+  </data>
+  <data name="VmSupport.VirtualBoxGuestAdditions.Description">
+    <value>Downloads and installs Oracle's Guest Additions: seamless mouse, clipboard, shared folders.</value>
+  </data>
+  <data name="VmSupport.VmwareTools.Label">
+    <value>Install VMware Tools</value>
+  </data>
+  <data name="VmSupport.VmwareTools.Description">
+    <value>Downloads and installs VMware's guest tools: paravirtual drivers, clipboard, resolution sync.</value>
+  </data>
+  <data name="VmSupport.VirtIoAndQemuAgent.Label">
+    <value>Install VirtIO drivers and QEMU guest agent</value>
+  </data>
+  <data name="VmSupport.VirtIoAndQemuAgent.Description">
+    <value>For Proxmox / KVM: installs the signed VirtIO drivers and qemu-guest-agent service at first logon.</value>
+  </data>
+  <data name="VmSupport.ParallelsTools.Label">
+    <value>Install Parallels Tools</value>
+  </data>
+  <data name="VmSupport.ParallelsTools.Description">
+    <value>Installs Parallels' integration tools: coherence mode, clipboard, shared folders.</value>
+  </data>
+
+  <!-- ═══ Express settings section ════════════════════════════ -->
+  <data name="Section.express-settings.Subtitle">
+    <value>Control the "Express settings" screen shown during Windows out-of-box setup.</value>
+  </data>
+  <data name="ExpressSettings.Mode.Label">
+    <value>Express settings prompt</value>
+  </data>
+  <data name="ExpressSettings.Mode.Description">
+    <value>Decide whether Setup asks about express settings, accepts all defaults, or opts out of all of them.</value>
+  </data>
+  <data name="ExpressSettings.Mode.Interactive">
+    <value>Ask me during setup</value>
+  </data>
+  <data name="ExpressSettings.Mode.EnableAll">
+    <value>Accept all express settings</value>
+  </data>
+  <data name="ExpressSettings.Mode.DisableAll">
+    <value>Disable all express settings</value>
+  </data>
+
+  <!-- ═══ Lock keys section ═══════════════════════════════════ -->
+  <data name="Section.lock-keys.Subtitle">
+    <value>Configure Caps Lock, Num Lock, and Scroll Lock initial state and whether the physical key is active.</value>
+  </data>
+  <data name="LockKeys.Mode.Label">
+    <value>Lock key behaviour</value>
+  </data>
+  <data name="LockKeys.Mode.Default">
+    <value>Keep Windows defaults</value>
+  </data>
+  <data name="LockKeys.Mode.Configure">
+    <value>Configure each key</value>
+  </data>
+  <data name="LockKeys.Group.Initial">
+    <value>Initial state at boot</value>
+  </data>
+  <data name="LockKeys.Group.Lock">
+    <value>Lock the physical key</value>
+  </data>
+  <data name="LockKeys.CapsLock.Initial.Label">
+    <value>Caps Lock on boot</value>
+  </data>
+  <data name="LockKeys.NumLock.Initial.Label">
+    <value>Num Lock on boot</value>
+  </data>
+  <data name="LockKeys.ScrollLock.Initial.Label">
+    <value>Scroll Lock on boot</value>
+  </data>
+  <data name="LockKeys.Initial.Off">
+    <value>Off</value>
+  </data>
+  <data name="LockKeys.Initial.On">
+    <value>On</value>
+  </data>
+  <data name="LockKeys.CapsLock.Lock.Label">
+    <value>Disable the Caps Lock key (ignore scancode)</value>
+  </data>
+  <data name="LockKeys.NumLock.Lock.Label">
+    <value>Disable the Num Lock key (ignore scancode)</value>
+  </data>
+  <data name="LockKeys.ScrollLock.Lock.Label">
+    <value>Disable the Scroll Lock key (ignore scancode)</value>
+  </data>
+
+  <!-- ═══ Sticky keys section ═════════════════════════════════ -->
+  <data name="Section.sticky-keys.Subtitle">
+    <value>Control the Sticky Keys accessibility feature and its hotkey prompt.</value>
+  </data>
+  <data name="StickyKeys.Mode.Label">
+    <value>Sticky Keys behaviour</value>
+  </data>
+  <data name="StickyKeys.Mode.Default">
+    <value>Keep Windows defaults</value>
+  </data>
+  <data name="StickyKeys.Mode.Disable">
+    <value>Disable Sticky Keys and its hotkey prompt</value>
+  </data>
+  <data name="StickyKeys.Mode.Configure">
+    <value>Configure flags individually</value>
+  </data>
+  <data name="StickyKeys.Group.Flags">
+    <value>Flags</value>
+  </data>
+  <data name="StickyKeys.HotKeyActive.Label">
+    <value>Enable hotkey (press Shift five times)</value>
+  </data>
+  <data name="StickyKeys.Indicator.Label">
+    <value>Show status indicator in the taskbar</value>
+  </data>
+  <data name="StickyKeys.TriState.Label">
+    <value>Enable the "locked" tri-state (like Caps Lock)</value>
+  </data>
+  <data name="StickyKeys.TwoKeysOff.Label">
+    <value>Turn off Sticky Keys when two keys are pressed together</value>
+  </data>
+  <data name="StickyKeys.AudibleFeedback.Label">
+    <value>Play a sound when a modifier is latched</value>
+  </data>
+  <data name="StickyKeys.HotKeySound.Label">
+    <value>Play a sound when the hotkey toggles Sticky Keys</value>
   </data>
 
   <!-- ═══ Docs mode ══════════════════════════════════════════ -->

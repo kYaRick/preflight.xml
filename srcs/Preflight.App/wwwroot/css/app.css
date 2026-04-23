@@ -2111,3 +2111,88 @@ html.theme-dark .pf-xml-code .token.namespace {
         transform: none !important;
     }
 }
+
+/* ─── Section group sub-heading ──────────────────────────────
+   Separates logical clusters of checkboxes (e.g. Explorer,
+   System, Edge) inside a single section. Uses the same muted
+   text tone as option descriptions so it reads as metadata,
+   not as a second-level header competing with the section
+   title. */
+.pf-section__group-heading {
+    margin: 1.25rem 0 0.25rem;
+    color: var(--pf-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* The first group heading in a section doesn't need the top
+   margin - the section's own spacing already handles it. */
+.pf-section__options > .pf-section__group-heading:first-child {
+    margin-top: 0;
+}
+
+/* ─── Radio group ────────────────────────────────────────────
+   Used by OptionKind.Radio (and the bespoke lock-keys /
+   sticky-keys forms). Vertical stack of labelled radios with
+   enough spacing that the click target isn't cramped. */
+.pf-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.pf-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: var(--pf-text);
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.pf-radio input[type="radio"] {
+    accent-color: var(--pf-accent);
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    cursor: pointer;
+}
+
+.pf-radio__label {
+    user-select: none;
+}
+
+/* ─── Checkbox group (CheckboxGroup kind) ────────────────────
+   Stacked checkboxes where each item corresponds to one
+   InlineValues entry. Uses the same rhythm as pf-radio-group
+   so both feel like members of the same control family. */
+.pf-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.pf-checkbox-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: var(--pf-text);
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.pf-checkbox-row__label {
+    user-select: none;
+}
+
+/* ─── Textarea ───────────────────────────────────────────────
+   Full-width, resizable-vertical only so a long script stays
+   within the option card. */
+.pf-textarea {
+    width: 100%;
+}
+
