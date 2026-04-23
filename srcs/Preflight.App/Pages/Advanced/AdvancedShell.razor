@@ -38,18 +38,37 @@
              so the form gets the space schneegans-parity controls actually need). -->
         <FluentGridItem xs="12" md="9">
             <FluentCard Style="padding: 24px;">
-                @if (_activeSection == "region")
+                @{
+                    var def = Preflight.App.Content.SectionRegistry.Get(_activeSection);
+                }
+                @if (def is not null)
                 {
-                    <SectionView Section="@RegionSection.Definition" ViewMode="SectionView.SectionMode.Advanced" />
+                    <SectionView Section="@def" ViewMode="SectionView.SectionMode.Advanced" />
                 }
                 else
                 {
-                    <FluentLabel Typo="Typography.H3">@L[$"Advanced.Section.{_activeSection}"]</FluentLabel>
-                    <div style="margin-top: 16px;">
-                        <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
-                            @L["Common.ComingInPhase3"]
-                        </FluentMessageBar>
-                    </div>
+                    // Bespoke layouts that go beyond SectionView's flat option list.
+                    // Each custom .razor mounts against ModeService like SectionView does.
+                    switch (_activeSection)
+                    {
+                        case "network":
+                            <NetworkSectionView />
+                            break;
+                        case "personalization":
+                            <PersonalizationSectionView />
+                            break;
+                        case "bloatware":
+                            <BloatwareSectionView />
+                            break;
+                        default:
+                            <FluentLabel Typo="Typography.H3">@L[$"Advanced.Section.{_activeSection}"]</FluentLabel>
+                            <div style="margin-top: 16px;">
+                                <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
+                                    @L["Common.ComingInPhase3"]
+                                </FluentMessageBar>
+                            </div>
+                            break;
+                    }
                 }
             </FluentCard>
         </FluentGridItem>
@@ -114,6 +133,7 @@
     [
         "region", "disk", "users", "edition", "privacy",
         "security", "bloatware", "tweaks", "vm", "network",
+        "personalization",
     ];
 
     private string _activeSection = "region";
