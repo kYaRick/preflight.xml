@@ -10,6 +10,8 @@ public sealed class UnattendConfig
     public RegionSettings Region { get; init; } = new();
     public DiskSettings Disk { get; init; } = new();
     public WindowsEditionSettings Edition { get; init; } = new();
+    public SourceImageSettings SourceImage { get; init; } = new();
+    public WindowsPeSettings Pe { get; init; } = new();
     public List<UserAccount> Users { get; init; } = [];
     public FirstLogonSettings FirstLogon { get; init; } = new();
     public PrivacySettings Privacy { get; init; } = new();
@@ -45,8 +47,16 @@ public sealed class DiskSettings
 {
     public DiskMode Mode { get; set; } = DiskMode.Interactive;
     public PartitionStyle PartitionStyle { get; set; } = PartitionStyle.Gpt;
+    // Schneegans' default (Constants.EspDefaultSize) - kept in sync for predictable downgrades.
     public int EspSizeMb { get; set; } = 300;
     public RecoveryMode Recovery { get; set; } = RecoveryMode.OnRecoveryPartition;
+    public int RecoverySizeMb { get; set; } = 1000;
+    /// <summary>User-supplied diskpart script for <see cref="DiskMode.CustomScript"/>.</summary>
+    public string? CustomScript { get; set; }
+    /// <summary>Install-to disk index (null = first available). Applies only when <see cref="Mode"/> ≠ Interactive.</summary>
+    public int? InstallDiskIndex { get; set; }
+    /// <summary>Install-to partition index (null = derived from layout). Applies only when <see cref="Mode"/> ≠ Interactive.</summary>
+    public int? InstallPartitionIndex { get; set; }
 }
 
 public enum DiskMode
@@ -67,6 +77,40 @@ public enum RecoveryMode
     OnRecoveryPartition,
     OnWindowsPartition,
     Remove,
+}
+
+// ─── Source image (which WIM / index Setup picks) ────────────────
+
+public sealed class SourceImageSettings
+{
+    public SourceImageMode Mode { get; set; } = SourceImageMode.Automatic;
+    public int ImageIndex { get; set; } = 1;
+    public string? ImageName { get; set; }
+}
+
+public enum SourceImageMode
+{
+    Automatic,
+    ByIndex,
+    ByName,
+}
+
+// ─── Windows PE stage ────────────────────────────────────────────
+
+public sealed class WindowsPeSettings
+{
+    public PeMode Mode { get; set; } = PeMode.Default;
+    public bool Disable8Dot3Names { get; set; }
+    public bool PauseBeforePartition { get; set; }
+    public bool PauseBeforeReboot { get; set; }
+    public string? CustomCmd { get; set; }
+}
+
+public enum PeMode
+{
+    Default,
+    Generated,
+    Custom,
 }
 
 // ─── Windows edition ─────────────────────────────────────────────
@@ -94,7 +138,9 @@ public enum WindowsEdition
     Pro,
     ProN,
     ProEducation,
+    ProEducationN,
     ProForWorkstations,
+    ProForWorkstationsN,
     Education,
     EducationN,
     Enterprise,
