@@ -401,8 +401,258 @@
   <data name="Advanced.Section.vm">
     <value>🖥️ Віртуальна машина</value>
   </data>
+  <data name="Advanced.Section.vm-support">
+    <value>🖥️ Віртуальна машина</value>
+  </data>
+  <data name="Advanced.Section.express-settings">
+    <value>✨ Експрес-налаштування</value>
+  </data>
+  <data name="Advanced.Section.lock-keys">
+    <value>⌨️ Клавіші-фіксатори</value>
+  </data>
+  <data name="Advanced.Section.sticky-keys">
+    <value>♿ Залипання клавіш</value>
+  </data>
   <data name="Advanced.Section.network">
     <value>📡 Мережа</value>
+  </data>
+
+  <!-- ═══ System tweaks section ═══════════════════════════════ -->
+  <data name="Section.tweaks.Subtitle">
+    <value>Тонкі налаштування реєстру на першому завантаженні: Провідник, Edge, продуктивність.</value>
+  </data>
+  <data name="Tweaks.Group.Shell">
+    <value>Провідник і оболонка</value>
+  </data>
+  <data name="Tweaks.Group.System">
+    <value>Система і продуктивність</value>
+  </data>
+  <data name="Tweaks.Group.Edge">
+    <value>Microsoft Edge</value>
+  </data>
+  <data name="Tweaks.ShowFileExtensions.Label">
+    <value>Показувати розширення файлів у Провіднику</value>
+  </data>
+  <data name="Tweaks.ShowAllTrayIcons.Label">
+    <value>Показувати всі значки в області сповіщень</value>
+  </data>
+  <data name="Tweaks.HideTaskViewButton.Label">
+    <value>Сховати кнопку "Подання завдань" із панелі</value>
+  </data>
+  <data name="Tweaks.ClassicContextMenu.Label">
+    <value>Повернути класичне (Windows 10) контекстне меню</value>
+  </data>
+  <data name="Tweaks.LeftTaskbar.Label">
+    <value>Вирівняти значки панелі задач ліворуч</value>
+  </data>
+  <data name="Tweaks.LaunchToThisPC.Label">
+    <value>Відкривати Провідник у розділі "Цей ПК"</value>
+  </data>
+  <data name="Tweaks.ShowEndTask.Label">
+    <value>Увімкнути "Завершити завдання" у меню панелі задач</value>
+  </data>
+  <data name="Tweaks.HideInfoTip.Label">
+    <value>Приховати підказки Провідника для файлів і тек</value>
+  </data>
+  <data name="Tweaks.EnableLongPaths.Label">
+    <value>Увімкнути довгі шляхи Win32 (&gt; 260 символів)</value>
+  </data>
+  <data name="Tweaks.HardenSystemDriveAcl.Label">
+    <value>Посилити ACL диска C:\ (прибрати Authenticated Users)</value>
+  </data>
+  <data name="Tweaks.DeleteJunctions.Label">
+    <value>Видалити застарілі junctions профілю користувача</value>
+  </data>
+  <data name="Tweaks.AllowPowerShellScripts.Label">
+    <value>Установити політику PowerShell RemoteSigned</value>
+  </data>
+  <data name="Tweaks.DisableLastAccess.Label">
+    <value>Вимкнути NTFS-мітку "останній доступ"</value>
+  </data>
+  <data name="Tweaks.PreventAutomaticReboot.Label">
+    <value>Запобігти автоматичному перезавантаженню після оновлення</value>
+  </data>
+  <data name="Tweaks.DisableFastStartup.Label">
+    <value>Вимкнути швидкий запуск (hiberboot)</value>
+  </data>
+  <data name="Tweaks.DisableSystemRestore.Label">
+    <value>Вимкнути Відновлення системи</value>
+  </data>
+  <data name="Tweaks.TurnOffSystemSounds.Label">
+    <value>Вимкнути всі системні звуки</value>
+  </data>
+  <data name="Tweaks.DisableAppSuggestions.Label">
+    <value>Вимкнути рекомендовані застосунки й рекламу в Пуск</value>
+  </data>
+  <data name="Tweaks.DisableWidgets.Label">
+    <value>Вимкнути віджети</value>
+  </data>
+  <data name="Tweaks.DisableWindowsUpdate.Label">
+    <value>Призупинити Windows Update (заплановане завдання)</value>
+  </data>
+  <data name="Tweaks.DisablePointerPrecision.Label">
+    <value>Вимкнути "Підвищену точність миші" (акселерацію)</value>
+  </data>
+  <data name="Tweaks.DeleteWindowsOld.Label">
+    <value>Видалити C:\Windows.old після першого входу</value>
+  </data>
+  <data name="Tweaks.DisableBingResults.Label">
+    <value>Приховати результати Bing у меню Пуск</value>
+  </data>
+  <data name="Tweaks.PreventDeviceEncryption.Label">
+    <value>Запобігти автоматичному BitLocker-шифруванню</value>
+  </data>
+  <data name="Tweaks.DisableCoreIsolation.Label">
+    <value>Вимкнути ізоляцію ядра / цілісність пам'яті</value>
+  </data>
+  <data name="Tweaks.DisableAutomaticRestartSignOn.Label">
+    <value>Вимкнути автоматичний вхід після перезавантаження</value>
+  </data>
+  <data name="Tweaks.DisableWpbt.Label">
+    <value>Вимкнути виконання WPBT</value>
+  </data>
+  <data name="Tweaks.HideEdgeFre.Label">
+    <value>Приховати початковий екран Edge</value>
+  </data>
+  <data name="Tweaks.DisableEdgeStartupBoost.Label">
+    <value>Вимкнути "швидкий старт" Edge</value>
+  </data>
+  <data name="Tweaks.MakeEdgeUninstallable.Label">
+    <value>Дозволити видалення Microsoft Edge</value>
+  </data>
+  <data name="Tweaks.DeleteEdgeDesktopIcon.Label">
+    <value>Видалити ярлик Edge з робочого столу</value>
+  </data>
+
+  <!-- ═══ VM support section ══════════════════════════════════ -->
+  <data name="Section.vm-support.Subtitle">
+    <value>Автоматично встановити гостьові інструменти, якщо ціль — віртуальна машина.</value>
+  </data>
+  <data name="VmSupport.VirtualBoxGuestAdditions.Label">
+    <value>Встановити VirtualBox Guest Additions</value>
+  </data>
+  <data name="VmSupport.VirtualBoxGuestAdditions.Description">
+    <value>Завантажує й встановлює Oracle Guest Additions: миша, буфер обміну, спільні теки.</value>
+  </data>
+  <data name="VmSupport.VmwareTools.Label">
+    <value>Встановити VMware Tools</value>
+  </data>
+  <data name="VmSupport.VmwareTools.Description">
+    <value>Завантажує й встановлює VMware Tools: паравіртуальні драйвери, буфер обміну, синхронізація роздільної здатності.</value>
+  </data>
+  <data name="VmSupport.VirtIoAndQemuAgent.Label">
+    <value>Встановити драйвери VirtIO і QEMU guest agent</value>
+  </data>
+  <data name="VmSupport.VirtIoAndQemuAgent.Description">
+    <value>Для Proxmox / KVM: підписані VirtIO-драйвери та служба qemu-guest-agent на першому вході.</value>
+  </data>
+  <data name="VmSupport.ParallelsTools.Label">
+    <value>Встановити Parallels Tools</value>
+  </data>
+  <data name="VmSupport.ParallelsTools.Description">
+    <value>Встановлює інтеграційні інструменти Parallels: Coherence, буфер обміну, спільні теки.</value>
+  </data>
+
+  <!-- ═══ Express settings section ════════════════════════════ -->
+  <data name="Section.express-settings.Subtitle">
+    <value>Керуйте екраном "Експрес-налаштування" під час встановлення Windows.</value>
+  </data>
+  <data name="ExpressSettings.Mode.Label">
+    <value>Запит експрес-налаштувань</value>
+  </data>
+  <data name="ExpressSettings.Mode.Description">
+    <value>Вирішіть: показати запит, прийняти все або відмовитися від усього.</value>
+  </data>
+  <data name="ExpressSettings.Mode.Interactive">
+    <value>Запитати під час встановлення</value>
+  </data>
+  <data name="ExpressSettings.Mode.EnableAll">
+    <value>Прийняти всі експрес-налаштування</value>
+  </data>
+  <data name="ExpressSettings.Mode.DisableAll">
+    <value>Вимкнути всі експрес-налаштування</value>
+  </data>
+
+  <!-- ═══ Lock keys section ═══════════════════════════════════ -->
+  <data name="Section.lock-keys.Subtitle">
+    <value>Налаштуйте початковий стан Caps Lock, Num Lock, Scroll Lock і чи активна фізична клавіша.</value>
+  </data>
+  <data name="LockKeys.Mode.Label">
+    <value>Поведінка клавіш-фіксаторів</value>
+  </data>
+  <data name="LockKeys.Mode.Default">
+    <value>Залишити типові налаштування Windows</value>
+  </data>
+  <data name="LockKeys.Mode.Configure">
+    <value>Налаштувати кожну клавішу</value>
+  </data>
+  <data name="LockKeys.Group.Initial">
+    <value>Початковий стан при завантаженні</value>
+  </data>
+  <data name="LockKeys.Group.Lock">
+    <value>Заблокувати фізичну клавішу</value>
+  </data>
+  <data name="LockKeys.CapsLock.Initial.Label">
+    <value>Caps Lock при завантаженні</value>
+  </data>
+  <data name="LockKeys.NumLock.Initial.Label">
+    <value>Num Lock при завантаженні</value>
+  </data>
+  <data name="LockKeys.ScrollLock.Initial.Label">
+    <value>Scroll Lock при завантаженні</value>
+  </data>
+  <data name="LockKeys.Initial.Off">
+    <value>Вимкнено</value>
+  </data>
+  <data name="LockKeys.Initial.On">
+    <value>Увімкнено</value>
+  </data>
+  <data name="LockKeys.CapsLock.Lock.Label">
+    <value>Вимкнути клавішу Caps Lock (ігнорувати scancode)</value>
+  </data>
+  <data name="LockKeys.NumLock.Lock.Label">
+    <value>Вимкнути клавішу Num Lock (ігнорувати scancode)</value>
+  </data>
+  <data name="LockKeys.ScrollLock.Lock.Label">
+    <value>Вимкнути клавішу Scroll Lock (ігнорувати scancode)</value>
+  </data>
+
+  <!-- ═══ Sticky keys section ═════════════════════════════════ -->
+  <data name="Section.sticky-keys.Subtitle">
+    <value>Керуйте функцією "Залипання клавіш" та її гарячою клавішею.</value>
+  </data>
+  <data name="StickyKeys.Mode.Label">
+    <value>Поведінка залипання клавіш</value>
+  </data>
+  <data name="StickyKeys.Mode.Default">
+    <value>Залишити типові налаштування Windows</value>
+  </data>
+  <data name="StickyKeys.Mode.Disable">
+    <value>Вимкнути залипання клавіш і гарячий виклик</value>
+  </data>
+  <data name="StickyKeys.Mode.Configure">
+    <value>Налаштувати прапорці окремо</value>
+  </data>
+  <data name="StickyKeys.Group.Flags">
+    <value>Прапорці</value>
+  </data>
+  <data name="StickyKeys.HotKeyActive.Label">
+    <value>Увімкнути гарячу клавішу (Shift п'ять разів)</value>
+  </data>
+  <data name="StickyKeys.Indicator.Label">
+    <value>Показувати індикатор статусу в області сповіщень</value>
+  </data>
+  <data name="StickyKeys.TriState.Label">
+    <value>Увімкнути "заблокований" тристан (як Caps Lock)</value>
+  </data>
+  <data name="StickyKeys.TwoKeysOff.Label">
+    <value>Вимкнути при одночасному натисканні двох клавіш</value>
+  </data>
+  <data name="StickyKeys.AudibleFeedback.Label">
+    <value>Звук при фіксації модифікатора</value>
+  </data>
+  <data name="StickyKeys.HotKeySound.Label">
+    <value>Звук при перемиканні гарячою клавішею</value>
   </data>
 
   <!-- ═══ Docs mode ══════════════════════════════════════════ -->

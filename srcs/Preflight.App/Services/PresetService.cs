@@ -82,8 +82,8 @@ public sealed class PresetService
             ShowFileExtensions = true,
             ClassicContextMenu = true,
             DisableWidgets = true,
-            LeftAlignTaskbar = true,
-            HideBingSearchResults = true,
+            LeftTaskbar = true,
+            DisableBingResults = true,
         },
     };
 
