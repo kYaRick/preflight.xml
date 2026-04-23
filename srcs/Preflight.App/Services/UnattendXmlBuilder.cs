@@ -23,6 +23,8 @@ public sealed class UnattendXmlBuilder
 {
     private readonly UnattendGenerator _generator = new();
 
+    public IEnumerable<Bloatware> GetBloatwareCatalog() => _generator.Bloatwares.Values;
+
     /// <summary>
     /// Build an <c>autounattend.xml</c> string from the current config.
     /// Returns an XML comment describing the failure if mapping or generation throws -

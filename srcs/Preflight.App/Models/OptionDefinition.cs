@@ -57,6 +57,12 @@ public sealed record OptionDefinition
     /// <summary>Inline value list for small dropdowns / radios / checkbox groups.</summary>
     public IReadOnlyList<OptionValue>? InlineValues { get; init; }
 
+    /// <summary>Static child toggles for <see cref="OptionKind.CheckboxGroup"/>.</summary>
+    public IReadOnlyList<CheckboxItem>? CheckboxItems { get; init; }
+
+    /// <summary>Dynamic item provider used by some CheckboxGroup sections (e.g. bloatware catalog).</summary>
+    public Func<IReadOnlyList<OptionValue>>? ItemsProvider { get; init; }
+
     // ─── Number-input bounds (Number only) ────────────────────────
 
     public int? Min { get; init; }
@@ -78,6 +84,9 @@ public sealed record OptionDefinition
 
     /// <summary>Resource-keyed placeholder (alternative to raw <see cref="Placeholder"/>).</summary>
     public string? PlaceholderKey { get; init; }
+
+    /// <summary>Optional validation pattern for text inputs.</summary>
+    public string? Pattern { get; init; }
 
     // ─── Binding ──────────────────────────────────────────────────
 
@@ -109,3 +118,12 @@ public sealed record OptionDefinition
 
 /// <summary>A single entry in an inline dropdown / radio / checkbox-group option list.</summary>
 public sealed record OptionValue(string Value, string DisplayKey);
+
+/// <summary>
+/// One boolean toggle inside a <see cref="OptionKind.CheckboxGroup"/>.
+/// </summary>
+public sealed record CheckboxItem(
+    string Id,
+    string LabelKey,
+    Func<UnattendConfig, bool> Get,
+    Action<UnattendConfig, bool> Set);
