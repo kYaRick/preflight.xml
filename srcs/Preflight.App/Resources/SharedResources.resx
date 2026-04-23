@@ -402,6 +402,203 @@
   <data name="Advanced.Section.network">
     <value>📡 Network</value>
   </data>
+  <data name="Advanced.Section.source-image">
+    <value>📀 Source image</value>
+  </data>
+  <data name="Advanced.Section.windows-pe">
+    <value>🧩 Windows PE</value>
+  </data>
+
+  <!-- ═══ Section: disk ═══════════════════════════════════════ -->
+  <data name="Section.disk.Subtitle">
+    <value>How Windows Setup will partition, format, and target the install disk.</value>
+  </data>
+  <data name="Disk.Mode.Description">
+    <value>Interactive lets Setup ask at install time. Auto wipe silently partitions the first disk. Custom runs a diskpart script you paste below.</value>
+  </data>
+  <data name="Disk.Mode.Interactive">
+    <value>Interactive (ask during Setup)</value>
+  </data>
+  <data name="Disk.Mode.AutoWipe">
+    <value>Auto wipe and partition the first disk</value>
+  </data>
+  <data name="Disk.Mode.CustomScript">
+    <value>Use a custom diskpart script</value>
+  </data>
+  <data name="Disk.PartitionStyle.Description">
+    <value>GPT is required for UEFI boot and disks larger than 2 TB. MBR is legacy BIOS only.</value>
+  </data>
+  <data name="Disk.PartitionStyle.Gpt">
+    <value>GPT (UEFI)</value>
+  </data>
+  <data name="Disk.PartitionStyle.Mbr">
+    <value>MBR (legacy BIOS)</value>
+  </data>
+  <data name="Disk.EspSize.Label">
+    <value>EFI system partition size (MB)</value>
+  </data>
+  <data name="Disk.EspSize.Description">
+    <value>Size of the EFI system partition. 100 MB minimum; 300 MB is the default and covers most bootloaders including BitLocker.</value>
+  </data>
+  <data name="Disk.Recovery.Label">
+    <value>Windows RE placement</value>
+  </data>
+  <data name="Disk.Recovery.Description">
+    <value>Where Windows Recovery Environment lives. Dedicated partition is Microsoft's default. Folder keeps it on C:. Remove frees ~800 MB but disables in-place recovery.</value>
+  </data>
+  <data name="Disk.Recovery.Partition">
+    <value>Dedicated recovery partition</value>
+  </data>
+  <data name="Disk.Recovery.Folder">
+    <value>Inside Windows partition</value>
+  </data>
+  <data name="Disk.Recovery.None">
+    <value>Remove (no recovery)</value>
+  </data>
+  <data name="Disk.RecoverySize.Label">
+    <value>Recovery partition size (MB)</value>
+  </data>
+  <data name="Disk.RecoverySize.Description">
+    <value>Size reserved for Windows RE. 1000 MB (schneegans default) fits the base image; Microsoft recommends 1024 MB+ for future updates.</value>
+  </data>
+  <data name="Disk.CustomScript.Label">
+    <value>Diskpart script</value>
+  </data>
+  <data name="Disk.CustomScript.Description">
+    <value>Full diskpart.exe script. Must contain ASSIGN LETTER=W (Windows) and ASSIGN LETTER=S (system) so Setup knows where to install.</value>
+  </data>
+  <data name="Disk.CustomScript.Placeholder">
+    <value>SELECT DISK=0&#xA;CLEAN&#xA;CONVERT GPT&#xA;CREATE PARTITION EFI SIZE=300&#xA;FORMAT QUICK FS=FAT32 LABEL="System"&#xA;ASSIGN LETTER=S&#xA;...</value>
+  </data>
+  <data name="Disk.InstallDiskIndex.Label">
+    <value>Install disk index</value>
+  </data>
+  <data name="Disk.InstallDiskIndex.Description">
+    <value>Zero-based disk number. Leave as-is to let Setup pick the first available disk.</value>
+  </data>
+  <data name="Disk.InstallPartitionIndex.Label">
+    <value>Install partition index</value>
+  </data>
+  <data name="Disk.InstallPartitionIndex.Description">
+    <value>One-based partition number on the chosen disk. Leave as-is to auto-derive from the partition layout.</value>
+  </data>
+
+  <!-- ═══ Section: edition ════════════════════════════════════ -->
+  <data name="Section.edition.Subtitle">
+    <value>Which Windows edition to install and how Setup gets the product key.</value>
+  </data>
+  <data name="Edition.KeyMode.Label">
+    <value>Product key</value>
+  </data>
+  <data name="Edition.KeyMode.Description">
+    <value>Generic keys install the edition unattended and activate later. Custom uses your own key. Interactive asks during Setup. From BIOS reads the OEM-embedded key.</value>
+  </data>
+  <data name="Edition.KeyMode.Generic">
+    <value>Generic key (edition selection only)</value>
+  </data>
+  <data name="Edition.KeyMode.Custom">
+    <value>Custom key</value>
+  </data>
+  <data name="Edition.KeyMode.Interactive">
+    <value>Ask during Setup</value>
+  </data>
+  <data name="Edition.KeyMode.FromBios">
+    <value>Read OEM key from BIOS/UEFI</value>
+  </data>
+  <data name="Edition.ProductKey.Label">
+    <value>Product key</value>
+  </data>
+  <data name="Edition.ProductKey.Description">
+    <value>Five groups of five alphanumeric characters, e.g. AAAAA-BBBBB-CCCCC-DDDDD-EEEEE.</value>
+  </data>
+  <data name="Edition.ProductKey.Placeholder">
+    <value>AAAAA-BBBBB-CCCCC-DDDDD-EEEEE</value>
+  </data>
+  <data name="Edition.Edition.Description">
+    <value>Pick the SKU matching your install media. Windows Setup uses this to both select the image index and pick the right generic key when no custom key is given.</value>
+  </data>
+
+  <!-- ═══ Section: source image ═══════════════════════════════ -->
+  <data name="Section.source-image.Subtitle">
+    <value>Which image inside install.wim Setup applies to the target partition.</value>
+  </data>
+  <data name="SourceImage.Mode.Label">
+    <value>Image selection</value>
+  </data>
+  <data name="SourceImage.Mode.Description">
+    <value>Automatic lets Setup pick from the edition. By index points at a specific image. By name matches the display name inside the WIM.</value>
+  </data>
+  <data name="SourceImage.Mode.Automatic">
+    <value>Automatic (derive from edition)</value>
+  </data>
+  <data name="SourceImage.Mode.ByIndex">
+    <value>By image index</value>
+  </data>
+  <data name="SourceImage.Mode.ByName">
+    <value>By image name</value>
+  </data>
+  <data name="SourceImage.ImageIndex.Label">
+    <value>Image index</value>
+  </data>
+  <data name="SourceImage.ImageIndex.Description">
+    <value>One-based index as listed by dism /Get-ImageInfo. Typical install.wim files contain 1 to 11 images.</value>
+  </data>
+  <data name="SourceImage.ImageName.Label">
+    <value>Image name</value>
+  </data>
+  <data name="SourceImage.ImageName.Description">
+    <value>Full display name from the WIM, e.g. "Windows 11 Pro". Must match exactly; Setup matches are case-sensitive.</value>
+  </data>
+  <data name="SourceImage.ImageName.Placeholder">
+    <value>Windows 11 Pro</value>
+  </data>
+
+  <!-- ═══ Section: windows-pe ═════════════════════════════════ -->
+  <data name="Section.windows-pe.Subtitle">
+    <value>How the Windows PE pre-install stage runs: default Setup, generated diskpart + DISM, or a custom .cmd script.</value>
+  </data>
+  <data name="Pe.Mode.Label">
+    <value>PE stage mode</value>
+  </data>
+  <data name="Pe.Mode.Description">
+    <value>Default runs the standard Windows Setup PE path. Generated emits a diskpart + DISM .cmd script. Custom replaces the entire stage with your own commands.</value>
+  </data>
+  <data name="Pe.Mode.Default">
+    <value>Default (standard Setup)</value>
+  </data>
+  <data name="Pe.Mode.Generated">
+    <value>Generated (diskpart + DISM script)</value>
+  </data>
+  <data name="Pe.Mode.Custom">
+    <value>Custom .cmd script</value>
+  </data>
+  <data name="Pe.Disable8Dot3.Label">
+    <value>Disable 8.3 short file names</value>
+  </data>
+  <data name="Pe.Disable8Dot3.Description">
+    <value>Strips legacy 8.3 names on the Windows volume. Saves a little space and marginally speeds up directory listings; breaks a handful of very old installers.</value>
+  </data>
+  <data name="Pe.PauseBeforePartition.Label">
+    <value>Pause before partitioning</value>
+  </data>
+  <data name="Pe.PauseBeforePartition.Description">
+    <value>Shows a confirmation prompt before diskpart wipes the disk. Useful when debugging a new configuration; uncheck for truly unattended installs.</value>
+  </data>
+  <data name="Pe.PauseBeforeReboot.Label">
+    <value>Pause before reboot</value>
+  </data>
+  <data name="Pe.PauseBeforeReboot.Description">
+    <value>Keeps the PE window open after DISM finishes so you can inspect logs before the machine reboots into Specialize.</value>
+  </data>
+  <data name="Pe.CustomCmd.Label">
+    <value>PE .cmd script</value>
+  </data>
+  <data name="Pe.CustomCmd.Description">
+    <value>Replaces the entire PE stage. You are responsible for partitioning, applying the image, and copying the autounattend.xml into C:\Windows\Panther.</value>
+  </data>
+  <data name="Pe.CustomCmd.Placeholder">
+    <value>@echo off&#xA;diskpart.exe /s X:\diskpart.txt&#xA;dism.exe /Apply-Image ...&#xA;bcdboot.exe W:\Windows /s S:</value>
+  </data>
 
   <!-- ═══ Docs mode ══════════════════════════════════════════ -->
   <data name="Docs.Title">

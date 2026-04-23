@@ -404,6 +404,203 @@
   <data name="Advanced.Section.network">
     <value>📡 Мережа</value>
   </data>
+  <data name="Advanced.Section.source-image">
+    <value>📀 Джерело образу</value>
+  </data>
+  <data name="Advanced.Section.windows-pe">
+    <value>🧩 Windows PE</value>
+  </data>
+
+  <!-- ═══ Section: disk ═══════════════════════════════════════ -->
+  <data name="Section.disk.Subtitle">
+    <value>Як Windows Setup розбиває, форматує і обирає диск для встановлення.</value>
+  </data>
+  <data name="Disk.Mode.Description">
+    <value>Інтерактивно — Setup спитає під час встановлення. Авто-очистка — тихо розбиває перший диск. Користувацький — запускає diskpart-скрипт, який ви вставите нижче.</value>
+  </data>
+  <data name="Disk.Mode.Interactive">
+    <value>Інтерактивно (спитати у Setup)</value>
+  </data>
+  <data name="Disk.Mode.AutoWipe">
+    <value>Авто-очистити та розбити перший диск</value>
+  </data>
+  <data name="Disk.Mode.CustomScript">
+    <value>Користувацький diskpart-скрипт</value>
+  </data>
+  <data name="Disk.PartitionStyle.Description">
+    <value>GPT потрібен для UEFI та дисків &gt; 2 ТБ. MBR — лише для застарілого BIOS.</value>
+  </data>
+  <data name="Disk.PartitionStyle.Gpt">
+    <value>GPT (UEFI)</value>
+  </data>
+  <data name="Disk.PartitionStyle.Mbr">
+    <value>MBR (застарілий BIOS)</value>
+  </data>
+  <data name="Disk.EspSize.Label">
+    <value>Розмір EFI-розділу (МБ)</value>
+  </data>
+  <data name="Disk.EspSize.Description">
+    <value>Розмір системного EFI-розділу. Мінімум 100 МБ; 300 МБ за замовчуванням і покриває більшість завантажувачів, включаючи BitLocker.</value>
+  </data>
+  <data name="Disk.Recovery.Label">
+    <value>Розміщення Windows RE</value>
+  </data>
+  <data name="Disk.Recovery.Description">
+    <value>Де знаходиться середовище відновлення Windows. Окремий розділ — стандарт Microsoft. У Windows — тримає його на C:. Видалити — звільняє ~800 МБ, але вимикає відновлення на місці.</value>
+  </data>
+  <data name="Disk.Recovery.Partition">
+    <value>Окремий розділ відновлення</value>
+  </data>
+  <data name="Disk.Recovery.Folder">
+    <value>Усередині Windows-розділу</value>
+  </data>
+  <data name="Disk.Recovery.None">
+    <value>Видалити (без відновлення)</value>
+  </data>
+  <data name="Disk.RecoverySize.Label">
+    <value>Розмір розділу відновлення (МБ)</value>
+  </data>
+  <data name="Disk.RecoverySize.Description">
+    <value>Резерв для Windows RE. 1000 МБ (дефолт schneegans) достатньо для базового образу; Microsoft рекомендує 1024 МБ+ для майбутніх оновлень.</value>
+  </data>
+  <data name="Disk.CustomScript.Label">
+    <value>Diskpart-скрипт</value>
+  </data>
+  <data name="Disk.CustomScript.Description">
+    <value>Повний скрипт diskpart.exe. Має містити ASSIGN LETTER=W (Windows) та ASSIGN LETTER=S (system), щоб Setup знав, куди встановлювати.</value>
+  </data>
+  <data name="Disk.CustomScript.Placeholder">
+    <value>SELECT DISK=0&#xA;CLEAN&#xA;CONVERT GPT&#xA;CREATE PARTITION EFI SIZE=300&#xA;FORMAT QUICK FS=FAT32 LABEL="System"&#xA;ASSIGN LETTER=S&#xA;...</value>
+  </data>
+  <data name="Disk.InstallDiskIndex.Label">
+    <value>Індекс диска встановлення</value>
+  </data>
+  <data name="Disk.InstallDiskIndex.Description">
+    <value>Номер диска від нуля. Залиште як є, щоб Setup обрав перший доступний диск.</value>
+  </data>
+  <data name="Disk.InstallPartitionIndex.Label">
+    <value>Індекс розділу встановлення</value>
+  </data>
+  <data name="Disk.InstallPartitionIndex.Description">
+    <value>Номер розділу на обраному диску (з одиниці). Залиште як є, щоб вивести з макета.</value>
+  </data>
+
+  <!-- ═══ Section: edition ════════════════════════════════════ -->
+  <data name="Section.edition.Subtitle">
+    <value>Яку редакцію Windows встановлювати та як Setup отримає ключ продукту.</value>
+  </data>
+  <data name="Edition.KeyMode.Label">
+    <value>Ключ продукту</value>
+  </data>
+  <data name="Edition.KeyMode.Description">
+    <value>Загальний ключ встановлює редакцію без уваги і активує пізніше. Власний — використовує ваш ключ. Інтерактивно — запитує під час Setup. З BIOS — читає OEM-ключ, вшитий у прошивку.</value>
+  </data>
+  <data name="Edition.KeyMode.Generic">
+    <value>Загальний ключ (лише вибір редакції)</value>
+  </data>
+  <data name="Edition.KeyMode.Custom">
+    <value>Власний ключ</value>
+  </data>
+  <data name="Edition.KeyMode.Interactive">
+    <value>Спитати під час Setup</value>
+  </data>
+  <data name="Edition.KeyMode.FromBios">
+    <value>Читати OEM-ключ з BIOS/UEFI</value>
+  </data>
+  <data name="Edition.ProductKey.Label">
+    <value>Ключ продукту</value>
+  </data>
+  <data name="Edition.ProductKey.Description">
+    <value>Пʼять груп по пʼять алфавітно-цифрових символів, наприклад AAAAA-BBBBB-CCCCC-DDDDD-EEEEE.</value>
+  </data>
+  <data name="Edition.ProductKey.Placeholder">
+    <value>AAAAA-BBBBB-CCCCC-DDDDD-EEEEE</value>
+  </data>
+  <data name="Edition.Edition.Description">
+    <value>Оберіть редакцію, що відповідає вашому інсталяційному носію. Setup використовує це і для вибору індекса образу, і для підбору потрібного загального ключа, якщо власний не вказано.</value>
+  </data>
+
+  <!-- ═══ Section: source image ═══════════════════════════════ -->
+  <data name="Section.source-image.Subtitle">
+    <value>Який образ всередині install.wim Setup застосовує до цільового розділу.</value>
+  </data>
+  <data name="SourceImage.Mode.Label">
+    <value>Вибір образу</value>
+  </data>
+  <data name="SourceImage.Mode.Description">
+    <value>Автоматично — Setup визначає за редакцією. За індексом — вказує конкретний образ. За іменем — шукає співпадіння з назвою всередині WIM.</value>
+  </data>
+  <data name="SourceImage.Mode.Automatic">
+    <value>Автоматично (з редакції)</value>
+  </data>
+  <data name="SourceImage.Mode.ByIndex">
+    <value>За індексом образу</value>
+  </data>
+  <data name="SourceImage.Mode.ByName">
+    <value>За назвою образу</value>
+  </data>
+  <data name="SourceImage.ImageIndex.Label">
+    <value>Індекс образу</value>
+  </data>
+  <data name="SourceImage.ImageIndex.Description">
+    <value>Індекс з одиниці, як видає dism /Get-ImageInfo. Типовий install.wim має від 1 до 11 образів.</value>
+  </data>
+  <data name="SourceImage.ImageName.Label">
+    <value>Назва образу</value>
+  </data>
+  <data name="SourceImage.ImageName.Description">
+    <value>Повна назва образу з WIM, наприклад «Windows 11 Pro». Має співпадати точно; Setup розрізняє регістр.</value>
+  </data>
+  <data name="SourceImage.ImageName.Placeholder">
+    <value>Windows 11 Pro</value>
+  </data>
+
+  <!-- ═══ Section: windows-pe ═════════════════════════════════ -->
+  <data name="Section.windows-pe.Subtitle">
+    <value>Як виконується передінсталяційна стадія Windows PE: стандартний Setup, згенерований diskpart + DISM чи власний .cmd-скрипт.</value>
+  </data>
+  <data name="Pe.Mode.Label">
+    <value>Режим PE</value>
+  </data>
+  <data name="Pe.Mode.Description">
+    <value>Стандартний — запускає звичайний Setup PE. Згенерований — створює .cmd з diskpart і DISM. Власний — замінює всю стадію вашими командами.</value>
+  </data>
+  <data name="Pe.Mode.Default">
+    <value>Стандартний (звичайний Setup)</value>
+  </data>
+  <data name="Pe.Mode.Generated">
+    <value>Згенерований (diskpart + DISM)</value>
+  </data>
+  <data name="Pe.Mode.Custom">
+    <value>Власний .cmd-скрипт</value>
+  </data>
+  <data name="Pe.Disable8Dot3.Label">
+    <value>Вимкнути короткі імена 8.3</value>
+  </data>
+  <data name="Pe.Disable8Dot3.Description">
+    <value>Прибирає застарілі імена 8.3 на томі Windows. Трохи економить місце і прискорює лістинг каталогів; ламає дуже старі інсталятори.</value>
+  </data>
+  <data name="Pe.PauseBeforePartition.Label">
+    <value>Пауза перед розбивкою</value>
+  </data>
+  <data name="Pe.PauseBeforePartition.Description">
+    <value>Показує запит підтвердження перед очисткою диска. Корисно при налагодженні; зніміть для повністю автоматичної інсталяції.</value>
+  </data>
+  <data name="Pe.PauseBeforeReboot.Label">
+    <value>Пауза перед перезавантаженням</value>
+  </data>
+  <data name="Pe.PauseBeforeReboot.Description">
+    <value>Залишає вікно PE відкритим після завершення DISM, щоб можна було переглянути логи до перезавантаження у Specialize.</value>
+  </data>
+  <data name="Pe.CustomCmd.Label">
+    <value>.cmd-скрипт PE</value>
+  </data>
+  <data name="Pe.CustomCmd.Description">
+    <value>Замінює всю стадію PE. Ви самі відповідаєте за розбивку, застосування образу і копіювання autounattend.xml у C:\Windows\Panther.</value>
+  </data>
+  <data name="Pe.CustomCmd.Placeholder">
+    <value>@echo off&#xA;diskpart.exe /s X:\diskpart.txt&#xA;dism.exe /Apply-Image ...&#xA;bcdboot.exe W:\Windows /s S:</value>
+  </data>
 
   <!-- ═══ Docs mode ══════════════════════════════════════════ -->
   <data name="Docs.Title">
