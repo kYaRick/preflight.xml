@@ -335,6 +335,168 @@
     <value>Apps to remove</value>
   </data>
 
+  <!-- ═══ Network ═══════════════════════════════════════════ -->
+  <data name="Section.network.Subtitle">
+    <value>Wi-Fi behaviour during OOBE: skip the prompt, configure one network, or paste a full WLAN profile.</value>
+  </data>
+  <data name="Network.WifiMode.Label">
+    <value>Wi-Fi mode</value>
+  </data>
+  <data name="Network.WifiMode.Description">
+    <value>Choose how Setup handles the Wi-Fi prompt. "Interactive" keeps the stock experience; "Skip" bypasses it (useful for Ethernet-only installs); "Configure" pre-provisions a single WPA2/WPA3 network; "Profile XML" accepts a full WLAN_profile_v1 document.</value>
+  </data>
+  <data name="Network.WifiMode.Interactive">
+    <value>Interactive (ask during OOBE)</value>
+  </data>
+  <data name="Network.WifiMode.Skip">
+    <value>Skip Wi-Fi prompt</value>
+  </data>
+  <data name="Network.WifiMode.Configure">
+    <value>Configure one network</value>
+  </data>
+  <data name="Network.WifiMode.ProfileXml">
+    <value>Paste WLAN profile XML</value>
+  </data>
+  <data name="Network.Ssid.Label">
+    <value>SSID (network name)</value>
+  </data>
+  <data name="Network.SsidHidden.Label">
+    <value>Network is hidden (non-broadcast)</value>
+  </data>
+  <data name="Network.Auth.Label">
+    <value>Authentication</value>
+  </data>
+  <data name="Network.Auth.Open">
+    <value>Open (no password)</value>
+  </data>
+  <data name="Network.Auth.Wpa2Personal">
+    <value>WPA2-Personal</value>
+  </data>
+  <data name="Network.Auth.Wpa3Personal">
+    <value>WPA3-Personal</value>
+  </data>
+  <data name="Network.Password.Label">
+    <value>Password</value>
+  </data>
+  <data name="Network.ProfileXml.Label">
+    <value>WLAN profile XML</value>
+  </data>
+  <data name="Network.ProfileXml.Description">
+    <value>Paste a full WLAN_profile_v1 XML document (the schema Windows exports via "netsh wlan export profile"). Validated against WLAN_profile_v1.xsd at generation time.</value>
+  </data>
+
+  <!-- ═══ Personalization ═══════════════════════════════════ -->
+  <data name="Section.personalization.Subtitle">
+    <value>Themes, accents, wallpaper, and lock-screen image applied on first logon.</value>
+  </data>
+  <data name="Personalization.Colors.Title">
+    <value>Colors &amp; theme</value>
+  </data>
+  <data name="Personalization.Colors.Subtitle">
+    <value>Light / dark choice for the shell and apps, accent colour, translucency.</value>
+  </data>
+  <data name="Personalization.Colors.Mode.Label">
+    <value>Color mode</value>
+  </data>
+  <data name="Personalization.Colors.Mode.Default">
+    <value>Windows default</value>
+  </data>
+  <data name="Personalization.Colors.Mode.Custom">
+    <value>Custom</value>
+  </data>
+  <data name="Personalization.Colors.TaskbarAndStartTheme.Label">
+    <value>Taskbar &amp; Start theme</value>
+  </data>
+  <data name="Personalization.Colors.AppsTheme.Label">
+    <value>Apps theme</value>
+  </data>
+  <data name="Personalization.Colors.Theme.Dark">
+    <value>Dark</value>
+  </data>
+  <data name="Personalization.Colors.Theme.Light">
+    <value>Light</value>
+  </data>
+  <data name="Personalization.Colors.AccentColor.Label">
+    <value>Accent colour</value>
+  </data>
+  <data name="Personalization.Colors.AccentColor.Description">
+    <value>HTML hex colour, e.g. #0078D4. Used for highlights and optionally Start / taskbar / title bars.</value>
+  </data>
+  <data name="Personalization.Colors.AccentOnStartAndTaskbar.Label">
+    <value>Show accent on Start and taskbar</value>
+  </data>
+  <data name="Personalization.Colors.AccentOnTitleBars.Label">
+    <value>Show accent on title bars and window borders</value>
+  </data>
+  <data name="Personalization.Colors.Translucent.Label">
+    <value>Enable transparency effects</value>
+  </data>
+  <data name="Personalization.Wallpaper.Title">
+    <value>Desktop wallpaper</value>
+  </data>
+  <data name="Personalization.Wallpaper.Subtitle">
+    <value>Keep the Windows default, paint a solid colour, or supply a PowerShell script that downloads the image.</value>
+  </data>
+  <data name="Personalization.Wallpaper.Mode.Label">
+    <value>Wallpaper source</value>
+  </data>
+  <data name="Personalization.Wallpaper.Mode.Default">
+    <value>Windows default</value>
+  </data>
+  <data name="Personalization.Wallpaper.Mode.SolidColor">
+    <value>Solid colour</value>
+  </data>
+  <data name="Personalization.Wallpaper.Mode.Script">
+    <value>PowerShell script</value>
+  </data>
+  <data name="Personalization.Wallpaper.SolidColor.Label">
+    <value>Solid colour (hex)</value>
+  </data>
+  <data name="Personalization.Wallpaper.SolidColor.Description">
+    <value>HTML hex colour, e.g. #1E1E1E.</value>
+  </data>
+  <data name="Personalization.Wallpaper.Script.Label">
+    <value>Wallpaper script</value>
+  </data>
+  <data name="Personalization.Wallpaper.Script.Description">
+    <value>PowerShell script that writes the image bytes to the pipeline ([byte[]]) — runs during Specialize. Example: Invoke-WebRequest -UseBasicParsing -Uri 'https://...' | Select-Object -Expand Content</value>
+  </data>
+  <data name="Personalization.LockScreen.Title">
+    <value>Lock screen</value>
+  </data>
+  <data name="Personalization.LockScreen.Subtitle">
+    <value>Optional PowerShell script that supplies the lock-screen image bytes.</value>
+  </data>
+  <data name="Personalization.LockScreen.Mode.Label">
+    <value>Lock-screen source</value>
+  </data>
+  <data name="Personalization.LockScreen.Mode.Default">
+    <value>Windows default</value>
+  </data>
+  <data name="Personalization.LockScreen.Mode.Script">
+    <value>PowerShell script</value>
+  </data>
+  <data name="Personalization.LockScreen.Script.Label">
+    <value>Lock-screen script</value>
+  </data>
+  <data name="Personalization.LockScreen.Script.Description">
+    <value>PowerShell script that writes the image bytes to the pipeline ([byte[]]) — runs during Specialize.</value>
+  </data>
+
+  <!-- ═══ Bloatware ═════════════════════════════════════════ -->
+  <data name="Section.bloatware.Subtitle">
+    <value>Remove preinstalled apps and capabilities. Uses the schneegans catalog.</value>
+  </data>
+  <data name="Bloatware.SelectAll">
+    <value>Select all</value>
+  </data>
+  <data name="Bloatware.ClearAll">
+    <value>Clear all</value>
+  </data>
+  <data name="Bloatware.Selected">
+    <value>{0} of {1} selected</value>
+  </data>
+
   <!-- ═══ Advanced mode ══════════════════════════════════════ -->
   <data name="Advanced.Title">
     <value>Advanced editor</value>
@@ -401,6 +563,9 @@
   </data>
   <data name="Advanced.Section.network">
     <value>📡 Network</value>
+  </data>
+  <data name="Advanced.Section.personalization">
+    <value>🎨 Personalization</value>
   </data>
 
   <!-- ═══ Docs mode ══════════════════════════════════════════ -->

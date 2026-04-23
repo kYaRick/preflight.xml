@@ -404,6 +404,9 @@
   <data name="Advanced.Section.network">
     <value>📡 Мережа</value>
   </data>
+  <data name="Advanced.Section.personalization">
+    <value>🎨 Персоналізація</value>
+  </data>
 
   <!-- ═══ Docs mode ══════════════════════════════════════════ -->
   <data name="Docs.Title">

@@ -193,9 +193,13 @@ public sealed class VmSupport
 public sealed class NetworkSettings
 {
     public WifiMode WifiMode { get; set; } = WifiMode.Interactive;
-    public string? WifiSsid { get; set; }
-    public string? WifiPassword { get; set; }
-    public WifiAuth WifiAuth { get; set; } = WifiAuth.Wpa2Personal;
+    // SSID / auth / password apply only when WifiMode == Configure.
+    public string? Ssid { get; set; }
+    public bool SsidHidden { get; set; }
+    public WifiAuth Auth { get; set; } = WifiAuth.Wpa2Personal;
+    public string? Password { get; set; }
+    // Raw WLAN_profile_v1 XML; applies only when WifiMode == ProfileXml.
+    public string? ProfileXml { get; set; }
 }
 
 public enum WifiMode
@@ -203,6 +207,7 @@ public enum WifiMode
     Interactive,
     Skip,
     Configure,
+    ProfileXml,
 }
 
 public enum WifiAuth
@@ -216,14 +221,59 @@ public enum WifiAuth
 
 public sealed class PersonalizationSettings
 {
-    public PersonalizationTheme Theme { get; set; } = PersonalizationTheme.Default;
-    public string? AccentColor { get; set; } // hex like "#0078d4"
+    public ColorSettings Colors { get; init; } = new();
+    public WallpaperSettings Wallpaper { get; init; } = new();
+    public LockScreenSettings LockScreen { get; init; } = new();
 }
 
-public enum PersonalizationTheme
+public sealed class ColorSettings
+{
+    public ColorMode Mode { get; set; } = ColorMode.Default;
+    public ColorTheme TaskbarAndStartTheme { get; set; } = ColorTheme.Dark;
+    public ColorTheme AppsTheme { get; set; } = ColorTheme.Dark;
+    /// <summary>HTML-style hex accent colour, e.g. <c>#0078d4</c>.</summary>
+    public string AccentColor { get; set; } = "#0078D4";
+    public bool AccentOnStartAndTaskbar { get; set; }
+    public bool AccentOnTitleBars { get; set; }
+    public bool Translucent { get; set; } = true;
+}
+
+public enum ColorMode
 {
     Default,
+    Custom,
+}
+
+public enum ColorTheme
+{
     Dark,
     Light,
-    Custom,
+}
+
+public sealed class WallpaperSettings
+{
+    public WallpaperMode Mode { get; set; } = WallpaperMode.Default;
+    /// <summary>HTML-style hex colour used when <see cref="Mode"/> is <see cref="WallpaperMode.SolidColor"/>.</summary>
+    public string SolidColor { get; set; } = "#0078D4";
+    /// <summary>PowerShell script that must echo a byte[] of the image; used when <see cref="Mode"/> is <see cref="WallpaperMode.Script"/>.</summary>
+    public string? Script { get; set; }
+}
+
+public enum WallpaperMode
+{
+    Default,
+    SolidColor,
+    Script,
+}
+
+public sealed class LockScreenSettings
+{
+    public LockScreenMode Mode { get; set; } = LockScreenMode.Default;
+    public string? Script { get; set; }
+}
+
+public enum LockScreenMode
+{
+    Default,
+    Script,
 }

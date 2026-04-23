@@ -22,6 +22,14 @@ public sealed class UnattendXmlBuilder
     private readonly UnattendGenerator _generator = new();
 
     /// <summary>
+    /// Read-only view over the embedded bloatware catalog for UI consumers
+    /// (see <see cref="BloatwareCatalog"/>). Returned as plain
+    /// <see cref="Bloatware"/> instances so callers can pick off
+    /// <c>Id</c> / <c>DisplayName</c> without a deeper schneegans dependency.
+    /// </summary>
+    public IEnumerable<Bloatware> GetBloatwareCatalog() => _generator.Bloatwares.Values;
+
+    /// <summary>
     /// Build an <c>autounattend.xml</c> string from the current config.
     /// Returns an XML comment describing the failure if mapping or generation throws -
     /// the Advanced panel displays whatever we return, so a thrown exception would blank
@@ -54,6 +62,10 @@ public sealed class UnattendXmlBuilder
         AccountSettings = MapAccounts(ui.Users, ui.FirstLogon),
         EditionSettings = MapEdition(ui.Edition),
         Bloatwares = MapBloatware(ui.Bloatware),
+        WifiSettings = MapWifi(ui.Network),
+        ColorSettings = MapColors(ui.Personalization.Colors),
+        WallpaperSettings = MapWallpaper(ui.Personalization.Wallpaper),
+        LockScreenSettings = MapLockScreen(ui.Personalization.LockScreen),
     };
 
     private ILanguageSettings MapLanguage(RegionSettings region)
@@ -145,6 +157,88 @@ public sealed class UnattendXmlBuilder
         Preflight.App.Models.WindowsEdition.EnterpriseN => "enterprise_n",
         _ => "pro",
     };
+
+    private static IWifiSettings MapWifi(NetworkSettings net)
+    {
+        switch (net.WifiMode)
+        {
+            case Preflight.App.Models.WifiMode.Skip:
+                return new SkipWifiSettings();
+            case Preflight.App.Models.WifiMode.Configure:
+                // An SSID is mandatory; fall back to Interactive until the user types one so
+                // the preview keeps rendering instead of blanking on ConfigurationException.
+                if (string.IsNullOrWhiteSpace(net.Ssid))
+                    return new InteractiveWifiSettings();
+                var auth = net.Auth switch
+                {
+                    Preflight.App.Models.WifiAuth.Open         => WifiAuthentications.Open,
+                    Preflight.App.Models.WifiAuth.Wpa3Personal => WifiAuthentications.WPA3SAE,
+                    _                                          => WifiAuthentications.WPA2PSK,
+                };
+                // Open nets get an empty password; the schneegans builder ignores it.
+                var pwd = auth == WifiAuthentications.Open ? string.Empty : (net.Password ?? string.Empty);
+                return new ParameterizedWifiSettings(
+                    Name: net.Ssid!,
+                    Password: pwd,
+                    ConnectAutomatically: true,
+                    Authentication: auth,
+                    NonBroadcast: net.SsidHidden);
+            case Preflight.App.Models.WifiMode.ProfileXml:
+                if (string.IsNullOrWhiteSpace(net.ProfileXml))
+                    return new InteractiveWifiSettings();
+                // XmlWifiSettings throws ConfigurationException on bad XML — catch so a
+                // half-typed profile doesn't blow up the whole preview.
+                try { return new XmlWifiSettings(net.ProfileXml!); }
+                catch (ConfigurationException) { return new InteractiveWifiSettings(); }
+            default:
+                return new InteractiveWifiSettings();
+        }
+    }
+
+    private static IColorSettings MapColors(ColorSettings c)
+    {
+        if (c.Mode != ColorMode.Custom) return new DefaultColorSettings();
+
+        // The custom path needs a parseable hex string; on garbage input fall back to default.
+        if (!TryParseHtmlColor(c.AccentColor, out var accent))
+            return new DefaultColorSettings();
+
+        return new CustomColorSettings(
+            SystemTheme: c.TaskbarAndStartTheme == Preflight.App.Models.ColorTheme.Light
+                ? Schneegans.Unattend.ColorTheme.Light
+                : Schneegans.Unattend.ColorTheme.Dark,
+            AppsTheme: c.AppsTheme == Preflight.App.Models.ColorTheme.Light
+                ? Schneegans.Unattend.ColorTheme.Light
+                : Schneegans.Unattend.ColorTheme.Dark,
+            EnableTransparency: c.Translucent,
+            AccentColorOnStart: c.AccentOnStartAndTaskbar,
+            AccentColorOnBorders: c.AccentOnTitleBars,
+            AccentColor: accent);
+    }
+
+    private static IWallpaperSettings MapWallpaper(WallpaperSettings w) => w.Mode switch
+    {
+        WallpaperMode.SolidColor when TryParseHtmlColor(w.SolidColor, out var c)
+            => new SolidWallpaperSettings(c),
+        WallpaperMode.Script when !string.IsNullOrWhiteSpace(w.Script)
+            => new ScriptWallpaperSettings(w.Script!),
+        _ => new DefaultWallpaperSettings(),
+    };
+
+    private static ILockScreenSettings MapLockScreen(LockScreenSettings l) => l.Mode switch
+    {
+        LockScreenMode.Script when !string.IsNullOrWhiteSpace(l.Script)
+            => new ScriptLockScreenSettings(l.Script!),
+        _ => new DefaultLockScreenSettings(),
+    };
+
+    private static bool TryParseHtmlColor(string? html, out System.Drawing.Color color)
+    {
+        color = System.Drawing.Color.Empty;
+        if (string.IsNullOrWhiteSpace(html)) return false;
+        try { color = System.Drawing.ColorTranslator.FromHtml(html.Trim()); return true; }
+        catch (Exception) { return false; }
+    }
 
     private ImmutableList<Bloatware> MapBloatware(BloatwareSettings bloatware)
     {
