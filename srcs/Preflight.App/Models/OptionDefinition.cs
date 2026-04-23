@@ -6,22 +6,23 @@ public enum OptionKind
     Dropdown,
     /// <summary>Plain text input bound to a <see cref="string"/>.</summary>
     Text,
-    /// <summary>Boolean checkbox. <see cref="OptionDefinition.GetString"/> / <see cref="OptionDefinition.SetString"/> are ignored; use <see cref="OptionDefinition.GetBool"/> / <see cref="OptionDefinition.SetBool"/>.</summary>
+    /// <summary>Boolean checkbox. Uses <see cref="OptionDefinition.GetBool"/> / <see cref="OptionDefinition.SetBool"/>.</summary>
     Checkbox,
-    /// <summary>Radio group - exactly one of <see cref="OptionDefinition.InlineValues"/> is selected.
-    /// Uses <see cref="OptionDefinition.GetString"/> / <see cref="OptionDefinition.SetString"/>.</summary>
+    /// <summary>Exclusive radio group. Items from <see cref="OptionDefinition.InlineValues"/>; bound via <see cref="OptionDefinition.GetString"/>/<see cref="OptionDefinition.SetString"/>.</summary>
     Radio,
-    /// <summary>Group of independent checkboxes (each item can be toggled independently).
-    /// Uses <see cref="OptionDefinition.IsItemSelected"/> / <see cref="OptionDefinition.SetItemSelected"/>.</summary>
+    /// <summary>Multi-select group of independent checkboxes.
+    /// Membership is read/written via <see cref="OptionDefinition.IsItemSelected"/>/<see cref="OptionDefinition.SetItemSelected"/>
+    /// (preferred), or legacy <see cref="OptionDefinition.GetStringSet"/>/<see cref="OptionDefinition.SetStringSetItem"/>.</summary>
     CheckboxGroup,
-    /// <summary>Numeric input bound to an <see cref="int"/>. Uses <see cref="OptionDefinition.GetInt"/> / <see cref="OptionDefinition.SetInt"/>.</summary>
+    /// <summary>Numeric input bound via <see cref="OptionDefinition.GetInt"/>/<see cref="OptionDefinition.SetInt"/>.</summary>
     Number,
-    /// <summary>Multi-line text input bound to a <see cref="string"/>. Uses <see cref="OptionDefinition.GetString"/> / <see cref="OptionDefinition.SetString"/>.</summary>
+    /// <summary>Multi-line text input bound via <see cref="OptionDefinition.GetString"/>/<see cref="OptionDefinition.SetString"/>.</summary>
     Textarea,
 }
 
 /// <summary>
 /// Describes one user-editable option inside a <see cref="SectionDefinition"/>.
+/// Bindings are strongly typed by kind; each kind only reads the delegates it needs.
 /// </summary>
 public sealed record OptionDefinition
 {
@@ -43,18 +44,17 @@ public sealed record OptionDefinition
     public required OptionKind Kind { get; init; }
 
     /// <summary>
-    /// Optional sub-heading grouping marker. When set, this option appears under an
-    /// &lt;h4&gt; sub-heading rendered from this resource key. Consecutive options sharing
-    /// the same value render once under one heading.
+    /// Optional sub-heading grouping marker. Consecutive options sharing the same value
+    /// render once under one &lt;h4&gt; from this resource key.
     /// </summary>
     public string? GroupHeadingKey { get; init; }
 
-    // ─── Value source (Dropdown / Radio / CheckboxGroup) ──────────
+    // ─── Value source (Dropdown / Radio / CheckboxGroup) ─────────
 
-    /// <summary>When non-null, the view fetches this JSON path from <c>wwwroot/</c> and maps <c>{Id, DisplayName}</c> into dropdown options.</summary>
+    /// <summary>When non-null, the view fetches this JSON path from <c>wwwroot/</c> and maps <c>{Id, DisplayName}</c> into options.</summary>
     public string? JsonSource { get; init; }
 
-    /// <summary>Inline value list for small dropdowns / radios / checkbox groups where a JSON file would be overkill.</summary>
+    /// <summary>Inline value list for small dropdowns / radios / checkbox groups.</summary>
     public IReadOnlyList<OptionValue>? InlineValues { get; init; }
 
     // ─── Number-input bounds (Number only) ────────────────────────
@@ -62,9 +62,22 @@ public sealed record OptionDefinition
     public int? Min { get; init; }
     public int? Max { get; init; }
 
-    // ─── Textarea size (Textarea only) ────────────────────────────
+    // ─── Textarea tuning ──────────────────────────────────────────
 
+    /// <summary>Row count hint for the <see cref="OptionKind.Textarea"/> control. Legacy alias honoured by <see cref="SectionView"/>.</summary>
     public int? Rows { get; init; }
+
+    /// <summary>Row count hint for the <see cref="OptionKind.Textarea"/> control.</summary>
+    public int TextareaRows { get; init; } = 6;
+
+    /// <summary>Monospace rendering hint.</summary>
+    public bool Monospace { get; init; }
+
+    /// <summary>Placeholder text for text-like inputs (raw string).</summary>
+    public string? Placeholder { get; init; }
+
+    /// <summary>Resource-keyed placeholder (alternative to raw <see cref="Placeholder"/>).</summary>
+    public string? PlaceholderKey { get; init; }
 
     // ─── Binding ──────────────────────────────────────────────────
 
@@ -81,6 +94,11 @@ public sealed record OptionDefinition
     public Func<UnattendConfig, string, bool>? IsItemSelected { get; init; }
     /// <summary>For <see cref="OptionKind.CheckboxGroup"/>: set selected state for this value-id.</summary>
     public Action<UnattendConfig, string, bool>? SetItemSelected { get; init; }
+
+    /// <summary>Legacy CheckboxGroup binding: whole-set read. Prefer <see cref="IsItemSelected"/>.</summary>
+    public Func<UnattendConfig, ISet<string>>? GetStringSet { get; init; }
+    /// <summary>Legacy CheckboxGroup binding: per-item write. Prefer <see cref="SetItemSelected"/>.</summary>
+    public Action<UnattendConfig, string, bool>? SetStringSetItem { get; init; }
 
     // ─── Conditional visibility ───────────────────────────────────
 

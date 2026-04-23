@@ -1,0 +1,95 @@
+@using System.Net.Http.Json
+@using Preflight.App.Models
+@inject IStringLocalizer<SharedResources> L
+@inject HttpClient Http
+@inject ModeService Mode
+@implements IDisposable
+
+<div class="pf-section pf-section--advanced">
+    <header class="pf-section__head">
+        <h2 class="pf-section__title">@L["Advanced.Section.components"]</h2>
+        <p class="pf-section__subtitle">@L["Section.components.Subtitle"]</p>
+    </header>
+
+    <p class="pf-section__intro-note">@L["Components.Help"]</p>
+
+    @for (var i = 0; i < Mode.Config.Components.Entries.Count; i++)
+    {
+        var slotIndex = i;
+        var entry = Mode.Config.Components.Entries[slotIndex];
+
+        <div class="pf-component-slot">
+            <div class="pf-component-slot__head">
+                <span class="pf-component-slot__num">#@(slotIndex + 1)</span>
+                <label class="pf-option__label" for="@($"comp-id-{slotIndex}")">@L["Components.ComponentId.Label"]</label>
+            </div>
+            <FluentSelect TOption="string"
+                          Value="@(entry.ComponentId ?? string.Empty)"
+                          ValueChanged="@(v => OnComponentIdChanged(slotIndex, v))"
+                          Width="100%">
+                @foreach (var opt in _componentOptions)
+                {
+                    <FluentOption TOption="string" Value="@opt.Id" Selected="@(opt.Id == (entry.ComponentId ?? string.Empty))">@opt.DisplayName</FluentOption>
+                }
+            </FluentSelect>
+
+            <label class="pf-option__label" style="margin-top: 12px;">@L["Components.Xml.Label"]</label>
+            <FluentTextArea Value="@(entry.Xml ?? string.Empty)"
+                            ValueChanged="@(v => OnXmlChanged(slotIndex, v))"
+                            Rows="8"
+                            Style="width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;"
+                            Placeholder="@L["Components.Xml.Placeholder"]" />
+        </div>
+    }
+</div>
+
+@code {
+    public sealed record ComponentEntry(string Id, string DisplayName);
+
+    private IReadOnlyList<ComponentEntry> _componentOptions = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Mode.StateChanged += OnStateChanged;
+        await LoadComponentsAsync();
+    }
+
+    private async Task LoadComponentsAsync()
+    {
+        try
+        {
+            var entries = await Http.GetFromJsonAsync<List<ComponentEntry>>("data/components.json");
+            if (entries is not null)
+            {
+                // Prepend an empty "not selected" option so a slot can be explicitly cleared.
+                var list = new List<ComponentEntry> { new(string.Empty, L["Components.None"]) };
+                list.AddRange(entries);
+                _componentOptions = list;
+                StateHasChanged();
+            }
+        }
+        catch (HttpRequestException)
+        {
+            _componentOptions = [new(string.Empty, L["Components.None"])];
+        }
+    }
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Mode.StateChanged -= OnStateChanged;
+    }
+
+    private void OnComponentIdChanged(int slotIndex, string? value)
+    {
+        Mode.Config.Components.Entries[slotIndex].ComponentId = string.IsNullOrEmpty(value) ? null : value;
+        Mode.NotifyConfigChanged();
+    }
+
+    private void OnXmlChanged(int slotIndex, string? value)
+    {
+        Mode.Config.Components.Entries[slotIndex].Xml = value;
+        Mode.NotifyConfigChanged();
+    }
+}

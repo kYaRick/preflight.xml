@@ -4,12 +4,12 @@ using Preflight.App.Models;
 namespace Preflight.App.Content;
 
 /// <summary>
-/// Central lookup of every data-driven <see cref="SectionDefinition"/>. Rather than asking
-/// each page (Docs / Advanced / Wizard) to import every section class by name, callers go
-/// through here so adding a section is a one-line registry edit.
+/// Single source of truth for every section the Advanced / Docs / Wizard surfaces know about.
+/// Data-driven sections expose a <see cref="SectionDefinition"/>; sections with bespoke UI
+/// skip the definition (or publish it only for header metadata) and render via a dedicated
+/// <c>.razor</c> that AdvancedShell switches on by id.
 ///
-/// Sections that need a bespoke layout (lock-keys, sticky-keys) are identified by id here
-/// but rendered by a dedicated <c>.razor</c> component the calling page switches on.
+/// Keys are the URL-safe slugs used by <c>/advanced/{id}</c> and <c>/docs/{id}</c>.
 /// </summary>
 public static class SectionRegistry
 {
@@ -22,11 +22,24 @@ public static class SectionRegistry
         "express-settings",
         "lock-keys",
         "sticky-keys",
+        "wdac",
+        "applocker",
+        "scripts",
+        "components",
     ];
 
-    /// <summary>Section ids that render via a custom .razor component instead of the data-driven SectionView.</summary>
+    /// <summary>Section ids that render via a bespoke <c>.razor</c> component instead of the generic <see cref="Layout.SectionView"/>.</summary>
     public static readonly IReadOnlySet<string> CustomSectionIds =
-        new HashSet<string>(StringComparer.Ordinal) { "lock-keys", "sticky-keys" };
+        new HashSet<string>(StringComparer.Ordinal)
+        {
+            "lock-keys",
+            "sticky-keys",
+            "scripts",
+            "components",
+        };
+
+    /// <summary>Public dictionary exposed for pages that want to enumerate data-driven defs (e.g. Docs).</summary>
+    public static IReadOnlyDictionary<string, SectionDefinition> Definitions => _defs;
 
     private static readonly Dictionary<string, SectionDefinition> _defs = new(StringComparer.Ordinal)
     {
@@ -35,13 +48,16 @@ public static class SectionRegistry
         ["vm-support"] = VmSupportSection.Definition,
         ["express-settings"] = ExpressSettingsSection.Definition,
         // lock-keys / sticky-keys render via bespoke .razor components, but we still register
-        // their section metadata so header / nav labels can come from a single source of truth.
+        // their metadata so header / nav labels have a single source of truth.
         ["lock-keys"] = LockKeysSection.Definition,
         ["sticky-keys"] = StickyKeysSection.Definition,
+        ["wdac"] = WdacSection.Definition,
+        ["applocker"] = AppLockerSection.Definition,
     };
 
-    public static SectionDefinition? TryGet(string id) =>
-        _defs.TryGetValue(id, out var def) ? def : null;
+    public static SectionDefinition? TryGet(string? id) =>
+        id is not null && _defs.TryGetValue(id, out var def) ? def : null;
 
-    public static bool IsCustom(string id) => CustomSectionIds.Contains(id);
+    public static bool IsCustom(string? id) =>
+        id is not null && CustomSectionIds.Contains(id);
 }

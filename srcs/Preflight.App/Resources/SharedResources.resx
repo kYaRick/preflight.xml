@@ -414,6 +414,173 @@
   <data name="Advanced.Section.network">
     <value>📡 Network</value>
   </data>
+  <data name="Advanced.Section.scripts">
+    <value>📜 Custom scripts</value>
+  </data>
+  <data name="Advanced.Section.wdac">
+    <value>🛡️ WDAC</value>
+  </data>
+  <data name="Advanced.Section.applocker">
+    <value>🔐 AppLocker</value>
+  </data>
+  <data name="Advanced.Section.components">
+    <value>🧩 XML components</value>
+  </data>
+
+  <!-- ═══ Scripts section ═════════════════════════════════════ -->
+  <data name="Section.scripts.Subtitle">
+    <value>Run Cmd / PowerShell / Registry / VBScript at four points during Windows Setup.</value>
+  </data>
+  <data name="Scripts.Phase.System.Label">
+    <value>System (Specialize pass)</value>
+  </data>
+  <data name="Scripts.Phase.System.Description">
+    <value>Runs in the SYSTEM context before any user profile exists. Use for domain join, driver install, service configuration.</value>
+  </data>
+  <data name="Scripts.Phase.DefaultUser.Label">
+    <value>Default user</value>
+  </data>
+  <data name="Scripts.Phase.DefaultUser.Description">
+    <value>Edits the Default User hive so settings apply to every new profile. Only Registry, Cmd and PowerShell are allowed here.</value>
+  </data>
+  <data name="Scripts.Phase.FirstLogon.Label">
+    <value>First logon</value>
+  </data>
+  <data name="Scripts.Phase.FirstLogon.Description">
+    <value>Runs once, on the very first user logon, in that user's context.</value>
+  </data>
+  <data name="Scripts.Phase.UserOnce.Label">
+    <value>User once (every new user)</value>
+  </data>
+  <data name="Scripts.Phase.UserOnce.Description">
+    <value>Runs on each user's first logon, per-user.</value>
+  </data>
+  <data name="Scripts.Type.Cmd">
+    <value>Cmd (.cmd)</value>
+  </data>
+  <data name="Scripts.Type.PowerShell">
+    <value>PowerShell (.ps1)</value>
+  </data>
+  <data name="Scripts.Type.Registry">
+    <value>Registry (.reg)</value>
+  </data>
+  <data name="Scripts.Type.VbScript">
+    <value>VBScript (.vbs)</value>
+  </data>
+  <data name="Scripts.Type.Cmd.Placeholder">
+    <value>@echo off
+rem Commands run as SYSTEM…</value>
+  </data>
+  <data name="Scripts.Type.PowerShell.Placeholder">
+    <value># PowerShell, runs as SYSTEM
+Write-Host 'Hello from preflight.xml'</value>
+  </data>
+  <data name="Scripts.Type.Registry.Placeholder">
+    <value>Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\MyKey]
+"Value"="example"</value>
+  </data>
+  <data name="Scripts.Type.VbScript.Placeholder">
+    <value>' VBScript
+WScript.Echo "Hello"</value>
+  </data>
+  <data name="Scripts.Slot.Clear">
+    <value>Clear</value>
+  </data>
+  <data name="Scripts.RestartExplorer.Label">
+    <value>Restart Explorer after scripts finish</value>
+  </data>
+  <data name="Scripts.RestartExplorer.Description">
+    <value>Applies any shell-related registry tweaks without a reboot.</value>
+  </data>
+
+  <!-- ═══ WDAC section ════════════════════════════════════════ -->
+  <data name="Section.wdac.Subtitle">
+    <value>Windows Defender Application Control - lock down which binaries can execute.</value>
+  </data>
+  <data name="Wdac.Mode.Label">
+    <value>Mode</value>
+  </data>
+  <data name="Wdac.Mode.Description">
+    <value>Choose "Not configured" to skip WDAC entirely, or "Basic" to deploy a built-in policy allowing Windows, Program Files and Program Files (x86), with known write-able folders denied.</value>
+  </data>
+  <data name="Wdac.Mode.NotConfigured">
+    <value>Not configured</value>
+  </data>
+  <data name="Wdac.Mode.Basic">
+    <value>Basic policy</value>
+  </data>
+  <data name="Wdac.Enforcement.Label">
+    <value>Enforcement</value>
+  </data>
+  <data name="Wdac.Enforcement.Description">
+    <value>Audit logs violations without blocking, "Enforce" blocks. Only applies when Mode = Basic policy.</value>
+  </data>
+  <data name="Wdac.Enforcement.Audit">
+    <value>Audit only</value>
+  </data>
+  <data name="Wdac.Enforcement.AuditOnBootFail">
+    <value>Audit on boot failure</value>
+  </data>
+  <data name="Wdac.Enforcement.Enforce">
+    <value>Enforce</value>
+  </data>
+  <data name="Wdac.ScriptEnforcement.Label">
+    <value>Script enforcement</value>
+  </data>
+  <data name="Wdac.ScriptEnforcement.Description">
+    <value>"Restricted" blocks untrusted PowerShell/VBScript; "Unrestricted" lets them run.</value>
+  </data>
+  <data name="Wdac.ScriptEnforcement.Restricted">
+    <value>Restricted</value>
+  </data>
+  <data name="Wdac.ScriptEnforcement.Unrestricted">
+    <value>Unrestricted</value>
+  </data>
+
+  <!-- ═══ AppLocker section ═══════════════════════════════════ -->
+  <data name="Section.applocker.Subtitle">
+    <value>Paste a custom AppLocker policy XML to deploy at first boot.</value>
+  </data>
+  <data name="AppLocker.Mode.Label">
+    <value>Mode</value>
+  </data>
+  <data name="AppLocker.Mode.Description">
+    <value>"Not configured" skips AppLocker. "Custom XML" deploys the policy you paste below; it's validated against Microsoft's schema at generation time.</value>
+  </data>
+  <data name="AppLocker.Mode.NotConfigured">
+    <value>Not configured</value>
+  </data>
+  <data name="AppLocker.Mode.CustomXml">
+    <value>Custom XML policy</value>
+  </data>
+  <data name="AppLocker.PolicyXml.Label">
+    <value>Policy XML</value>
+  </data>
+  <data name="AppLocker.PolicyXml.Description">
+    <value>An AppLockerPolicy document. Invalid XML is reported in the generated autounattend as a comment.</value>
+  </data>
+
+  <!-- ═══ Components section ══════════════════════════════════ -->
+  <data name="Section.components.Subtitle">
+    <value>Inject raw autounattend.xml fragments into chosen components.</value>
+  </data>
+  <data name="Components.Help">
+    <value>For each slot, pick a component + pass combination and paste the child XML that should appear inside the &lt;component&gt; element. Leave slots empty to skip.</value>
+  </data>
+  <data name="Components.ComponentId.Label">
+    <value>Component / pass</value>
+  </data>
+  <data name="Components.Xml.Label">
+    <value>XML fragment</value>
+  </data>
+  <data name="Components.Xml.Placeholder">
+    <value>&lt;SomeElement&gt;value&lt;/SomeElement&gt;</value>
+  </data>
+  <data name="Components.None">
+    <value>— Not selected —</value>
+  </data>
 
   <!-- ═══ System tweaks section ═══════════════════════════════ -->
   <data name="Section.tweaks.Subtitle">

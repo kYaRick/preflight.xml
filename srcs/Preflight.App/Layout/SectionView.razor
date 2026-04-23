@@ -302,16 +302,36 @@
 
     private void RenderCheckboxGroup(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
     {
-        var entries = option.InlineValues ?? [];
+        // Data source: inline values (preferred for enum-style sets) or JSON loaded at OnParametersSet
+        // (used by large bloatware/icon/component lists).
+        IReadOnlyList<(string Value, string DisplayText)> rows;
+        if (option.InlineValues is { } inline && inline.Count > 0)
+        {
+            rows = inline.Select(v => (v.Value, (string)L[v.DisplayKey])).ToList();
+        }
+        else if (option.JsonSource is not null && _jsonCache.TryGetValue(option.JsonSource, out var cached))
+        {
+            rows = cached.Select(e => (e.Id, e.DisplayName)).ToList();
+        }
+        else
+        {
+            rows = [];
+        }
+
+        // Membership lookup: prefer the per-item delegate (Group-5 pattern), fall back to the
+        // whole-set getter (Group-7 legacy) if only that one is supplied.
+        var legacySet = option.GetStringSet?.Invoke(ModeSvc.Config);
 
         var i = 0;
         builder.OpenElement(i++, "div");
         builder.AddAttribute(i++, "class", "pf-checkbox-group");
 
-        foreach (var entry in entries)
+        foreach (var row in rows)
         {
-            var entryValue = entry.Value;
-            var isChecked = option.IsItemSelected?.Invoke(ModeSvc.Config, entryValue) ?? false;
+            var value = row.Value;
+            var isChecked = option.IsItemSelected?.Invoke(ModeSvc.Config, value)
+                            ?? legacySet?.Contains(value)
+                            ?? false;
 
             builder.OpenElement(i++, "label");
             builder.AddAttribute(i++, "class", "pf-checkbox-row");
@@ -320,14 +340,17 @@
             builder.AddAttribute(i++, "Value", isChecked);
             builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<bool>(this, v =>
             {
-                option.SetItemSelected?.Invoke(ModeSvc.Config, entryValue, v);
+                if (option.SetItemSelected is not null)
+                    option.SetItemSelected.Invoke(ModeSvc.Config, value, v);
+                else
+                    option.SetStringSetItem?.Invoke(ModeSvc.Config, value, v);
                 ModeSvc.NotifyConfigChanged();
             }));
             builder.CloseComponent();
 
             builder.OpenElement(i++, "span");
             builder.AddAttribute(i++, "class", "pf-checkbox-row__label");
-            builder.AddContent(i++, L[entry.DisplayKey]);
+            builder.AddContent(i++, row.DisplayText);
             builder.CloseElement();
 
             builder.CloseElement();
@@ -357,9 +380,15 @@
     {
         var i = 0;
         builder.OpenComponent<FluentTextArea>(i++);
-        builder.AddAttribute(i++, "Value", option.GetString?.Invoke(ModeSvc.Config));
-        builder.AddAttribute(i++, "Rows", option.Rows ?? 5);
+        builder.AddAttribute(i++, "Value", option.GetString?.Invoke(ModeSvc.Config) ?? "");
+        // Rows: explicit `Rows` override wins; otherwise fall back to `TextareaRows` (default 6).
+        builder.AddAttribute(i++, "Rows", option.Rows ?? option.TextareaRows);
         builder.AddAttribute(i++, "Class", "pf-textarea");
+        var placeholder = option.PlaceholderKey is not null ? (string)L[option.PlaceholderKey] : option.Placeholder;
+        if (!string.IsNullOrEmpty(placeholder))
+            builder.AddAttribute(i++, "Placeholder", placeholder);
+        if (option.Monospace)
+            builder.AddAttribute(i++, "Style", "width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;");
         builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<string>(this, v =>
         {
             option.SetString?.Invoke(ModeSvc.Config, v);

@@ -416,6 +416,173 @@
   <data name="Advanced.Section.network">
     <value>📡 Мережа</value>
   </data>
+  <data name="Advanced.Section.scripts">
+    <value>📜 Скрипти</value>
+  </data>
+  <data name="Advanced.Section.wdac">
+    <value>🛡️ WDAC</value>
+  </data>
+  <data name="Advanced.Section.applocker">
+    <value>🔐 AppLocker</value>
+  </data>
+  <data name="Advanced.Section.components">
+    <value>🧩 XML-компоненти</value>
+  </data>
+
+  <!-- ═══ Scripts section ═════════════════════════════════════ -->
+  <data name="Section.scripts.Subtitle">
+    <value>Виконати Cmd / PowerShell / Registry / VBScript у чотирьох точках Windows Setup.</value>
+  </data>
+  <data name="Scripts.Phase.System.Label">
+    <value>Система (пас Specialize)</value>
+  </data>
+  <data name="Scripts.Phase.System.Description">
+    <value>Запускається в контексті SYSTEM ще до створення профілів користувачів.</value>
+  </data>
+  <data name="Scripts.Phase.DefaultUser.Label">
+    <value>Default user</value>
+  </data>
+  <data name="Scripts.Phase.DefaultUser.Description">
+    <value>Редагує гілку Default User, щоб налаштування потрапили у кожен новий профіль. Дозволено лише Registry, Cmd і PowerShell.</value>
+  </data>
+  <data name="Scripts.Phase.FirstLogon.Label">
+    <value>Перший вхід</value>
+  </data>
+  <data name="Scripts.Phase.FirstLogon.Description">
+    <value>Запускається один раз при першому вході першого користувача в його контексті.</value>
+  </data>
+  <data name="Scripts.Phase.UserOnce.Label">
+    <value>User once (для кожного нового користувача)</value>
+  </data>
+  <data name="Scripts.Phase.UserOnce.Description">
+    <value>Запускається при першому вході кожного окремого користувача.</value>
+  </data>
+  <data name="Scripts.Type.Cmd">
+    <value>Cmd (.cmd)</value>
+  </data>
+  <data name="Scripts.Type.PowerShell">
+    <value>PowerShell (.ps1)</value>
+  </data>
+  <data name="Scripts.Type.Registry">
+    <value>Registry (.reg)</value>
+  </data>
+  <data name="Scripts.Type.VbScript">
+    <value>VBScript (.vbs)</value>
+  </data>
+  <data name="Scripts.Type.Cmd.Placeholder">
+    <value>@echo off
+rem Команди виконуються як SYSTEM…</value>
+  </data>
+  <data name="Scripts.Type.PowerShell.Placeholder">
+    <value># PowerShell, виконується як SYSTEM
+Write-Host 'Hello from preflight.xml'</value>
+  </data>
+  <data name="Scripts.Type.Registry.Placeholder">
+    <value>Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\SOFTWARE\MyKey]
+"Value"="example"</value>
+  </data>
+  <data name="Scripts.Type.VbScript.Placeholder">
+    <value>' VBScript
+WScript.Echo "Hello"</value>
+  </data>
+  <data name="Scripts.Slot.Clear">
+    <value>Очистити</value>
+  </data>
+  <data name="Scripts.RestartExplorer.Label">
+    <value>Перезапустити Explorer після скриптів</value>
+  </data>
+  <data name="Scripts.RestartExplorer.Description">
+    <value>Застосовує реєстрові зміни без перезавантаження.</value>
+  </data>
+
+  <!-- ═══ WDAC section ════════════════════════════════════════ -->
+  <data name="Section.wdac.Subtitle">
+    <value>Windows Defender Application Control - обмеження запуску виконуваних файлів.</value>
+  </data>
+  <data name="Wdac.Mode.Label">
+    <value>Режим</value>
+  </data>
+  <data name="Wdac.Mode.Description">
+    <value>«Не налаштовано» пропускає WDAC. «Базова» розгортає політику за замовчуванням.</value>
+  </data>
+  <data name="Wdac.Mode.NotConfigured">
+    <value>Не налаштовано</value>
+  </data>
+  <data name="Wdac.Mode.Basic">
+    <value>Базова політика</value>
+  </data>
+  <data name="Wdac.Enforcement.Label">
+    <value>Застосування</value>
+  </data>
+  <data name="Wdac.Enforcement.Description">
+    <value>«Тільки аудит» логує порушення, «Застосовувати» блокує. Дійсне лише у режимі «Базова політика».</value>
+  </data>
+  <data name="Wdac.Enforcement.Audit">
+    <value>Лише аудит</value>
+  </data>
+  <data name="Wdac.Enforcement.AuditOnBootFail">
+    <value>Аудит при збою завантаження</value>
+  </data>
+  <data name="Wdac.Enforcement.Enforce">
+    <value>Застосовувати</value>
+  </data>
+  <data name="Wdac.ScriptEnforcement.Label">
+    <value>Застосування до скриптів</value>
+  </data>
+  <data name="Wdac.ScriptEnforcement.Description">
+    <value>«Обмежено» блокує недовірені PowerShell/VBScript; «Без обмежень» дозволяє їх.</value>
+  </data>
+  <data name="Wdac.ScriptEnforcement.Restricted">
+    <value>Обмежено</value>
+  </data>
+  <data name="Wdac.ScriptEnforcement.Unrestricted">
+    <value>Без обмежень</value>
+  </data>
+
+  <!-- ═══ AppLocker section ═══════════════════════════════════ -->
+  <data name="Section.applocker.Subtitle">
+    <value>Вставте власну політику AppLocker у форматі XML.</value>
+  </data>
+  <data name="AppLocker.Mode.Label">
+    <value>Режим</value>
+  </data>
+  <data name="AppLocker.Mode.Description">
+    <value>«Не налаштовано» пропускає AppLocker. «Власний XML» розгортає вставлену політику; її перевіряють за схемою Microsoft.</value>
+  </data>
+  <data name="AppLocker.Mode.NotConfigured">
+    <value>Не налаштовано</value>
+  </data>
+  <data name="AppLocker.Mode.CustomXml">
+    <value>Власний XML</value>
+  </data>
+  <data name="AppLocker.PolicyXml.Label">
+    <value>XML політики</value>
+  </data>
+  <data name="AppLocker.PolicyXml.Description">
+    <value>Документ AppLockerPolicy. Про некоректний XML ви дізнаєтесь у вигляді коментаря у згенерованому autounattend.</value>
+  </data>
+
+  <!-- ═══ Components section ══════════════════════════════════ -->
+  <data name="Section.components.Subtitle">
+    <value>Вставте сирі фрагменти autounattend.xml у вибрані компоненти.</value>
+  </data>
+  <data name="Components.Help">
+    <value>Для кожного слоту виберіть комбінацію компонента і паса та вставте дочірній XML, який має зʼявитися всередині елемента &lt;component&gt;. Порожні слоти пропускаються.</value>
+  </data>
+  <data name="Components.ComponentId.Label">
+    <value>Компонент / пас</value>
+  </data>
+  <data name="Components.Xml.Label">
+    <value>XML-фрагмент</value>
+  </data>
+  <data name="Components.Xml.Placeholder">
+    <value>&lt;SomeElement&gt;value&lt;/SomeElement&gt;</value>
+  </data>
+  <data name="Components.None">
+    <value>— Не вибрано —</value>
+  </data>
 
   <!-- ═══ System tweaks section ═══════════════════════════════ -->
   <data name="Section.tweaks.Subtitle">

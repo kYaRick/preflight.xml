@@ -110,6 +110,31 @@
     // below; new data-driven sections need zero changes here.
     private RenderFragment RenderActiveSection() => builder =>
     {
+        // Custom-razor sections run BEFORE the SectionDefinition lookup so a pure-
+        // custom section (no Definition entry, e.g. scripts/components) still dispatches.
+        if (SectionRegistry.IsCustom(_activeSection))
+        {
+            switch (_activeSection)
+            {
+                case "lock-keys":
+                    builder.OpenComponent<LockKeysForm>(0);
+                    builder.CloseComponent();
+                    return;
+                case "sticky-keys":
+                    builder.OpenComponent<StickyKeysForm>(0);
+                    builder.CloseComponent();
+                    return;
+                case "scripts":
+                    builder.OpenComponent<ScriptsSection>(0);
+                    builder.CloseComponent();
+                    return;
+                case "components":
+                    builder.OpenComponent<ComponentsSection>(0);
+                    builder.CloseComponent();
+                    return;
+            }
+        }
+
         var def = SectionRegistry.TryGet(_activeSection);
         if (def is null)
         {
@@ -123,21 +148,6 @@
             builder.AddAttribute(6, "ChildContent", (RenderFragment)(b => b.AddContent(0, L["Common.ComingInPhase3"])));
             builder.CloseComponent();
             return;
-        }
-
-        if (SectionRegistry.IsCustom(_activeSection))
-        {
-            switch (_activeSection)
-            {
-                case "lock-keys":
-                    builder.OpenComponent<LockKeysForm>(0);
-                    builder.CloseComponent();
-                    return;
-                case "sticky-keys":
-                    builder.OpenComponent<StickyKeysForm>(0);
-                    builder.CloseComponent();
-                    return;
-            }
         }
 
         builder.OpenComponent<SectionView>(0);
