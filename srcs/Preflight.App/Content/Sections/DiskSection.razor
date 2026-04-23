@@ -1,0 +1,76 @@
+@using Preflight.App.Models
+@inject IStringLocalizer<SharedResources> L
+@inject ModeService ModeSvc
+@implements IDisposable
+
+@*
+    Custom Advanced layout for the "Disk & install target" section.
+
+    Schneegans exposes three disjoint partition-settings flavours (Interactive /
+    Unattended / CustomScript) plus an orthogonal "install to" pair. A flat option
+    list would make every sub-field always visible; the conditional blocks below
+    render only the subset that actually applies to the current mode so the form
+    stays compact.
+*@
+
+<div class="pf-section pf-section--advanced">
+
+    <header class="pf-section__head">
+        <h2 class="pf-section__title">@L[DiskSectionDefinition.Definition.TitleKey]</h2>
+        <p class="pf-section__subtitle">@L[DiskSectionDefinition.Definition.SubtitleKey]</p>
+        <a class="pf-section__docs-link" href="@($"/docs/{DiskSectionDefinition.Definition.Id}")">@L["Section.Docs.Link"]</a>
+    </header>
+
+    <section class="pf-section__options">
+
+        <SectionView Section="@DiskSectionDefinition.Definition"
+                     ViewMode="SectionView.SectionMode.Advanced"
+                     ShowHeader="false"
+                     OptionIds="@(new[] { "mode" })" />
+
+        @if (ModeSvc.Config.Disk.Mode == DiskMode.AutoWipe)
+        {
+            <div class="pf-section__group">
+                <SectionView Section="@DiskSectionDefinition.Definition"
+                             ViewMode="SectionView.SectionMode.Advanced"
+                             ShowHeader="false"
+                             OptionIds="@(new[] { "partition-style", "esp-size-mb", "recovery" })" />
+
+                @if (ModeSvc.Config.Disk.Recovery == RecoveryMode.OnRecoveryPartition)
+                {
+                    <SectionView Section="@DiskSectionDefinition.Definition"
+                                 ViewMode="SectionView.SectionMode.Advanced"
+                                 ShowHeader="false"
+                                 OptionIds="@(new[] { "recovery-size-mb" })" />
+                }
+            </div>
+        }
+
+        @if (ModeSvc.Config.Disk.Mode == DiskMode.CustomScript)
+        {
+            <div class="pf-section__group">
+                <SectionView Section="@DiskSectionDefinition.Definition"
+                             ViewMode="SectionView.SectionMode.Advanced"
+                             ShowHeader="false"
+                             OptionIds="@(new[] { "custom-script" })" />
+            </div>
+        }
+
+        @if (ModeSvc.Config.Disk.Mode != DiskMode.Interactive)
+        {
+            <div class="pf-section__group">
+                <SectionView Section="@DiskSectionDefinition.Definition"
+                             ViewMode="SectionView.SectionMode.Advanced"
+                             ShowHeader="false"
+                             OptionIds="@(new[] { "install-disk-index", "install-partition-index" })" />
+            </div>
+        }
+
+    </section>
+</div>
+
+@code {
+    protected override void OnInitialized() => ModeSvc.StateChanged += OnStateChanged;
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => ModeSvc.StateChanged -= OnStateChanged;
+}

@@ -1,0 +1,63 @@
+@inject IStringLocalizer<SharedResources> L
+@inject BloatwareCatalog Catalog
+@inject ModeService Mode
+@implements IDisposable
+
+@*
+    Flat list of the schneegans bloatware catalog, rendered through SectionView's
+    CheckboxGroup kind. A tiny header bar above the list offers Select all / Clear all
+    since the full list is 40+ entries and users frequently want "remove everything
+    except a handful".
+*@
+
+<div class="pf-bloatware">
+    <header class="pf-section__head">
+        <h2 class="pf-section__title">@L["Advanced.Section.bloatware"]</h2>
+        <p class="pf-section__subtitle">@L["Section.bloatware.Subtitle"]</p>
+    </header>
+
+    <div class="pf-bloatware__toolbar" style="display: flex; gap: 12px; align-items: center; margin: 12px 0;">
+        <FluentLabel Typo="Typography.Body">
+            @string.Format(L["Bloatware.Selected"].Value, SelectedCount, Catalog.Items.Count)
+        </FluentLabel>
+        <FluentSpacer />
+        <FluentButton Appearance="Appearance.Outline" @onclick="SelectAll">@L["Bloatware.SelectAll"]</FluentButton>
+        <FluentButton Appearance="Appearance.Outline" @onclick="ClearAll">@L["Bloatware.ClearAll"]</FluentButton>
+    </div>
+
+    <SectionView Section="@_definition"
+                 ViewMode="SectionView.SectionMode.Advanced"
+                 ShowHeader="false" />
+</div>
+
+@code {
+    private SectionDefinition _definition = default!;
+
+    protected override void OnInitialized()
+    {
+        _definition = BloatwareSection.Build(Catalog);
+        Mode.StateChanged += OnConfigChanged;
+    }
+
+    private int SelectedCount => Mode.Config.Bloatware.AppsToRemove.Count;
+
+    private void SelectAll()
+    {
+        foreach (var item in Catalog.Items)
+            Mode.Config.Bloatware.AppsToRemove.Add(item.Value);
+        Mode.NotifyConfigChanged();
+    }
+
+    private void ClearAll()
+    {
+        Mode.Config.Bloatware.AppsToRemove.Clear();
+        Mode.NotifyConfigChanged();
+    }
+
+    private void OnConfigChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Mode.StateChanged -= OnConfigChanged;
+    }
+}

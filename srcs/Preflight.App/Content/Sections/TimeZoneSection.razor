@@ -1,0 +1,98 @@
+@* Time-zone form. Radio chooses Implicit (Windows decides at install time) or Explicit
+   (user picks a specific time zone); the Dropdown below appears only in Explicit mode.
+   The 140+ entry list loads once from /data/time-offsets.json. *@
+
+@implements IDisposable
+@inject IStringLocalizer<SharedResources> L
+@inject ModeService Mode
+@inject HttpClient Http
+
+<div class="pf-section pf-section--advanced">
+    <header class="pf-section__head">
+        <h2 class="pf-section__title">@L["Advanced.Section.time-zone"]</h2>
+        <p class="pf-section__subtitle">@L["Section.time-zone.Subtitle"]</p>
+        <a class="pf-section__docs-link" href="/docs/time-zone">@L["Section.Docs.Link"]</a>
+    </header>
+
+    <section class="pf-section__options">
+        <div id="mode" class="pf-option">
+            <div class="pf-option__head">
+                <label class="pf-option__label">@L["TimeZone.Mode.Label"]</label>
+                <a class="pf-option__learn-more"
+                   href="https://learn.microsoft.com/windows-hardware/customize/desktop/unattend/microsoft-windows-shell-setup-timezone"
+                   target="_blank" rel="noopener">@L["Section.LearnMore"]</a>
+            </div>
+            <p class="pf-option__description">@L["TimeZone.Mode.Description"]</p>
+            <FluentRadioGroup Value="@ModeString"
+                              ValueChanged="@OnModeChanged"
+                              TValue="string">
+                <FluentRadio Value="@("Implicit")">@L["TimeZone.Mode.Implicit"]</FluentRadio>
+                <FluentRadio Value="@("Explicit")">@L["TimeZone.Mode.Explicit"]</FluentRadio>
+            </FluentRadioGroup>
+        </div>
+
+        @if (Mode.Config.TimeZoneSettings.Mode == TimeZoneMode.Explicit)
+        {
+            <div id="zone" class="pf-option">
+                <div class="pf-option__head">
+                    <label class="pf-option__label" for="tz-select">@L["TimeZone.Zone.Label"]</label>
+                </div>
+                <p class="pf-option__description">@L["TimeZone.Zone.Description"]</p>
+                <FluentSelect TOption="TimeOffsetEntry"
+                              Items="@_offsets"
+                              OptionValue="@(e => e.Id)"
+                              OptionText="@(e => e.DisplayName)"
+                              Value="@(Mode.Config.TimeZoneSettings.ExplicitId ?? "")"
+                              ValueChanged="@OnZoneChanged"
+                              Width="100%" />
+            </div>
+        }
+    </section>
+</div>
+
+@code {
+    private record TimeOffsetEntry(string Id, string DisplayName);
+
+    private IEnumerable<TimeOffsetEntry> _offsets = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Mode.StateChanged += OnConfigChanged;
+
+        try
+        {
+            var entries = await Http.GetFromJsonAsync<List<TimeOffsetEntry>>("data/time-offsets.json");
+            _offsets = entries ?? [];
+        }
+        catch (Exception)
+        {
+            // If the JSON can't load, the dropdown just stays empty - the radio still
+            // lets the user fall back to Implicit.
+            _offsets = [];
+        }
+    }
+
+    private string ModeString => Mode.Config.TimeZoneSettings.Mode.ToString();
+
+    private void OnModeChanged(string value)
+    {
+        if (Enum.TryParse<TimeZoneMode>(value, out var m))
+        {
+            Mode.Config.TimeZoneSettings.Mode = m;
+            Mode.NotifyConfigChanged();
+        }
+    }
+
+    private void OnZoneChanged(string value)
+    {
+        Mode.Config.TimeZoneSettings.ExplicitId = string.IsNullOrWhiteSpace(value) ? null : value;
+        Mode.NotifyConfigChanged();
+    }
+
+    private void OnConfigChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Mode.StateChanged -= OnConfigChanged;
+    }
+}

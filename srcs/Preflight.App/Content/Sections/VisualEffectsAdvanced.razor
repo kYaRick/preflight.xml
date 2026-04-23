@@ -1,0 +1,47 @@
+@using Preflight.App.Models
+@implements IDisposable
+@inject ModeService Mode
+@inject IStringLocalizer<SharedResources> L
+
+@* Visual-effects advanced view: preset radio on top (via the shared data-driven pipeline), then
+   the 17 per-effect checkbox grid revealed only when the preset is Custom. One checkbox per
+   VisualEffect enum member; the i18n key is VisualEffects.Effect.{Name} so resx stays scannable. *@
+<SectionView Section="@VisualEffectsSection.Definition"
+             ViewMode="SectionView.SectionMode.Advanced"
+             ShowHeader="false" />
+
+@if (Mode.Config.VisualEffects.Preset == VisualEffectsPreset.Custom)
+{
+    <div class="pf-option" style="margin-top: 16px;">
+        <div class="pf-option__head">
+            <label class="pf-option__label">@L["VisualEffects.CustomEffects.Label"]</label>
+        </div>
+        <p class="pf-option__description">@L["VisualEffects.CustomEffects.Description"]</p>
+        <div class="pf-checkbox-group" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px 16px; margin-top: 8px;">
+            @foreach (var effect in Enum.GetValues<VisualEffect>())
+            {
+                var current = effect; // capture for closure - Blazor EventCallback binds on each iteration
+                <FluentCheckbox Value="@IsEnabled(current)"
+                                ValueChanged="@(v => SetEnabled(current, v))"
+                                Label="@L[$"VisualEffects.Effect.{current}"]" />
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private bool IsEnabled(VisualEffect effect)
+        // Missing keys default to false (matches schneegans' "off when unspecified" semantics in
+        // CustomEffects: the dictionary is fully populated only when the user picks a preset).
+        => Mode.Config.VisualEffects.CustomEffects.TryGetValue(effect, out var v) && v;
+
+    private void SetEnabled(VisualEffect effect, bool value)
+    {
+        Mode.Config.VisualEffects.CustomEffects[effect] = value;
+        Mode.NotifyConfigChanged();
+    }
+
+    protected override void OnInitialized() => Mode.StateChanged += OnChanged;
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Mode.StateChanged -= OnChanged;
+}

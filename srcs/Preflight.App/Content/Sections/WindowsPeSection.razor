@@ -1,0 +1,54 @@
+@using Preflight.App.Models
+@inject IStringLocalizer<SharedResources> L
+@inject ModeService ModeSvc
+@implements IDisposable
+
+@*
+    Custom Advanced layout for the "Windows PE stage" section. IPESettings has
+    three flavours: Default, Generated (+ 3 tweak toggles), Custom (user cmd).
+    The extra controls only apply to the "Generated" path.
+*@
+
+<div class="pf-section pf-section--advanced">
+
+    <header class="pf-section__head">
+        <h2 class="pf-section__title">@L[WindowsPeSectionDefinition.Definition.TitleKey]</h2>
+        <p class="pf-section__subtitle">@L[WindowsPeSectionDefinition.Definition.SubtitleKey]</p>
+        <a class="pf-section__docs-link" href="@($"/docs/{WindowsPeSectionDefinition.Definition.Id}")">@L["Section.Docs.Link"]</a>
+    </header>
+
+    <section class="pf-section__options">
+
+        <SectionView Section="@WindowsPeSectionDefinition.Definition"
+                     ViewMode="SectionView.SectionMode.Advanced"
+                     ShowHeader="false"
+                     OptionIds="@(new[] { "mode" })" />
+
+        @if (ModeSvc.Config.Pe.Mode == PeMode.Generated)
+        {
+            <div class="pf-section__group">
+                <SectionView Section="@WindowsPeSectionDefinition.Definition"
+                             ViewMode="SectionView.SectionMode.Advanced"
+                             ShowHeader="false"
+                             OptionIds="@(new[] { "disable-8dot3", "pause-before-partition", "pause-before-reboot" })" />
+            </div>
+        }
+
+        @if (ModeSvc.Config.Pe.Mode == PeMode.Custom)
+        {
+            <div class="pf-section__group">
+                <SectionView Section="@WindowsPeSectionDefinition.Definition"
+                             ViewMode="SectionView.SectionMode.Advanced"
+                             ShowHeader="false"
+                             OptionIds="@(new[] { "custom-cmd" })" />
+            </div>
+        }
+
+    </section>
+</div>
+
+@code {
+    protected override void OnInitialized() => ModeSvc.StateChanged += OnStateChanged;
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => ModeSvc.StateChanged -= OnStateChanged;
+}

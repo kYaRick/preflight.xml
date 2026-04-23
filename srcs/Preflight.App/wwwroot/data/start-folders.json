@@ -1,0 +1,11 @@
+[
+  { "Id": "Settings", "DisplayName": "Settings" },
+  { "Id": "FileExplorer", "DisplayName": "File Explorer" },
+  { "Id": "Documents", "DisplayName": "Documents" },
+  { "Id": "Downloads", "DisplayName": "Downloads" },
+  { "Id": "Music", "DisplayName": "Music" },
+  { "Id": "Pictures", "DisplayName": "Pictures" },
+  { "Id": "Videos", "DisplayName": "Videos" },
+  { "Id": "Network", "DisplayName": "Network" },
+  { "Id": "PersonalFolder", "DisplayName": "Personal Folder" }
+]

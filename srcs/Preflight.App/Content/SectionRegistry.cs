@@ -5,27 +5,54 @@ namespace Preflight.App.Content;
 
 /// <summary>
 /// Single source of truth for every section the Advanced / Docs / Wizard surfaces know about.
-/// Data-driven sections expose a <see cref="SectionDefinition"/>; sections with bespoke UI
-/// skip the definition (or publish it only for header metadata) and render via a dedicated
-/// <c>.razor</c> that AdvancedShell switches on by id.
-///
-/// Keys are the URL-safe slugs used by <c>/advanced/{id}</c> and <c>/docs/{id}</c>.
+/// Sections are registered with their definitions (or null for fully custom runtime sections).
+/// The registry maintains ordering via <see cref="AllSectionIds"/>, which is the authoritative
+/// list for nav menus and other enumeration surfaces.
 /// </summary>
 public static class SectionRegistry
 {
-    /// <summary>All registered section ids in display order (used by nav menus).</summary>
+    /// <summary>All registered section ids in display order (used by nav menus and enumeration).</summary>
     public static readonly IReadOnlyList<string> AllSectionIds =
     [
+        // Setup & Identification Phase
         "region",
+        "time-zone",
+        "computer-name",
+        "setup-settings",
+        
+        // Installation & System Image Phase
+        "source-image",
+        "edition",
+        "windows-pe",
+        "disk",
+        
+        // System Configuration Phase
         "tweaks",
         "vm-support",
         "express-settings",
-        "lock-keys",
-        "sticky-keys",
         "wdac",
         "applocker",
+        "processor-archs",
+        "compact-os",
+        
+        // Desktop & Personalization Phase
+        "explorer",
+        "visual-effects",
+        "desktop-icons",
+        "start-menu",
+        "start-folders",
+        "personalization",
+        "network",
+        
+        // Advanced Features Phase
+        "lock-keys",
+        "sticky-keys",
         "scripts",
         "components",
+        "bloatware",
+        
+        // User Management Phase
+        "users",
     ];
 
     /// <summary>Section ids that render via a bespoke <c>.razor</c> component instead of the generic <see cref="Layout.SectionView"/>.</summary>
@@ -36,23 +63,61 @@ public static class SectionRegistry
             "sticky-keys",
             "scripts",
             "components",
+            "network",
+            "personalization",
+            "bloatware",
+            "start-folders",
+            "start-menu",
+            "computer-name",
+            "time-zone",
+            "users",
         };
 
     /// <summary>Public dictionary exposed for pages that want to enumerate data-driven defs (e.g. Docs).</summary>
-    public static IReadOnlyDictionary<string, SectionDefinition> Definitions => _defs;
+    public static IReadOnlyDictionary<string, SectionDefinition?> Definitions => _defs;
 
-    private static readonly Dictionary<string, SectionDefinition> _defs = new(StringComparer.Ordinal)
+    private static readonly Dictionary<string, SectionDefinition?> _defs = new(StringComparer.Ordinal)
     {
+        // Setup & Identification
         ["region"] = RegionSection.Definition,
+        ["time-zone"] = TimeZoneSectionDefinition.Definition,
+        ["computer-name"] = ComputerNameSectionDefinition.Definition,
+        ["setup-settings"] = SetupSettingsSection.Definition,
+        
+        // Installation & System Image
+        ["source-image"] = SourceImageSectionDefinition.Definition,
+        ["edition"] = EditionSectionDefinition.Definition,
+        ["windows-pe"] = WindowsPeSectionDefinition.Definition,
+        ["disk"] = DiskSectionDefinition.Definition,
+        
+        // System Configuration
         ["tweaks"] = SystemTweaksSection.Definition,
         ["vm-support"] = VmSupportSection.Definition,
         ["express-settings"] = ExpressSettingsSection.Definition,
-        // lock-keys / sticky-keys render via bespoke .razor components, but we still register
-        // their metadata so header / nav labels have a single source of truth.
-        ["lock-keys"] = LockKeysSection.Definition,
-        ["sticky-keys"] = StickyKeysSection.Definition,
         ["wdac"] = WdacSection.Definition,
         ["applocker"] = AppLockerSection.Definition,
+        ["processor-archs"] = ProcessorArchsSection.Definition,
+        ["compact-os"] = CompactOsSection.Definition,
+        
+        // Desktop & Personalization
+        ["explorer"] = ExplorerSection.Definition,
+        ["visual-effects"] = VisualEffectsSection.Definition,
+        ["desktop-icons"] = DesktopIconsSection.Definition,
+        // Custom sections with bespoke components; definitions stored for nav metadata
+        ["start-menu"] = StartMenuSection.Definition,
+        ["start-folders"] = StartFoldersSection.Definition,
+        ["personalization"] = null,  // Renders via PersonalizationSectionView
+        ["network"] = null,           // Renders via NetworkSectionView
+        
+        // Advanced Features
+        ["lock-keys"] = LockKeysSection.Definition,
+        ["sticky-keys"] = StickyKeysSection.Definition,
+        ["scripts"] = null,           // Custom .razor (Scripts category)
+        ["components"] = null,        // Custom .razor (Components category)
+        ["bloatware"] = null,         // Renders via BloatwareSectionView with injected catalog
+        
+        // User Management
+        ["users"] = null,             // Renders via UsersSection.razor
     };
 
     public static SectionDefinition? TryGet(string? id) =>
