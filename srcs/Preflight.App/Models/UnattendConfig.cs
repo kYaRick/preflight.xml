@@ -19,6 +19,10 @@ public sealed class UnattendConfig
     public VmSupport VmSupport { get; init; } = new();
     public NetworkSettings Network { get; init; } = new();
     public PersonalizationSettings Personalization { get; init; } = new();
+    public CustomScriptsSettings Scripts { get; init; } = new();
+    public WdacSettings Wdac { get; init; } = new();
+    public AppLockerSettings AppLocker { get; init; } = new();
+    public XmlComponentsSettings Components { get; init; } = new();
 }
 
 public enum TargetOs
@@ -226,4 +230,95 @@ public enum PersonalizationTheme
     Dark,
     Light,
     Custom,
+}
+
+// ─── Custom scripts ──────────────────────────────────────────────
+
+/// <summary>
+/// Schneegans' four script phases, rolled up into a single "Scripts" section on the UI.
+/// Each list can hold up to <see cref="CustomScriptsSettings.MaxSlotsPerPhase"/> entries -
+/// the UI renders empty slots as optional, and the adapter skips ones with empty Content.
+/// </summary>
+public sealed class CustomScriptsSettings
+{
+    public const int MaxSlotsPerPhase = 8;
+
+    public List<CustomScript> System { get; init; } = [];
+    public List<CustomScript> DefaultUser { get; init; } = [];
+    public List<CustomScript> FirstLogon { get; init; } = [];
+    public List<CustomScript> UserOnce { get; init; } = [];
+    public bool RestartExplorer { get; set; }
+}
+
+public sealed class CustomScript
+{
+    public CustomScriptType Type { get; set; } = CustomScriptType.Cmd;
+    public string Content { get; set; } = "";
+}
+
+public enum CustomScriptType
+{
+    Cmd,
+    PowerShell,
+    Registry,
+    VbScript,
+}
+
+// ─── WDAC ────────────────────────────────────────────────────────
+
+public sealed class WdacSettings
+{
+    public WdacMode Mode { get; set; } = WdacMode.NotConfigured;
+    public WdacEnforcement Enforcement { get; set; } = WdacEnforcement.Audit;
+    public WdacScriptEnforcement ScriptEnforcement { get; set; } = WdacScriptEnforcement.Restricted;
+}
+
+public enum WdacMode
+{
+    NotConfigured,
+    Basic,
+}
+
+public enum WdacEnforcement
+{
+    Audit,
+    AuditOnBootFail,
+    Enforce,
+}
+
+public enum WdacScriptEnforcement
+{
+    Restricted,
+    Unrestricted,
+}
+
+// ─── AppLocker ───────────────────────────────────────────────────
+
+public sealed class AppLockerSettings
+{
+    public AppLockerMode Mode { get; set; } = AppLockerMode.NotConfigured;
+    public string? PolicyXml { get; set; }
+}
+
+public enum AppLockerMode
+{
+    NotConfigured,
+    CustomXml,
+}
+
+// ─── XML components (raw injection) ──────────────────────────────
+
+public sealed class XmlComponentsSettings
+{
+    // Seed 3 empty slots - the UI renders slot-by-slot and the adapter skips any slot
+    // where ComponentId or Xml is empty. Trimming / expanding slots can come later.
+    public List<XmlComponentEntry> Entries { get; init; } = [new(), new(), new()];
+}
+
+public sealed class XmlComponentEntry
+{
+    /// <summary>Lookup key in <c>components.json</c>, e.g. <c>Microsoft-Windows-Shell-Setup|oobeSystem</c>.</summary>
+    public string? ComponentId { get; set; }
+
+    public string? Xml { get; set; }
 }

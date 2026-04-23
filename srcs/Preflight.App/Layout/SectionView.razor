@@ -166,6 +166,18 @@
             case OptionKind.Checkbox:
                 RenderCheckbox(builder, option);
                 break;
+            case OptionKind.Radio:
+                RenderRadio(builder, option);
+                break;
+            case OptionKind.CheckboxGroup:
+                RenderCheckboxGroup(builder, option);
+                break;
+            case OptionKind.Number:
+                RenderNumber(builder, option);
+                break;
+            case OptionKind.Textarea:
+                RenderTextarea(builder, option);
+                break;
         }
     };
 
@@ -225,6 +237,108 @@
             option.SetBool?.Invoke(ModeSvc.Config, v);
             ModeSvc.NotifyConfigChanged();
         }));
+        builder.CloseComponent();
+    }
+
+    private void RenderRadio(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
+    {
+        var currentValue = option.GetString?.Invoke(ModeSvc.Config) ?? "";
+        var entries = option.JsonSource is not null && _jsonCache.TryGetValue(option.JsonSource, out var cached)
+            ? cached
+            : option.InlineValues?.Select(v => new DataEntry(v.Value, L[v.DisplayKey])).ToList() as IReadOnlyList<DataEntry>
+              ?? [];
+
+        var i = 0;
+        builder.OpenElement(i++, "div");
+        builder.AddAttribute(i++, "class", "pf-radio-group");
+        builder.AddAttribute(i++, "role", "radiogroup");
+
+        var idx = 10;
+        foreach (var entry in entries)
+        {
+            builder.OpenElement(idx++, "label");
+            builder.AddAttribute(idx++, "class", "pf-radio");
+
+            builder.OpenElement(idx++, "input");
+            builder.AddAttribute(idx++, "type", "radio");
+            builder.AddAttribute(idx++, "name", $"radio-{option.Id}");
+            builder.AddAttribute(idx++, "value", entry.Id);
+            builder.AddAttribute(idx++, "checked", entry.Id == currentValue);
+            var capturedId = entry.Id;
+            builder.AddAttribute(idx++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, _ =>
+            {
+                option.SetString?.Invoke(ModeSvc.Config, capturedId);
+                ModeSvc.NotifyConfigChanged();
+            }));
+            builder.CloseElement();
+
+            builder.OpenElement(idx++, "span");
+            builder.AddContent(idx++, entry.DisplayName);
+            builder.CloseElement();
+
+            builder.CloseElement();
+        }
+
+        builder.CloseElement();
+    }
+
+    private void RenderCheckboxGroup(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
+    {
+        var set = option.GetStringSet?.Invoke(ModeSvc.Config) ?? new HashSet<string>();
+        var entries = option.JsonSource is not null && _jsonCache.TryGetValue(option.JsonSource, out var cached)
+            ? cached
+            : option.InlineValues?.Select(v => new DataEntry(v.Value, L[v.DisplayKey])).ToList() as IReadOnlyList<DataEntry>
+              ?? [];
+
+        var i = 0;
+        builder.OpenElement(i++, "div");
+        builder.AddAttribute(i++, "class", "pf-checkbox-group");
+
+        var idx = 10;
+        foreach (var entry in entries)
+        {
+            builder.OpenComponent<FluentCheckbox>(idx++);
+            builder.AddAttribute(idx++, "Value", set.Contains(entry.Id));
+            var capturedId = entry.Id;
+            builder.AddAttribute(idx++, "ValueChanged", EventCallback.Factory.Create<bool>(this, v =>
+            {
+                option.SetStringSetItem?.Invoke(ModeSvc.Config, capturedId, v);
+                ModeSvc.NotifyConfigChanged();
+            }));
+            builder.AddAttribute(idx++, "ChildContent", (RenderFragment)(c => c.AddContent(0, entry.DisplayName)));
+            builder.CloseComponent();
+        }
+
+        builder.CloseElement();
+    }
+
+    private void RenderNumber(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
+    {
+        var i = 0;
+        builder.OpenComponent<FluentNumberField<int>>(i++);
+        builder.AddAttribute(i++, "Value", option.GetInt?.Invoke(ModeSvc.Config) ?? 0);
+        builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<int>(this, v =>
+        {
+            option.SetInt?.Invoke(ModeSvc.Config, v);
+            ModeSvc.NotifyConfigChanged();
+        }));
+        builder.CloseComponent();
+    }
+
+    private void RenderTextarea(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
+    {
+        var i = 0;
+        builder.OpenComponent<FluentTextArea>(i++);
+        builder.AddAttribute(i++, "Value", option.GetString?.Invoke(ModeSvc.Config) ?? "");
+        builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<string>(this, v =>
+        {
+            option.SetString?.Invoke(ModeSvc.Config, v);
+            ModeSvc.NotifyConfigChanged();
+        }));
+        builder.AddAttribute(i++, "Rows", option.TextareaRows);
+        builder.AddAttribute(i++, "Style", "width: 100%;" + (option.Monospace ? " font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;" : ""));
+        if (!string.IsNullOrEmpty(option.Placeholder))
+            builder.AddAttribute(i++, "Placeholder", option.Placeholder);
         builder.CloseComponent();
     }
 }
