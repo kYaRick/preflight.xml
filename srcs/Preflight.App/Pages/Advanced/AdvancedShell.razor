@@ -116,12 +116,44 @@
         {
             switch (_activeSection)
             {
+                case "users":
+                    builder.OpenComponent<UsersSection>(0);
+                    builder.CloseComponent();
+                    return;
                 case "lock-keys":
                     builder.OpenComponent<LockKeysForm>(0);
                     builder.CloseComponent();
                     return;
                 case "sticky-keys":
                     builder.OpenComponent<StickyKeysForm>(0);
+                    builder.CloseComponent();
+                    return;
+                case "network":
+                    builder.OpenComponent<NetworkSectionView>(0);
+                    builder.CloseComponent();
+                    return;
+                case "personalization":
+                    builder.OpenComponent<PersonalizationSectionView>(0);
+                    builder.CloseComponent();
+                    return;
+                case "bloatware":
+                    builder.OpenComponent<BloatwareSectionView>(0);
+                    builder.CloseComponent();
+                    return;
+                case "start-menu":
+                    builder.OpenComponent<StartMenuAdvanced>(0);
+                    builder.CloseComponent();
+                    return;
+                case "start-folders":
+                    builder.OpenComponent<StartFoldersAdvanced>(0);
+                    builder.CloseComponent();
+                    return;
+                case "computer-name":
+                    builder.OpenComponent<ComputerNameSection>(0);
+                    builder.CloseComponent();
+                    return;
+                case "time-zone":
+                    builder.OpenComponent<TimeZoneSection>(0);
                     builder.CloseComponent();
                     return;
                 case "scripts":

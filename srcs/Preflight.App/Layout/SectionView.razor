@@ -302,12 +302,49 @@
 
     private void RenderCheckboxGroup(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
     {
+        if (option.CheckboxItems is { Count: > 0 } directItems)
+        {
+            var j = 0;
+            builder.OpenElement(j++, "div");
+            builder.AddAttribute(j++, "class", "pf-checkbox-group");
+
+            foreach (var item in directItems)
+            {
+                builder.OpenElement(j++, "label");
+                builder.AddAttribute(j++, "class", "pf-checkbox-row");
+
+                builder.OpenComponent<FluentCheckbox>(j++);
+                builder.AddAttribute(j++, "Value", item.Get(ModeSvc.Config));
+                builder.AddAttribute(j++, "ValueChanged", EventCallback.Factory.Create<bool>(this, v =>
+                {
+                    item.Set(ModeSvc.Config, v);
+                    ModeSvc.NotifyConfigChanged();
+                }));
+                builder.CloseComponent();
+
+                builder.OpenElement(j++, "span");
+                builder.AddAttribute(j++, "class", "pf-checkbox-row__label");
+                builder.AddContent(j++, L[item.LabelKey]);
+                builder.CloseElement();
+
+                builder.CloseElement();
+            }
+
+            builder.CloseElement();
+            return;
+        }
+
         // Data source: inline values (preferred for enum-style sets) or JSON loaded at OnParametersSet
         // (used by large bloatware/icon/component lists).
         IReadOnlyList<(string Value, string DisplayText)> rows;
         if (option.InlineValues is { } inline && inline.Count > 0)
         {
             rows = inline.Select(v => (v.Value, (string)L[v.DisplayKey])).ToList();
+        }
+        else if (option.ItemsProvider is not null)
+        {
+            var provided = option.ItemsProvider.Invoke() ?? [];
+            rows = provided.Select(v => (v.Value, (string)L[v.DisplayKey])).ToList();
         }
         else if (option.JsonSource is not null && _jsonCache.TryGetValue(option.JsonSource, out var cached))
         {
