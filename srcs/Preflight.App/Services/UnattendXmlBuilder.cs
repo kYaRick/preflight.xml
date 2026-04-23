@@ -54,6 +54,10 @@ public sealed class UnattendXmlBuilder
         AccountSettings = MapAccounts(ui.Users, ui.FirstLogon),
         EditionSettings = MapEdition(ui.Edition),
         Bloatwares = MapBloatware(ui.Bloatware),
+        ScriptSettings = MapScripts(ui.Scripts),
+        WdacSettings = MapWdac(ui.Wdac),
+        AppLockerSettings = MapAppLocker(ui.AppLocker),
+        Components = MapComponents(ui.Components),
     };
 
     private ILanguageSettings MapLanguage(RegionSettings region)
@@ -158,6 +162,97 @@ public sealed class UnattendXmlBuilder
             .Where(b => b is not null)
             .Select(b => b!)
             .ToImmutableList();
+    }
+
+    // ─── Scripts ───────────────────────────────────────────────────
+
+    private static ScriptSettings MapScripts(CustomScriptsSettings ui)
+    {
+        static ScriptType MapType(CustomScriptType t) => t switch
+        {
+            CustomScriptType.Cmd => ScriptType.Cmd,
+            CustomScriptType.PowerShell => ScriptType.Ps1,
+            CustomScriptType.Registry => ScriptType.Reg,
+            CustomScriptType.VbScript => ScriptType.Vbs,
+            _ => ScriptType.Cmd,
+        };
+
+        IEnumerable<Script> Expand(IEnumerable<CustomScript> entries, ScriptPhase phase)
+        {
+            foreach (var e in entries)
+            {
+                if (string.IsNullOrWhiteSpace(e.Content)) continue;
+                // Schneegans' Script ctor validates (phase, type) - skip combinations it
+                // rejects so the preview renders instead of throwing (e.g. DefaultUser + Vbs).
+                Script? s = null;
+                try { s = new Script(e.Content, phase, MapType(e.Type)); }
+                catch (ConfigurationException) { }
+                if (s is not null) yield return s;
+            }
+        }
+
+        var all = Expand(ui.System, ScriptPhase.System)
+            .Concat(Expand(ui.DefaultUser, ScriptPhase.DefaultUser))
+            .Concat(Expand(ui.FirstLogon, ScriptPhase.FirstLogon))
+            .Concat(Expand(ui.UserOnce, ScriptPhase.UserOnce))
+            .ToImmutableList();
+
+        return new ScriptSettings(all, ui.RestartExplorer);
+    }
+
+    // ─── WDAC ──────────────────────────────────────────────────────
+
+    private static IWdacSettings MapWdac(WdacSettings ui)
+    {
+        if (ui.Mode != WdacMode.Basic) return new SkipWdacSettings();
+
+        var audit = ui.Enforcement switch
+        {
+            WdacEnforcement.Audit => WdacAuditModes.Auditing,
+            WdacEnforcement.AuditOnBootFail => WdacAuditModes.AuditingOnBootFailure,
+            WdacEnforcement.Enforce => WdacAuditModes.Enforcement,
+            _ => WdacAuditModes.Auditing,
+        };
+        var script = ui.ScriptEnforcement == WdacScriptEnforcement.Unrestricted
+            ? WdacScriptModes.Unrestricted
+            : WdacScriptModes.Restricted;
+        return new ConfigureWdacSettings(audit, script);
+    }
+
+    // ─── AppLocker ─────────────────────────────────────────────────
+
+    private static IAppLockerSettings MapAppLocker(AppLockerSettings ui)
+    {
+        if (ui.Mode != AppLockerMode.CustomXml || string.IsNullOrWhiteSpace(ui.PolicyXml))
+            return new SkipAppLockerSettings();
+
+        // The ConfigureAppLockerSettings constructor doesn't validate; the schema check
+        // happens inside the modifier's Process() and would throw ConfigurationException.
+        // That's caught by Build()'s outer try/catch and rendered as an XML comment -
+        // good enough for a first cut (TODO: inline validation on the Textarea).
+        return new ConfigureAppLockerSettings(ui.PolicyXml);
+    }
+
+    // ─── Components ────────────────────────────────────────────────
+
+    private static ImmutableDictionary<ComponentAndPass, string> MapComponents(XmlComponentsSettings ui)
+    {
+        var builder = ImmutableDictionary.CreateBuilder<ComponentAndPass, string>();
+        foreach (var entry in ui.Entries)
+        {
+            if (string.IsNullOrWhiteSpace(entry.ComponentId) || string.IsNullOrWhiteSpace(entry.Xml))
+                continue;
+
+            // ComponentId is stored as "ComponentName|PassName" (see components.json
+            // generation in the app's build step); split lazily and drop malformed rows.
+            var parts = entry.ComponentId.Split('|', 2);
+            if (parts.Length != 2) continue;
+            if (!Enum.TryParse<Pass>(parts[1], out var pass)) continue;
+
+            var key = new ComponentAndPass(parts[0], pass);
+            builder[key] = entry.Xml!;
+        }
+        return builder.ToImmutable();
     }
 
     // ─── Lookup helper ──────────────────────────────────────────────

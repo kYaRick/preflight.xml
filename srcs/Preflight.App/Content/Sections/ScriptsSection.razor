@@ -1,0 +1,138 @@
+@using Preflight.App.Models
+@inject IStringLocalizer<SharedResources> L
+@inject ModeService Mode
+@implements IDisposable
+
+<div class="pf-section pf-section--advanced">
+    <header class="pf-section__head">
+        <h2 class="pf-section__title">@L["Advanced.Section.scripts"]</h2>
+        <p class="pf-section__subtitle">@L["Section.scripts.Subtitle"]</p>
+    </header>
+
+    @foreach (var phase in _phases)
+    {
+        <section class="pf-scripts-phase">
+            <h3 class="pf-scripts-phase__title">@L[$"Scripts.Phase.{phase.Key}.Label"]</h3>
+            <p class="pf-scripts-phase__desc">@L[$"Scripts.Phase.{phase.Key}.Description"]</p>
+
+            @for (var i = 0; i < CustomScriptsSettings.MaxSlotsPerPhase; i++)
+            {
+                var slotIndex = i;
+                var list = phase.Getter(Mode.Config.Scripts);
+                var entry = slotIndex < list.Count ? list[slotIndex] : null;
+                var hasContent = entry is not null && !string.IsNullOrWhiteSpace(entry.Content);
+                // Render an explicit "empty" slot with a default Cmd type, only promote it
+                // into the list when the user types content. This keeps the serialized config
+                // tidy and the Schneegans adapter simple.
+                var type = entry?.Type ?? CustomScriptType.Cmd;
+                var content = entry?.Content ?? "";
+
+                <div class="pf-script-slot @(hasContent ? "is-filled" : null)">
+                    <div class="pf-script-slot__head">
+                        <span class="pf-script-slot__num">#@(slotIndex + 1)</span>
+                        <FluentSelect TOption="string"
+                                      Value="@type.ToString()"
+                                      ValueChanged="@(v => OnTypeChanged(phase, slotIndex, v))"
+                                      Width="180px">
+                            @foreach (var t in GetAllowedTypes(phase.Key))
+                            {
+                                <FluentOption TOption="string" Value="@t.ToString()" Selected="@(t == type)">@L[$"Scripts.Type.{t}"]</FluentOption>
+                            }
+                        </FluentSelect>
+                        @if (hasContent)
+                        {
+                            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => ClearSlot(phase, slotIndex))">
+                                @L["Scripts.Slot.Clear"]
+                            </FluentButton>
+                        }
+                    </div>
+                    <FluentTextArea Value="@content"
+                                    ValueChanged="@(v => OnContentChanged(phase, slotIndex, type, v))"
+                                    Rows="6"
+                                    Style="width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;"
+                                    Placeholder="@L[$"Scripts.Type.{type}.Placeholder"]" />
+                </div>
+            }
+        </section>
+    }
+
+    <section class="pf-scripts-global">
+        <FluentCheckbox Value="@Mode.Config.Scripts.RestartExplorer"
+                        ValueChanged="@(v => { Mode.Config.Scripts.RestartExplorer = v; Mode.NotifyConfigChanged(); })">
+            @L["Scripts.RestartExplorer.Label"]
+        </FluentCheckbox>
+        <p class="pf-option__description">@L["Scripts.RestartExplorer.Description"]</p>
+    </section>
+</div>
+
+@code {
+    private sealed record PhaseDef(string Key, Func<CustomScriptsSettings, List<CustomScript>> Getter);
+
+    private static readonly PhaseDef[] _phases =
+    [
+        new("System",      s => s.System),
+        new("DefaultUser", s => s.DefaultUser),
+        new("FirstLogon",  s => s.FirstLogon),
+        new("UserOnce",    s => s.UserOnce),
+    ];
+
+    // DefaultUser phase is restricted to Reg / Cmd / Ps1 by Schneegans' ScriptExtensions.GetAllowedTypes -
+    // mirror that constraint so the dropdown can't produce an invalid combination.
+    private static IEnumerable<CustomScriptType> GetAllowedTypes(string phase) =>
+        phase == "DefaultUser"
+            ? new[] { CustomScriptType.Cmd, CustomScriptType.PowerShell, CustomScriptType.Registry }
+            : Enum.GetValues<CustomScriptType>();
+
+    protected override void OnInitialized()
+    {
+        Mode.StateChanged += OnStateChanged;
+    }
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Mode.StateChanged -= OnStateChanged;
+    }
+
+    private void OnTypeChanged(PhaseDef phase, int slotIndex, string? typeStr)
+    {
+        if (!Enum.TryParse<CustomScriptType>(typeStr, out var type)) return;
+
+        var list = phase.Getter(Mode.Config.Scripts);
+        EnsureSlot(list, slotIndex);
+        list[slotIndex].Type = type;
+        Mode.NotifyConfigChanged();
+    }
+
+    private void OnContentChanged(PhaseDef phase, int slotIndex, CustomScriptType fallbackType, string? content)
+    {
+        var list = phase.Getter(Mode.Config.Scripts);
+
+        if (string.IsNullOrEmpty(content))
+        {
+            // Empty content - if the slot exists, keep it (user may be mid-paste), but don't
+            // promote a non-existent slot. Trimming dead slots happens on save/adapter mapping.
+            if (slotIndex < list.Count) list[slotIndex].Content = content ?? "";
+        }
+        else
+        {
+            EnsureSlot(list, slotIndex, fallbackType);
+            list[slotIndex].Content = content;
+        }
+
+        Mode.NotifyConfigChanged();
+    }
+
+    private void ClearSlot(PhaseDef phase, int slotIndex)
+    {
+        var list = phase.Getter(Mode.Config.Scripts);
+        if (slotIndex < list.Count) list[slotIndex].Content = "";
+        Mode.NotifyConfigChanged();
+    }
+
+    private static void EnsureSlot(List<CustomScript> list, int slotIndex, CustomScriptType type = CustomScriptType.Cmd)
+    {
+        while (list.Count <= slotIndex) list.Add(new CustomScript { Type = type });
+    }
+}
