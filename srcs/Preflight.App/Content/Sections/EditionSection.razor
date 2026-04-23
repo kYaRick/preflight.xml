@@ -1,0 +1,56 @@
+@using Preflight.App.Models
+@inject IStringLocalizer<SharedResources> L
+@inject ModeService ModeSvc
+@implements IDisposable
+
+@*
+    Custom Advanced layout for the "Windows edition & product key" section.
+
+    IEditionSettings has four disjoint shapes - only Custom needs a product-key
+    field, only Generic / Custom-without-key need an edition dropdown - so the
+    two data fields are rendered only when the current KeyMode actually uses them.
+*@
+
+<div class="pf-section pf-section--advanced">
+
+    <header class="pf-section__head">
+        <h2 class="pf-section__title">@L[EditionSectionDefinition.Definition.TitleKey]</h2>
+        <p class="pf-section__subtitle">@L[EditionSectionDefinition.Definition.SubtitleKey]</p>
+        <a class="pf-section__docs-link" href="@($"/docs/{EditionSectionDefinition.Definition.Id}")">@L["Section.Docs.Link"]</a>
+    </header>
+
+    <section class="pf-section__options">
+
+        <SectionView Section="@EditionSectionDefinition.Definition"
+                     ViewMode="SectionView.SectionMode.Advanced"
+                     ShowHeader="false"
+                     OptionIds="@(new[] { "key-mode" })" />
+
+        @if (ModeSvc.Config.Edition.KeyMode == ProductKeyMode.Custom)
+        {
+            <div class="pf-section__group">
+                <SectionView Section="@EditionSectionDefinition.Definition"
+                             ViewMode="SectionView.SectionMode.Advanced"
+                             ShowHeader="false"
+                             OptionIds="@(new[] { "product-key" })" />
+            </div>
+        }
+
+        @if (ModeSvc.Config.Edition.KeyMode is ProductKeyMode.Generic or ProductKeyMode.Custom)
+        {
+            <div class="pf-section__group">
+                <SectionView Section="@EditionSectionDefinition.Definition"
+                             ViewMode="SectionView.SectionMode.Advanced"
+                             ShowHeader="false"
+                             OptionIds="@(new[] { "edition-id" })" />
+            </div>
+        }
+
+    </section>
+</div>
+
+@code {
+    protected override void OnInitialized() => ModeSvc.StateChanged += OnStateChanged;
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => ModeSvc.StateChanged -= OnStateChanged;
+}

@@ -1,5 +1,7 @@
 @page "/advanced"
 @page "/advanced/{Section}"
+@using Preflight.App.Content
+@using Preflight.App.Content.Sections
 @implements IDisposable
 @inject IStringLocalizer<SharedResources> L
 @inject NavigationManager Nav
@@ -38,18 +40,35 @@
              so the form gets the space schneegans-parity controls actually need). -->
         <FluentGridItem xs="12" md="9">
             <FluentCard Style="padding: 24px;">
-                @if (_activeSection == "region")
+                @switch (_activeSection)
                 {
-                    <SectionView Section="@RegionSection.Definition" ViewMode="SectionView.SectionMode.Advanced" />
-                }
-                else
-                {
-                    <FluentLabel Typo="Typography.H3">@L[$"Advanced.Section.{_activeSection}"]</FluentLabel>
-                    <div style="margin-top: 16px;">
-                        <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
-                            @L["Common.ComingInPhase3"]
-                        </FluentMessageBar>
-                    </div>
+                    case "disk":
+                        <DiskSection />
+                        break;
+                    case "edition":
+                        <EditionSection />
+                        break;
+                    case "source-image":
+                        <SourceImageSection />
+                        break;
+                    case "windows-pe":
+                        <WindowsPeSection />
+                        break;
+                    default:
+                        @if (SectionRegistry.TryGet(_activeSection) is { } def)
+                        {
+                            <SectionView Section="@def" ViewMode="SectionView.SectionMode.Advanced" />
+                        }
+                        else
+                        {
+                            <FluentLabel Typo="Typography.H3">@L[$"Advanced.Section.{_activeSection}"]</FluentLabel>
+                            <div style="margin-top: 16px;">
+                                <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
+                                    @L["Common.ComingInPhase3"]
+                                </FluentMessageBar>
+                            </div>
+                        }
+                        break;
                 }
             </FluentCard>
         </FluentGridItem>
@@ -109,11 +128,14 @@
 @code {
     [Parameter] public string? Section { get; set; }
 
-    // Kept in sync with resource keys Advanced.Section.*
+    // Kept in sync with resource keys Advanced.Section.*. Cluster order follows
+    // SectionRegistry.Order (everything that has a live form) plus the still-stub
+    // sections so the sidebar lists every upcoming cluster.
     private static readonly string[] _sections =
     [
-        "region", "disk", "users", "edition", "privacy",
-        "security", "bloatware", "tweaks", "vm", "network",
+        "region",
+        "disk", "edition", "source-image", "windows-pe",
+        "users", "privacy", "security", "bloatware", "tweaks", "vm", "network",
     ];
 
     private string _activeSection = "region";
