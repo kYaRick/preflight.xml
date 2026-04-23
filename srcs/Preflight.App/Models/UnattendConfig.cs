@@ -17,6 +17,8 @@ public sealed class UnattendConfig
     public BloatwareSettings Bloatware { get; init; } = new();
     public SystemTweaks Tweaks { get; init; } = new();
     public VmSupport VmSupport { get; init; } = new();
+    public LockKeysSettings LockKeys { get; init; } = new();
+    public StickyKeysSettings StickyKeys { get; init; } = new();
     public NetworkSettings Network { get; init; } = new();
     public PersonalizationSettings Personalization { get; init; } = new();
 }
@@ -166,16 +168,50 @@ public sealed class BloatwareSettings
 }
 
 // ─── System tweaks ───────────────────────────────────────────────
+//
+// Mirrors the bool-valued fields of Schneegans.Unattend.Configuration.
+// Every property here is passed through in UnattendXmlBuilder.MapSystemTweaks
+// so that a schema-level rename in Preflight.Unattend would surface as a
+// build error rather than a silent no-op.
 
 public sealed class SystemTweaks
 {
-    public bool EnableLongPaths { get; set; }
+    // File Explorer & shell
     public bool ShowFileExtensions { get; set; }
+    public bool ShowAllTrayIcons { get; set; }
+    public bool HideTaskViewButton { get; set; }
     public bool ClassicContextMenu { get; set; }
+    public bool LeftTaskbar { get; set; }
+    public bool LaunchToThisPC { get; set; }
+    public bool ShowEndTask { get; set; }
+    public bool HideInfoTip { get; set; }
+
+    // System / performance
+    public bool EnableLongPaths { get; set; }
+    public bool HardenSystemDriveAcl { get; set; }
+    public bool DeleteJunctions { get; set; }
+    public bool AllowPowerShellScripts { get; set; }
+    public bool DisableLastAccess { get; set; }
+    public bool PreventAutomaticReboot { get; set; }
     public bool DisableFastStartup { get; set; }
+    public bool DisableSystemRestore { get; set; }
+    public bool TurnOffSystemSounds { get; set; }
+    public bool DisableAppSuggestions { get; set; }
     public bool DisableWidgets { get; set; }
-    public bool LeftAlignTaskbar { get; set; }
-    public bool HideBingSearchResults { get; set; }
+    public bool DisableWindowsUpdate { get; set; }
+    public bool DisablePointerPrecision { get; set; }
+    public bool DeleteWindowsOld { get; set; }
+    public bool DisableBingResults { get; set; }
+    public bool PreventDeviceEncryption { get; set; }
+    public bool DisableCoreIsolation { get; set; }
+    public bool DisableAutomaticRestartSignOn { get; set; }
+    public bool DisableWpbt { get; set; }
+
+    // Edge
+    public bool HideEdgeFre { get; set; }
+    public bool DisableEdgeStartupBoost { get; set; }
+    public bool MakeEdgeUninstallable { get; set; }
+    public bool DeleteEdgeDesktopIcon { get; set; }
 }
 
 // ─── Virtualization guest additions ──────────────────────────────
@@ -186,6 +222,56 @@ public sealed class VmSupport
     public bool VmwareTools { get; set; }
     public bool VirtIoAndQemuAgent { get; set; }
     public bool ParallelsTools { get; set; }
+}
+
+// ─── Lock-key (Caps / Num / Scroll) ──────────────────────────────
+
+public enum LockKeysMode
+{
+    Default,
+    Configure,
+}
+
+public enum LockKeyInitialState
+{
+    Off,
+    On,
+}
+
+public sealed class LockKeysSettings
+{
+    public LockKeysMode Mode { get; set; } = LockKeysMode.Default;
+
+    public LockKeyInitialState CapsLockInitial { get; set; } = LockKeyInitialState.Off;
+    public LockKeyInitialState NumLockInitial { get; set; } = LockKeyInitialState.On;
+    public LockKeyInitialState ScrollLockInitial { get; set; } = LockKeyInitialState.Off;
+
+    /// <summary>When true, the physical key is ignored (scancode mapped to nothing).</summary>
+    public bool LockCapsLock { get; set; }
+    public bool LockNumLock { get; set; }
+    public bool LockScrollLock { get; set; }
+}
+
+// ─── Sticky keys accessibility ────────────────────────────────────
+
+public enum StickyKeysMode
+{
+    Default,
+    Disable,
+    Configure,
+}
+
+public sealed class StickyKeysSettings
+{
+    public StickyKeysMode Mode { get; set; } = StickyKeysMode.Default;
+
+    // Match Schneegans.Unattend.StickyKeys flag enum.
+    public bool HotKeyActive { get; set; }
+    public bool Indicator { get; set; }
+    public bool TriState { get; set; }
+    public bool TwoKeysOff { get; set; }
+    public bool AudibleFeedback { get; set; }
+    public bool HotKeySound { get; set; }
 }
 
 // ─── Network ─────────────────────────────────────────────────────

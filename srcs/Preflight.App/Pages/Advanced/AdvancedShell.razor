@@ -1,5 +1,7 @@
 @page "/advanced"
 @page "/advanced/{Section}"
+@using Preflight.App.Content
+@using Preflight.App.Content.Sections
 @implements IDisposable
 @inject IStringLocalizer<SharedResources> L
 @inject NavigationManager Nav
@@ -38,19 +40,7 @@
              so the form gets the space schneegans-parity controls actually need). -->
         <FluentGridItem xs="12" md="9">
             <FluentCard Style="padding: 24px;">
-                @if (_activeSection == "region")
-                {
-                    <SectionView Section="@RegionSection.Definition" ViewMode="SectionView.SectionMode.Advanced" />
-                }
-                else
-                {
-                    <FluentLabel Typo="Typography.H3">@L[$"Advanced.Section.{_activeSection}"]</FluentLabel>
-                    <div style="margin-top: 16px;">
-                        <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
-                            @L["Common.ComingInPhase3"]
-                        </FluentMessageBar>
-                    </div>
-                }
+                @RenderActiveSection()
             </FluentCard>
         </FluentGridItem>
 
@@ -109,14 +99,52 @@
 @code {
     [Parameter] public string? Section { get; set; }
 
-    // Kept in sync with resource keys Advanced.Section.*
-    private static readonly string[] _sections =
-    [
-        "region", "disk", "users", "edition", "privacy",
-        "security", "bloatware", "tweaks", "vm", "network",
-    ];
+    // Kept in sync with SectionRegistry so new sections register once and both the
+    // nav menu and the route-dispatch switch pick them up automatically.
+    private static readonly IReadOnlyList<string> _sections = SectionRegistry.AllSectionIds;
 
     private string _activeSection = "region";
+
+    // Dispatch the active section to either the data-driven SectionView or a bespoke
+    // .razor component registered for that id. New custom forms go in the switch
+    // below; new data-driven sections need zero changes here.
+    private RenderFragment RenderActiveSection() => builder =>
+    {
+        var def = SectionRegistry.TryGet(_activeSection);
+        if (def is null)
+        {
+            builder.OpenComponent<FluentLabel>(0);
+            builder.AddAttribute(1, "Typo", Typography.H3);
+            builder.AddAttribute(2, "ChildContent", (RenderFragment)(b => b.AddContent(0, L[$"Advanced.Section.{_activeSection}"])));
+            builder.CloseComponent();
+            builder.OpenComponent<FluentMessageBar>(3);
+            builder.AddAttribute(4, "Intent", MessageIntent.Info);
+            builder.AddAttribute(5, "AllowDismiss", false);
+            builder.AddAttribute(6, "ChildContent", (RenderFragment)(b => b.AddContent(0, L["Common.ComingInPhase3"])));
+            builder.CloseComponent();
+            return;
+        }
+
+        if (SectionRegistry.IsCustom(_activeSection))
+        {
+            switch (_activeSection)
+            {
+                case "lock-keys":
+                    builder.OpenComponent<LockKeysForm>(0);
+                    builder.CloseComponent();
+                    return;
+                case "sticky-keys":
+                    builder.OpenComponent<StickyKeysForm>(0);
+                    builder.CloseComponent();
+                    return;
+            }
+        }
+
+        builder.OpenComponent<SectionView>(0);
+        builder.AddAttribute(1, "Section", def);
+        builder.AddAttribute(2, "ViewMode", SectionView.SectionMode.Advanced);
+        builder.CloseComponent();
+    };
     private string _xmlPreview = string.Empty;
     private int _xmlLineCount;
     private bool _expanded;
@@ -141,7 +169,7 @@
 
     protected override void OnParametersSet()
     {
-        if (!string.IsNullOrWhiteSpace(Section) && _sections.Contains(Section))
+        if (!string.IsNullOrWhiteSpace(Section) && _sections.Contains(Section, StringComparer.Ordinal))
             _activeSection = Section;
         else
             _activeSection = "region";
