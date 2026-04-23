@@ -24,6 +24,7 @@ builder.Services.AddScoped<CultureService>();
 builder.Services.AddSingleton<ModeService>();
 builder.Services.AddSingleton<PresetService>();
 builder.Services.AddSingleton<UnattendXmlBuilder>();
+builder.Services.AddSingleton<BloatwareCatalog>();
 
 var host = builder.Build();
 
