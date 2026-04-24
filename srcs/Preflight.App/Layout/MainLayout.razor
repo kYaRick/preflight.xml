@@ -42,6 +42,17 @@
     </FluentFooter>
 </FluentLayout>
 
+<button type="button"
+        class="pf-go-top @(_showGoTop ? "is-visible" : null)"
+        title="@L[@"Common.ScrollToTop"]"
+        aria-label="@L[@"Common.ScrollToTop"]"
+        @onclick="ScrollToTop">
+    <svg class="pf-go-top__plane" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor"
+              d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1l3.5 1v-1.5L13 19v-5.5z" />
+    </svg>
+</button>
+
 <CommandPalette Open="_paletteOpen" OpenChanged="v => _paletteOpen = v" />
 <ShortcutsHelp Open="_helpOpen" OpenChanged="v => _helpOpen = v" />
 
@@ -49,6 +60,7 @@
     private DesignThemeModes _themeMode = DesignThemeModes.System;
     private bool _paletteOpen;
     private bool _helpOpen;
+    private bool _showGoTop;
     private DotNetObjectReference<MainLayout>? _selfRef;
     private bool _pendingRouteAnimation;
 
@@ -83,6 +95,12 @@
             _selfRef = DotNetObjectReference.Create(this);
             await JS.InvokeVoidAsync("preflightKeyboard.register", _selfRef);
 
+            // Register scroll watcher for the go-top plane button. JS throttles the
+            // scroll handler internally; we only get called when the threshold is
+            // crossed, not on every scroll event.
+            try { await JS.InvokeVoidAsync("preflightScroll.watchTop", _selfRef); }
+            catch (JSException) { /* helper not loaded yet - ignore */ }
+
             // Sync theme from storage
             var token = await JS.InvokeAsync<string>("preflightTheme.get");
             var next = token switch
@@ -105,6 +123,20 @@
             _pendingRouteAnimation = false;
             await JS.InvokeVoidAsync("preflightNav.replayRouteAnim");
         }
+    }
+
+    [JSInvokable]
+    public void OnScrollVisibility(bool visible)
+    {
+        if (_showGoTop == visible) return;
+        _showGoTop = visible;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task ScrollToTop()
+    {
+        try { await JS.InvokeVoidAsync("preflightScroll.toTop"); }
+        catch (JSException) { /* helper not loaded */ }
     }
 
     [JSInvokable]

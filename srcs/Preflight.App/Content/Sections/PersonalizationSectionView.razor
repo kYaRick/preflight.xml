@@ -1,0 +1,33 @@
+@inject IStringLocalizer<SharedResources> L
+
+@*
+    Three independent collapsible sub-sections: Colors, Wallpaper, Lock screen.
+    Each mounts its own SectionView against a dedicated SectionDefinition so the
+    VisibleWhen predicates can scope to that sub-section's model without tripping
+    over siblings.
+*@
+
+<div class="pf-personalization">
+    <header class="pf-section__head">
+        <h2 class="pf-section__title">@L["Advanced.Section.personalization"]</h2>
+        <p class="pf-section__subtitle">@L["Section.personalization.Subtitle"]</p>
+    </header>
+
+    <FluentAccordion Style="margin-top: 16px;">
+        <FluentAccordionItem Heading="@(L["Personalization.Colors.Title"].Value)" Expanded="true">
+            <SectionView Section="@PersonalizationSection.Colors"
+                         ViewMode="SectionView.SectionMode.Advanced"
+                         ShowHeader="false" />
+        </FluentAccordionItem>
+        <FluentAccordionItem Heading="@(L["Personalization.Wallpaper.Title"].Value)">
+            <SectionView Section="@PersonalizationSection.Wallpaper"
+                         ViewMode="SectionView.SectionMode.Advanced"
+                         ShowHeader="false" />
+        </FluentAccordionItem>
+        <FluentAccordionItem Heading="@(L["Personalization.LockScreen.Title"].Value)">
+            <SectionView Section="@PersonalizationSection.LockScreen"
+                         ViewMode="SectionView.SectionMode.Advanced"
+                         ShowHeader="false" />
+        </FluentAccordionItem>
+    </FluentAccordion>
+</div>

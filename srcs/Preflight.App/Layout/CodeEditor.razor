@@ -1,0 +1,82 @@
+@using Microsoft.JSInterop
+@implements IAsyncDisposable
+@inject IJSRuntime JS
+
+@*
+    Textarea with a Prism-highlighted overlay so XML / JSON inputs in the
+    Advanced editor look like the XML preview modal. The <pre> sits absolutely
+    behind a transparent textarea; the textarea's caret and selection stay
+    visible while Prism paints the tokens underneath.
+
+    Keeping the two layers pixel-aligned is the tricky part - they must share
+    the same font, size, line-height, padding and wrap mode, and the <pre>
+    scroll position must mirror the textarea's as the user types past the
+    visible rows. Sync is done from JS via preflightCodeEditor.
+*@
+
+<div class="pf-code-editor @(string.IsNullOrEmpty(Class) ? null : Class)"
+     data-language="@Language"
+     @ref="_root">
+    <pre class="pf-xml-code pf-code-editor__view" aria-hidden="true"><code @ref="_codeEl" class="language-@Language"></code></pre>
+    <textarea class="pf-code-editor__input"
+              @ref="_textareaEl"
+              rows="@Rows"
+              spellcheck="false"
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              placeholder="@Placeholder"
+              value="@Value"
+              @oninput="OnInput"></textarea>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public string Language { get; set; } = "xml";
+    [Parameter] public string? Value { get; set; }
+    [Parameter] public EventCallback<string?> ValueChanged { get; set; }
+    [Parameter] public int Rows { get; set; } = 12;
+    [Parameter] public string? Placeholder { get; set; }
+    [Parameter] public string? Class { get; set; }
+
+    private ElementReference _root;
+    private ElementReference _codeEl;
+    private ElementReference _textareaEl;
+    private string? _lastPainted;
+    private bool _wired;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // First-render: ask JS to wire scroll-sync between textarea and <pre>.
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("preflightCodeEditor.wire", _root, _textareaEl);
+            _wired = true;
+        }
+
+        // Re-paint the highlighted copy whenever the bound Value changes. We
+        // skip the JS round-trip when the text is unchanged - Prism is not free
+        // on multi-KB XML pastes.
+        if (!ReferenceEquals(_lastPainted, Value))
+        {
+            _lastPainted = Value;
+            await JS.InvokeVoidAsync("preflightPrism.highlight", _codeEl, Value ?? string.Empty);
+        }
+    }
+
+    private Task OnInput(ChangeEventArgs e)
+    {
+        var next = e.Value as string ?? string.Empty;
+        Value = next;
+        return ValueChanged.InvokeAsync(next);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_wired)
+        {
+            try { await JS.InvokeVoidAsync("preflightCodeEditor.unwire", _root); }
+            catch (JSDisconnectedException) { /* page is tearing down - nothing to clean */ }
+            catch (ObjectDisposedException) { /* same */ }
+        }
+    }
+}

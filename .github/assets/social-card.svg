@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img"
+  aria-labelledby="og-title og-desc" preserveAspectRatio="xMidYMid meet">
+  <title id="og-title">preflight.xml</title>
+  <desc id="og-desc">Visual builder for Windows autounattend.xml - in your browser, offline,
+    instantly.</desc>
+
+  <defs>
+    <linearGradient id="ogBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e1b4b" />
+      <stop offset="55%" stop-color="#4c1d95" />
+      <stop offset="100%" stop-color="#6d28d9" />
+    </linearGradient>
+    <radialGradient id="ogGlow" cx="0.78" cy="0.42" r="0.6">
+      <stop offset="0%" stop-color="#a855f7" stop-opacity="0.5" />
+      <stop offset="60%" stop-color="#a855f7" stop-opacity="0.12" />
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- icon gradients - identical to icon.svg -->
+    <linearGradient id="ogIconBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6d28d9" />
+      <stop offset="60%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+    <linearGradient id="ogIconShine" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22" />
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+
+    <linearGradient id="ogXmlAccent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fde68a" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+
+    <filter id="ogIconShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="22" in="SourceAlpha" />
+      <feOffset dx="0" dy="16" result="off" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.6" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#ogBg)" />
+  <rect width="1200" height="630" fill="url(#ogGlow)" />
+
+  <!-- XML pattern -->
+  <g opacity="0.08" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+    font-size="14" fill="#e9d5ff">
+    <text x="48" y="50">&lt;?xml version="1.0" encoding="utf-8"?&gt;</text>
+    <text x="48" y="72">&lt;unattend xmlns="urn:schemas-microsoft-com:unattend"&gt;</text>
+    <text x="48" y="94"> &lt;settings pass="windowsPE"&gt;</text>
+    <text x="48" y="116"> &lt;component name="Microsoft-Windows-Setup"&gt;</text>
+    <text x="700" y="546"> &lt;/component&gt;</text>
+    <text x="700" y="568"> &lt;/settings&gt;</text>
+    <text x="700" y="590">&lt;/unattend&gt;</text>
+  </g>
+
+  <!-- app icon as hero - same design as icon.svg, 360×360 -->
+  <g transform="translate(760, 135)" filter="url(#ogIconShadow)">
+    <rect x="0" y="0" width="360" height="360" rx="80" fill="url(#ogIconBg)" />
+    <rect x="0" y="0" width="360" height="360" rx="80" fill="url(#ogIconShine)" />
+    <g transform="translate(83, 79) scale(8.44)">
+      <path
+        d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1l3.5 1v-1.5L13 19v-5.5z"
+        fill="#ffffff" />
+    </g>
+  </g>
+
+  <!-- wordmark + tagline (left column) -->
+  <g font-family="system-ui, -apple-system, 'Segoe UI', 'DM Sans', sans-serif">
+    <text x="72" y="270" font-size="104" font-weight="800" fill="#ffffff" letter-spacing="-2.5">
+      preflight<tspan fill="url(#ogXmlAccent)">.xml</tspan></text>
+    <text x="74" y="330" font-size="28" font-weight="500" fill="#e9d5ff">Visual builder for Windows</text>
+    <text x="74" y="368" font-family="'JetBrains Mono', Consolas, monospace" font-size="26"
+      font-weight="500" fill="#f0abfc">autounattend.xml</text>
+    <text x="74" y="410" font-size="22" font-weight="400" fill="#c4b5fd" opacity="0.9">In your
+      browser · offline · instantly.</text>
+  </g>
+
+  <!-- tech pills -->
+  <g transform="translate(72, 452)" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+    font-size="17" font-weight="600" fill="#ffffff">
+    <g>
+      <rect width="112" height="40" rx="20" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff"
+        stroke-opacity="0.22" stroke-width="1.5" />
+      <text x="56" y="26" text-anchor="middle">.NET 10</text>
+    </g>
+    <g transform="translate(122, 0)">
+      <rect width="160" height="40" rx="20" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff"
+        stroke-opacity="0.22" stroke-width="1.5" />
+      <text x="80" y="26" text-anchor="middle">Blazor WASM</text>
+    </g>
+    <g transform="translate(292, 0)">
+      <rect width="100" height="40" rx="20" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff"
+        stroke-opacity="0.22" stroke-width="1.5" />
+      <text x="50" y="26" text-anchor="middle">PWA</text>
+    </g>
+    <g transform="translate(402, 0)">
+      <rect width="108" height="40" rx="20" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff"
+        stroke-opacity="0.22" stroke-width="1.5" />
+      <text x="54" y="26" text-anchor="middle">Fluent UI</text>
+    </g>
+    <g transform="translate(520, 0)">
+      <rect width="84" height="40" rx="20" fill="#fde68a" fill-opacity="0.18" stroke="#fde68a"
+        stroke-opacity="0.5" stroke-width="1.5" />
+      <text x="42" y="26" text-anchor="middle" fill="#fde68a">MIT</text>
+    </g>
+  </g>
+
+  <!-- repo URL (footer) -->
+  <text x="72" y="584" font-family="'JetBrains Mono', Consolas, monospace" font-size="18"
+    fill="#c4b5fd" opacity="0.75">github.com/kYaRick/preflight.xml</text>
+
+  <!-- Ukraine solidarity ribbon (subtle, bottom-right) -->
+  <g transform="translate(1084, 564)" opacity="0.85">
+    <rect x="0" y="0" width="80" height="20" fill="#3b82f6" />
+    <rect x="0" y="20" width="80" height="20" fill="#fbbf24" />
+    <text x="40" y="15" font-family="system-ui, sans-serif" font-size="11" font-weight="700"
+      fill="#ffffff" text-anchor="middle">WITH</text>
+    <text x="40" y="35" font-family="system-ui, sans-serif" font-size="11" font-weight="700"
+      fill="#1e40af" text-anchor="middle">UA</text>
+  </g>
+
+  <!-- accent bar -->
+  <rect x="0" y="624" width="1200" height="6" fill="url(#ogXmlAccent)" opacity="0.5" />
+</svg>

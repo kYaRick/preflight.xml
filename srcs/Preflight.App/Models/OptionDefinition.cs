@@ -6,17 +6,27 @@ public enum OptionKind
     Dropdown,
     /// <summary>Plain text input bound to a <see cref="string"/>.</summary>
     Text,
-    /// <summary>Boolean checkbox. <see cref="OptionDefinition.GetString"/> / <see cref="OptionDefinition.SetString"/> are ignored; use <see cref="OptionDefinition.GetBool"/> / <see cref="OptionDefinition.SetBool"/>.</summary>
+    /// <summary>Boolean checkbox. Uses <see cref="OptionDefinition.GetBool"/> / <see cref="OptionDefinition.SetBool"/>.</summary>
     Checkbox,
+    /// <summary>Exclusive radio group. Items from <see cref="OptionDefinition.InlineValues"/>; bound via <see cref="OptionDefinition.GetString"/>/<see cref="OptionDefinition.SetString"/>.</summary>
+    Radio,
+    /// <summary>Multi-select group of independent checkboxes.
+    /// Membership is read/written via <see cref="OptionDefinition.IsItemSelected"/>/<see cref="OptionDefinition.SetItemSelected"/>
+    /// (preferred), or legacy <see cref="OptionDefinition.GetStringSet"/>/<see cref="OptionDefinition.SetStringSetItem"/>.</summary>
+    CheckboxGroup,
+    /// <summary>Numeric input bound via <see cref="OptionDefinition.GetInt"/>/<see cref="OptionDefinition.SetInt"/>.</summary>
+    Number,
+    /// <summary>Multi-line text input bound via <see cref="OptionDefinition.GetString"/>/<see cref="OptionDefinition.SetString"/>.</summary>
+    Textarea,
 }
 
 /// <summary>
 /// Describes one user-editable option inside a <see cref="SectionDefinition"/>.
-/// For Phase 3a, only <see cref="OptionKind.Dropdown"/> (string values) and <see cref="OptionKind.Checkbox"/> are fully wired.
+/// Bindings are strongly typed by kind; each kind only reads the delegates it needs.
 /// </summary>
 public sealed record OptionDefinition
 {
-    /// <summary>Stable within a section — e.g. <c>display-lang</c>. Used for anchor links from Advanced → Docs.</summary>
+    /// <summary>Stable within a section - e.g. <c>display-lang</c>. Used for anchor links from Advanced → Docs.</summary>
     public required string Id { get; init; }
 
     /// <summary>Resource key for the option label shown next to the control.</summary>
@@ -33,22 +43,103 @@ public sealed record OptionDefinition
 
     public required OptionKind Kind { get; init; }
 
-    // ─── Value source (Dropdown only) ─────────────────────────────
+    /// <summary>
+    /// Optional sub-heading grouping marker. Consecutive options sharing the same value
+    /// render once under one &lt;h4&gt; from this resource key.
+    /// </summary>
+    public string? GroupHeadingKey { get; init; }
 
-    /// <summary>When non-null, the view fetches this JSON path from <c>wwwroot/</c> and maps <c>{Id, DisplayName}</c> into dropdown options.</summary>
+    // ─── Value source (Dropdown / Radio / CheckboxGroup) ─────────
+
+    /// <summary>When non-null, the view fetches this JSON path from <c>wwwroot/</c> and maps <c>{Id, DisplayName}</c> into options.</summary>
     public string? JsonSource { get; init; }
 
-    /// <summary>Inline value list for small dropdowns where a JSON file would be overkill.</summary>
+    /// <summary>Inline value list for small dropdowns / radios / checkbox groups.</summary>
     public IReadOnlyList<OptionValue>? InlineValues { get; init; }
 
-    // ─── Binding (strongly-typed for the two kinds we ship in 3a) ─
+    /// <summary>Static child toggles for <see cref="OptionKind.CheckboxGroup"/>.</summary>
+    public IReadOnlyList<CheckboxItem>? CheckboxItems { get; init; }
+
+    /// <summary>Dynamic item provider used by some CheckboxGroup sections (e.g. bloatware catalog).</summary>
+    public Func<IReadOnlyList<OptionValue>>? ItemsProvider { get; init; }
+
+    // ─── Number-input bounds (Number only) ────────────────────────
+
+    public int? Min { get; init; }
+    public int? Max { get; init; }
+
+    // ─── Textarea tuning ──────────────────────────────────────────
+
+    /// <summary>Row count hint for the <see cref="OptionKind.Textarea"/> control. Legacy alias honoured by <see cref="SectionView"/>.</summary>
+    public int? Rows { get; init; }
+
+    /// <summary>Row count hint for the <see cref="OptionKind.Textarea"/> control.</summary>
+    public int TextareaRows { get; init; } = 6;
+
+    /// <summary>Monospace rendering hint.</summary>
+    public bool Monospace { get; init; }
+
+    /// <summary>
+    /// Code-editor language hint (e.g. <c>"xml"</c>, <c>"json"</c>). When set, the Advanced
+    /// textarea renders as a Prism-highlighted editor instead of a plain FluentTextArea.
+    /// Null keeps the default behaviour.
+    /// </summary>
+    public string? Language { get; init; }
+
+    /// <summary>Placeholder text for text-like inputs (raw string).</summary>
+    public string? Placeholder { get; init; }
+
+    /// <summary>Resource-keyed placeholder (alternative to raw <see cref="Placeholder"/>).</summary>
+    public string? PlaceholderKey { get; init; }
+
+    /// <summary>Optional validation pattern for text inputs.</summary>
+    public string? Pattern { get; init; }
+
+    // ─── Binding ──────────────────────────────────────────────────
 
     public Func<UnattendConfig, string?>? GetString { get; init; }
     public Action<UnattendConfig, string?>? SetString { get; init; }
 
     public Func<UnattendConfig, bool>? GetBool { get; init; }
     public Action<UnattendConfig, bool>? SetBool { get; init; }
+
+    public Func<UnattendConfig, int>? GetInt { get; init; }
+    public Action<UnattendConfig, int>? SetInt { get; init; }
+
+    /// <summary>For <see cref="OptionKind.CheckboxGroup"/>: is this value-id currently selected?</summary>
+    public Func<UnattendConfig, string, bool>? IsItemSelected { get; init; }
+    /// <summary>For <see cref="OptionKind.CheckboxGroup"/>: set selected state for this value-id.</summary>
+    public Action<UnattendConfig, string, bool>? SetItemSelected { get; init; }
+
+    /// <summary>Legacy CheckboxGroup binding: whole-set read. Prefer <see cref="IsItemSelected"/>.</summary>
+    public Func<UnattendConfig, ISet<string>>? GetStringSet { get; init; }
+    /// <summary>Legacy CheckboxGroup binding: per-item write. Prefer <see cref="SetItemSelected"/>.</summary>
+    public Action<UnattendConfig, string, bool>? SetStringSetItem { get; init; }
+
+    // ─── Conditional visibility ───────────────────────────────────
+
+    /// <summary>Predicate controlling whether this option renders at all. Returns true to show.
+    /// Used for master/child patterns (e.g. "when Mode == Configure, show detail checkboxes").</summary>
+    public Func<UnattendConfig, bool>? VisibleWhen { get; init; }
 }
 
-/// <summary>A single entry in an inline dropdown option list.</summary>
-public sealed record OptionValue(string Value, string DisplayKey);
+/// <summary>A single entry in an inline dropdown / radio / checkbox-group option list.</summary>
+public sealed record OptionValue(string Value, string DisplayKey)
+{
+    /// <summary>
+    /// Optional illustrative image shown next to the radio label (relative path from
+    /// wwwroot, e.g. <c>content/images/taskbar-search-box.png</c>). Rendered only in
+    /// the Radio kind; ignored elsewhere. Keeps the UI educational for options where
+    /// the right choice is visual (taskbar search layouts, wallpaper, desktop icons).
+    /// </summary>
+    public string? ImagePath { get; init; }
+}
+
+/// <summary>
+/// One boolean toggle inside a <see cref="OptionKind.CheckboxGroup"/>.
+/// </summary>
+public sealed record CheckboxItem(
+    string Id,
+    string LabelKey,
+    Func<UnattendConfig, bool> Get,
+    Action<UnattendConfig, bool> Set);

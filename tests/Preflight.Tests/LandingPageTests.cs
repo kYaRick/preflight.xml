@@ -14,6 +14,7 @@ public sealed class LandingPageTests : TestContext
         Services.AddFluentUIComponents();
         Services.AddSingleton<ModeService>();
         Services.AddSingleton<PresetService>();
+        Services.AddSingleton<UnattendXmlImporter>();
     }
 
     [Fact]

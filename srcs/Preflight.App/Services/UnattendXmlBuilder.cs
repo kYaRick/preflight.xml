@@ -1,286 +1,429 @@
-using System.Globalization;
+using System.Collections.Immutable;
 using System.Text;
-using System.Xml;
-using System.Xml.Linq;
 using Preflight.App.Models;
+using Schneegans.Unattend;
+// Our UnattendConfig and Schneegans.Unattend both declare several enums with the same
+// short name - alias the library types so the adapter can reference both without ambiguity.
+using SchneegansEdition = Schneegans.Unattend.WindowsEdition;
+using SchneegansExpressSettings = Schneegans.Unattend.ExpressSettingsMode;
+using SchneegansPartitionLayout = Schneegans.Unattend.PartitionLayout;
+using SchneegansRecoveryMode = Schneegans.Unattend.RecoveryMode;
+using SchneegansStickyKeys = Schneegans.Unattend.StickyKeys;
 
 namespace Preflight.App.Services;
 
 /// <summary>
-/// Serializes <see cref="UnattendConfig"/> into a Windows <c>autounattend.xml</c> document.
+/// Thin adapter over the vendored <see cref="Schneegans.Unattend.UnattendGenerator"/>.
+/// Translates our mutable UI-facing <see cref="UnattendConfig"/> into Schneegans'
+/// immutable <see cref="Configuration"/> record and serializes the result for the
+/// Advanced preview panel / download button.
 ///
-/// Phase 3a scope: Region, Edition, Users, Disk (install target only), Bloatware (FirstLogon script stub).
-/// Subsequent phases extend this via additional private Apply* methods — the public surface stays stable.
+/// Registered as a singleton so the generator (which parses a dozen embedded JSON
+/// resources on construction) is paid for exactly once per session.
 /// </summary>
 public sealed class UnattendXmlBuilder
 {
-    private static readonly XNamespace Unattend = "urn:schemas-microsoft-com:unattend";
-    private static readonly XNamespace Wcm = "http://schemas.microsoft.com/WMIConfig/2002/State";
+    private readonly UnattendGenerator _generator = new();
 
-    private const string PublicKeyToken = "31bf3856ad364e35";
+    public IEnumerable<Bloatware> GetBloatwareCatalog() => _generator.Bloatwares.Values;
 
-    private readonly IFormatProvider _invariant = CultureInfo.InvariantCulture;
-
+    /// <summary>
+    /// Build an <c>autounattend.xml</c> string from the current config.
+    /// Returns an XML comment describing the failure if mapping or generation throws -
+    /// the Advanced panel displays whatever we return, so a thrown exception would blank
+    /// the preview instead of explaining the problem.
+    /// </summary>
     public string Build(UnattendConfig config)
     {
         ArgumentNullException.ThrowIfNull(config);
 
-        var passes = new Dictionary<string, XElement>(StringComparer.Ordinal)
+        try
         {
-            ["offlineServicing"] = NewPass("offlineServicing"),
-            ["windowsPE"] = NewPass("windowsPE"),
-            ["generalize"] = NewPass("generalize"),
-            ["specialize"] = NewPass("specialize"),
-            ["auditSystem"] = NewPass("auditSystem"),
-            ["auditUser"] = NewPass("auditUser"),
-            ["oobeSystem"] = NewPass("oobeSystem"),
+            var schneegans = MapToConfiguration(config);
+            var doc = _generator.GenerateXml(schneegans);
+            var bytes = UnattendGenerator.Serialize(doc);
+            // Serialize emits ASCII-encoded bytes with a utf-8 declaration - decoding as
+            // UTF-8 is correct (ASCII is a strict UTF-8 subset).
+            var xml = Encoding.UTF8.GetString(bytes);
+
+            // Embed a round-trip marker: a single XML comment holding the base64-encoded
+            // config JSON. The importer reads this back on upload so a downloaded
+            // preflight.xml can be re-opened and edited without losing any state.
+            // Placed right after the <?xml ?> declaration so it stays at the top even if
+            // Schneegans' output inserts its own leading comments later.
+            return InsertMetadataComment(xml, config);
+        }
+        catch (Exception ex)
+        {
+            return $"<!-- preflight.xml: failed to generate XML - {ex.GetType().Name}: {ex.Message} -->";
+        }
+    }
+
+    /// <summary>Marker line Import uses to find and strip the config blob before parsing.</summary>
+    public const string MetadataCommentPrefix = "<!-- preflight.config:";
+    private const string MetadataCommentSuffix = " -->";
+
+    private static string InsertMetadataComment(string xml, UnattendConfig config)
+    {
+        var json = UnattendConfigSerializer.Serialize(config);
+        var base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+        var marker = $"{MetadataCommentPrefix} {base64}{MetadataCommentSuffix}";
+
+        // Splice after the <?xml ... ?> declaration if present; otherwise prepend.
+        var xmlDeclEnd = xml.IndexOf("?>", StringComparison.Ordinal);
+        if (xmlDeclEnd < 0)
+            return marker + "\n" + xml;
+
+        var insertAt = xmlDeclEnd + 2;
+        return xml[..insertAt] + "\n" + marker + xml[insertAt..];
+    }
+
+    // ─── Mapping ────────────────────────────────────────────────────
+
+    private Configuration MapToConfiguration(UnattendConfig ui)
+    {
+        var baseConfig = Configuration.Default with
+        {
+            LanguageSettings = MapLanguage(ui.Region),
+            AccountSettings = MapAccounts(ui.Users, ui.FirstLogon),
+            EditionSettings = MapEdition(ui.Edition),
+            PartitionSettings = MapDisk(ui.Disk),
+            Bloatwares = MapBloatware(ui.Bloatware),
+            ExpressSettings = MapExpressSettings(ui.Privacy.ExpressSettings),
+            LockKeySettings = MapLockKeys(ui.LockKeys),
+            StickyKeysSettings = MapStickyKeys(ui.StickyKeys),
+            ScriptSettings = MapScripts(ui.Scripts),
+            WdacSettings = MapWdac(ui.Wdac),
+            AppLockerSettings = MapAppLocker(ui.AppLocker),
+            Components = MapComponents(ui.Components),
         };
 
-        ApplyRegion(passes, config.Region);
-        ApplyEdition(passes, config.Edition);
-        ApplyDisk(passes, config.Disk);
-        ApplyUsers(passes, config.Users, config.FirstLogon);
-        ApplyBloatware(passes, config.Bloatware);
-
-        var root = new XElement(Unattend + "unattend",
-            new XAttribute(XNamespace.Xmlns + "wcm", Wcm.NamespaceName),
-            passes.Values);
-
-        var doc = new XDocument(new XDeclaration("1.0", "utf-8", null), root);
-        return Serialize(doc);
+        baseConfig = MapSystemTweaks(baseConfig, ui.Tweaks);
+        baseConfig = MapVmSupport(baseConfig, ui.VmSupport);
+        return baseConfig;
     }
 
-    // ─── Passes & component scaffolding ─────────────────────────────
-
-    private static XElement NewPass(string pass) =>
-        new(Unattend + "settings", new XAttribute("pass", pass));
-
-    private static XElement GetOrAddComponent(XElement pass, string name, string architecture = "amd64")
+    private ILanguageSettings MapLanguage(RegionSettings region)
     {
-        var existing = pass.Elements(Unattend + "component")
-            .FirstOrDefault(c => (string?)c.Attribute("name") == name
-                && (string?)c.Attribute("processorArchitecture") == architecture);
-        if (existing is not null) return existing;
+        // Any lookup failure → fall back to the interactive (Windows Setup asks) path so
+        // the preview still renders. The user sees this as "language settings unspecified"
+        // in the XML, which is the right signal that something in the UI needs attention.
+        var image = TryLookup<ImageLanguage>(region.DisplayLanguage);
+        var locale = TryLookup<UserLocale>(region.InputLanguage);
+        var geo = TryLookup<GeoLocation>(region.HomeLocation);
 
-        var comp = new XElement(Unattend + "component",
-            new XAttribute("name", name),
-            new XAttribute("processorArchitecture", architecture),
-            new XAttribute("publicKeyToken", PublicKeyToken),
-            new XAttribute("language", "neutral"),
-            new XAttribute("versionScope", "nonSxS"));
-        pass.Add(comp);
-        return comp;
+        if (image is null || locale is null || geo is null)
+            return new InteractiveLanguageSettings();
+
+        // UserLocale.KeyboardLayout is the Microsoft-recommended default for that locale;
+        // if the JSON entry omits it (rare) we fall back to the US English keyboard so the
+        // required LocaleAndKeyboard record can still be constructed.
+        var keyboard = locale.KeyboardLayout
+            ?? TryLookup<KeyboardIdentifier>("00000409")
+            ?? throw new InvalidOperationException("Default US keyboard identifier missing from embedded data.");
+
+        return new UnattendedLanguageSettings(
+            ImageLanguage: image,
+            LocaleAndKeyboard: new LocaleAndKeyboard(locale, keyboard),
+            LocaleAndKeyboard2: null,
+            LocaleAndKeyboard3: null,
+            GeoLocation: geo);
     }
 
-    // ─── Region ─────────────────────────────────────────────────────
-
-    private static void ApplyRegion(Dictionary<string, XElement> passes, RegionSettings region)
+    private static IAccountSettings MapAccounts(List<UserAccount> users, FirstLogonSettings firstLogon)
     {
-        // windowsPE: show Setup UI in the configured language before OS is live.
-        var winPeIntl = GetOrAddComponent(passes["windowsPE"], "Microsoft-Windows-International-Core-WinPE");
-        winPeIntl.Add(new XElement(Unattend + "UILanguage", region.DisplayLanguage));
-        winPeIntl.Add(new XElement(Unattend + "SetupUILanguage",
-            new XElement(Unattend + "UILanguage", region.DisplayLanguage)));
+        // Empty list / no admin → defer to Windows Setup so we don't throw from the
+        // UnattendedAccountSettings constructor's "must have one admin" guard.
+        var named = users.Where(u => !string.IsNullOrWhiteSpace(u.Name)).ToList();
+        if (named.Count == 0 || !named.Any(u => u.Group == AccountGroup.Administrators))
+            return new InteractiveLocalAccountSettings();
 
-        // oobeSystem: final locale configuration applied to the user session.
-        var oobeIntl = GetOrAddComponent(passes["oobeSystem"], "Microsoft-Windows-International-Core");
-        oobeIntl.Add(new XElement(Unattend + "InputLocale", region.InputLanguage));
-        oobeIntl.Add(new XElement(Unattend + "SystemLocale", region.DisplayLanguage));
-        oobeIntl.Add(new XElement(Unattend + "UILanguage", region.DisplayLanguage));
-        oobeIntl.Add(new XElement(Unattend + "UserLocale", region.DisplayLanguage));
-    }
+        var accounts = named
+            .Select(u => new Account(
+                name: u.Name.Trim(),
+                displayName: u.DisplayName ?? u.Name.Trim(),
+                password: u.Password ?? string.Empty,
+                group: u.Group == AccountGroup.Administrators
+                    ? Constants.AdministratorsGroup
+                    : Constants.UsersGroup))
+            .ToImmutableList();
 
-    // ─── Edition ────────────────────────────────────────────────────
-
-    private static void ApplyEdition(Dictionary<string, XElement> passes, WindowsEditionSettings edition)
-    {
-        var setup = GetOrAddComponent(passes["windowsPE"], "Microsoft-Windows-Setup");
-        var userData = setup.Element(Unattend + "UserData") ?? AddChild(setup, "UserData");
-        var productKey = userData.Element(Unattend + "ProductKey") ?? AddChild(userData, "ProductKey");
-
-        var key = edition.KeyMode switch
+        IAutoLogonSettings autoLogon = firstLogon.Mode switch
         {
-            ProductKeyMode.Generic => GenericKey(edition.Edition),
-            ProductKeyMode.Custom => edition.ProductKey,
-            ProductKeyMode.Interactive => null,
-            ProductKeyMode.FromBios => null,
-            _ => null,
+            FirstLogonMode.FirstAdminAccount => new OwnAutoLogonSettings(),
+            FirstLogonMode.BuiltInAdministrator => new BuiltinAutoLogonSettings(string.Empty),
+            FirstLogonMode.DoNotLogon => new NoneAutoLogonSettings(),
+            _ => new NoneAutoLogonSettings(),
         };
 
-        if (!string.IsNullOrWhiteSpace(key))
-        {
-            productKey.Add(new XElement(Unattend + "Key", key));
-            productKey.Add(new XElement(Unattend + "WillShowUI", "OnError"));
-        }
-        else
-        {
-            productKey.Add(new XElement(Unattend + "Key"));
-            productKey.Add(new XElement(Unattend + "WillShowUI", "Always"));
-        }
-
-        if (userData.Element(Unattend + "AcceptEula") is null)
-            userData.Add(new XElement(Unattend + "AcceptEula", "true"));
+        return new UnattendedAccountSettings(accounts, autoLogon, firstLogon.ObscurePasswordsWithBase64);
     }
 
-    /// <summary>
-    /// GVLK (generic volume license keys) published by Microsoft — activate against KMS only.
-    /// Values sourced from cschneegans/unattend-generator/resource/WindowsEdition.json (MIT).
-    /// </summary>
-    private static string GenericKey(WindowsEdition edition) => edition switch
+    private IEditionSettings MapEdition(WindowsEditionSettings edition) => edition.KeyMode switch
     {
-        WindowsEdition.Home => "YTMG3-N6DKC-DKB77-7M9GH-8HVX7",
-        WindowsEdition.HomeN => "4CPRK-NM3K3-X6XXQ-RXX86-WXCHW",
-        WindowsEdition.HomeSingleLanguage => "BT79Q-G7N6G-PGBYW-4YWX6-6F4BT",
-        WindowsEdition.Pro => "VK7JG-NPHTM-C97JM-9MPGT-3V66T",
-        WindowsEdition.ProN => "2B87N-8KFHP-DKV6R-Y2C8J-PKCKT",
-        WindowsEdition.ProEducation => "8PTT6-RNW4C-6V7J2-C2D3X-MHBPB",
-        WindowsEdition.ProForWorkstations => "DXG7C-N36C4-C4HTG-X4T3X-2YV77",
-        WindowsEdition.Education => "YNMGQ-8RYV3-4PGQ3-C8XTP-7CFBY",
-        WindowsEdition.EducationN => "84NGF-MHBT6-FXBX8-QWJK7-DRR8H",
-        WindowsEdition.Enterprise => "XGVPP-NMH47-7TTHJ-W3FW7-8HV2C",
-        WindowsEdition.EnterpriseN => "WGGHN-J84D6-QYCPR-T7PJ7-X766F",
-        _ => "VK7JG-NPHTM-C97JM-9MPGT-3V66T",
+        ProductKeyMode.Interactive => new InteractiveEditionSettings(),
+        ProductKeyMode.FromBios => new FirmwareEditionSettings(),
+        ProductKeyMode.Custom when !string.IsNullOrWhiteSpace(edition.ProductKey)
+            => SafeCustom(edition.ProductKey!),
+        // Generic (GVLK) and Custom-without-key both fall through to an edition lookup.
+        _ => TryLookup<SchneegansEdition>(MapEditionId(edition.Edition)) is { } we
+            ? new UnattendedEditionSettings(we)
+            : new InteractiveEditionSettings(),
     };
 
-    // ─── Disk ───────────────────────────────────────────────────────
-
-    private static void ApplyDisk(Dictionary<string, XElement> passes, DiskSettings disk)
+    private static IEditionSettings SafeCustom(string productKey)
     {
-        // Phase 3a ships with install-target only. Partitioning / DiskConfiguration lands in 3b.
-        var setup = GetOrAddComponent(passes["windowsPE"], "Microsoft-Windows-Setup");
-        var imageInstall = setup.Element(Unattend + "ImageInstall") ?? AddChild(setup, "ImageInstall");
-        var osImage = imageInstall.Element(Unattend + "OSImage") ?? AddChild(imageInstall, "OSImage");
-
-        if (osImage.Element(Unattend + "InstallTo") is null)
-        {
-            osImage.Add(new XElement(Unattend + "InstallTo",
-                new XElement(Unattend + "DiskID", "0"),
-                new XElement(Unattend + "PartitionID", disk.PartitionStyle == PartitionStyle.Gpt ? "3" : "1")));
-        }
-
-        if (osImage.Element(Unattend + "InstallFrom") is null)
-        {
-            osImage.Add(new XElement(Unattend + "InstallFrom",
-                new XElement(Unattend + "MetaData",
-                    new XAttribute(Wcm + "action", "add"),
-                    new XElement(Unattend + "Key", "/IMAGE/INDEX"),
-                    new XElement(Unattend + "Value", "1"))));
-        }
+        try { return new CustomEditionSettings(productKey); }
+        catch (ConfigurationException) { return new InteractiveEditionSettings(); }
     }
 
-    // ─── Users ──────────────────────────────────────────────────────
-
-    private static void ApplyUsers(Dictionary<string, XElement> passes, List<UserAccount> users, FirstLogonSettings firstLogon)
+    private static string MapEditionId(Preflight.App.Models.WindowsEdition edition) => edition switch
     {
-        if (users.Count == 0) return;
-
-        var shell = GetOrAddComponent(passes["oobeSystem"], "Microsoft-Windows-Shell-Setup");
-        var userAccounts = shell.Element(Unattend + "UserAccounts") ?? AddChild(shell, "UserAccounts");
-        var localAccounts = userAccounts.Element(Unattend + "LocalAccounts") ?? AddChild(userAccounts, "LocalAccounts");
-
-        foreach (var account in users)
-        {
-            if (string.IsNullOrWhiteSpace(account.Name)) continue;
-
-            var localAccount = new XElement(Unattend + "LocalAccount",
-                new XAttribute(Wcm + "action", "add"),
-                new XElement(Unattend + "Name", account.Name),
-                new XElement(Unattend + "DisplayName", account.DisplayName ?? account.Name),
-                new XElement(Unattend + "Group", GroupName(account.Group)));
-
-            if (!string.IsNullOrEmpty(account.Password))
-                localAccount.Add(BuildPassword("Password", account.Password, firstLogon.ObscurePasswordsWithBase64));
-
-            localAccounts.Add(localAccount);
-        }
-
-        // OOBE block — minimum viable to suppress interactive prompts.
-        if (shell.Element(Unattend + "OOBE") is null)
-        {
-            shell.Add(new XElement(Unattend + "OOBE",
-                new XElement(Unattend + "ProtectYourPC", "3"),
-                new XElement(Unattend + "HideEULAPage", "true"),
-                new XElement(Unattend + "HideOEMRegistrationScreen", "true"),
-                new XElement(Unattend + "HideOnlineAccountScreens", "true"),
-                new XElement(Unattend + "HideWirelessSetupInOOBE", "true")));
-        }
-    }
-
-    private static string GroupName(AccountGroup group) => group switch
-    {
-        AccountGroup.Administrators => "Administrators",
-        AccountGroup.Users => "Users",
-        _ => "Users",
+        Preflight.App.Models.WindowsEdition.Home => "home",
+        Preflight.App.Models.WindowsEdition.HomeN => "home_n",
+        Preflight.App.Models.WindowsEdition.HomeSingleLanguage => "home_single",
+        Preflight.App.Models.WindowsEdition.Pro => "pro",
+        Preflight.App.Models.WindowsEdition.ProN => "pro_n",
+        Preflight.App.Models.WindowsEdition.ProEducation => "pro_edu",
+        Preflight.App.Models.WindowsEdition.ProForWorkstations => "pro_wks",
+        Preflight.App.Models.WindowsEdition.Education => "education",
+        Preflight.App.Models.WindowsEdition.EducationN => "education_n",
+        Preflight.App.Models.WindowsEdition.Enterprise => "enterprise",
+        Preflight.App.Models.WindowsEdition.EnterpriseN => "enterprise_n",
+        _ => "pro",
     };
 
-    /// <summary>
-    /// Build a <c>&lt;Password&gt;</c>-shaped element. When obscured, the plaintext is UTF-16LE encoded
-    /// with the element name appended, then Base64'd — the documented Windows Setup convention.
-    /// </summary>
-    private static XElement BuildPassword(string elementName, string plaintext, bool obscure)
+    private static IPartitionSettings MapDisk(DiskSettings disk) => disk.Mode switch
     {
-        var value = obscure
-            ? Convert.ToBase64String(Encoding.Unicode.GetBytes(plaintext + elementName))
-            : plaintext;
+        DiskMode.AutoWipe => new UnattendedPartitionSettings(
+            PartitionLayout: disk.PartitionStyle == PartitionStyle.Gpt
+                ? SchneegansPartitionLayout.GPT
+                : SchneegansPartitionLayout.MBR,
+            RecoveryMode: disk.Recovery switch
+            {
+                Preflight.App.Models.RecoveryMode.OnRecoveryPartition => SchneegansRecoveryMode.Partition,
+                Preflight.App.Models.RecoveryMode.OnWindowsPartition => SchneegansRecoveryMode.Folder,
+                Preflight.App.Models.RecoveryMode.Remove => SchneegansRecoveryMode.None,
+                _ => SchneegansRecoveryMode.Partition,
+            },
+            EspSize: disk.EspSizeMb,
+            RecoverySize: disk.RecoverySizeMb),
+        DiskMode.CustomScript when !string.IsNullOrWhiteSpace(disk.CustomScript) =>
+            new CustomPartitionSettings(
+                disk.CustomScript!,
+                disk.InstallDiskIndex is int d && disk.InstallPartitionIndex is int p
+                    ? new CustomInstallToSettings(d, p)
+                    : new AvailableInstallToSettings()),
+        _ => new InteractivePartitionSettings(),
+    };
 
-        return new XElement(Unattend + elementName,
-            new XElement(Unattend + "Value", value),
-            new XElement(Unattend + "PlainText", obscure ? "false" : "true"));
+    private ImmutableList<Bloatware> MapBloatware(BloatwareSettings bloatware)
+    {
+        if (bloatware.AppsToRemove.Count == 0)
+            return ImmutableList<Bloatware>.Empty;
+
+        // Skip unknown ids so a stale preset (or a bloatware id that was later removed
+        // upstream) doesn't blow up the whole preview.
+        return bloatware.AppsToRemove
+            .Select(id => TryLookup<Bloatware>(id))
+            .Where(b => b is not null)
+            .Select(b => b!)
+            .ToImmutableList();
     }
 
-    // ─── Bloatware ──────────────────────────────────────────────────
-
-    private void ApplyBloatware(Dictionary<string, XElement> passes, BloatwareSettings bloatware)
+    // ─── System tweaks ──────────────────────────────────────────────
+    // Every named bool on Configuration gets passed through explicitly. If schneegans
+    // renames or drops a property, this method fails to compile rather than silently
+    // emitting a stale XML preview.
+    private static Configuration MapSystemTweaks(Configuration baseConfig, SystemTweaks t) => baseConfig with
     {
-        // Phase 3a: inject a single FirstLogonCommand that removes the selected AppX packages.
-        // Phase 3b will replace this with a proper script slot + schneegans-parity removal logic.
-        if (bloatware.AppsToRemove.Count == 0) return;
+        // Explorer & shell
+        ShowFileExtensions = t.ShowFileExtensions,
+        ShowAllTrayIcons = t.ShowAllTrayIcons,
+        HideTaskViewButton = t.HideTaskViewButton,
+        ClassicContextMenu = t.ClassicContextMenu,
+        LeftTaskbar = t.LeftTaskbar,
+        LaunchToThisPC = t.LaunchToThisPC,
+        ShowEndTask = t.ShowEndTask,
+        HideInfoTip = t.HideInfoTip,
 
-        var shell = GetOrAddComponent(passes["oobeSystem"], "Microsoft-Windows-Shell-Setup");
-        var firstLogon = shell.Element(Unattend + "FirstLogonCommands") ?? AddChild(shell, "FirstLogonCommands");
+        // System & performance
+        EnableLongPaths = t.EnableLongPaths,
+        HardenSystemDriveAcl = t.HardenSystemDriveAcl,
+        DeleteJunctions = t.DeleteJunctions,
+        AllowPowerShellScripts = t.AllowPowerShellScripts,
+        DisableLastAccess = t.DisableLastAccess,
+        PreventAutomaticReboot = t.PreventAutomaticReboot,
+        DisableFastStartup = t.DisableFastStartup,
+        DisableSystemRestore = t.DisableSystemRestore,
+        TurnOffSystemSounds = t.TurnOffSystemSounds,
+        DisableAppSuggestions = t.DisableAppSuggestions,
+        DisableWidgets = t.DisableWidgets,
+        DisableWindowsUpdate = t.DisableWindowsUpdate,
+        DisablePointerPrecision = t.DisablePointerPrecision,
+        DeleteWindowsOld = t.DeleteWindowsOld,
+        DisableBingResults = t.DisableBingResults,
+        PreventDeviceEncryption = t.PreventDeviceEncryption,
+        DisableCoreIsolation = t.DisableCoreIsolation,
+        DisableAutomaticRestartSignOn = t.DisableAutomaticRestartSignOn,
+        DisableWpbt = t.DisableWpbt,
 
-        var packages = string.Join(",", bloatware.AppsToRemove.Select(a => $"'{a.Replace("'", "''")}'"));
-        var ps = $"Get-AppxPackage -AllUsers | Where-Object {{ $_.Name -in @({packages}) }} | Remove-AppxPackage -AllUsers";
-        var cmd = $"powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \"{ps}\"";
+        // Edge
+        HideEdgeFre = t.HideEdgeFre,
+        DisableEdgeStartupBoost = t.DisableEdgeStartupBoost,
+        MakeEdgeUninstallable = t.MakeEdgeUninstallable,
+        DeleteEdgeDesktopIcon = t.DeleteEdgeDesktopIcon,
+    };
 
-        var order = firstLogon.Elements(Unattend + "SynchronousCommand").Count() + 1;
-        firstLogon.Add(new XElement(Unattend + "SynchronousCommand",
-            new XAttribute(Wcm + "action", "add"),
-            new XElement(Unattend + "Order", order.ToString(_invariant)),
-            new XElement(Unattend + "CommandLine", cmd),
-            new XElement(Unattend + "Description", "Remove selected AppX bloatware")));
+    private static Configuration MapVmSupport(Configuration baseConfig, VmSupport v) => baseConfig with
+    {
+        VBoxGuestAdditions = v.VirtualBoxGuestAdditions,
+        VMwareTools = v.VmwareTools,
+        VirtIoGuestTools = v.VirtIoAndQemuAgent,
+        ParallelsTools = v.ParallelsTools,
+    };
+
+    private static SchneegansExpressSettings MapExpressSettings(Preflight.App.Models.ExpressSettingsMode mode) => mode switch
+    {
+        Preflight.App.Models.ExpressSettingsMode.Interactive => SchneegansExpressSettings.Interactive,
+        Preflight.App.Models.ExpressSettingsMode.EnableAll => SchneegansExpressSettings.EnableAll,
+        Preflight.App.Models.ExpressSettingsMode.DisableAll => SchneegansExpressSettings.DisableAll,
+        _ => SchneegansExpressSettings.Interactive,
+    };
+
+    private static ILockKeySettings MapLockKeys(LockKeysSettings k) => k.Mode switch
+    {
+        LockKeysMode.Default => new SkipLockKeySettings(),
+        LockKeysMode.Configure => new ConfigureLockKeySettings(
+            CapsLock: new LockKeySetting(
+                Initial: k.CapsLockInitial == LockKeyInitialState.On ? LockKeyInitial.On : LockKeyInitial.Off,
+                Behavior: k.LockCapsLock ? LockKeyBehavior.Ignore : LockKeyBehavior.Toggle),
+            NumLock: new LockKeySetting(
+                Initial: k.NumLockInitial == LockKeyInitialState.On ? LockKeyInitial.On : LockKeyInitial.Off,
+                Behavior: k.LockNumLock ? LockKeyBehavior.Ignore : LockKeyBehavior.Toggle),
+            ScrollLock: new LockKeySetting(
+                Initial: k.ScrollLockInitial == LockKeyInitialState.On ? LockKeyInitial.On : LockKeyInitial.Off,
+                Behavior: k.LockScrollLock ? LockKeyBehavior.Ignore : LockKeyBehavior.Toggle)),
+        _ => new SkipLockKeySettings(),
+    };
+
+    private static IStickyKeysSettings MapStickyKeys(StickyKeysSettings s) => s.Mode switch
+    {
+        StickyKeysMode.Default => new DefaultStickyKeysSettings(),
+        StickyKeysMode.Disable => new DisabledStickyKeysSettings(),
+        StickyKeysMode.Configure => new CustomStickyKeysSettings(BuildStickyKeyFlags(s)),
+        _ => new DefaultStickyKeysSettings(),
+    };
+
+    private static HashSet<SchneegansStickyKeys> BuildStickyKeyFlags(StickyKeysSettings s)
+    {
+        var flags = new HashSet<SchneegansStickyKeys>();
+        if (s.HotKeyActive) flags.Add(SchneegansStickyKeys.HotKeyActive);
+        if (s.Indicator) flags.Add(SchneegansStickyKeys.Indicator);
+        if (s.TriState) flags.Add(SchneegansStickyKeys.TriState);
+        if (s.TwoKeysOff) flags.Add(SchneegansStickyKeys.TwoKeysOff);
+        if (s.AudibleFeedback) flags.Add(SchneegansStickyKeys.AudibleFeedback);
+        if (s.HotKeySound) flags.Add(SchneegansStickyKeys.HotKeySound);
+        return flags;
     }
 
-    // ─── Utility ────────────────────────────────────────────────────
+    // ─── Scripts ───────────────────────────────────────────────────
 
-    private static XElement AddChild(XElement parent, string localName)
+    private static ScriptSettings MapScripts(CustomScriptsSettings ui)
     {
-        var child = new XElement(Unattend + localName);
-        parent.Add(child);
-        return child;
-    }
-
-    private static string Serialize(XDocument doc)
-    {
-        var settings = new XmlWriterSettings
+        static ScriptType MapType(CustomScriptType t) => t switch
         {
-            Indent = true,
-            IndentChars = "  ",
-            NewLineChars = "\n",
-            OmitXmlDeclaration = false,
-            Encoding = new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+            CustomScriptType.Cmd => ScriptType.Cmd,
+            CustomScriptType.PowerShell => ScriptType.Ps1,
+            CustomScriptType.Registry => ScriptType.Reg,
+            CustomScriptType.VbScript => ScriptType.Vbs,
+            _ => ScriptType.Cmd,
         };
 
-        using var sw = new StringWriterWithEncoding(Encoding.UTF8);
-        using (var xw = XmlWriter.Create(sw, settings))
+        IEnumerable<Script> Expand(IEnumerable<CustomScript> entries, ScriptPhase phase)
         {
-            doc.Save(xw);
+            foreach (var e in entries)
+            {
+                if (string.IsNullOrWhiteSpace(e.Content)) continue;
+                // Schneegans' Script ctor validates (phase, type) - skip combinations it
+                // rejects so the preview renders instead of throwing (e.g. DefaultUser + Vbs).
+                Script? s = null;
+                try { s = new Script(e.Content, phase, MapType(e.Type)); }
+                catch (ConfigurationException) { }
+                if (s is not null) yield return s;
+            }
         }
-        return sw.ToString();
+
+        var all = Expand(ui.System, ScriptPhase.System)
+            .Concat(Expand(ui.DefaultUser, ScriptPhase.DefaultUser))
+            .Concat(Expand(ui.FirstLogon, ScriptPhase.FirstLogon))
+            .Concat(Expand(ui.UserOnce, ScriptPhase.UserOnce))
+            .ToImmutableList();
+
+        return new ScriptSettings(all, ui.RestartExplorer);
     }
 
-    private sealed class StringWriterWithEncoding(Encoding encoding) : StringWriter
+    // ─── WDAC ──────────────────────────────────────────────────────
+
+    private static IWdacSettings MapWdac(WdacSettings ui)
     {
-        public override Encoding Encoding { get; } = encoding;
+        if (ui.Mode != WdacMode.Basic) return new SkipWdacSettings();
+
+        var audit = ui.Enforcement switch
+        {
+            WdacEnforcement.Audit => WdacAuditModes.Auditing,
+            WdacEnforcement.AuditOnBootFail => WdacAuditModes.AuditingOnBootFailure,
+            WdacEnforcement.Enforce => WdacAuditModes.Enforcement,
+            _ => WdacAuditModes.Auditing,
+        };
+        var script = ui.ScriptEnforcement == WdacScriptEnforcement.Unrestricted
+            ? WdacScriptModes.Unrestricted
+            : WdacScriptModes.Restricted;
+        return new ConfigureWdacSettings(audit, script);
+    }
+
+    // ─── AppLocker ─────────────────────────────────────────────────
+
+    private static IAppLockerSettings MapAppLocker(AppLockerSettings ui)
+    {
+        if (ui.Mode != AppLockerMode.CustomXml || string.IsNullOrWhiteSpace(ui.PolicyXml))
+            return new SkipAppLockerSettings();
+
+        // The ConfigureAppLockerSettings constructor doesn't validate; the schema check
+        // happens inside the modifier's Process() and would throw ConfigurationException.
+        // That's caught by Build()'s outer try/catch and rendered as an XML comment -
+        // good enough for a first cut (TODO: inline validation on the Textarea).
+        return new ConfigureAppLockerSettings(ui.PolicyXml);
+    }
+
+    // ─── Components ────────────────────────────────────────────────
+
+    private static ImmutableDictionary<ComponentAndPass, string> MapComponents(XmlComponentsSettings ui)
+    {
+        var builder = ImmutableDictionary.CreateBuilder<ComponentAndPass, string>();
+        foreach (var entry in ui.Entries)
+        {
+            if (string.IsNullOrWhiteSpace(entry.ComponentId) || string.IsNullOrWhiteSpace(entry.Xml))
+                continue;
+
+            // ComponentId is stored as "ComponentName|PassName" (see components.json
+            // generation in the app's build step); split lazily and drop malformed rows.
+            var parts = entry.ComponentId.Split('|', 2);
+            if (parts.Length != 2) continue;
+            if (!Enum.TryParse<Pass>(parts[1], out var pass)) continue;
+
+            var key = new ComponentAndPass(parts[0], pass);
+            builder[key] = entry.Xml!;
+        }
+        return builder.ToImmutable();
+    }
+
+    // ─── Lookup helper ──────────────────────────────────────────────
+
+    private T? TryLookup<T>(string? key) where T : class, IKeyed
+    {
+        if (string.IsNullOrWhiteSpace(key)) return null;
+        try { return _generator.Lookup<T>(key); }
+        catch (ConfigurationException) { return null; }
     }
 }

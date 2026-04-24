@@ -1,17 +1,13 @@
 @inject IStringLocalizer<SharedResources> L
 
-@* Wizard flavor of the Region section — narrative framing with step title + description,
-   then the same controls Advanced uses, sourced from a single RegionSection.Definition
-   (option B from the Phase 3 design). Adding a field to the section definition surfaces
-   it here automatically; no duplicated dropdown setup. *@
+@*
+    Region wizard step. The section's own SectionView header (h2 + subtitle +
+    "Read in Docs" link) carries framing - we don't layer a wizard-specific
+    H3 on top because that doubled the heading in every step.
+*@
 
 <FluentCard Style="padding: 24px;">
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="16">
-        <FluentLabel Typo="Typography.H3">🌍 @L["Step.Language.Title"]</FluentLabel>
-        <FluentLabel Typo="Typography.Body">@L["Step.Language.Description"]</FluentLabel>
-
-        <SectionView Section="@RegionSection.Definition"
-                     ViewMode="SectionView.SectionMode.Advanced"
-                     OptionIds="@(new[] { "display-lang", "input-lang", "home-location" })" />
-    </FluentStack>
+    <SectionView Section="@RegionSection.Definition"
+                 ViewMode="SectionView.SectionMode.Advanced"
+                 OptionIds="@(new[] { "display-lang", "input-lang", "home-location" })" />
 </FluentCard>

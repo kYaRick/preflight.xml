@@ -1,7 +1,7 @@
 The following MIT license applies to the cschneegans/unattend-generator
-project (https://github.com/cschneegans/unattend-generator), which
-preflight.xml references via git submodule at deps/schneegans-reference/
-and whose JSON / XSD resource files are synced into wwwroot/data/.
+project (https://github.com/cschneegans/unattend-generator), whose source
+is vendored into srcs/Preflight.Unattend/ and compiled into preflight.xml
+as the XML generation engine.
 
 ───────────────────────────────────────────────────────────────
 

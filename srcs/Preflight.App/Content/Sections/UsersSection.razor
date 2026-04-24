@@ -1,0 +1,435 @@
+@using Preflight.App.Models
+@using Preflight.App.Services
+@inject IStringLocalizer<SharedResources> L
+@inject ModeService Mode
+@implements IDisposable
+
+@*
+    Users section - the largest form in the app. Built as a custom Razor component
+    rather than an OptionDefinition list because it needs a dynamic table plus four
+    conditional sub-forms (first-logon password, custom expiration days, custom
+    lockout triplet, disabled-lockout warning).
+
+    Controls are FluentUI primitives (TextField / NumberField / RadioGroup / Checkbox /
+    Select / Button) so the Users form matches the rest of the Advanced editor visually.
+    Each sub-section uses `.pf-users__block` (styled with breathing room + a horizontal
+    divider) so the blocks don't crowd each other.
+*@
+
+<div class="pf-section pf-section--advanced pf-users">
+
+    <header class="pf-section__head">
+        <h2 class="pf-section__title">@L["Advanced.Section.users"]</h2>
+        <p class="pf-section__subtitle">@L["Section.users.Subtitle"]</p>
+        <a class="pf-section__docs-link" href="/docs/users">@L["Section.Docs.Link"]</a>
+    </header>
+
+    @* ── Accounts table ───────────────────────────────────────── *@
+    <section class="pf-option pf-users__block">
+        <div class="pf-option__head">
+            <label class="pf-option__label">@L["Users.Accounts.Title"]</label>
+        </div>
+        <p class="pf-option__description">@L["Users.Accounts.Description"]</p>
+
+        @if (Config.Users.Count == 0)
+        {
+            <div class="pf-users__empty">@L["Users.Accounts.Empty"]</div>
+        }
+        else
+        {
+            <div class="pf-users__table-wrap">
+                <table class="pf-users__table">
+                    <thead>
+                        <tr>
+                            <th scope="col">@L["Users.Account.Username"]</th>
+                            <th scope="col">@L["Users.Account.DisplayName"]</th>
+                            <th scope="col">@L["Users.Account.Password"]</th>
+                            <th scope="col">@L["Users.Account.Group"]</th>
+                            <th scope="col" class="pf-users__table-actions"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (var i = 0; i < Config.Users.Count; i++)
+                        {
+                            var idx = i;
+                            var account = Config.Users[idx];
+                            var revealed = _revealedPasswords.Contains(idx);
+                            <tr>
+                                <td>
+                                    <FluentTextField Value="@account.Name"
+                                                     Maxlength="20"
+                                                     AriaLabel="@L["Users.Account.Username"]"
+                                                     Style="width: 100%;"
+                                                     ValueChanged="@(v => SetName(idx, v))" />
+                                </td>
+                                <td>
+                                    <FluentTextField Value="@account.DisplayName"
+                                                     AriaLabel="@L["Users.Account.DisplayName"]"
+                                                     Style="width: 100%;"
+                                                     ValueChanged="@(v => SetDisplayName(idx, v))" />
+                                </td>
+                                <td>
+                                    <div class="pf-users__password">
+                                        <FluentTextField Value="@account.Password"
+                                                         TextFieldType="@(revealed ? TextFieldType.Text : TextFieldType.Password)"
+                                                         AriaLabel="@L["Users.Account.Password"]"
+                                                         Autocomplete="new-password"
+                                                         Style="width: 100%;"
+                                                         ValueChanged="@(v => SetPassword(idx, v))" />
+                                        <button type="button"
+                                                class="pf-users__icon-btn"
+                                                aria-label="@(revealed ? L["Users.Account.HidePassword"] : L["Users.Account.ShowPassword"])"
+                                                title="@(revealed ? L["Users.Account.HidePassword"] : L["Users.Account.ShowPassword"])"
+                                                @onclick="@(() => TogglePasswordReveal(idx))">
+                                            @(revealed ? EyeOffIcon : EyeIcon)
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
+                                    <FluentSelect TOption="string"
+                                                  Value="@account.Group.ToString()"
+                                                  ValueChanged="@(v => SetGroup(idx, v))"
+                                                  AriaLabel="@L["Users.Account.Group"]"
+                                                  Style="width: 100%;">
+                                        <FluentOption TOption="string" Value="@(AccountGroup.Administrators.ToString())">@L["Users.Account.Group.Admin"]</FluentOption>
+                                        <FluentOption TOption="string" Value="@(AccountGroup.Users.ToString())">@L["Users.Account.Group.User"]</FluentOption>
+                                    </FluentSelect>
+                                </td>
+                                <td class="pf-users__table-actions">
+                                    <button type="button"
+                                            class="pf-users__icon-btn pf-users__icon-btn--danger"
+                                            aria-label="@L["Users.Accounts.Remove"]"
+                                            title="@L["Users.Accounts.Remove"]"
+                                            @onclick="@(() => RemoveAccount(idx))">
+                                        @TrashIcon
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+
+        <FluentButton Appearance="Appearance.Outline" OnClick="AddAccount" Class="pf-users__add-btn">
+            <span aria-hidden="true" style="margin-right: 4px;">＋</span> @L["Users.Accounts.Add"]
+        </FluentButton>
+    </section>
+
+    @* ── First-logon mode ─────────────────────────────────────── *@
+    <section class="pf-option pf-users__block">
+        <div class="pf-option__head">
+            <label class="pf-option__label">@L["Users.FirstLogon.Title"]</label>
+        </div>
+        <p class="pf-option__description">@L["Users.FirstLogon.Description"]</p>
+
+        <FluentRadioGroup Name="pf-first-logon"
+                          Orientation="Orientation.Vertical"
+                          Class="pf-radio-group"
+                          Value="@FirstLogon.Mode.ToString()"
+                          TValue="string"
+                          ValueChanged="@(v => SetFirstLogonMode(Enum.Parse<FirstLogonMode>(v)))">
+            @foreach (var (mode, labelKey) in _firstLogonOptions)
+            {
+                <FluentRadio Value="@mode.ToString()" TValue="string">@L[labelKey]</FluentRadio>
+            }
+        </FluentRadioGroup>
+
+        @if (FirstLogon.Mode == FirstLogonMode.BuiltInAdministrator)
+        {
+            <div class="pf-users__sub-field">
+                <label class="pf-users__sub-label" for="pf-builtin-pw">@L["Users.FirstLogon.BuiltInPassword"]</label>
+                <FluentTextField Id="pf-builtin-pw"
+                                 TextFieldType="TextFieldType.Password"
+                                 Autocomplete="new-password"
+                                 Value="@FirstLogon.BuiltInAdminPassword"
+                                 Style="width: 100%; max-width: 420px;"
+                                 ValueChanged="@SetBuiltInPassword" />
+            </div>
+        }
+
+        <div class="pf-users__checkbox-stack">
+            <FluentCheckbox Value="@FirstLogon.ObscurePasswordsWithBase64"
+                            ValueChanged="@SetObscure">
+                <strong>@L["Users.FirstLogon.Obscure"]</strong>
+            </FluentCheckbox>
+            <small class="pf-users__hint">@L["Users.FirstLogon.Obscure.Description"]</small>
+
+            <FluentCheckbox Value="@FirstLogon.PromptForMicrosoftAccount"
+                            ValueChanged="@SetPromptMsa">
+                @L["Users.FirstLogon.PromptMsa"]
+            </FluentCheckbox>
+
+            <FluentCheckbox Value="@FirstLogon.PromptForLocalAccount"
+                            ValueChanged="@SetPromptLocal">
+                @L["Users.FirstLogon.PromptLocal"]
+            </FluentCheckbox>
+
+            <small class="pf-users__hint">@L["Users.FirstLogon.PromptHint"]</small>
+        </div>
+    </section>
+
+    @* ── Password expiration ──────────────────────────────────── *@
+    <section class="pf-option pf-users__block">
+        <div class="pf-option__head">
+            <label class="pf-option__label">@L["Users.Expiration.Title"]</label>
+        </div>
+        <p class="pf-option__description">@L["Users.Expiration.Description"]</p>
+
+        <FluentRadioGroup Name="pf-expiration"
+                          Orientation="Orientation.Vertical"
+                          Class="pf-radio-group"
+                          Value="@Security.PasswordExpiration.ToString()"
+                          TValue="string"
+                          ValueChanged="@(v => SetExpirationMode(Enum.Parse<PasswordExpirationMode>(v)))">
+            @foreach (var (mode, labelKey) in _expirationOptions)
+            {
+                <FluentRadio Value="@mode.ToString()" TValue="string">@L[labelKey]</FluentRadio>
+            }
+        </FluentRadioGroup>
+
+        @if (Security.PasswordExpiration == PasswordExpirationMode.Custom)
+        {
+            <div class="pf-users__sub-field">
+                <label class="pf-users__sub-label" for="pf-exp-days">@L["Users.Expiration.Days"]</label>
+                <FluentNumberField TValue="int"
+                                   Id="pf-exp-days"
+                                   Min="1"
+                                   Max="999"
+                                   Value="@Security.PasswordExpirationDays"
+                                   ValueChanged="@(v => { Security.PasswordExpirationDays = v; Mode.NotifyConfigChanged(); })" />
+            </div>
+        }
+    </section>
+
+    @* ── Lockout ──────────────────────────────────────────────── *@
+    <section class="pf-option pf-users__block">
+        <div class="pf-option__head">
+            <label class="pf-option__label">@L["Users.Lockout.Title"]</label>
+        </div>
+        <p class="pf-option__description">@L["Users.Lockout.Description"]</p>
+
+        <FluentRadioGroup Name="pf-lockout"
+                          Orientation="Orientation.Vertical"
+                          Class="pf-radio-group"
+                          Value="@Security.Lockout.ToString()"
+                          TValue="string"
+                          ValueChanged="@(v => SetLockoutMode(Enum.Parse<LockoutMode>(v)))">
+            @foreach (var (mode, labelKey) in _lockoutOptions)
+            {
+                <FluentRadio Value="@mode.ToString()" TValue="string">@L[labelKey]</FluentRadio>
+            }
+        </FluentRadioGroup>
+
+        @if (Security.Lockout == LockoutMode.Disabled)
+        {
+            <FluentMessageBar Intent="MessageIntent.Warning" AllowDismiss="false" Style="margin-top: 8px;">
+                @L["Users.Lockout.Disabled.Warning"]
+            </FluentMessageBar>
+        }
+
+        @if (Security.Lockout == LockoutMode.Custom)
+        {
+            <div class="pf-users__sub-field">
+                <label class="pf-users__sub-label" for="pf-lo-attempts">@L["Users.Lockout.Attempts"]</label>
+                <FluentNumberField TValue="int"
+                                   Id="pf-lo-attempts"
+                                   Min="0"
+                                   Max="999"
+                                   Value="@Security.LockoutAttempts"
+                                   ValueChanged="@(v => { Security.LockoutAttempts = v; Mode.NotifyConfigChanged(); })" />
+            </div>
+            <div class="pf-users__sub-field">
+                <label class="pf-users__sub-label" for="pf-lo-window">@L["Users.Lockout.Window"]</label>
+                <FluentNumberField TValue="int"
+                                   Id="pf-lo-window"
+                                   Min="1"
+                                   Max="99999"
+                                   Value="@Security.LockoutWindowMinutes"
+                                   ValueChanged="@(v => { Security.LockoutWindowMinutes = v; Mode.NotifyConfigChanged(); })" />
+            </div>
+            <div class="pf-users__sub-field">
+                <label class="pf-users__sub-label" for="pf-lo-unlock">@L["Users.Lockout.Unlock"]</label>
+                <FluentNumberField TValue="int"
+                                   Id="pf-lo-unlock"
+                                   Min="1"
+                                   Max="99999"
+                                   Value="@Security.LockoutUnlockMinutes"
+                                   ValueChanged="@(v => { Security.LockoutUnlockMinutes = v; Mode.NotifyConfigChanged(); })" />
+            </div>
+            <small class="pf-users__hint">@L["Users.Lockout.WindowHint"]</small>
+        }
+    </section>
+</div>
+
+@code {
+    private UnattendConfig Config => Mode.Config;
+    private FirstLogonSettings FirstLogon => Mode.Config.FirstLogon;
+    private AccountSecuritySettings Security => Mode.Config.AccountSecurity;
+
+    // Tracks which accounts have their password field switched to type="text".
+    // Intentionally unit-local - reset after mount / config swap so a fresh session
+    // never shows passwords for a previously-edited account.
+    private readonly HashSet<int> _revealedPasswords = [];
+
+    private static readonly (FirstLogonMode mode, string labelKey)[] _firstLogonOptions =
+    [
+        (FirstLogonMode.FirstAdminAccount, "Users.FirstLogon.FirstAdmin"),
+        (FirstLogonMode.BuiltInAdministrator, "Users.FirstLogon.BuiltIn"),
+        (FirstLogonMode.DoNotLogon, "Users.FirstLogon.DoNotLogon"),
+    ];
+
+    private static readonly (PasswordExpirationMode mode, string labelKey)[] _expirationOptions =
+    [
+        (PasswordExpirationMode.Default, "Users.Expiration.Default"),
+        (PasswordExpirationMode.Never, "Users.Expiration.Never"),
+        (PasswordExpirationMode.Custom, "Users.Expiration.Custom"),
+    ];
+
+    private static readonly (LockoutMode mode, string labelKey)[] _lockoutOptions =
+    [
+        (LockoutMode.Default, "Users.Lockout.Default"),
+        (LockoutMode.Disabled, "Users.Lockout.Disabled"),
+        (LockoutMode.Custom, "Users.Lockout.Custom"),
+    ];
+
+    protected override void OnInitialized()
+    {
+        Mode.StateChanged += OnConfigChanged;
+    }
+
+    private void OnConfigChanged()
+    {
+        // A preset swap rewrites Config.Users wholesale - our reveal tracker points
+        // at indices from the old list, so drop it to avoid leaking password state
+        // into unrelated accounts.
+        _revealedPasswords.Clear();
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Mode.StateChanged -= OnConfigChanged;
+    }
+
+    // ─── account mutations ─────────────────────────────────────────
+
+    private void AddAccount()
+    {
+        Config.Users.Add(new UserAccount
+        {
+            Group = Config.Users.Any(u => u.Group == AccountGroup.Administrators)
+                ? AccountGroup.Users
+                : AccountGroup.Administrators,
+        });
+        Mode.NotifyConfigChanged();
+    }
+
+    private void RemoveAccount(int idx)
+    {
+        if (idx < 0 || idx >= Config.Users.Count) return;
+        Config.Users.RemoveAt(idx);
+        _revealedPasswords.Remove(idx);
+        // Shift indices above the removed row down by one so reveal state stays
+        // pinned to the intended account.
+        var shifted = _revealedPasswords.Where(i => i > idx).ToArray();
+        foreach (var i in shifted)
+        {
+            _revealedPasswords.Remove(i);
+            _revealedPasswords.Add(i - 1);
+        }
+        Mode.NotifyConfigChanged();
+    }
+
+    private void TogglePasswordReveal(int idx)
+    {
+        if (!_revealedPasswords.Add(idx)) _revealedPasswords.Remove(idx);
+    }
+
+    private void SetName(int idx, string? v)
+    {
+        if (idx < 0 || idx >= Config.Users.Count) return;
+        Config.Users[idx].Name = v ?? string.Empty;
+        Mode.NotifyConfigChanged();
+    }
+
+    private void SetDisplayName(int idx, string? v)
+    {
+        if (idx < 0 || idx >= Config.Users.Count) return;
+        Config.Users[idx].DisplayName = string.IsNullOrEmpty(v) ? null : v;
+        Mode.NotifyConfigChanged();
+    }
+
+    private void SetPassword(int idx, string? v)
+    {
+        if (idx < 0 || idx >= Config.Users.Count) return;
+        Config.Users[idx].Password = v;
+        Mode.NotifyConfigChanged();
+    }
+
+    private void SetGroup(int idx, string? v)
+    {
+        if (idx < 0 || idx >= Config.Users.Count) return;
+        Config.Users[idx].Group = Enum.TryParse<AccountGroup>(v, out var g) ? g : AccountGroup.Users;
+        Mode.NotifyConfigChanged();
+    }
+
+    // ─── first-logon mutations ─────────────────────────────────────
+
+    private void SetFirstLogonMode(FirstLogonMode m)
+    {
+        FirstLogon.Mode = m;
+        Mode.NotifyConfigChanged();
+    }
+
+    private void SetBuiltInPassword(string? v)
+    {
+        FirstLogon.BuiltInAdminPassword = string.IsNullOrEmpty(v) ? null : v;
+        Mode.NotifyConfigChanged();
+    }
+
+    private void SetObscure(bool v)
+    {
+        FirstLogon.ObscurePasswordsWithBase64 = v;
+        Mode.NotifyConfigChanged();
+    }
+
+    private void SetPromptMsa(bool v)
+    {
+        FirstLogon.PromptForMicrosoftAccount = v;
+        Mode.NotifyConfigChanged();
+    }
+
+    private void SetPromptLocal(bool v)
+    {
+        FirstLogon.PromptForLocalAccount = v;
+        Mode.NotifyConfigChanged();
+    }
+
+    // ─── expiration mutations ──────────────────────────────────────
+
+    private void SetExpirationMode(PasswordExpirationMode m)
+    {
+        Security.PasswordExpiration = m;
+        Mode.NotifyConfigChanged();
+    }
+
+    // ─── lockout mutations ─────────────────────────────────────────
+
+    private void SetLockoutMode(LockoutMode m)
+    {
+        Security.Lockout = m;
+        Mode.NotifyConfigChanged();
+    }
+
+    // ─── inline SVG icons ──────────────────────────────────────────
+
+    private static readonly MarkupString EyeIcon = new(
+        "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'></path><circle cx='12' cy='12' r='3'></circle></svg>");
+
+    private static readonly MarkupString EyeOffIcon = new(
+        "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24'></path><line x1='1' y1='1' x2='23' y2='23'></line></svg>");
+
+    private static readonly MarkupString TrashIcon = new(
+        "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><polyline points='3 6 5 6 21 6'></polyline><path d='M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6'></path><path d='M10 11v6'></path><path d='M14 11v6'></path><path d='M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2'></path></svg>");
+}

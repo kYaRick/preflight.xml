@@ -1,0 +1,181 @@
+@using Preflight.App.Models
+@inject IStringLocalizer<SharedResources> L
+@inject ModeService Mode
+@implements IDisposable
+
+<div class="pf-section pf-section--advanced">
+
+    @if (ShowHeader)
+    {
+        <header class="pf-section__head">
+            <h2 class="pf-section__title">@L[LockKeysSection.Definition.TitleKey]</h2>
+            <p class="pf-section__subtitle">@L[LockKeysSection.Definition.SubtitleKey]</p>
+            <a class="pf-section__docs-link" href="/docs/lock-keys">@L["Section.Docs.Link"]</a>
+        </header>
+    }
+
+    <section class="pf-section__options">
+
+        @* Mode radio *@
+        <div id="mode" class="pf-option">
+            <div class="pf-option__head">
+                <label class="pf-option__label">@L["LockKeys.Mode.Label"]</label>
+            </div>
+            <div class="pf-radio-group" role="radiogroup">
+                @foreach (var (val, key) in _modes)
+                {
+                    <label class="pf-radio">
+                        <input type="radio"
+                               name="lock-keys-mode"
+                               value="@val"
+                               checked="@(_c.LockKeys.Mode == val)"
+                               @onchange="@(() => SetMode(val))" />
+                        <span class="pf-radio__label">@L[key]</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        @if (_c.LockKeys.Mode == LockKeysMode.Configure)
+        {
+            <h4 class="pf-section__group-heading">@L["LockKeys.Group.Initial"]</h4>
+
+            @RenderInitialRadio("caps-initial", "LockKeys.CapsLock.Initial.Label",
+                _c.LockKeys.CapsLockInitial, v => _c.LockKeys.CapsLockInitial = v)
+
+            @RenderInitialRadio("num-initial", "LockKeys.NumLock.Initial.Label",
+                _c.LockKeys.NumLockInitial, v => _c.LockKeys.NumLockInitial = v)
+
+            @RenderInitialRadio("scroll-initial", "LockKeys.ScrollLock.Initial.Label",
+                _c.LockKeys.ScrollLockInitial, v => _c.LockKeys.ScrollLockInitial = v)
+
+            <h4 class="pf-section__group-heading">@L["LockKeys.Group.Lock"]</h4>
+
+            @RenderLockCheckbox("caps-lock", "LockKeys.CapsLock.Lock.Label",
+                () => _c.LockKeys.LockCapsLock, v => _c.LockKeys.LockCapsLock = v)
+
+            @RenderLockCheckbox("num-lock", "LockKeys.NumLock.Lock.Label",
+                () => _c.LockKeys.LockNumLock, v => _c.LockKeys.LockNumLock = v)
+
+            @RenderLockCheckbox("scroll-lock", "LockKeys.ScrollLock.Lock.Label",
+                () => _c.LockKeys.LockScrollLock, v => _c.LockKeys.LockScrollLock = v)
+        }
+
+    </section>
+</div>
+
+@code {
+    [Parameter] public bool ShowHeader { get; set; } = true;
+
+    private UnattendConfig _c = default!;
+
+    private static readonly (LockKeysMode Value, string Key)[] _modes =
+    [
+        (LockKeysMode.Default, "LockKeys.Mode.Default"),
+        (LockKeysMode.Configure, "LockKeys.Mode.Configure"),
+    ];
+
+    private static readonly (LockKeyInitialState Value, string Key)[] _initials =
+    [
+        (LockKeyInitialState.Off, "LockKeys.Initial.Off"),
+        (LockKeyInitialState.On, "LockKeys.Initial.On"),
+    ];
+
+    protected override void OnInitialized()
+    {
+        _c = Mode.Config;
+        Mode.StateChanged += OnState;
+    }
+
+    private void OnState()
+    {
+        _c = Mode.Config;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void SetMode(LockKeysMode v)
+    {
+        _c.LockKeys.Mode = v;
+        Mode.NotifyConfigChanged();
+    }
+
+    private RenderFragment RenderInitialRadio(string id, string labelKey, LockKeyInitialState current, Action<LockKeyInitialState> setter) => builder =>
+    {
+        var i = 0;
+        builder.OpenElement(i++, "div");
+        builder.AddAttribute(i++, "id", id);
+        builder.AddAttribute(i++, "class", "pf-option");
+
+        builder.OpenElement(i++, "div");
+        builder.AddAttribute(i++, "class", "pf-option__head");
+        builder.OpenElement(i++, "label");
+        builder.AddAttribute(i++, "class", "pf-option__label");
+        builder.AddContent(i++, L[labelKey]);
+        builder.CloseElement();
+        builder.CloseElement();
+
+        builder.OpenElement(i++, "div");
+        builder.AddAttribute(i++, "class", "pf-radio-group");
+        builder.AddAttribute(i++, "role", "radiogroup");
+
+        foreach (var (val, key) in _initials)
+        {
+            builder.OpenElement(i++, "label");
+            builder.AddAttribute(i++, "class", "pf-radio");
+
+            builder.OpenElement(i++, "input");
+            builder.AddAttribute(i++, "type", "radio");
+            builder.AddAttribute(i++, "name", id);
+            builder.AddAttribute(i++, "value", val.ToString());
+            builder.AddAttribute(i++, "checked", current == val);
+            builder.AddAttribute(i++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, _ =>
+            {
+                setter(val);
+                Mode.NotifyConfigChanged();
+            }));
+            builder.CloseElement();
+
+            builder.OpenElement(i++, "span");
+            builder.AddAttribute(i++, "class", "pf-radio__label");
+            builder.AddContent(i++, L[key]);
+            builder.CloseElement();
+
+            builder.CloseElement();
+        }
+
+        builder.CloseElement();
+        builder.CloseElement();
+    };
+
+    private RenderFragment RenderLockCheckbox(string id, string labelKey, Func<bool> getter, Action<bool> setter) => builder =>
+    {
+        var i = 0;
+        builder.OpenElement(i++, "div");
+        builder.AddAttribute(i++, "id", id);
+        builder.AddAttribute(i++, "class", "pf-option");
+
+        builder.OpenElement(i++, "div");
+        builder.AddAttribute(i++, "class", "pf-option__head");
+        builder.OpenElement(i++, "label");
+        builder.AddAttribute(i++, "class", "pf-option__label");
+        builder.AddContent(i++, L[labelKey]);
+        builder.CloseElement();
+        builder.CloseElement();
+
+        builder.OpenComponent<FluentCheckbox>(i++);
+        builder.AddAttribute(i++, "Value", getter());
+        builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<bool>(this, v =>
+        {
+            setter(v);
+            Mode.NotifyConfigChanged();
+        }));
+        builder.CloseComponent();
+
+        builder.CloseElement();
+    };
+
+    public void Dispose()
+    {
+        Mode.StateChanged -= OnState;
+    }
+}

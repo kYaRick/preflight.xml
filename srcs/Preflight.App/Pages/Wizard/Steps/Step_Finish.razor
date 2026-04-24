@@ -1,8 +1,73 @@
+@using Preflight.App.Services
 @inject IStringLocalizer<SharedResources> L
+@inject ModeService Mode
+@inject UnattendXmlBuilder XmlBuilder
+@inject IJSRuntime JS
+
+@*
+    Finish step - recap of what the user picked (region + disk + users + privacy)
+    with a one-click "generate & download autounattend.xml" shortcut so the guided
+    flow can actually ship a file without forcing a detour through /wizard/review.
+*@
 
 <FluentCard Style="padding: 24px;">
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="16">
         <FluentLabel Typo="Typography.H3">🏁 @L["Step.Finish.Title"]</FluentLabel>
         <FluentLabel Typo="Typography.Body">@L["Step.Finish.Description"]</FluentLabel>
+
+        <div class="pf-review-grid">
+            <ReviewRow Label="@L["Region.DisplayLanguage.Label"]" Value="@Mode.Config.Region.DisplayLanguage" />
+            <ReviewRow Label="@L["Region.HomeLocation.Label"]" Value="@Mode.Config.Region.HomeLocation" />
+            <ReviewRow Label="@L["Disk.Mode.Label"]" Value="@Mode.Config.Disk.Mode.ToString()" />
+            <ReviewRow Label="@L["Disk.PartitionStyle.Label"]" Value="@Mode.Config.Disk.PartitionStyle.ToString()" />
+            <ReviewRow Label="@L["Users.Count.Label"]" Value="@Mode.Config.Users.Count.ToString()" />
+            <ReviewRow Label="@L["Privacy.Express.Label"]" Value="@Mode.Config.Privacy.ExpressSettings.ToString()" />
+            <ReviewRow Label="@L["Bloatware.RemoveCount.Label"]" Value="@Mode.Config.Bloatware.AppsToRemove.Count.ToString()" />
+        </div>
+
+        @if (_lastError is not null)
+        {
+            <FluentMessageBar Intent="MessageIntent.Error" AllowDismiss="true">@_lastError</FluentMessageBar>
+        }
+
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" VerticalAlignment="VerticalAlignment.Center">
+            <FluentButton Appearance="Appearance.Accent" OnClick="DownloadXml" Disabled="@_downloading">
+                @if (_downloading)
+                {
+                    <text>⏳ @L["Wizard.Review.Preparing"]</text>
+                }
+                else
+                {
+                    <text>⬇️ @L["Wizard.Review.Download"]</text>
+                }
+            </FluentButton>
+            <FluentAnchor Href="/wizard/review" Appearance="Appearance.Outline">@L["Wizard.Review.Title"] →</FluentAnchor>
+        </FluentStack>
     </FluentStack>
 </FluentCard>
+
+@code {
+    private bool _downloading;
+    private string? _lastError;
+
+    private async Task DownloadXml()
+    {
+        _downloading = true;
+        _lastError = null;
+        StateHasChanged();
+        try
+        {
+            var xml = XmlBuilder.Build(Mode.Config);
+            await JS.InvokeVoidAsync("preflightFiles.download", "autounattend.xml", xml, "application/xml");
+        }
+        catch (Exception ex)
+        {
+            _lastError = ex.Message;
+        }
+        finally
+        {
+            _downloading = false;
+            StateHasChanged();
+        }
+    }
+}

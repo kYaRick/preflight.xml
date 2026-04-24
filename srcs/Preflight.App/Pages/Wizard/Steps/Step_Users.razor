@@ -1,9 +1,11 @@
 @inject IStringLocalizer<SharedResources> L
 
+@*
+    Users wizard step. UsersSection owns its own header + accounts table +
+    first-logon/expiration/lockout sub-forms. No extra wrapper title - that
+    duplicated the section's own "Users" heading.
+*@
+
 <FluentCard Style="padding: 24px;">
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
-        <FluentLabel Typo="Typography.H3">👤 @L["Step.Users.Title"]</FluentLabel>
-        <FluentLabel Typo="Typography.Body">@L["Step.Users.Description"]</FluentLabel>
-        <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">@L["Common.ComingInPhase3"]</FluentMessageBar>
-    </FluentStack>
+    <UsersSection />
 </FluentCard>

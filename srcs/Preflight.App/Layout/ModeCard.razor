@@ -4,7 +4,7 @@
 *@
 
 @*
-  Only the outer card carries the click handler — the CTA button is decorative and
+  Only the outer card carries the click handler - the CTA button is decorative and
   shares the same target. Stacking two handlers (card + button) meant real-browser
   clicks could fire twice and race with the navigation that follows, which looked
   like "first click is ignored" because the second navigation cancelled the first.

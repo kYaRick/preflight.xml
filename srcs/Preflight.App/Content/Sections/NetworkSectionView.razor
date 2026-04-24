@@ -1,0 +1,5 @@
+@* Network section - a flat SectionDefinition is enough once VisibleWhen predicates hide
+   the irrelevant Configure/ProfileXml fields. Named "...View" to avoid a name collision
+   with the static <see cref="NetworkSection"/> class that holds the definition. *@
+
+<SectionView Section="@NetworkSection.Definition" ViewMode="SectionView.SectionMode.Advanced" />

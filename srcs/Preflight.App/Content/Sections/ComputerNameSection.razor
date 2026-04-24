@@ -1,0 +1,101 @@
+@* Computer-name form. Radio picks the mode; the Text / Textarea below is rendered
+   conditionally based on the active mode. Writes live through ModeService so the
+   XML preview rebuilds on every keystroke. *@
+
+@implements IDisposable
+@inject IStringLocalizer<SharedResources> L
+@inject ModeService Mode
+
+<div class="pf-section pf-section--advanced">
+    <header class="pf-section__head">
+        <h2 class="pf-section__title">@L["Advanced.Section.computer-name"]</h2>
+        <p class="pf-section__subtitle">@L["Section.computer-name.Subtitle"]</p>
+        <a class="pf-section__docs-link" href="/docs/computer-name">@L["Section.Docs.Link"]</a>
+    </header>
+
+    <section class="pf-section__options">
+        <div id="mode" class="pf-option">
+            <div class="pf-option__head">
+                <label class="pf-option__label">@L["ComputerName.Mode.Label"]</label>
+                <a class="pf-option__learn-more"
+                   href="https://learn.microsoft.com/windows-hardware/customize/desktop/unattend/microsoft-windows-shell-setup-computername"
+                   target="_blank" rel="noopener">@L["Section.LearnMore"]</a>
+            </div>
+            <p class="pf-option__description">@L["ComputerName.Mode.Description"]</p>
+            <FluentRadioGroup Value="@ModeString"
+                              ValueChanged="@OnModeChanged"
+                              TValue="string">
+                <FluentRadio Value="@("Random")">@L["ComputerName.Mode.Random"]</FluentRadio>
+                <FluentRadio Value="@("Manual")">@L["ComputerName.Mode.Manual"]</FluentRadio>
+                <FluentRadio Value="@("Script")">@L["ComputerName.Mode.Script"]</FluentRadio>
+            </FluentRadioGroup>
+        </div>
+
+        @if (Mode.Config.ComputerName.Mode == ComputerNameMode.Manual)
+        {
+            <div id="custom-name" class="pf-option">
+                <div class="pf-option__head">
+                    <label class="pf-option__label" for="cn-custom">@L["ComputerName.Custom.Label"]</label>
+                </div>
+                <p class="pf-option__description">@L["ComputerName.Custom.Description"]</p>
+                <FluentTextField id="cn-custom"
+                                 Value="@Mode.Config.ComputerName.CustomName"
+                                 ValueChanged="@OnCustomChanged"
+                                 Placeholder="MY-PC"
+                                 Style="width: 100%;" />
+            </div>
+        }
+
+        @if (Mode.Config.ComputerName.Mode == ComputerNameMode.Script)
+        {
+            <div id="script" class="pf-option">
+                <div class="pf-option__head">
+                    <label class="pf-option__label" for="cn-script">@L["ComputerName.Script.Label"]</label>
+                </div>
+                <p class="pf-option__description">@L["ComputerName.Script.Description"]</p>
+                <FluentTextArea id="cn-script"
+                                Value="@Mode.Config.ComputerName.Script"
+                                ValueChanged="@OnScriptChanged"
+                                Rows="8"
+                                Style="width: 100%; font-family: monospace;" />
+            </div>
+        }
+    </section>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        Mode.StateChanged += OnConfigChanged;
+    }
+
+    private string ModeString => Mode.Config.ComputerName.Mode.ToString();
+
+    private void OnModeChanged(string value)
+    {
+        if (Enum.TryParse<ComputerNameMode>(value, out var m))
+        {
+            Mode.Config.ComputerName.Mode = m;
+            Mode.NotifyConfigChanged();
+        }
+    }
+
+    private void OnCustomChanged(string value)
+    {
+        Mode.Config.ComputerName.CustomName = value;
+        Mode.NotifyConfigChanged();
+    }
+
+    private void OnScriptChanged(string value)
+    {
+        Mode.Config.ComputerName.Script = value;
+        Mode.NotifyConfigChanged();
+    }
+
+    private void OnConfigChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Mode.StateChanged -= OnConfigChanged;
+    }
+}

@@ -1,0 +1,126 @@
+@using Preflight.App.Models
+@inject IStringLocalizer<SharedResources> L
+@inject ModeService Mode
+@implements IDisposable
+
+<div class="pf-section pf-section--advanced">
+
+    @if (ShowHeader)
+    {
+        <header class="pf-section__head">
+            <h2 class="pf-section__title">@L[StickyKeysSection.Definition.TitleKey]</h2>
+            <p class="pf-section__subtitle">@L[StickyKeysSection.Definition.SubtitleKey]</p>
+            <a class="pf-section__docs-link" href="/docs/sticky-keys">@L["Section.Docs.Link"]</a>
+        </header>
+    }
+
+    <section class="pf-section__options">
+
+        @* Mode radio *@
+        <div id="mode" class="pf-option">
+            <div class="pf-option__head">
+                <label class="pf-option__label">@L["StickyKeys.Mode.Label"]</label>
+            </div>
+            <div class="pf-radio-group" role="radiogroup">
+                @foreach (var (val, key) in _modes)
+                {
+                    <label class="pf-radio">
+                        <input type="radio"
+                               name="sticky-keys-mode"
+                               value="@val"
+                               checked="@(_c.StickyKeys.Mode == val)"
+                               @onchange="@(() => SetMode(val))" />
+                        <span class="pf-radio__label">@L[key]</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        @if (_c.StickyKeys.Mode == StickyKeysMode.Configure)
+        {
+            <h4 class="pf-section__group-heading">@L["StickyKeys.Group.Flags"]</h4>
+
+            @RenderFlagCheckbox("hotkey-active", "StickyKeys.HotKeyActive.Label",
+                () => _c.StickyKeys.HotKeyActive, v => _c.StickyKeys.HotKeyActive = v)
+
+            @RenderFlagCheckbox("indicator", "StickyKeys.Indicator.Label",
+                () => _c.StickyKeys.Indicator, v => _c.StickyKeys.Indicator = v)
+
+            @RenderFlagCheckbox("tri-state", "StickyKeys.TriState.Label",
+                () => _c.StickyKeys.TriState, v => _c.StickyKeys.TriState = v)
+
+            @RenderFlagCheckbox("two-keys-off", "StickyKeys.TwoKeysOff.Label",
+                () => _c.StickyKeys.TwoKeysOff, v => _c.StickyKeys.TwoKeysOff = v)
+
+            @RenderFlagCheckbox("audible-feedback", "StickyKeys.AudibleFeedback.Label",
+                () => _c.StickyKeys.AudibleFeedback, v => _c.StickyKeys.AudibleFeedback = v)
+
+            @RenderFlagCheckbox("hotkey-sound", "StickyKeys.HotKeySound.Label",
+                () => _c.StickyKeys.HotKeySound, v => _c.StickyKeys.HotKeySound = v)
+        }
+
+    </section>
+</div>
+
+@code {
+    [Parameter] public bool ShowHeader { get; set; } = true;
+
+    private UnattendConfig _c = default!;
+
+    private static readonly (StickyKeysMode Value, string Key)[] _modes =
+    [
+        (StickyKeysMode.Default, "StickyKeys.Mode.Default"),
+        (StickyKeysMode.Disable, "StickyKeys.Mode.Disable"),
+        (StickyKeysMode.Configure, "StickyKeys.Mode.Configure"),
+    ];
+
+    protected override void OnInitialized()
+    {
+        _c = Mode.Config;
+        Mode.StateChanged += OnState;
+    }
+
+    private void OnState()
+    {
+        _c = Mode.Config;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void SetMode(StickyKeysMode v)
+    {
+        _c.StickyKeys.Mode = v;
+        Mode.NotifyConfigChanged();
+    }
+
+    private RenderFragment RenderFlagCheckbox(string id, string labelKey, Func<bool> getter, Action<bool> setter) => builder =>
+    {
+        var i = 0;
+        builder.OpenElement(i++, "div");
+        builder.AddAttribute(i++, "id", id);
+        builder.AddAttribute(i++, "class", "pf-option");
+
+        builder.OpenElement(i++, "div");
+        builder.AddAttribute(i++, "class", "pf-option__head");
+        builder.OpenElement(i++, "label");
+        builder.AddAttribute(i++, "class", "pf-option__label");
+        builder.AddContent(i++, L[labelKey]);
+        builder.CloseElement();
+        builder.CloseElement();
+
+        builder.OpenComponent<FluentCheckbox>(i++);
+        builder.AddAttribute(i++, "Value", getter());
+        builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<bool>(this, v =>
+        {
+            setter(v);
+            Mode.NotifyConfigChanged();
+        }));
+        builder.CloseComponent();
+
+        builder.CloseElement();
+    };
+
+    public void Dispose()
+    {
+        Mode.StateChanged -= OnState;
+    }
+}

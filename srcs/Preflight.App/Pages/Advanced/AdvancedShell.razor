@@ -1,5 +1,7 @@
 @page "/advanced"
 @page "/advanced/{Section}"
+@using Preflight.App.Content
+@using Preflight.App.Content.Sections
 @implements IDisposable
 @inject IStringLocalizer<SharedResources> L
 @inject NavigationManager Nav
@@ -9,7 +11,7 @@
 
 <PageTitle>@L["Advanced.Title"] · preflight.xml</PageTitle>
 
-<div style="padding: 24px 16px; max-width: 1600px; margin: 0 auto;">
+<div class="pf-advanced-shell" style="padding: 24px 16px; max-width: 1600px; margin: 0 auto;">
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
         <FluentLabel Typo="Typography.PageTitle">⚙️ @L["Advanced.Title"]</FluentLabel>
         <FluentSpacer />
@@ -18,73 +20,105 @@
 
     <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 24px 0;">@L["Advanced.Subtitle"]</FluentLabel>
 
-    <FluentGrid Spacing="3">
+    <FluentGrid Spacing="3" Style="align-items: flex-start;">
 
-        <!-- Left column: sections navigation -->
+        <!-- Left column: sections navigation. Filter input (top) narrows by label,
+             view toggle switches between grouped and flat lists so power users can
+             mash everything into one scroll when they know where they're going. -->
         <FluentGridItem xs="12" md="3">
-            <FluentCard Style="padding: 8px; position: sticky; top: 16px;">
-                <FluentNavMenu>
-                    @foreach (var id in _sections)
+            <FluentCard Class="pf-nav-card" Style="padding: 6px; position: sticky; top: 16px;">
+                <div class="pf-nav-toolbar">
+                    <div class="pf-nav-search">
+                        <span class="pf-nav-search__icon" aria-hidden="true">🔎</span>
+                        <input type="search"
+                               class="pf-nav-search__input"
+                               placeholder="@L[@"Advanced.SidebarSearch"]"
+                               value="@_sidebarFilter"
+                               @oninput="OnSidebarFilterChanged"
+                               aria-label="@L[@"Advanced.SidebarSearch"]" />
+                        @if (!string.IsNullOrEmpty(_sidebarFilter))
+                        {
+                            <button type="button" class="pf-nav-search__clear" aria-label="Clear" @onclick="ClearSidebarFilter">✕</button>
+                        }
+                    </div>
+                    <button type="button"
+                            class="pf-nav-toggle @(_sidebarGrouped ? "is-active" : null)"
+                            title="@L[@"Advanced.SidebarGrouped"]"
+                            @onclick="ToggleSidebarGrouping">
+                        @(_sidebarGrouped ? "▤" : "≡")
+                    </button>
+                </div>
+
+                <nav class="pf-nav-groups" aria-label="@L[@"Advanced.Title"]">
+                    @if (_sidebarGrouped && string.IsNullOrEmpty(_sidebarFilter))
                     {
-                        <FluentNavLink Href="@($"/advanced/{id}")" Match="NavLinkMatch.All">
-                            @L[$"Advanced.Section.{id}"]
-                        </FluentNavLink>
+                        @foreach (var group in SectionRegistry.Groups)
+                        {
+                            var isOpen = group.SectionIds.Contains(_activeSection, StringComparer.Ordinal)
+                                         || _openGroupIds.Contains(group.Id);
+                            <details class="pf-nav-group" open="@isOpen">
+                                <summary class="pf-nav-group__summary">
+                                    <span class="pf-nav-group__icon" aria-hidden="true">@group.Emoji</span>
+                                    <span class="pf-nav-group__title">@L[group.TitleKey]</span>
+                                    <span class="pf-nav-group__count">@group.SectionIds.Count</span>
+                                </summary>
+                                <ul class="pf-nav-group__list">
+                                    @foreach (var id in group.SectionIds)
+                                    {
+                                        <li>
+                                            <NavLink class="pf-nav-group__link" href="@($"/advanced/{id}")" Match="NavLinkMatch.All">
+                                                @L[$"Advanced.Section.{id}"]
+                                            </NavLink>
+                                        </li>
+                                    }
+                                </ul>
+                            </details>
+                        }
                     }
-                </FluentNavMenu>
+                    else
+                    {
+                        <ul class="pf-nav-flat">
+                            @foreach (var id in FilteredSectionIds())
+                            {
+                                <li>
+                                    <NavLink class="pf-nav-group__link" href="@($"/advanced/{id}")" Match="NavLinkMatch.All">
+                                        @L[$"Advanced.Section.{id}"]
+                                    </NavLink>
+                                </li>
+                            }
+                            @if (!FilteredSectionIds().Any())
+                            {
+                                <li class="pf-nav-flat__empty">@L[@"Advanced.SidebarEmpty"]</li>
+                            }
+                        </ul>
+                    }
+                </nav>
             </FluentCard>
         </FluentGridItem>
 
-        <!-- Middle column: form -->
-        <FluentGridItem xs="12" md="6">
+        <!-- Main column: form (9/12 - the XML preview moved to a FAB+modal,
+             so the form gets the space schneegans-parity controls actually need). -->
+        <FluentGridItem xs="12" md="9">
             <FluentCard Style="padding: 24px;">
-                @if (_activeSection == "region")
-                {
-                    <SectionView Section="@RegionSection.Definition" ViewMode="SectionView.SectionMode.Advanced" />
-                }
-                else
-                {
-                    <FluentLabel Typo="Typography.H3">@L[$"Advanced.Section.{_activeSection}"]</FluentLabel>
-                    <div style="margin-top: 16px;">
-                        <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
-                            @L["Common.ComingInPhase3"]
-                        </FluentMessageBar>
-                    </div>
-                }
-            </FluentCard>
-        </FluentGridItem>
+                @RenderActiveSection()
 
-        <!-- Right column: live XML preview -->
-        <FluentGridItem xs="12" md="3">
-            <FluentCard Style="padding: 14px; position: sticky; top: 16px;">
-                <div class="pf-xml-panel">
-                    <div class="pf-xml-toolbar">
-                        <span class="pf-xml-toolbar__title">@L["Advanced.Preview.Title"]</span>
-                        <span class="pf-xml-toolbar__meta" title="@L["Advanced.Preview.LinesTooltip"]">@_xmlLineCount @L["Advanced.Preview.Lines"]</span>
-                        <div class="pf-xml-toolbar__actions">
-                            <button type="button"
-                                    class="pf-xml-iconbtn @(_justCopied ? "is-copied" : null)"
-                                    title="@(_justCopied ? L["Advanced.Preview.Copied"] : L["Advanced.Preview.Copy"])"
-                                    aria-label="@(_justCopied ? L["Advanced.Preview.Copied"] : L["Advanced.Preview.Copy"])"
-                                    @onclick="CopyXml">
-                                @(_justCopied ? CheckIcon : CopyIcon)
-                            </button>
-                            <button type="button"
-                                    class="pf-xml-iconbtn"
-                                    title="@L["Advanced.Preview.Download"]"
-                                    aria-label="@L["Advanced.Preview.Download"]"
-                                    @onclick="DownloadXml">
-                                @DownloadIcon
-                            </button>
-                            <button type="button"
-                                    class="pf-xml-iconbtn"
-                                    title="@L["Advanced.Preview.Expand"]"
-                                    aria-label="@L["Advanced.Preview.Expand"]"
-                                    @onclick="OpenExpanded">
-                                @ExpandIcon
-                            </button>
-                        </div>
-                    </div>
-                    <pre class="pf-xml-code language-markup"><code class="language-markup" @ref="_codeEl"></code></pre>
+                @*
+                    Prev/Next navigation - lets the user tab through sections in registry
+                    order without scrolling back to the sidebar every time. Disabled at
+                    the list ends rather than hidden so the row's shape stays stable.
+                *@
+                <div class="pf-section-nav">
+                    <FluentButton Appearance="Appearance.Outline"
+                                  Disabled="@(PrevSectionId() is null)"
+                                  OnClick="@(() => GoToSection(PrevSectionId()))">
+                        ← @(PrevSectionId() is { } prev ? (string)L[$"Advanced.Section.{prev}"] : (string)L[@"Common.Back"])
+                    </FluentButton>
+                    <FluentSpacer />
+                    <FluentButton Appearance="Appearance.Accent"
+                                  Disabled="@(NextSectionId() is null)"
+                                  OnClick="@(() => GoToSection(NextSectionId()))">
+                        @(NextSectionId() is { } next ? (string)L[$"Advanced.Section.{next}"] : (string)L[@"Common.Next"]) →
+                    </FluentButton>
                 </div>
             </FluentCard>
         </FluentGridItem>
@@ -92,12 +126,25 @@
     </FluentGrid>
 </div>
 
+<!-- Floating XML-preview button - sticky to the viewport, one click opens the
+     existing full-width modal. Pulses briefly when the XML rebuilds so the
+     user notices a fresh diff is available. -->
+<button type="button"
+        class="pf-xml-fab @(_fabPulsing ? "is-pulsing" : null)"
+        title="@($"{L["Advanced.Preview.Title"]} - {L["Advanced.Preview.Open"]} (Ctrl+Shift+X)")"
+        aria-label="@L["Advanced.Preview.Open"]"
+        @onclick="OpenExpanded">
+    <span class="pf-xml-fab__icon" aria-hidden="true">@EyeIcon</span>
+    <span class="pf-xml-fab__label">XML</span>
+    <span class="pf-xml-fab__count" title="@L["Advanced.Preview.LinesTooltip"]">@_xmlLineCount</span>
+</button>
+
 @if (_expanded)
 {
     <div class="pf-overlay pf-xml-modal is-open" @ref="_modalOverlay" @onclick="CloseExpanded" role="presentation">
         <div class="pf-xml-dialog" role="dialog" aria-modal="true" aria-label="@L["Advanced.Preview.Title"]" @onclick:stopPropagation="true">
             <div class="pf-xml-dialog__header">
-                <span class="pf-xml-dialog__title">@L["Advanced.Preview.Title"] — autounattend.xml</span>
+                <span class="pf-xml-dialog__title">@L["Advanced.Preview.Title"] - autounattend.xml</span>
                 <span class="pf-xml-toolbar__meta" title="@L["Advanced.Preview.LinesTooltip"]">@_xmlLineCount @L["Advanced.Preview.Lines"]</span>
                 <div class="pf-xml-dialog__actions">
                     <button type="button"
@@ -131,26 +178,177 @@
 @code {
     [Parameter] public string? Section { get; set; }
 
-    // Kept in sync with resource keys Advanced.Section.*
-    private static readonly string[] _sections =
-    [
-        "region", "disk", "users", "edition", "privacy",
-        "security", "bloatware", "tweaks", "vm", "network",
-    ];
+    // Kept in sync with SectionRegistry so new sections register once and both the
+    // nav menu and the route-dispatch switch pick them up automatically.
+    private static readonly IReadOnlyList<string> _sections = SectionRegistry.AllSectionIds;
+
+    // Groups the user has explicitly expanded in addition to the one that owns the
+    // active section (that one is always open).
+    private readonly HashSet<string> _openGroupIds = new(StringComparer.Ordinal);
+
+    // Sidebar view: grouped (phase chapters) vs flat (one long list). Power users who
+    // know the layout prefer flat; newcomers benefit from groups. Toggle persists only
+    // for the mounted lifetime of this component, which is fine for a tweak.
+    private bool _sidebarGrouped = true;
+
+    // Filter text applied to section labels; when non-empty, collapses groups and
+    // renders a flat filtered list regardless of _sidebarGrouped.
+    private string _sidebarFilter = "";
 
     private string _activeSection = "region";
+
+    private void OnSidebarFilterChanged(ChangeEventArgs e) => _sidebarFilter = (e.Value as string) ?? "";
+    private void ClearSidebarFilter() => _sidebarFilter = "";
+    private void ToggleSidebarGrouping() => _sidebarGrouped = !_sidebarGrouped;
+
+    private IEnumerable<string> FilteredSectionIds()
+    {
+        if (string.IsNullOrWhiteSpace(_sidebarFilter)) return _sections;
+        var needle = _sidebarFilter.Trim();
+        return _sections.Where(id =>
+        {
+            // Match against both the slug (so power users can type "disk") and the
+            // localized label (so newcomers can type "диск" / "Wi-Fi" / whatever).
+            if (id.Contains(needle, StringComparison.OrdinalIgnoreCase)) return true;
+            var label = (string)L[$"Advanced.Section.{id}"];
+            return label.Contains(needle, StringComparison.OrdinalIgnoreCase);
+        });
+    }
+
+    // ─── Prev/Next walk ─────────────────────────────────────────────
+    // Walks registry order; returns null at the boundaries so the buttons can
+    // disable themselves instead of wrapping around.
+    private int IndexOfActive()
+    {
+        for (var i = 0; i < _sections.Count; i++)
+            if (string.Equals(_sections[i], _activeSection, StringComparison.Ordinal))
+                return i;
+        return -1;
+    }
+
+    private string? PrevSectionId()
+    {
+        var i = IndexOfActive();
+        return i > 0 ? _sections[i - 1] : null;
+    }
+
+    private string? NextSectionId()
+    {
+        var i = IndexOfActive();
+        return i >= 0 && i < _sections.Count - 1 ? _sections[i + 1] : null;
+    }
+
+    private void GoToSection(string? id)
+    {
+        if (string.IsNullOrEmpty(id)) return;
+        Nav.NavigateTo($"/advanced/{id}");
+    }
+
+    // Dispatch the active section to either the data-driven SectionView or a bespoke
+    // .razor component registered for that id. New custom forms go in the switch
+    // below; new data-driven sections need zero changes here.
+    private RenderFragment RenderActiveSection() => builder =>
+    {
+        // Custom-razor sections run BEFORE the SectionDefinition lookup so a pure-
+        // custom section (no Definition entry, e.g. scripts/components) still dispatches.
+        if (SectionRegistry.IsCustom(_activeSection))
+        {
+            switch (_activeSection)
+            {
+                case "users":
+                    builder.OpenComponent<UsersSection>(0);
+                    builder.CloseComponent();
+                    return;
+                case "lock-keys":
+                    builder.OpenComponent<LockKeysForm>(0);
+                    builder.CloseComponent();
+                    return;
+                case "sticky-keys":
+                    builder.OpenComponent<StickyKeysForm>(0);
+                    builder.CloseComponent();
+                    return;
+                case "network":
+                    builder.OpenComponent<NetworkSectionView>(0);
+                    builder.CloseComponent();
+                    return;
+                case "personalization":
+                    builder.OpenComponent<PersonalizationSectionView>(0);
+                    builder.CloseComponent();
+                    return;
+                case "bloatware":
+                    builder.OpenComponent<BloatwareSectionView>(0);
+                    builder.CloseComponent();
+                    return;
+                case "start-menu":
+                    builder.OpenComponent<StartMenuAdvanced>(0);
+                    builder.CloseComponent();
+                    return;
+                case "start-folders":
+                    builder.OpenComponent<StartFoldersAdvanced>(0);
+                    builder.CloseComponent();
+                    return;
+                case "computer-name":
+                    builder.OpenComponent<ComputerNameSection>(0);
+                    builder.CloseComponent();
+                    return;
+                case "time-zone":
+                    builder.OpenComponent<TimeZoneSection>(0);
+                    builder.CloseComponent();
+                    return;
+                case "scripts":
+                    builder.OpenComponent<ScriptsSection>(0);
+                    builder.CloseComponent();
+                    return;
+                case "components":
+                    builder.OpenComponent<ComponentsSection>(0);
+                    builder.CloseComponent();
+                    return;
+                case "visual-effects":
+                    builder.OpenComponent<VisualEffectsAdvanced>(0);
+                    builder.CloseComponent();
+                    return;
+                case "desktop-icons":
+                    builder.OpenComponent<DesktopIconsAdvanced>(0);
+                    builder.CloseComponent();
+                    return;
+            }
+        }
+
+        var def = SectionRegistry.TryGet(_activeSection);
+        if (def is null)
+        {
+            builder.OpenComponent<FluentLabel>(0);
+            builder.AddAttribute(1, "Typo", Typography.H3);
+            builder.AddAttribute(2, "ChildContent", (RenderFragment)(b => b.AddContent(0, L[$"Advanced.Section.{_activeSection}"])));
+            builder.CloseComponent();
+            builder.OpenComponent<FluentMessageBar>(3);
+            builder.AddAttribute(4, "Intent", MessageIntent.Info);
+            builder.AddAttribute(5, "AllowDismiss", false);
+            builder.AddAttribute(6, "ChildContent", (RenderFragment)(b => b.AddContent(0, L["Common.ComingInPhase3"])));
+            builder.CloseComponent();
+            return;
+        }
+
+        builder.OpenComponent<SectionView>(0);
+        builder.AddAttribute(1, "Section", def);
+        builder.AddAttribute(2, "ViewMode", SectionView.SectionMode.Advanced);
+        builder.CloseComponent();
+    };
     private string _xmlPreview = string.Empty;
     private int _xmlLineCount;
     private bool _expanded;
     private bool _justCopied;
+    private bool _fabPulsing;
 
     // Gated flag so OnAfterRender only re-runs Prism when the XML actually
-    // changed or the modal just opened — not on every unrelated re-render.
+    // changed or the modal just opened - not on every unrelated re-render.
     private bool _needsHighlight = true;
 
-    private ElementReference _codeEl;
     private ElementReference _modalCodeEl;
     private ElementReference _modalOverlay;
+
+    private DotNetObjectReference<AdvancedShell>? _selfRef;
+    private CancellationTokenSource? _pulseCts;
 
     protected override void OnInitialized()
     {
@@ -160,7 +358,7 @@
 
     protected override void OnParametersSet()
     {
-        if (!string.IsNullOrWhiteSpace(Section) && _sections.Contains(Section))
+        if (!string.IsNullOrWhiteSpace(Section) && _sections.Contains(Section, StringComparer.Ordinal))
             _activeSection = Section;
         else
             _activeSection = "region";
@@ -173,7 +371,25 @@
 
         _xmlLineCount = CountLines(_xmlPreview);
         _needsHighlight = true;
+        TriggerFabPulse();
         InvokeAsync(StateHasChanged);
+    }
+
+    // Short CSS pulse signalling the XML rebuilt after a config change. The
+    // .is-pulsing class is added for ~0.9s (matches the CSS animation) and any
+    // re-trigger while still pulsing restarts the timer via CancellationToken.
+    private void TriggerFabPulse()
+    {
+        _pulseCts?.Cancel();
+        _pulseCts = new CancellationTokenSource();
+        var token = _pulseCts.Token;
+        _fabPulsing = true;
+        _ = Task.Delay(900, token).ContinueWith(t =>
+        {
+            if (t.IsCanceled) return;
+            _fabPulsing = false;
+            InvokeAsync(StateHasChanged);
+        }, TaskScheduler.Default);
     }
 
     private static int CountLines(string s)
@@ -187,20 +403,40 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            // Page-local keyboard listener - only active while AdvancedShell is
+            // mounted. Ctrl/Cmd+Shift+X opens the XML modal.
+            _selfRef = DotNetObjectReference.Create(this);
+            try { await JS.InvokeVoidAsync("preflightAdvancedShortcuts.register", _selfRef); }
+            catch (JSException) { /* JS module not loaded yet - retried implicitly via next shortcut register */ }
+        }
+
         if (!_needsHighlight && !firstRender) return;
         _needsHighlight = false;
 
-        await JS.InvokeVoidAsync("preflightPrism.highlight", _codeEl, _xmlPreview);
+        // The sidebar preview was removed (FAB + modal replace it); only re-run
+        // Prism on the modal code element, and only when the modal is open.
         if (_expanded)
         {
             // Lift the overlay out of the .pf-page-enter stacking context so it
-            // renders above the sticky header. Idempotent — safe to call every
+            // renders above the sticky header. Idempotent - safe to call every
             // render while the modal is open.
             try { await JS.InvokeVoidAsync("preflightPortal.attach", _modalOverlay); }
-            catch { /* ref not yet attached — will retry on next render */ }
+            catch { /* ref not yet attached - will retry on next render */ }
 
             await JS.InvokeVoidAsync("preflightPrism.highlight", _modalCodeEl, _xmlPreview);
         }
+    }
+
+    [JSInvokable]
+    public void OnShortcut(string id)
+    {
+        if (id != "xml-preview") return;
+        // Toggle on repeat press so power users can open/close without reaching
+        // for the mouse.
+        if (_expanded) _ = CloseExpanded();
+        else { OpenExpanded(); StateHasChanged(); }
     }
 
     private void OpenExpanded()
@@ -212,17 +448,17 @@
     private async Task CloseExpanded()
     {
         // Snap the overlay back to its original Blazor-owned parent BEFORE the
-        // @if flips false — otherwise Blazor's diff can't locate the node to
+        // @if flips false - otherwise Blazor's diff can't locate the node to
         // remove it (we moved it to <body> via preflightPortal.attach).
         try { await JS.InvokeVoidAsync("preflightPortal.detach", _modalOverlay); }
-        catch { /* already gone — ignore */ }
+        catch { /* already gone - ignore */ }
         _expanded = false;
     }
 
     private async Task CopyXml()
     {
         try { await JS.InvokeAsync<bool>("preflightFiles.copyText", _xmlPreview); }
-        catch (JSException) { /* clipboard refused (non-HTTPS, permissions) — no-op */ }
+        catch (JSException) { /* clipboard refused (non-HTTPS, permissions) - no-op */ }
 
         _justCopied = true;
         StateHasChanged();
@@ -238,7 +474,7 @@
         await JS.InvokeVoidAsync("preflightFiles.download", "autounattend.xml", _xmlPreview, "application/xml");
     }
 
-    // Inline stroke SVGs — inherit colour via currentColor, sized to 14px
+    // Inline stroke SVGs - inherit colour via currentColor, sized to 14px
     // by the button rule (.pf-xml-iconbtn svg). Static MarkupString so the
     // markup isn't re-parsed on every render.
     private static readonly MarkupString CopyIcon = new(
@@ -256,5 +492,16 @@
     private static readonly MarkupString CloseIcon = new(
         "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><line x1='18' y1='6' x2='6' y2='18'></line><line x1='6' y1='6' x2='18' y2='18'></line></svg>");
 
-    public void Dispose() => Mode.StateChanged -= RebuildPreview;
+    private static readonly MarkupString EyeIcon = new(
+        "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'></path><circle cx='12' cy='12' r='3'></circle></svg>");
+
+    public void Dispose()
+    {
+        Mode.StateChanged -= RebuildPreview;
+        _pulseCts?.Cancel();
+        _pulseCts?.Dispose();
+        try { _ = JS.InvokeVoidAsync("preflightAdvancedShortcuts.unregister"); }
+        catch { /* page unload - ignore */ }
+        _selfRef?.Dispose();
+    }
 }

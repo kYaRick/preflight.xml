@@ -28,6 +28,10 @@
         <PackageVersion Include="Markdig" Version="0.38.0" />
     </ItemGroup>
 
+    <ItemGroup Label="Unattend generator (vendored from cschneegans/unattend-generator)">
+        <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    </ItemGroup>
+
     <ItemGroup Label="Testing">
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
         <PackageVersion Include="bunit" Version="1.32.7" />

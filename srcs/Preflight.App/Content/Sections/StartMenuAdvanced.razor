@@ -1,0 +1,48 @@
+@using Preflight.App.Models
+@implements IDisposable
+@inject ModeService Mode
+
+@* Custom shell for the start-menu section. Three radio+reveal pairs (TaskbarIcons / StartTiles /
+   StartPins) hide their textarea companions unless the matching radio is on its "Custom*" value.
+   Re-renders on StateChanged so flipping the radio immediately shows/hides the payload input. *@
+<SectionView Section="@StartMenuSection.Definition"
+             ViewMode="SectionView.SectionMode.Advanced"
+             ShowHeader="false"
+             OptionIds="@VisibleOptionIds()" />
+
+@code {
+    // Single source of truth for what "custom" means per radio. Kept here rather than on the
+    // section definition because this filtering only matters in the Advanced editor - Docs
+    // wants to render all three textareas so the user sees their spec.
+    private static readonly IReadOnlyList<string> AllIds =
+    [
+        "taskbar-search",
+        "taskbar-icons", "taskbar-icons-xml",
+        "disable-widgets", "left-taskbar", "hide-task-view-button",
+        "show-all-tray-icons", "disable-bing-results",
+        "start-tiles", "start-tiles-xml",
+        "start-pins",  "start-pins-json",
+    ];
+
+    private string[] VisibleOptionIds()
+    {
+        var list = new List<string>(AllIds.Count);
+        foreach (var id in AllIds)
+        {
+            // Hide the three payload textareas unless the sibling radio selects a custom mode.
+            var include = id switch
+            {
+                "taskbar-icons-xml" => Mode.Config.StartMenu.TaskbarIcons == TaskbarIconsMode.CustomXml,
+                "start-tiles-xml"   => Mode.Config.StartMenu.StartTiles   == StartTilesMode.CustomXml,
+                "start-pins-json"   => Mode.Config.StartMenu.StartPins    == StartPinsMode.CustomJson,
+                _ => true,
+            };
+            if (include) list.Add(id);
+        }
+        return [.. list];
+    }
+
+    protected override void OnInitialized() => Mode.StateChanged += OnChanged;
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Mode.StateChanged -= OnChanged;
+}

@@ -1,0 +1,53 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Vendored from cschneegans/unattend-generator (MIT). See LICENSE.txt and
+    ../../NOTICE for attribution. Keep source edits minimal so we can diff
+    cleanly against upstream when syncing. Behavioral changes belong in the
+    consumer (Preflight.App) via the adapter layer.
+  -->
+
+  <PropertyGroup>
+    <RootNamespace>Schneegans.Unattend</RootNamespace>
+    <!-- AssemblyName MUST stay UnattendGenerator. Bloatware.json embeds
+         Newtonsoft $type metadata like "Schneegans.Unattend.PackageBloatwareStep,
+         UnattendGenerator", and the deserializer resolves that assembly by name
+         at runtime. Changing it breaks Bloatware deserialization and blows up
+         the generator's constructor. -->
+    <AssemblyName>UnattendGenerator</AssemblyName>
+
+    <!-- Upstream targets net8/net9; we keep the repo-wide net10.0 to avoid a
+         multi-TFM matrix. Directory.Build.props already sets TargetFramework. -->
+
+    <!-- Upstream is not warning-clean under our strict analyzers; relax here
+         only. This keeps the file-level diff against upstream small and lets
+         us track upstream releases without fighting the analyzer. -->
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <EnforceCodeStyleInBuild>false</EnforceCodeStyleInBuild>
+    <AnalysisLevel>none</AnalysisLevel>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+  </PropertyGroup>
+
+  <!-- Example.cs declares a public static Main() as a stand-alone usage
+       sample. Excluded from compilation so it can't collide with a host
+       executable's entry point, and kept as None so the example stays
+       visible to anyone browsing the source. -->
+  <ItemGroup>
+    <Compile Remove="Example.cs" />
+  </ItemGroup>
+
+  <!-- All files under resource\ are embedded. Util.StringFromResource() looks
+       them up by name relative to the Schneegans.Unattend namespace, so the
+       default "{RootNamespace}.resource.{file}" logical naming lines up
+       exactly. The glob covers JSON data tables, XSD schemas, and template
+       PowerShell / VBScript / XML snippets the library emits. -->
+  <ItemGroup>
+    <None Remove="resource\**\*" />
+    <EmbeddedResource Include="resource\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" />
+  </ItemGroup>
+
+</Project>

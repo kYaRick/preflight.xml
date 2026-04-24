@@ -225,8 +225,8 @@ html.theme-dark body::after {
 .layout {
     min-height: 100vh;
     flex: 1;
-    padding: 12px !important;
-    gap: 12px !important;
+    padding: 0.75rem !important;
+    gap: 0.75rem !important;
     display: grid !important;
     grid-template-rows: auto 1fr auto !important;
     grid-template-columns: 1fr !important;
@@ -236,11 +236,11 @@ html.theme-dark body::after {
 .layout>.header,
 fluent-header.header {
     position: sticky;
-    top: 12px;
+    top: 0.75rem;
     margin: 0 !important;
     padding: 0 1.25rem !important;
-    height: 56px !important;
-    max-width: min(1400px, 100%);
+    height: 3.5rem !important;
+    max-width: min(87.5rem, 100%);
     width: 100%;
     justify-self: center;
     background: var(--pf-chrome-bg) !important;
@@ -252,10 +252,39 @@ fluent-header.header {
     z-index: 50;
 }
 
+/* Smooth blur tail BELOW the header - a slim, fixed strip sitting right
+   under the sticky header's bottom edge. Content that scrolls under the
+   header already gets blurred by the header's own backdrop-filter; this
+   strip adds a short fade-out so the blur doesn't stop with a hard line
+   where the header's glass panel ends. The mask makes the effect taper
+   to zero within ~18px so nothing beyond that is touched. */
+.layout::after {
+    content: '';
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 4.25rem;
+    /* 12px gap + 56px header height */
+    height: 1.125rem;
+    pointer-events: none;
+    z-index: 40;
+    /* under the header (50), above page content */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    -webkit-mask-image: linear-gradient(to bottom,
+            rgba(0, 0, 0, 0.9) 0%,
+            rgba(0, 0, 0, 0.5) 45%,
+            rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to bottom,
+            rgba(0, 0, 0, 0.9) 0%,
+            rgba(0, 0, 0, 0.5) 45%,
+            rgba(0, 0, 0, 0) 100%);
+}
+
 .layout>.body-content {
-    padding: 24px 0;
+    padding: 1.5rem 0;
     /* breathing room between the header island and page content */
-    max-width: min(1400px, 100%);
+    max-width: min(87.5rem, 100%);
     width: 100%;
     justify-self: center;
 }
@@ -277,7 +306,7 @@ fluent-header.header {
       swap). Works in every browser and covers FluentDesignTheme's
       separate re-paint. This is the reliable baseline.
 
-   2. View Transitions API (Chromium/Safari) — a full-viewport
+   2. View Transitions API (Chromium/Safari) - a full-viewport
       crossfade on top of #1. Graceful no-op in Firefox. */
 
 html.theme-transitioning body,
@@ -317,7 +346,7 @@ html.theme-transitioning .pf-hero-title {
 fluent-footer.footer {
     margin: 0 !important;
     padding: 0.625rem 1rem !important;
-    max-width: min(1400px, 100%);
+    max-width: min(87.5rem, 100%);
     width: 100%;
     justify-self: center;
     background: transparent !important;
@@ -568,8 +597,14 @@ fluent-button[appearance="accent"]:active::part(control) {
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    width: 44px;
-    height: 44px;
+    /* Width was 2.75rem - the emoji glyph plus its drop-shadow blur bled past
+       the right edge and got shaved off by the header's rounded clip. Extra
+       horizontal padding and `overflow: visible` give the glyph room to
+       breathe without shifting neighbours. */
+    min-width: 2.75rem;
+    height: 2.75rem;
+    padding: 0 0.375rem;
+    overflow: visible;
     font-size: 1.75rem;
     line-height: 1;
     text-decoration: none;
@@ -810,7 +845,7 @@ fluent-anchor[appearance="hypertext"]:hover {
 
 /* ─── Command palette ─────────────────────────────────────── */
 .pf-palette {
-    width: min(640px, 92vw);
+    width: min(40rem, 92vw);
     max-height: 70vh;
     background: var(--pf-modal-bg);
     backdrop-filter: blur(24px) saturate(180%);
@@ -977,7 +1012,7 @@ fluent-anchor[appearance="hypertext"]:hover {
 
 /* ─── Shortcuts help overlay ─────────────────────────────── */
 .pf-help {
-    width: min(420px, 92vw);
+    width: min(26.25rem, 92vw);
     background: var(--pf-modal-bg);
     backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--pf-modal-border);
@@ -1011,8 +1046,8 @@ fluent-anchor[appearance="hypertext"]:hover {
     color: var(--pf-text-subtle);
     font-size: 0.875rem;
     cursor: pointer;
-    width: 28px;
-    height: 28px;
+    width: 1.75rem;
+    height: 1.75rem;
     border-radius: var(--pf-radius-sm);
     transition: all 0.15s var(--pf-ease);
 }
@@ -1197,17 +1232,39 @@ fluent-anchor[appearance="hypertext"]:hover {
     border: 1px solid var(--pf-border);
 }
 
+/* Docs/intro images: constrain size, add card treatment, and let the following
+   `<em>` line act as a caption so scraped reference screenshots don't blow up
+   the page width. Images are rendered as block so the caption sits below. */
+.pf-section__intro img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0.75rem 0 0.25rem;
+    padding: 0.375rem;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+}
+
+.pf-section__intro p>img+em,
+.pf-section__intro p>img:first-child+em {
+    display: block;
+    color: var(--pf-text-muted);
+    font-size: 0.86rem;
+    margin-bottom: 0.75rem;
+}
+
 .pf-section__options {
     display: flex;
     flex-direction: column;
-    gap: 0.9rem;
+    gap: 0.75rem;
     overflow: visible;
 }
 
 .pf-option {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.6rem;
     padding: 1rem 1.125rem;
     background: var(--pf-card-bg);
     border: 1px solid var(--pf-card-border);
@@ -1219,16 +1276,38 @@ fluent-anchor[appearance="hypertext"]:hover {
 
 .pf-option__head {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
     gap: 0.75rem;
+}
+
+.pf-option__toggle-head {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pf-section--advanced .pf-option {
+    padding: 0.75rem 0.9rem;
+    background: rgba(var(--pf-bg-rgb), 0.55);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+    box-shadow: none;
+}
+
+.pf-section--advanced .pf-option:hover {
+    border-color: var(--pf-border-strong);
+}
+
+.pf-section--advanced .pf-option--toggle {
+    gap: 0.35rem;
 }
 
 .pf-option__label {
     margin: 0;
     color: var(--pf-text);
-    font-size: 1rem;
-    line-height: 1.4;
+    font-size: 0.98rem;
+    line-height: 1.35;
     font-weight: 700;
 }
 
@@ -1248,44 +1327,160 @@ fluent-anchor[appearance="hypertext"]:hover {
 .pf-option__description {
     margin: 0;
     color: var(--pf-text-muted);
-    font-size: 0.95rem;
-    line-height: 1.7;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.pf-section--advanced .pf-option__description {
+    line-height: 1.45;
 }
 
 .pf-docs-entry>.pf-section {
     margin-top: 0.5rem;
 }
 
-/* Advanced page layout: allow all content to flow naturally */
+/* Docs reading view: tighter vertical rhythm than the default .pf-section__intro,
+   which is tuned for the Advanced-mode context where there is also a form below.
+   Docs pages are pure reading, so we match the rest of the app's body typography
+   (0.875rem / line-height 1.45) instead of the looser reading preset. */
+.pf-docs-entry>div>*+*,
+.pf-docs-entry .pf-section {
+    gap: 0.5rem;
+}
+
+.pf-docs-entry .pf-section__intro {
+    padding: 0.75rem 1rem;
+}
+
+.pf-docs-entry .pf-section__intro p,
+.pf-docs-entry .pf-section__intro li {
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.pf-docs-entry .pf-section__intro p {
+    margin: 0.35rem 0;
+}
+
+.pf-docs-entry .pf-section__intro ul,
+.pf-docs-entry .pf-section__intro ol {
+    margin: 0.5rem 0;
+    padding-left: 1.15rem;
+}
+
+.pf-docs-entry .pf-section__intro li+li {
+    margin-top: 0.2rem;
+}
+
+.pf-docs-entry .pf-section__intro h2 {
+    font-size: 1.125rem;
+    margin: 0.75rem 0 0.2rem;
+}
+
+.pf-docs-entry .pf-section__intro h3 {
+    font-size: 1rem;
+    margin: 0.625rem 0 0.15rem;
+}
+
+.pf-docs-entry .pf-section__intro h4 {
+    font-size: 0.95rem;
+    margin: 0.5rem 0 0.15rem;
+}
+
+.pf-docs-entry .pf-section__intro> :first-child,
+.pf-docs-entry .pf-section__intro> :first-child> :first-child {
+    margin-top: 0;
+}
+
+.pf-docs-entry .pf-option {
+    padding: 0.65rem 0.85rem;
+    gap: 0.35rem;
+}
+
+.pf-docs-entry .pf-option__description {
+    font-size: 0.82rem;
+    line-height: 1.45;
+}
+
+/* The main h1 + subtitle pair at the top of a Docs page is currently rendered by
+   FluentLabel as <h2 class="fluent-typography"> at 32px - too heavy for a docs
+   reference. Scale it down to the size we use for section titles elsewhere so the
+   page reads like polished reference, not landing-page marketing. The selector
+   targets FluentLabel's first heading inside the fluent-grid-item that holds the
+   main content column; intro <h1>/<h2> from markdown are left alone. */
+.pf-docs-entry fluent-grid-item>.fluent-typography,
+.pf-docs-entry fluent-grid-item>h1.fluent-typography,
+.pf-docs-entry fluent-grid-item>h2.fluent-typography,
+.pf-docs-entry>div>fluent-grid>fluent-grid-item h2.fluent-typography:first-of-type {
+    font-size: clamp(1.5rem, 2vw, 1.875rem) !important;
+    line-height: 1.15 !important;
+    font-weight: 700 !important;
+}
+
+.pf-docs-entry fluent-label[typo="Body"] .fluent-typography,
+.pf-docs-entry .fluent-typography+.fluent-typography {
+    font-size: 0.92rem;
+}
+
+/* Advanced page layout: allow all content to flow naturally.
+   FluentGrid is a flex row; default align-items (stretch) makes the main
+   content column grow to match the tall left navigation. Pin items to the
+   top explicitly so the content card hugs its own height. */
 fluent-grid,
 fluent-grid-item,
 fluent-card {
     overflow: visible !important;
 }
 
+.pf-advanced-shell .fluent-grid {
+    align-items: flex-start !important;
+}
+
+.pf-advanced-shell fluent-grid-item>div {
+    align-self: flex-start;
+}
+
+.pf-advanced-shell fluent-card {
+    height: auto;
+}
+
 /* ─── FluentSelect dropdown sizing ───────────────────────────
-   Limit dropdown height and add scrollbar for long option lists.
-   Primary path: FluentSelect shadow parts.
-   Fallback path: global role="listbox" selector. */
-fluent-select.pf-select::part(listbox) {
-    max-height: 240px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
+   Long option lists (editions, time zones, components) have to stay
+   scrollable inside a fixed max-height box - otherwise the listbox
+   runs past the option card it's in and the panel beneath. Rules hit
+   every FluentSelect (not just .pf-select) because custom section
+   components mount bare FluentSelect and also need this behaviour.
 
-fluent-select.pf-select::part(positioning-region) {
-    max-height: 240px;
-}
-
-[role="listbox"] {
-    max-height: 240px;
+   Three selector paths cover the Fluent v4 shadow DOM surface:
+   1. ::part(listbox) / ::part(positioning-region) - primary
+   2. role="listbox" - fallback for browsers that don't expose parts yet
+   3. fluent-select itself - make sure its stacking context can extend
+      beyond the surrounding card. */
+fluent-select::part(listbox),
+fluent-select::part(positioning-region) {
+    max-height: 15rem !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
 }
 
+[role="listbox"] {
+    max-height: 15rem !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    /* Must sit above the pf-option card (z-index 1) and the sticky nav card
+       (position sticky stacks at 0) so the list never hides behind either. */
+    z-index: 50;
+}
+
+/* FluentSelect's listbox is rendered inside the custom element, so the element
+   itself must not clip. Belt-and-braces with the global card override. */
+fluent-select {
+    overflow: visible !important;
+}
+
 /* Smooth scrolling for dropdown options */
 [role="listbox"]::-webkit-scrollbar {
-    width: 8px;
+    width: 0.5rem;
 }
 
 [role="listbox"]::-webkit-scrollbar-track {
@@ -1317,7 +1512,7 @@ fluent-select.pf-select::part(positioning-region) {
 .pf-switcher {
     position: relative;
     display: inline-flex;
-    padding: 4px;
+    padding: 0.25rem;
     background: var(--pf-chrome-bg);
     backdrop-filter: blur(12px) saturate(160%);
     -webkit-backdrop-filter: blur(12px) saturate(160%);
@@ -1330,8 +1525,8 @@ fluent-select.pf-select::part(positioning-region) {
 
 .pf-switcher__indicator {
     position: absolute;
-    top: 4px;
-    bottom: 4px;
+    top: 0.25rem;
+    bottom: 0.25rem;
     left: 0;
     width: 0;
     opacity: 0;
@@ -1372,7 +1567,7 @@ fluent-select.pf-select::part(positioning-region) {
 
 .pf-switcher--icon .pf-switcher__btn {
     padding: 0.375rem 0.5rem;
-    min-width: 32px;
+    min-width: 2rem;
     justify-content: center;
 }
 
@@ -1484,8 +1679,8 @@ fluent-select.pf-select::part(positioning-region) {
     /* Fixed geometry so the SVG wave (400x60 viewBox) and the plane's
        pixel-based offset-path share the same coordinate space. On
        narrow phones scale the whole loader uniformly. */
-    width: 400px;
-    height: 100px;
+    width: 25rem;
+    height: 6.25rem;
     max-width: 95vw;
     z-index: 2;
 }
@@ -1498,10 +1693,10 @@ fluent-select.pf-select::part(positioning-region) {
 
 .runway-wave {
     position: absolute;
-    top: 20px;
+    top: 1.25rem;
     left: 0;
-    width: 400px;
-    height: 60px;
+    width: 25rem;
+    height: 3.75rem;
     display: block;
     overflow: visible;
     fill: none;
@@ -1526,15 +1721,22 @@ fluent-select.pf-select::part(positioning-region) {
 
 /* Progressive fill trail (0 → 100% one-shot). It's a status bar - once
    it reaches the end, stays there. `forwards` fill-mode pins the end state
-   even after the animation completes, through the overlay fade-out. */
+   even after the animation completes, through the overlay fade-out.
+
+   A horizontal mask gradient fades the trail's tail so the oldest part of
+   the flight path dissolves behind the plane - visually separates the
+   glowing plane from the line, which were blending into one violet smear. */
 .runway-trail {
     stroke: url(#runwayGradient);
-    stroke-width: 3;
+    stroke-width: 2;
     stroke-dasharray: 100;
     stroke-dashoffset: 100;
     /* initial: nothing drawn */
     stroke-linecap: round;
-    filter: drop-shadow(0 0 8px var(--pf-accent));
+    filter: drop-shadow(0 0 4px var(--pf-accent));
+    opacity: 0.85;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 18%, black 48%);
+    mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 18%, black 48%);
     animation: trailFly 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
@@ -1552,10 +1754,10 @@ fluent-select.pf-select::part(positioning-region) {
    Inline SVG with gradient fill - bulletproof visibility across themes. */
 .plane {
     position: absolute;
-    top: 20px;
+    top: 1.25rem;
     left: 0;
-    width: 28px;
-    height: 28px;
+    width: 1.75rem;
+    height: 1.75rem;
     display: block;
     pointer-events: none;
 
@@ -1566,7 +1768,12 @@ fluent-select.pf-select::part(positioning-region) {
     offset-anchor: center;
 
     /* One-shot forward flight in sync with `trailFly`. `forwards` fill-mode
-       pins the plane at 100% when done, matching the full status bar. */
+       pins the plane at 100% when done, matching the full status bar.
+
+       Two-layer drop-shadow (small white highlight + larger accent halo)
+       lifts the plane off the violet trail underneath so the nose always
+       reads clearly. */
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 14px var(--pf-accent));
     animation:
         planeFly 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards,
         planePulse 1.8s ease-in-out infinite;
@@ -1586,11 +1793,11 @@ fluent-select.pf-select::part(positioning-region) {
 
     0%,
     100% {
-        filter: drop-shadow(0 0 8px var(--pf-accent));
+        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 12px var(--pf-accent));
     }
 
     50% {
-        filter: drop-shadow(0 0 16px var(--pf-accent));
+        filter: drop-shadow(0 0 4px rgba(255, 255, 255, 1)) drop-shadow(0 0 22px var(--pf-accent-strong, var(--pf-accent)));
     }
 }
 
@@ -1641,14 +1848,14 @@ fluent-select.pf-select::part(positioning-region) {
 .pf-xml-panel {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0.625rem;
 }
 
 .pf-xml-toolbar {
     display: flex;
     align-items: center;
-    gap: 8px;
-    min-height: 32px;
+    gap: 0.5rem;
+    min-height: 2rem;
     flex-wrap: wrap;
 }
 
@@ -1673,7 +1880,7 @@ fluent-select.pf-select::part(positioning-region) {
 .pf-xml-toolbar__actions {
     margin-left: auto;
     display: inline-flex;
-    gap: 4px;
+    gap: 0.25rem;
 }
 
 .pf-xml-iconbtn {
@@ -1682,8 +1889,8 @@ fluent-select.pf-select::part(positioning-region) {
     background: var(--pf-chrome-bg);
     border: 1px solid var(--pf-border-strong);
     color: var(--pf-text-muted);
-    width: 28px;
-    height: 28px;
+    width: 1.75rem;
+    height: 1.75rem;
     padding: 0;
     border-radius: var(--pf-radius-sm);
     cursor: pointer;
@@ -1722,26 +1929,26 @@ fluent-select.pf-select::part(positioning-region) {
 }
 
 .pf-xml-iconbtn svg {
-    width: 14px;
-    height: 14px;
+    width: 0.875rem;
+    height: 0.875rem;
     display: block;
     color: currentColor;
 }
 
-/* Code surface — sidebar variant. Left accent border ties it visually to
+/* Code surface - sidebar variant. Left accent border ties it visually to
    the app palette; monospace with relaxed leading makes deep trees legible. */
 .pf-xml-code {
     margin: 0;
-    padding: 12px 14px;
+    padding: 0.75rem 0.875rem;
     font-family: var(--pf-font-mono);
-    font-size: 11.5px;
+    font-size: 0.7188rem;
     line-height: 1.55;
     background: var(--pf-surface-2);
     border: 1px solid var(--pf-border);
     border-left: 3px solid var(--pf-accent);
     border-radius: var(--pf-radius-md);
     overflow: auto;
-    max-height: 520px;
+    max-height: 32.5rem;
     white-space: pre;
     color: var(--pf-text);
     tab-size: 2;
@@ -1757,8 +1964,8 @@ fluent-select.pf-select::part(positioning-region) {
 }
 
 .pf-xml-code::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 0.625rem;
+    height: 0.625rem;
 }
 
 .pf-xml-code::-webkit-scrollbar-track {
@@ -1775,8 +1982,82 @@ fluent-select.pf-select::part(positioning-region) {
     background: var(--pf-accent);
 }
 
+/* ─── Advanced code editor (textarea + Prism overlay) ────
+   A <pre class="pf-xml-code pf-code-editor__view"> sits absolutely behind a
+   transparent textarea. Both share font metrics, padding, line-height and
+   `white-space: pre` so a character at row R column C lines up across layers.
+   JS keeps the <pre>'s scrollTop/scrollLeft mirrored to the textarea's. */
+.pf-code-editor {
+    position: relative;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-left: 3px solid var(--pf-accent);
+    border-radius: var(--pf-radius-md);
+    overflow: hidden;
+    transition: border-color 0.15s var(--pf-ease);
+}
+
+.pf-code-editor:focus-within {
+    border-color: var(--pf-accent-strong);
+    box-shadow: 0 0 0 2px var(--pf-accent-ring);
+}
+
+/* Highlighted mirror. Reuses .pf-xml-code's palette (tokens are coloured by
+   the shared .pf-xml-code .token.* rules below) but disables its own border,
+   max-height and radius since the wrapper owns those. */
+.pf-code-editor__view {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    max-height: none;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.pf-code-editor__view code {
+    display: block;
+    min-height: 100%;
+}
+
+/* Transparent textarea on top. Caret/selection remain visible because the
+   text itself (rendered transparent) lines up 1:1 with the Prism-painted
+   characters behind it. */
+.pf-code-editor__input {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 0.75rem 0.875rem;
+    margin: 0;
+    font-family: var(--pf-font-mono);
+    font-size: 0.7188rem;
+    line-height: 1.55;
+    color: transparent;
+    caret-color: var(--pf-text);
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: vertical;
+    white-space: pre;
+    overflow: auto;
+    tab-size: 2;
+    min-height: 15rem;
+}
+
+.pf-code-editor__input::selection {
+    color: transparent;
+    background: rgba(139, 92, 246, 0.35);
+}
+
+.pf-code-editor__input::placeholder {
+    color: var(--pf-text-muted);
+    opacity: 0.6;
+}
+
 /* ─── Prism token theme (scoped to .pf-xml-code) ──────────
-   We don't pull Prism's default CSS — it targets token classes with
+   We don't pull Prism's default CSS - it targets token classes with
    generic greens/blues that fight the indigo/violet palette. Instead
    we paint each token in a palette-native colour. Scoping to
    .pf-xml-code keeps this from leaking onto <code> elsewhere. */
@@ -1796,7 +2077,7 @@ fluent-select.pf-select::part(positioning-region) {
     color: var(--pf-text-muted);
 }
 
-/* Light theme: indigo tag / fuchsia attr / burnt-orange value — works against
+/* Light theme: indigo tag / fuchsia attr / burnt-orange value - works against
    a white/slate surface. Dark theme: the sidebar's card background carries a
    violet tint, so the indigo/violet tag colour that worked on light blends
    into the chrome and becomes unreadable. We shift to three distinct hues
@@ -1862,6 +2143,75 @@ html.theme-dark .pf-xml-code .token.namespace {
     /* pink-400 */
 }
 
+/* ─── Additional token types for non-XML languages (JSON / batch /
+   powershell / ini / vbnet). Reuse the XML palette so the CodeEditor
+   looks consistent regardless of which Prism grammar produced it. */
+.pf-xml-code .token.keyword,
+.pf-xml-code .token.selector,
+.pf-xml-code .token.important,
+.pf-xml-code .token.atrule,
+.pf-xml-code .token.class-name {
+    color: var(--pf-accent-strong);
+    font-weight: 500;
+}
+
+html.theme-dark .pf-xml-code .token.keyword,
+html.theme-dark .pf-xml-code .token.selector,
+html.theme-dark .pf-xml-code .token.important,
+html.theme-dark .pf-xml-code .token.atrule,
+html.theme-dark .pf-xml-code .token.class-name {
+    color: #c4b5fd;
+    /* violet-300 */
+}
+
+.pf-xml-code .token.property,
+.pf-xml-code .token.variable,
+.pf-xml-code .token.constant,
+.pf-xml-code .token.symbol {
+    color: #c026d3;
+}
+
+html.theme-dark .pf-xml-code .token.property,
+html.theme-dark .pf-xml-code .token.variable,
+html.theme-dark .pf-xml-code .token.constant,
+html.theme-dark .pf-xml-code .token.symbol {
+    color: #fbbf24;
+    /* amber-400 */
+}
+
+.pf-xml-code .token.function,
+.pf-xml-code .token.builtin {
+    color: var(--pf-accent);
+    font-weight: 500;
+}
+
+html.theme-dark .pf-xml-code .token.function,
+html.theme-dark .pf-xml-code .token.builtin {
+    color: #67e8f9;
+    /* cyan-300 */
+}
+
+.pf-xml-code .token.number,
+.pf-xml-code .token.boolean,
+.pf-xml-code .token.null,
+.pf-xml-code .token.regex {
+    color: #c2410c;
+}
+
+html.theme-dark .pf-xml-code .token.number,
+html.theme-dark .pf-xml-code .token.boolean,
+html.theme-dark .pf-xml-code .token.null,
+html.theme-dark .pf-xml-code .token.regex {
+    color: #f0abfc;
+    /* fuchsia-300 */
+}
+
+.pf-xml-code .token.operator,
+.pf-xml-code .token.url {
+    color: var(--pf-text);
+    opacity: 0.8;
+}
+
 /* ─── XML expand modal ────────────────────────────────────
    Overlay uses the shared .pf-overlay backdrop-blur, then centres a
    wide dialog (up to 1200px) that takes most of the viewport so a
@@ -1872,7 +2222,7 @@ html.theme-dark .pf-xml-code .token.namespace {
 }
 
 .pf-xml-dialog {
-    width: min(1200px, 100%);
+    width: min(75rem, 100%);
     max-height: 92vh;
     background: var(--pf-modal-bg);
     backdrop-filter: blur(24px) saturate(180%);
@@ -1892,8 +2242,8 @@ html.theme-dark .pf-xml-code .token.namespace {
 .pf-xml-dialog__header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 14px 18px;
+    gap: 0.625rem;
+    padding: 0.875rem 1.125rem;
     border-bottom: 1px solid var(--pf-border);
 }
 
@@ -1906,17 +2256,145 @@ html.theme-dark .pf-xml-code .token.namespace {
 .pf-xml-dialog__actions {
     margin-left: auto;
     display: inline-flex;
-    gap: 4px;
+    gap: 0.25rem;
 }
 
 .pf-xml-dialog .pf-xml-code {
-    margin: 14px;
+    margin: 0.875rem;
     max-height: none;
     flex: 1;
     min-height: 0;
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1.6;
     border-left-width: 4px;
+}
+
+/* ─── XML preview FAB ─────────────────────────────────────
+   A compact floating action button pinned to the bottom-right of the viewport.
+   Replaces the old sticky 3rd-column preview panel - the form now has that
+   width to breathe in, and the XML is one click (or Ctrl+Shift+X) away. */
+.pf-xml-fab {
+    position: fixed;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    z-index: 40;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    border-radius: 999px;
+    background: var(--pf-chrome-bg);
+    border: 1px solid var(--pf-border-strong);
+    color: var(--pf-text);
+    cursor: pointer;
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.18),
+        0 2px 6px rgba(0, 0, 0, 0.08);
+    transition:
+        transform 0.18s var(--pf-ease),
+        background 0.18s var(--pf-ease),
+        border-color 0.18s var(--pf-ease),
+        box-shadow 0.25s var(--pf-ease);
+}
+
+.pf-xml-fab:hover {
+    transform: translateY(-1px);
+    background: var(--pf-surface-2);
+    border-color: var(--pf-accent);
+    box-shadow:
+        0 12px 28px rgba(0, 0, 0, 0.22),
+        0 0 18px var(--pf-accent-ring);
+}
+
+.pf-xml-fab:active {
+    transform: translateY(0);
+}
+
+.pf-xml-fab:focus-visible {
+    outline: 2px solid var(--pf-accent);
+    outline-offset: 2px;
+}
+
+.pf-xml-fab__icon {
+    display: inline-flex;
+    color: var(--pf-accent);
+}
+
+.pf-xml-fab__icon svg {
+    width: 1.125rem;
+    height: 1.125rem;
+}
+
+.pf-xml-fab__label {
+    font-weight: 600;
+    font-size: 0.8125rem;
+    letter-spacing: 0.02em;
+}
+
+.pf-xml-fab__count {
+    font-family: var(--pf-font-mono);
+    font-size: 0.6875rem;
+    color: var(--pf-text-subtle);
+    padding: 0.125rem 0.4rem;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-sm);
+}
+
+.pf-xml-fab.is-pulsing {
+    animation: xmlFabPulse 0.9s var(--pf-ease);
+}
+
+.pf-xml-fab.is-pulsing .pf-xml-fab__count {
+    animation: xmlFabCountBlink 0.9s var(--pf-ease);
+}
+
+@keyframes xmlFabPulse {
+    0% {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 0 0 var(--pf-accent-ring);
+    }
+
+    50% {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 0 10px transparent;
+    }
+
+    100% {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 0 0 transparent;
+    }
+}
+
+@keyframes xmlFabCountBlink {
+
+    0%,
+    100% {
+        color: var(--pf-text-subtle);
+    }
+
+    30% {
+        color: var(--pf-accent);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .pf-xml-fab.is-pulsing,
+    .pf-xml-fab.is-pulsing .pf-xml-fab__count {
+        animation: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .pf-xml-fab {
+        right: 0.75rem;
+        bottom: 0.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .pf-xml-fab__label {
+        display: none;
+    }
 }
 
 /* ─── Responsive tweaks ────────────────────────────────── */
@@ -1942,12 +2420,12 @@ html.theme-dark .pf-xml-code .token.namespace {
     }
 
     .layout {
-        padding: 6px !important;
-        gap: 6px !important;
+        padding: 0.375rem !important;
+        gap: 0.375rem !important;
     }
 
     .layout>.header {
-        top: 6px !important;
+        top: 0.375rem !important;
         padding: 0 0.75rem !important;
     }
 }
@@ -1985,7 +2463,7 @@ html.theme-dark .pf-xml-code .token.namespace {
        plain opacity fade when matchMedia reports reduce=true. No CSS
        rule is needed here.
 
-       Theme crossfade on colored properties is motion-free — it stays
+       Theme crossfade on colored properties is motion-free - it stays
        on for reduced-motion users. View Transitions (which do a paint
        snapshot crossfade, still motion-free) also stay on. */
 
@@ -1998,4 +2476,927 @@ html.theme-dark .pf-xml-code .token.namespace {
     .fluent-nav-link:hover {
         transform: none !important;
     }
+}
+
+/* ─── Section group sub-heading ──────────────────────────────
+   Separates logical clusters of checkboxes (e.g. Explorer,
+   System, Edge) inside a single section. Uses the same muted
+   text tone as option descriptions so it reads as metadata,
+   not as a second-level header competing with the section
+   title. */
+.pf-section__group-heading {
+    margin: 1.25rem 0 0.25rem;
+    color: var(--pf-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* The first group heading in a section doesn't need the top
+   margin - the section's own spacing already handles it. */
+.pf-section__options>.pf-section__group-heading:first-child {
+    margin-top: 0;
+}
+
+/* ─── Radio group ────────────────────────────────────────────
+   Used by OptionKind.Radio (and the bespoke lock-keys /
+   sticky-keys forms). Vertical stack of labelled radios with
+   enough spacing that the click target isn't cramped. */
+.pf-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.pf-radio {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: var(--pf-text);
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.pf-radio input[type="radio"] {
+    accent-color: var(--pf-accent);
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    cursor: pointer;
+}
+
+.pf-radio__label {
+    user-select: none;
+}
+
+/* ─── Checkbox group (CheckboxGroup kind) ────────────────────
+   Stacked checkboxes where each item corresponds to one
+   InlineValues entry. Uses the same rhythm as pf-radio-group
+   so both feel like members of the same control family. */
+.pf-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.pf-checkbox-row {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: var(--pf-text);
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.pf-checkbox-row__label {
+    user-select: none;
+}
+
+/* ─── Textarea ───────────────────────────────────────────────
+   Full-width, resizable-vertical only so a long script stays
+   within the option card. */
+.pf-textarea {
+    width: 100%;
+}
+
+/* ─── Wizard step runway ─────────────────────────────────────
+   Takes the loading-screen plane-on-runway motif and shrinks it into a
+   horizontal step indicator. Progress flows left → right along the same
+   S-curve: the track is a faint guide, the trail a gradient accent that
+   fades toward its tail, and the plane rides the curve at --pf-step-progress
+   (0-100%). 36px tall, 240px wide by default - fits next to "Step 2 of 5". */
+.pf-step-runway {
+    --pf-step-progress: 0%;
+    position: relative;
+    width: 15rem;
+    height: 2.25rem;
+    flex: 0 0 auto;
+}
+
+.pf-step-runway__wave {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    overflow: visible;
+    fill: none;
+    stroke-linecap: round;
+}
+
+.pf-step-runway__track {
+    stroke: var(--pf-border-strong);
+    stroke-width: 1.5;
+    opacity: 0.35;
+}
+
+/* The trail grows from 0 → progress% by masking its stroke with a left→right
+   linear gradient. Dash-based reveals are brittle across path shapes; a mask
+   is exact at every percentage and also gives us the fading tail for free. */
+.pf-step-runway__trail {
+    stroke: url(#pfStepTrailGradient);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    /* All stops are fractions of the current progress so the gradient stays
+       monotonic at every step. Fixed absolute stops (e.g. "30%") overshoot
+       the progress tip at low percentages and blanked the line out entirely,
+       leaving only the filter drop-shadow visible as a violet blob. */
+    -webkit-mask-image: linear-gradient(to right,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0.35) calc(var(--pf-step-progress) * 0.15),
+            rgba(0, 0, 0, 0.9) calc(var(--pf-step-progress) * 0.55),
+            rgba(0, 0, 0, 1) calc(var(--pf-step-progress) - 0.5%),
+            rgba(0, 0, 0, 0) var(--pf-step-progress));
+    mask-image: linear-gradient(to right,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 0.35) calc(var(--pf-step-progress) * 0.15),
+            rgba(0, 0, 0, 0.9) calc(var(--pf-step-progress) * 0.55),
+            rgba(0, 0, 0, 1) calc(var(--pf-step-progress) - 0.5%),
+            rgba(0, 0, 0, 0) var(--pf-step-progress));
+    filter: drop-shadow(0 0 3px var(--pf-accent));
+    transition: -webkit-mask-image 0.5s var(--pf-ease-out),
+        mask-image 0.5s var(--pf-ease-out);
+}
+
+.pf-step-runway__plane {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1.375rem;
+    height: 1.375rem;
+    pointer-events: none;
+    color: var(--pf-accent);
+    /* Ride the same S-curve at the current progress. Match the SVG's 240x36
+       coordinate space so the plane lands on the crest. */
+    offset-path: path("M 2 18 Q 32 4, 62 18 T 122 18 T 182 18 T 238 18");
+    offset-rotate: auto 90deg;
+    offset-anchor: center;
+    offset-distance: var(--pf-step-progress);
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 10px var(--pf-accent));
+    transition: offset-distance 0.5s var(--pf-ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .pf-step-runway__trail,
+    .pf-step-runway__plane {
+        transition: none;
+    }
+}
+
+/* ─── Docs index: plain filter input above the cards grid ────
+   Reuses the pf-nav-search primitive without the wrapping card - on the
+   index page the input is a single standalone control, not a toolbar.
+   Auto margins centre it inside the page's max-width so the filter sits
+   over the middle of the cards grid rather than hugging the left edge. */
+.pf-docs-search {
+    max-width: 32.5rem;
+    margin: 0 auto 1rem;
+}
+
+/* ─── Themed global scrollbars ───────────────────────────────
+   The default Chrome/Edge scrollbar reads as "system OS chrome" which
+   clashes with the bespoke violet-on-dark palette. The custom rule below
+   paints a thin accent-gradient thumb on a translucent track so scrollbars
+   feel like part of the app. Firefox uses scrollbar-color / width - a close
+   visual match without pseudo-elements. */
+*::-webkit-scrollbar {
+    width: 0.625rem;
+    height: 0.625rem;
+}
+
+*::-webkit-scrollbar-track {
+    background: rgba(var(--pf-bg-rgb), 0.4);
+    border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg,
+            rgba(var(--pf-accent-rgb), 0.85) 0%,
+            rgba(var(--pf-accent-rgb), 0.55) 100%);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    border-radius: 10px;
+    min-height: 2.25rem;
+    transition: background 0.2s var(--pf-ease);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg,
+            var(--pf-accent) 0%,
+            var(--pf-accent-strong) 100%);
+    background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Firefox */
+* {
+    scrollbar-color: rgba(var(--pf-accent-rgb), 0.65) rgba(var(--pf-bg-rgb), 0.35);
+    scrollbar-width: thin;
+}
+
+/* ─── Go-to-top plane button ─────────────────────────────────
+   Appears bottom-left after the user scrolls past ~400px. Clicking it
+   scrolls the page back to top with a brief "takeoff" animation on the
+   plane glyph (tilt + translate). Mirrors the loading screen motif. */
+.pf-go-top {
+    position: fixed;
+    right: 1.5rem;
+    /* Sits above the XML-preview FAB when that's mounted (on /advanced) so the
+       two floating controls stack vertically instead of overlapping. On pages
+       without the FAB the button floats a little higher than the corner -
+       harmless, and keeps positions consistent across routes. */
+    bottom: 5.5rem;
+    width: 3rem;
+    height: 3rem;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: var(--pf-chrome-bg);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border: 1px solid var(--pf-chrome-border);
+    border-radius: 50%;
+    box-shadow: var(--pf-card-shadow);
+    color: var(--pf-accent);
+    cursor: pointer;
+    z-index: 60;
+    transition:
+        transform 0.25s var(--pf-ease),
+        box-shadow 0.25s var(--pf-ease),
+        opacity 0.25s var(--pf-ease);
+    opacity: 0.9;
+}
+
+.pf-go-top.is-visible {
+    display: inline-flex;
+}
+
+.pf-go-top:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+    box-shadow: var(--pf-card-shadow-hover);
+    border-color: var(--pf-accent);
+}
+
+.pf-go-top:active .pf-go-top__plane {
+    animation: pfGoTopTakeoff 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pf-go-top__plane {
+    width: 1.375rem;
+    height: 1.375rem;
+    display: block;
+    /* Nose-up default orientation so the glyph looks ready to launch. */
+    transform: rotate(-45deg);
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 8px var(--pf-accent));
+}
+
+@keyframes pfGoTopTakeoff {
+    0% {
+        transform: rotate(-45deg) translate(0, 0);
+        opacity: 1;
+    }
+
+    60% {
+        transform: rotate(-45deg) translate(12px, -18px);
+        opacity: 0.4;
+    }
+
+    61% {
+        transform: rotate(-45deg) translate(-12px, 18px);
+        opacity: 0;
+    }
+
+    80% {
+        transform: rotate(-45deg) translate(-12px, 18px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: rotate(-45deg) translate(0, 0);
+        opacity: 1;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pf-go-top:active .pf-go-top__plane {
+        animation: none;
+    }
+}
+
+/* ─── Sidebar toolbar (filter + view toggle) ──────────────
+   Sits above the groups; small search input + single icon button to
+   flip between grouped and flat. Uses native <input type="search"> so
+   the OS-provided clear icon survives (plus our explicit ✕ when focus
+   is lost). Keeps the surface dense but not cramped. */
+.pf-nav-toolbar {
+    display: flex;
+    align-items: stretch;
+    gap: 0.375rem;
+    padding: 0.25rem 0.375rem 0.5rem;
+    border-bottom: 1px solid var(--pf-border);
+    margin-bottom: 0.25rem;
+}
+
+.pf-nav-search {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+.pf-nav-search__icon {
+    position: absolute;
+    left: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.85rem;
+    color: var(--pf-text-subtle);
+    pointer-events: none;
+}
+
+.pf-nav-search__input {
+    width: 100%;
+    padding: 0.375rem 1.625rem 0.375rem 1.75rem;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-sm);
+    color: var(--pf-text);
+    font-size: 0.86rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s var(--pf-ease), background 0.15s var(--pf-ease);
+}
+
+.pf-nav-search__input::placeholder {
+    color: var(--pf-text-muted);
+    opacity: 0.7;
+}
+
+.pf-nav-search__input:focus {
+    border-color: var(--pf-accent);
+    background: var(--pf-bg);
+}
+
+.pf-nav-search__input::-webkit-search-cancel-button {
+    display: none;
+}
+
+.pf-nav-search__clear {
+    position: absolute;
+    right: 0.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.25rem;
+    height: 1.25rem;
+    border: none;
+    background: transparent;
+    color: var(--pf-text-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pf-nav-search__clear:hover {
+    color: var(--pf-text);
+    background: var(--pf-surface-2);
+}
+
+.pf-nav-toggle {
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-sm);
+    color: var(--pf-text-muted);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: color 0.15s var(--pf-ease), background 0.15s var(--pf-ease), border-color 0.15s var(--pf-ease);
+}
+
+.pf-nav-toggle:hover {
+    color: var(--pf-text);
+    border-color: var(--pf-border-strong);
+}
+
+.pf-nav-toggle.is-active {
+    color: var(--pf-accent-strong);
+    border-color: var(--pf-accent);
+    background: rgba(var(--pf-accent-rgb), 0.12);
+}
+
+.pf-nav-flat {
+    list-style: none;
+    margin: 0;
+    padding: 2px 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.pf-nav-flat__empty {
+    padding: 0.75rem 0.625rem;
+    text-align: center;
+    color: var(--pf-text-muted);
+    font-size: 0.85rem;
+}
+
+/* Prev/Next nav at the bottom of each Advanced section - same palette as the
+   Advanced.Preview modal buttons for visual continuity. */
+.pf-section-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--pf-border);
+}
+
+/* ─── Advanced sidebar (grouped nav) ──────────────────────
+   The 28 sections live under ~6 collapsible groups so the list reads
+   as chapters, not a wall of links. Native <details> handles open/close;
+   the group owning the active section opens automatically (razor-side). */
+.pf-nav-card {
+    padding: 0.375rem !important;
+}
+
+.pf-nav-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pf-nav-group {
+    border-radius: var(--pf-radius-sm);
+    background: transparent;
+}
+
+.pf-nav-group[open] {
+    background: rgba(var(--pf-accent-rgb, 139, 92, 246), 0.06);
+}
+
+.pf-nav-group__summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    list-style: none;
+    cursor: pointer;
+    color: var(--pf-text-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    border-radius: var(--pf-radius-sm);
+    user-select: none;
+    transition: color 0.15s var(--pf-ease), background 0.15s var(--pf-ease);
+}
+
+.pf-nav-group__summary::-webkit-details-marker {
+    display: none;
+}
+
+.pf-nav-group__summary::marker {
+    content: '';
+}
+
+.pf-nav-group__summary::after {
+    content: '▾';
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--pf-text-subtle);
+    transform: rotate(-90deg);
+    transition: transform 0.2s var(--pf-ease);
+}
+
+.pf-nav-group[open]>.pf-nav-group__summary::after {
+    transform: rotate(0deg);
+}
+
+.pf-nav-group__summary:hover {
+    color: var(--pf-text);
+    background: rgba(var(--pf-accent-rgb, 139, 92, 246), 0.1);
+}
+
+.pf-nav-group__icon {
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+.pf-nav-group__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pf-nav-group__count {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--pf-text-subtle);
+    padding: 1px 0.375rem;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: 10px;
+    min-width: 1.25rem;
+    text-align: center;
+}
+
+.pf-nav-group__list {
+    list-style: none;
+    margin: 0;
+    padding: 2px 0.25rem 0.375rem 1.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.pf-nav-group__link {
+    display: block;
+    padding: 0.375rem 0.625rem;
+    border-radius: var(--pf-radius-sm);
+    color: var(--pf-text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    transition: color 0.15s var(--pf-ease), background 0.15s var(--pf-ease);
+}
+
+.pf-nav-group__link:hover {
+    color: var(--pf-text);
+    background: rgba(var(--pf-accent-rgb, 139, 92, 246), 0.08);
+}
+
+.pf-nav-group__link.active {
+    color: var(--pf-accent-strong);
+    background: rgba(var(--pf-accent-rgb, 139, 92, 246), 0.18);
+    font-weight: 600;
+}
+
+/* ─── Loading skeleton placeholders ───────────────────────
+   Shown in place of a real control while its data source is still
+   fetching (e.g. FluentSelect populated from a 130-entry JSON). The
+   shimmer is a shifting linear-gradient overlay; `prefers-reduced-motion`
+   replaces it with a static tint so the animation doesn't trigger users
+   who've opted out of motion. */
+.pf-skeleton {
+    display: block;
+    border-radius: var(--pf-radius-md);
+    background: linear-gradient(90deg,
+            var(--pf-surface-2) 0%,
+            rgba(var(--pf-accent-rgb, 139, 92, 246), 0.08) 50%,
+            var(--pf-surface-2) 100%);
+    background-size: 200% 100%;
+    animation: pfSkeletonShimmer 1.4s ease-in-out infinite;
+    border: 1px solid var(--pf-border);
+}
+
+.pf-skeleton--select {
+    height: 2.5rem;
+    width: 100%;
+}
+
+@keyframes pfSkeletonShimmer {
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pf-skeleton {
+        animation: none;
+        background: var(--pf-surface-2);
+    }
+}
+
+/* ─── Custom scripts section ──────────────────────────────
+   Each phase is a card: title + description on the left, "Add script"
+   on the right. Slots grow below as the user adds them; empty phases
+   show a dashed placeholder so the section's shape reads immediately. */
+.pf-scripts-phase {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem 1.125rem;
+    background: rgba(var(--pf-bg-rgb), 0.55);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-lg);
+}
+
+.pf-scripts-phase__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.pf-scripts-phase__title {
+    margin: 0 0 0.2rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--pf-text);
+}
+
+.pf-scripts-phase__desc {
+    margin: 0;
+    max-width: 68ch;
+    color: var(--pf-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.pf-scripts-phase__empty {
+    padding: 0.75rem 1rem;
+    color: var(--pf-text-muted);
+    background: transparent;
+    border: 1px dashed var(--pf-border);
+    border-radius: var(--pf-radius-md);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.pf-script-slot {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 0.85rem 0.95rem;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+}
+
+.pf-script-slot__head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.pf-script-slot__num {
+    font-family: var(--pf-font-mono);
+    font-size: 0.85rem;
+    color: var(--pf-text-muted);
+    min-width: 1.625rem;
+}
+
+.pf-components {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.pf-component-slot {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 0.85rem 0.95rem;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+}
+
+.pf-component-slot__head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.pf-component-slot__num {
+    font-family: var(--pf-font-mono);
+    font-size: 0.85rem;
+    color: var(--pf-text-muted);
+    min-width: 1.625rem;
+}
+
+.pf-scripts-global {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem 1.125rem;
+    margin-top: 0.5rem;
+    background: rgba(var(--pf-bg-rgb), 0.55);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+}
+
+/* ─── Users section ────────────────────────────────────────
+   Four self-contained blocks (accounts / first-logon / expiration /
+   lockout). Each `.pf-users__block` already has `.pf-option` framing
+   from the shared Advanced palette; we override the default compact
+   padding + add breathing room between blocks so the long form
+   doesn't feel crammed. */
+.pf-users {
+    gap: 1.25rem;
+}
+
+.pf-section--advanced .pf-users__block {
+    padding: 1.125rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.pf-section--advanced .pf-users__block+.pf-users__block {
+    margin-top: 0.25rem;
+}
+
+.pf-users__block .pf-option__description {
+    margin: 0;
+}
+
+/* Accounts table: wraps so narrow viewports scroll rather than squish
+   the cells. Header row uses the muted palette so it reads as chrome. */
+.pf-users__table-wrap {
+    /* No overflow clipping: setting overflow-x: auto here implicitly coerced
+       overflow-y to auto (CSS spec - can't mix visible with a scrolling axis),
+       which chopped the Group dropdown's listbox at the table's bottom edge.
+       The table is narrow enough on any real viewport that horizontal overflow
+       isn't an issue; if it ever happens the page scrolls instead of the wrap. */
+    overflow: visible;
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+    background: rgba(var(--pf-bg-rgb), 0.4);
+}
+
+.pf-users__table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.92rem;
+}
+
+.pf-users__table th,
+.pf-users__table td {
+    padding: 0.55rem 0.7rem;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.pf-users__table th {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--pf-text-muted);
+    background: var(--pf-surface-2);
+    border-bottom: 1px solid var(--pf-border);
+}
+
+.pf-users__table tbody tr+tr td {
+    border-top: 1px solid var(--pf-border);
+}
+
+.pf-users__table-actions {
+    width: 2.75rem;
+    text-align: center !important;
+}
+
+.pf-users__password {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    width: 100%;
+}
+
+.pf-users__icon-btn {
+    flex: 0 0 auto;
+    width: 1.875rem;
+    height: 1.875rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: transparent;
+    color: var(--pf-text-muted);
+    border: 1px solid transparent;
+    border-radius: var(--pf-radius-sm);
+    cursor: pointer;
+    transition: color 0.15s var(--pf-ease), background 0.15s var(--pf-ease), border-color 0.15s var(--pf-ease);
+}
+
+.pf-users__icon-btn:hover {
+    color: var(--pf-text);
+    background: var(--pf-surface-2);
+    border-color: var(--pf-border);
+}
+
+.pf-users__icon-btn:focus-visible {
+    outline: 2px solid var(--pf-accent-ring);
+    outline-offset: 2px;
+}
+
+.pf-users__icon-btn--danger:hover {
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+.pf-users__icon-btn svg {
+    width: 1rem;
+    height: 1rem;
+    display: block;
+}
+
+.pf-users__empty {
+    padding: 0.875rem 1rem;
+    color: var(--pf-text-muted);
+    background: rgba(var(--pf-bg-rgb), 0.4);
+    border: 1px dashed var(--pf-border);
+    border-radius: var(--pf-radius-md);
+    font-size: 0.92rem;
+}
+
+.pf-users__add-btn {
+    align-self: flex-start;
+}
+
+.pf-users__sub-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding-left: 1.25rem;
+    border-left: 2px solid var(--pf-border);
+    max-width: 26.25rem;
+}
+
+.pf-users__sub-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--pf-text);
+}
+
+.pf-users__checkbox-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-top: 0.25rem;
+}
+
+.pf-users__hint {
+    display: block;
+    color: var(--pf-text-muted);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    padding-left: 1.75rem;
+}
+
+/* Give the shared option-card grid a touch more breathing room so that
+   radio groups, number fields and checkbox clusters don't visually run
+   into each other. 0.75 was noticeably tight; 1rem reads as a clear
+   divider without wasting vertical space. */
+.pf-section--advanced .pf-section__options {
+    gap: 1rem;
+}
+
+/* Consistent pad+gap on the RadioGroup rendered by SectionView so the
+   FluentRadio rows aren't wedged against the description line above. */
+.pf-section--advanced fluent-radio-group.pf-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.1rem;
+}
+
+/* When a radio group carries illustrative images (taskbar-search etc), give each
+   row more breathing room so the image doesn't crowd the next option. */
+.pf-section--advanced fluent-radio-group.pf-radio-group--images {
+    gap: 0.75rem;
+}
+
+.pf-radio__with-image {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.pf-radio__image {
+    width: 8.75rem;
+    height: auto;
+    max-height: 2.25rem;
+    display: block;
+    border-radius: 4px;
+    border: 1px solid var(--pf-border);
+    background: var(--pf-surface-2);
+    padding: 2px;
+    object-fit: contain;
 }

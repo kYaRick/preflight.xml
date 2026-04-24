@@ -1,3 +1,0 @@
-[submodule "deps/schneegans-reference"]
-	path = deps/schneegans-reference
-	url = https://github.com/cschneegans/unattend-generator.git

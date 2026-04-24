@@ -12,7 +12,7 @@ Brief for any AI coding assistant (Claude, Copilot, Cursor, Codex, etc.) working
 
 **Status:** 🟧 Pre-alpha. Blazor WASM shell scaffolded (Phase 2a). UX architecture pending (Phase 2b).
 
-**Reference implementation:** https://schneegans.de/windows/unattend-generator/ - the canonical prior art. Full structural spec captured in `.ai/reference/schneegans-spec.md` (local / gitignored). Consult before scaffolding UI or choosing option coverage.
+**Reference implementation:** https://schneegans.de/windows/unattend-generator/ - the canonical prior art. Its C# source (MIT) is vendored into `srcs/Preflight.Unattend/` and compiled as the XML generation engine; a narrative structural spec lives at `.ai/reference/schneegans-spec.md` (local / gitignored). Consult both before scaffolding UI or choosing option coverage.
 
 ---
 

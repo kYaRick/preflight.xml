@@ -1,0 +1,169 @@
+@using Preflight.App.Models
+@inject IStringLocalizer<SharedResources> L
+@inject ModeService Mode
+@implements IDisposable
+
+@*
+    Custom scripts. Four script phases (System / DefaultUser / FirstLogon / UserOnce);
+    each holds a growing list of entries the user creates via "Add script". No pre-
+    allocated empty slots - the form stays short until the user explicitly adds a
+    row, which keeps the section digestible for the common case (zero or one script
+    per phase). A script whose content is blank on serialization gets dropped by the
+    adapter, so there's no harm in deleting vs just clearing.
+*@
+
+<div class="pf-section pf-section--advanced">
+    <header class="pf-section__head">
+        <h2 class="pf-section__title">@L["Advanced.Section.scripts"]</h2>
+        <p class="pf-section__subtitle">@L["Section.scripts.Subtitle"]</p>
+    </header>
+
+    @foreach (var phase in _phases)
+    {
+        var list = phase.Getter(Mode.Config.Scripts);
+        var canAdd = list.Count < CustomScriptsSettings.MaxSlotsPerPhase;
+        <section class="pf-scripts-phase">
+            <div class="pf-scripts-phase__head">
+                <div>
+                    <h3 class="pf-scripts-phase__title">@L[$"Scripts.Phase.{phase.Key}.Label"]</h3>
+                    <p class="pf-scripts-phase__desc">@L[$"Scripts.Phase.{phase.Key}.Description"]</p>
+                </div>
+                <FluentButton Appearance="Appearance.Outline"
+                              OnClick="@(() => AddScript(phase))"
+                              Disabled="@(!canAdd)"
+                              Title="@(canAdd ? null : $"Max {CustomScriptsSettings.MaxSlotsPerPhase} per phase")">
+                    <span aria-hidden="true" style="margin-right: 4px;">＋</span> @L["Scripts.AddScript"]
+                </FluentButton>
+            </div>
+
+            @if (list.Count == 0)
+            {
+                <div class="pf-scripts-phase__empty">@L["Scripts.Phase.Empty"]</div>
+            }
+
+            @for (var i = 0; i < list.Count; i++)
+            {
+                var slotIndex = i;
+                var entry = list[slotIndex];
+                var type = entry.Type;
+                var content = entry.Content ?? "";
+
+                <div class="pf-script-slot is-filled">
+                    <div class="pf-script-slot__head">
+                        <span class="pf-script-slot__num">#@(slotIndex + 1)</span>
+                        <FluentSelect TOption="string"
+                                      Value="@type.ToString()"
+                                      ValueChanged="@(v => OnTypeChanged(phase, slotIndex, v))"
+                                      Width="180px">
+                            @foreach (var t in GetAllowedTypes(phase.Key))
+                            {
+                                <FluentOption TOption="string" Value="@t.ToString()" Selected="@(t == type)">@L[$"Scripts.Type.{t}"]</FluentOption>
+                            }
+                        </FluentSelect>
+                        <FluentSpacer />
+                        <FluentButton Appearance="Appearance.Stealth"
+                                      OnClick="@(() => RemoveScript(phase, slotIndex))"
+                                      Title="@L["Scripts.Remove"]"
+                                      aria-label="@L["Scripts.Remove"]">
+                            ✕
+                        </FluentButton>
+                    </div>
+                    <CodeEditor Language="@PrismLanguageFor(type)"
+                                Rows="6"
+                                Value="@content"
+                                ValueChanged="@(v => OnContentChanged(phase, slotIndex, type, v))"
+                                Placeholder="@L[$"Scripts.Type.{type}.Placeholder"]" />
+                </div>
+            }
+        </section>
+    }
+
+    <section class="pf-scripts-global">
+        <FluentCheckbox Value="@Mode.Config.Scripts.RestartExplorer"
+                        ValueChanged="@(v => { Mode.Config.Scripts.RestartExplorer = v; Mode.NotifyConfigChanged(); })">
+            @L["Scripts.RestartExplorer.Label"]
+        </FluentCheckbox>
+        <p class="pf-option__description">@L["Scripts.RestartExplorer.Description"]</p>
+    </section>
+</div>
+
+@code {
+    private sealed record PhaseDef(string Key, Func<CustomScriptsSettings, List<CustomScript>> Getter);
+
+    private static readonly PhaseDef[] _phases =
+    [
+        new("System",      s => s.System),
+        new("DefaultUser", s => s.DefaultUser),
+        new("FirstLogon",  s => s.FirstLogon),
+        new("UserOnce",    s => s.UserOnce),
+    ];
+
+    // Map each script type onto a Prism language hint so the CodeEditor picks the
+    // right token grammar. Registry files are close enough to INI, VBScript has no
+    // matching Prism component so we fall back to plain batch.
+    private static string PrismLanguageFor(CustomScriptType type) => type switch
+    {
+        CustomScriptType.PowerShell => "powershell",
+        CustomScriptType.Registry   => "ini",
+        CustomScriptType.Cmd        => "batch",
+        CustomScriptType.VbScript   => "vbnet",
+        _                           => "batch",
+    };
+
+    // DefaultUser phase is restricted to Reg / Cmd / Ps1 by Schneegans' ScriptExtensions.GetAllowedTypes -
+    // mirror that constraint so the dropdown can't produce an invalid combination.
+    private static IEnumerable<CustomScriptType> GetAllowedTypes(string phase) =>
+        phase == "DefaultUser"
+            ? new[] { CustomScriptType.Cmd, CustomScriptType.PowerShell, CustomScriptType.Registry }
+            : Enum.GetValues<CustomScriptType>();
+
+    protected override void OnInitialized()
+    {
+        Mode.StateChanged += OnStateChanged;
+    }
+
+    private void OnStateChanged() => InvokeAsync(StateHasChanged);
+
+    public void Dispose()
+    {
+        Mode.StateChanged -= OnStateChanged;
+    }
+
+    private void AddScript(PhaseDef phase)
+    {
+        var list = phase.Getter(Mode.Config.Scripts);
+        if (list.Count >= CustomScriptsSettings.MaxSlotsPerPhase) return;
+        // DefaultUser rejects VBScript; seed the new slot with a phase-valid default
+        // so the dropdown doesn't flash an invalid combination on first render.
+        var defaultType = phase.Key == "DefaultUser"
+            ? CustomScriptType.Cmd
+            : CustomScriptType.Cmd;
+        list.Add(new CustomScript { Type = defaultType, Content = "" });
+        Mode.NotifyConfigChanged();
+    }
+
+    private void RemoveScript(PhaseDef phase, int slotIndex)
+    {
+        var list = phase.Getter(Mode.Config.Scripts);
+        if (slotIndex < 0 || slotIndex >= list.Count) return;
+        list.RemoveAt(slotIndex);
+        Mode.NotifyConfigChanged();
+    }
+
+    private void OnTypeChanged(PhaseDef phase, int slotIndex, string? typeStr)
+    {
+        if (!Enum.TryParse<CustomScriptType>(typeStr, out var type)) return;
+        var list = phase.Getter(Mode.Config.Scripts);
+        if (slotIndex < 0 || slotIndex >= list.Count) return;
+        list[slotIndex].Type = type;
+        Mode.NotifyConfigChanged();
+    }
+
+    private void OnContentChanged(PhaseDef phase, int slotIndex, CustomScriptType fallbackType, string? content)
+    {
+        var list = phase.Getter(Mode.Config.Scripts);
+        if (slotIndex < 0 || slotIndex >= list.Count) return;
+        list[slotIndex].Content = content ?? "";
+        Mode.NotifyConfigChanged();
+    }
+}

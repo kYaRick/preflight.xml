@@ -3,9 +3,9 @@ namespace Preflight.App.Models;
 /// <summary>
 /// The static metadata that describes a single <c>autounattend.xml</c> configuration section.
 /// One <see cref="SectionDefinition"/> drives three renderings:
-///   • <c>/docs/{id}</c> — read-only — title + intro + option descriptions.
-///   • <c>/advanced/{id}</c> — editable — same content plus live controls bound to <see cref="UnattendConfig"/>.
-///   • <c>/wizard/guided/{step}</c> — narrative — hand-crafted step that picks a subset of the options.
+///   • <c>/docs/{id}</c> - read-only - title + intro + option descriptions.
+///   • <c>/advanced/{id}</c> - editable - same content plus live controls bound to <see cref="UnattendConfig"/>.
+///   • <c>/wizard/guided/{step}</c> - narrative - hand-crafted step that picks a subset of the options.
 /// Keeping the definition centralized means adding a new option or changing an enum value only ever
 /// touches one file; all three views pick up the change automatically.
 /// </summary>
@@ -14,7 +14,7 @@ public sealed record SectionDefinition
     /// <summary>URL-safe id that matches the route segment: <c>region</c>, <c>disk</c>, etc.</summary>
     public required string Id { get; init; }
 
-    /// <summary>Resource key for the section title — kept in <c>SharedResources.resx</c>.</summary>
+    /// <summary>Resource key for the section title - kept in <c>SharedResources.resx</c>.</summary>
     public required string TitleKey { get; init; }
 
     /// <summary>Resource key for the one-line subtitle shown under the title.</summary>

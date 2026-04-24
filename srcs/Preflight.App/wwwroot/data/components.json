@@ -1,0 +1,590 @@
+[
+  {
+    "Id": "Microsoft-Windows-Audio-AudioCore|specialize",
+    "DisplayName": "Microsoft-Windows-Audio-AudioCore (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Audio-VolumeControl|specialize",
+    "DisplayName": "Microsoft-Windows-Audio-VolumeControl (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Authentication-AuthUI|specialize",
+    "DisplayName": "Microsoft-Windows-Authentication-AuthUI (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-BLB-WSB-Online-Main|oobeSystem",
+    "DisplayName": "Microsoft-Windows-BLB-WSB-Online-Main (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-BLB-WSB-Online-Main|specialize",
+    "DisplayName": "Microsoft-Windows-BLB-WSB-Online-Main (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-BrowserService|generalize",
+    "DisplayName": "Microsoft-Windows-BrowserService (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-CodeIntegrity|offlineServicing",
+    "DisplayName": "Microsoft-Windows-CodeIntegrity (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-CoreMmRes|auditSystem",
+    "DisplayName": "Microsoft-Windows-CoreMmRes (auditSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-CoreMmRes|auditUser",
+    "DisplayName": "Microsoft-Windows-CoreMmRes (auditUser)"
+  },
+  {
+    "Id": "Microsoft-Windows-CoreMmRes|generalize",
+    "DisplayName": "Microsoft-Windows-CoreMmRes (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-CoreMmRes|oobeSystem",
+    "DisplayName": "Microsoft-Windows-CoreMmRes (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-CoreMmRes|specialize",
+    "DisplayName": "Microsoft-Windows-CoreMmRes (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Deployment|auditSystem",
+    "DisplayName": "Microsoft-Windows-Deployment (auditSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-Deployment|auditUser",
+    "DisplayName": "Microsoft-Windows-Deployment (auditUser)"
+  },
+  {
+    "Id": "Microsoft-Windows-Deployment|generalize",
+    "DisplayName": "Microsoft-Windows-Deployment (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Deployment|oobeSystem",
+    "DisplayName": "Microsoft-Windows-Deployment (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-Deployment|specialize",
+    "DisplayName": "Microsoft-Windows-Deployment (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-DeviceAccess|specialize",
+    "DisplayName": "Microsoft-Windows-DeviceAccess (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-DeviceGuard-Unattend|offlineServicing",
+    "DisplayName": "Microsoft-Windows-DeviceGuard-Unattend (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-Devices-Lights-WinRT|offlineServicing",
+    "DisplayName": "Microsoft-Windows-Devices-Lights-WinRT (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-DiagCpl|generalize",
+    "DisplayName": "Microsoft-Windows-DiagCpl (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-DiagCpl|offlineServicing",
+    "DisplayName": "Microsoft-Windows-DiagCpl (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-DiagCpl|specialize",
+    "DisplayName": "Microsoft-Windows-DiagCpl (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Disk-Failure-Diagnostic-Module|generalize",
+    "DisplayName": "Microsoft-Windows-Disk-Failure-Diagnostic-Module (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Disk-Failure-Diagnostic-Module|offlineServicing",
+    "DisplayName": "Microsoft-Windows-Disk-Failure-Diagnostic-Module (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-Disk-Failure-Diagnostic-Module|specialize",
+    "DisplayName": "Microsoft-Windows-Disk-Failure-Diagnostic-Module (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-DNS-Client|specialize",
+    "DisplayName": "Microsoft-Windows-DNS-Client (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Embedded-BootExp|oobeSystem",
+    "DisplayName": "Microsoft-Windows-Embedded-BootExp (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-Embedded-BootExp|specialize",
+    "DisplayName": "Microsoft-Windows-Embedded-BootExp (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Embedded-EmbeddedLogon|offlineServicing",
+    "DisplayName": "Microsoft-Windows-Embedded-EmbeddedLogon (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-Embedded-EmbeddedLogon|specialize",
+    "DisplayName": "Microsoft-Windows-Embedded-EmbeddedLogon (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Embedded-KeyboardFilterService|offlineServicing",
+    "DisplayName": "Microsoft-Windows-Embedded-KeyboardFilterService (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-Embedded-ShellLauncher|oobeSystem",
+    "DisplayName": "Microsoft-Windows-Embedded-ShellLauncher (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-Embedded-UnifiedWriteFilter|specialize",
+    "DisplayName": "Microsoft-Windows-Embedded-UnifiedWriteFilter (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-EnhancedStorage-Adm|specialize",
+    "DisplayName": "Microsoft-Windows-EnhancedStorage-Adm (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-ErrorReportingCore|specialize",
+    "DisplayName": "Microsoft-Windows-ErrorReportingCore (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Fax-Service|specialize",
+    "DisplayName": "Microsoft-Windows-Fax-Service (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-GPIOButtons|offlineServicing",
+    "DisplayName": "Microsoft-Windows-GPIOButtons (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-GPIOButtons|specialize",
+    "DisplayName": "Microsoft-Windows-GPIOButtons (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-HelpAndSupport|oobeSystem",
+    "DisplayName": "Microsoft-Windows-HelpAndSupport (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-HelpAndSupport|specialize",
+    "DisplayName": "Microsoft-Windows-HelpAndSupport (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-IE-ClientNetworkProtocolImplementation|oobeSystem",
+    "DisplayName": "Microsoft-Windows-IE-ClientNetworkProtocolImplementation (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-IE-ESC|specialize",
+    "DisplayName": "Microsoft-Windows-IE-ESC (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-IE-InternetExplorer|specialize",
+    "DisplayName": "Microsoft-Windows-IE-InternetExplorer (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-International-Core|oobeSystem",
+    "DisplayName": "Microsoft-Windows-International-Core (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-International-Core|specialize",
+    "DisplayName": "Microsoft-Windows-International-Core (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-International-Core-WinPE|windowsPE",
+    "DisplayName": "Microsoft-Windows-International-Core-WinPE (windowsPE)"
+  },
+  {
+    "Id": "Microsoft-Windows-LUA-Settings|offlineServicing",
+    "DisplayName": "Microsoft-Windows-LUA-Settings (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-MapControl-Desktop|oobeSystem",
+    "DisplayName": "Microsoft-Windows-MapControl-Desktop (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-MapControl-Desktop|specialize",
+    "DisplayName": "Microsoft-Windows-MapControl-Desktop (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-MediaPlayer-Core|offlineServicing",
+    "DisplayName": "Microsoft-Windows-MediaPlayer-Core (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-MicrosoftEdgeBrowser|specialize",
+    "DisplayName": "Microsoft-Windows-MicrosoftEdgeBrowser (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-MobilePC-Sensors-API|specialize",
+    "DisplayName": "Microsoft-Windows-MobilePC-Sensors-API (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-NetBT|specialize",
+    "DisplayName": "Microsoft-Windows-NetBT (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-NetworkBridge|generalize",
+    "DisplayName": "Microsoft-Windows-NetworkBridge (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-NetworkLoadBalancing-Core|specialize",
+    "DisplayName": "Microsoft-Windows-NetworkLoadBalancing-Core (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-OutOfBoxExperience|generalize",
+    "DisplayName": "Microsoft-Windows-OutOfBoxExperience (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-OutOfBoxExperience|specialize",
+    "DisplayName": "Microsoft-Windows-OutOfBoxExperience (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-PartitionManager|offlineServicing",
+    "DisplayName": "Microsoft-Windows-PartitionManager (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-PnpCustomizationsNonWinPE|auditSystem",
+    "DisplayName": "Microsoft-Windows-PnpCustomizationsNonWinPE (auditSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-PnpCustomizationsNonWinPE|offlineServicing",
+    "DisplayName": "Microsoft-Windows-PnpCustomizationsNonWinPE (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-PnpCustomizationsWinPE|windowsPE",
+    "DisplayName": "Microsoft-Windows-PnpCustomizationsWinPE (windowsPE)"
+  },
+  {
+    "Id": "Microsoft-Windows-PnpSysprep|generalize",
+    "DisplayName": "Microsoft-Windows-PnpSysprep (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-PnpSysprep|specialize",
+    "DisplayName": "Microsoft-Windows-PnpSysprep (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-PowerCPL|generalize",
+    "DisplayName": "Microsoft-Windows-PowerCPL (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-PowerCPL|specialize",
+    "DisplayName": "Microsoft-Windows-PowerCPL (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Printing-Spooler-Core|specialize",
+    "DisplayName": "Microsoft-Windows-Printing-Spooler-Core (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-RasServer|specialize",
+    "DisplayName": "Microsoft-Windows-RasServer (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-RemoteAssistance-Exe|specialize",
+    "DisplayName": "Microsoft-Windows-RemoteAssistance-Exe (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-SecureStartup-FilterDriver|auditSystem",
+    "DisplayName": "Microsoft-Windows-SecureStartup-FilterDriver (auditSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-SecureStartup-FilterDriver|offlineServicing",
+    "DisplayName": "Microsoft-Windows-SecureStartup-FilterDriver (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-SecureStartup-FilterDriver|oobeSystem",
+    "DisplayName": "Microsoft-Windows-SecureStartup-FilterDriver (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-SecureStartup-FilterDriver|specialize",
+    "DisplayName": "Microsoft-Windows-SecureStartup-FilterDriver (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Security-SPP|generalize",
+    "DisplayName": "Microsoft-Windows-Security-SPP (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Security-SPP-UX|specialize",
+    "DisplayName": "Microsoft-Windows-Security-SPP-UX (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Sensors-Core|offlineServicing",
+    "DisplayName": "Microsoft-Windows-Sensors-Core (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-Sensors-Core|oobeSystem",
+    "DisplayName": "Microsoft-Windows-Sensors-Core (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-Sensors-Core|specialize",
+    "DisplayName": "Microsoft-Windows-Sensors-Core (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-ServerManager-SvrMgrNc|generalize",
+    "DisplayName": "Microsoft-Windows-ServerManager-SvrMgrNc (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-ServerManager-SvrMgrNc|specialize",
+    "DisplayName": "Microsoft-Windows-ServerManager-SvrMgrNc (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Setup|windowsPE",
+    "DisplayName": "Microsoft-Windows-Setup (windowsPE)"
+  },
+  {
+    "Id": "Microsoft-Windows-SharedAccess|generalize",
+    "DisplayName": "Microsoft-Windows-SharedAccess (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Shell-Setup|auditSystem",
+    "DisplayName": "Microsoft-Windows-Shell-Setup (auditSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-Shell-Setup|auditUser",
+    "DisplayName": "Microsoft-Windows-Shell-Setup (auditUser)"
+  },
+  {
+    "Id": "Microsoft-Windows-Shell-Setup|generalize",
+    "DisplayName": "Microsoft-Windows-Shell-Setup (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Shell-Setup|offlineServicing",
+    "DisplayName": "Microsoft-Windows-Shell-Setup (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-Shell-Setup|oobeSystem",
+    "DisplayName": "Microsoft-Windows-Shell-Setup (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-Shell-Setup|specialize",
+    "DisplayName": "Microsoft-Windows-Shell-Setup (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Shell-Setup|windowsPE",
+    "DisplayName": "Microsoft-Windows-Shell-Setup (windowsPE)"
+  },
+  {
+    "Id": "Microsoft-Windows-SHWebSVC|oobeSystem",
+    "DisplayName": "Microsoft-Windows-SHWebSVC (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-SMBServer|generalize",
+    "DisplayName": "Microsoft-Windows-SMBServer (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-SNMP-Agent-Service|generalize",
+    "DisplayName": "Microsoft-Windows-SNMP-Agent-Service (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-SNMP-Agent-Service|specialize",
+    "DisplayName": "Microsoft-Windows-SNMP-Agent-Service (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-SQMAPI|specialize",
+    "DisplayName": "Microsoft-Windows-SQMAPI (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-STObject|generalize",
+    "DisplayName": "Microsoft-Windows-STObject (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-STObject|specialize",
+    "DisplayName": "Microsoft-Windows-STObject (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-StorPort-RegistrySettings|auditSystem",
+    "DisplayName": "Microsoft-Windows-StorPort-RegistrySettings (auditSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-StorPort-RegistrySettings|auditUser",
+    "DisplayName": "Microsoft-Windows-StorPort-RegistrySettings (auditUser)"
+  },
+  {
+    "Id": "Microsoft-Windows-StorPort-RegistrySettings|oobeSystem",
+    "DisplayName": "Microsoft-Windows-StorPort-RegistrySettings (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-StorPort-RegistrySettings|specialize",
+    "DisplayName": "Microsoft-Windows-StorPort-RegistrySettings (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-SystemMaintenanceService|specialize",
+    "DisplayName": "Microsoft-Windows-SystemMaintenanceService (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-SystemRestore-Main|specialize",
+    "DisplayName": "Microsoft-Windows-SystemRestore-Main (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-SystemSettingsThreshold|generalize",
+    "DisplayName": "Microsoft-Windows-SystemSettingsThreshold (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-SystemSettingsThreshold|specialize",
+    "DisplayName": "Microsoft-Windows-SystemSettingsThreshold (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-TabletPC-Platform-Input-Core|offlineServicing",
+    "DisplayName": "Microsoft-Windows-TabletPC-Platform-Input-Core (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-TabletPC-Platform-Input-Core|oobeSystem",
+    "DisplayName": "Microsoft-Windows-TabletPC-Platform-Input-Core (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-TabletPC-Platform-Input-Core|specialize",
+    "DisplayName": "Microsoft-Windows-TabletPC-Platform-Input-Core (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-TapiSetup|specialize",
+    "DisplayName": "Microsoft-Windows-TapiSetup (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-TCPIP|specialize",
+    "DisplayName": "Microsoft-Windows-TCPIP (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-TCPIP|windowsPE",
+    "DisplayName": "Microsoft-Windows-TCPIP (windowsPE)"
+  },
+  {
+    "Id": "Microsoft-Windows-TerminalServices-CentralPublishing|oobeSystem",
+    "DisplayName": "Microsoft-Windows-TerminalServices-CentralPublishing (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-TerminalServices-LicenseServer|oobeSystem",
+    "DisplayName": "Microsoft-Windows-TerminalServices-LicenseServer (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-TerminalServices-LocalSessionManager|generalize",
+    "DisplayName": "Microsoft-Windows-TerminalServices-LocalSessionManager (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-TerminalServices-LocalSessionManager|offlineServicing",
+    "DisplayName": "Microsoft-Windows-TerminalServices-LocalSessionManager (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-TerminalServices-LocalSessionManager|specialize",
+    "DisplayName": "Microsoft-Windows-TerminalServices-LocalSessionManager (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-TerminalServices-Publishing-WMIProvider|generalize",
+    "DisplayName": "Microsoft-Windows-TerminalServices-Publishing-WMIProvider (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-TerminalServices-Publishing-WMIProvider|offlineServicing",
+    "DisplayName": "Microsoft-Windows-TerminalServices-Publishing-WMIProvider (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-TerminalServices-Publishing-WMIProvider|specialize",
+    "DisplayName": "Microsoft-Windows-TerminalServices-Publishing-WMIProvider (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-TerminalServices-RDP-WinStationExtensions|generalize",
+    "DisplayName": "Microsoft-Windows-TerminalServices-RDP-WinStationExtensions (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-TerminalServices-RDP-WinStationExtensions|specialize",
+    "DisplayName": "Microsoft-Windows-TerminalServices-RDP-WinStationExtensions (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-TerminalServices-RemoteConnectionManager|generalize",
+    "DisplayName": "Microsoft-Windows-TerminalServices-RemoteConnectionManager (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-TerminalServices-RemoteConnectionManager|offlineServicing",
+    "DisplayName": "Microsoft-Windows-TerminalServices-RemoteConnectionManager (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-TerminalServices-RemoteConnectionManager|specialize",
+    "DisplayName": "Microsoft-Windows-TerminalServices-RemoteConnectionManager (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-Tpm-Tasks|specialize",
+    "DisplayName": "Microsoft-Windows-Tpm-Tasks (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-TwinUI|offlineServicing",
+    "DisplayName": "Microsoft-Windows-TwinUI (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-TwinUI|oobeSystem",
+    "DisplayName": "Microsoft-Windows-TwinUI (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-TwinUI|specialize",
+    "DisplayName": "Microsoft-Windows-TwinUI (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-UnattendedJoin|offlineServicing",
+    "DisplayName": "Microsoft-Windows-UnattendedJoin (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-UnattendedJoin|specialize",
+    "DisplayName": "Microsoft-Windows-UnattendedJoin (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-WDF-KernelLibrary|offlineServicing",
+    "DisplayName": "Microsoft-Windows-WDF-KernelLibrary (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-WiFiNetworkManager|offlineServicing",
+    "DisplayName": "Microsoft-Windows-WiFiNetworkManager (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-WiFiNetworkManager|oobeSystem",
+    "DisplayName": "Microsoft-Windows-WiFiNetworkManager (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-WiFiNetworkManager|specialize",
+    "DisplayName": "Microsoft-Windows-WiFiNetworkManager (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-WinRE-RecoveryAgent|oobeSystem",
+    "DisplayName": "Microsoft-Windows-WinRE-RecoveryAgent (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-WLANSVC|offlineServicing",
+    "DisplayName": "Microsoft-Windows-WLANSVC (offlineServicing)"
+  },
+  {
+    "Id": "Microsoft-Windows-WLANSVC|oobeSystem",
+    "DisplayName": "Microsoft-Windows-WLANSVC (oobeSystem)"
+  },
+  {
+    "Id": "Microsoft-Windows-WLANSVC|specialize",
+    "DisplayName": "Microsoft-Windows-WLANSVC (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-WLANSVC|windowsPE",
+    "DisplayName": "Microsoft-Windows-WLANSVC (windowsPE)"
+  },
+  {
+    "Id": "Microsoft-Windows-WorkstationService|generalize",
+    "DisplayName": "Microsoft-Windows-WorkstationService (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-WorkstationService|specialize",
+    "DisplayName": "Microsoft-Windows-WorkstationService (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-WPD-BusEnumService|specialize",
+    "DisplayName": "Microsoft-Windows-WPD-BusEnumService (specialize)"
+  },
+  {
+    "Id": "Microsoft-Windows-WWANUI|generalize",
+    "DisplayName": "Microsoft-Windows-WWANUI (generalize)"
+  },
+  {
+    "Id": "Microsoft-Windows-WWANUI|specialize",
+    "DisplayName": "Microsoft-Windows-WWANUI (specialize)"
+  },
+  {
+    "Id": "Networking-MPSSVC-Svc|specialize",
+    "DisplayName": "Networking-MPSSVC-Svc (specialize)"
+  },
+  {
+    "Id": "Security-Malware-Windows-Defender|offlineServicing",
+    "DisplayName": "Security-Malware-Windows-Defender (offlineServicing)"
+  },
+  {
+    "Id": "Security-Malware-Windows-Defender|oobeSystem",
+    "DisplayName": "Security-Malware-Windows-Defender (oobeSystem)"
+  },
+  {
+    "Id": "Security-Malware-Windows-Defender|specialize",
+    "DisplayName": "Security-Malware-Windows-Defender (specialize)"
+  }
+]

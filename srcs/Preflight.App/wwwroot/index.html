@@ -22,25 +22,56 @@
     <link href="Preflight.App.styles.css" rel="stylesheet" />
 
     <!-- PWA -->
+    <meta name="description" content="Visual builder for Windows autounattend.xml - offline, in your browser." />
+    <meta name="theme-color" content="#6d28d9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#2a1854" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="application-name" content="preflight.xml" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="preflight" />
     <link rel="icon" href="favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" href="favicon.png" sizes="32x32" />
     <link href="manifest.webmanifest" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
 
+    <!-- Open Graph / social previews -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="preflight.xml" />
+    <meta property="og:description" content="Visual builder for Windows autounattend.xml - in your browser, offline, instantly." />
+    <meta property="og:url" content="https://kyarick.github.io/preflight.xml/" />
+    <meta property="og:image" content="https://raw.githubusercontent.com/kYaRick/preflight.xml/main/.github/assets/social-card.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="preflight.xml" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="preflight.xml" />
+    <meta name="twitter:description" content="Visual builder for Windows autounattend.xml - in your browser, offline, instantly." />
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/kYaRick/preflight.xml/main/.github/assets/social-card.svg" />
+
     <script type="importmap"></script>
 
-    <!-- Syntax highlighter for the Advanced XML preview. Core + markup (XML/HTML)
-         is bundled in the default build; no extra language scripts needed. The
-         token colours themselves are overridden in css/app.css to match the
-         pf-* palette, so no prism theme CSS is pulled from the CDN. -->
+    <!-- Syntax highlighter for the Advanced XML preview AND the in-page CodeEditor
+         (Policy XML / start pins JSON / diskpart / custom scripts). Core + markup
+         ships in prism.min.js; the extras below cover the script/config surfaces.
+         `defer` on all of them so they execute in order after the DOM is parsed.
+         Token colours are overridden by css/app.css against the pf-* palette. -->
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-batch.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-powershell.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-ini.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-basic.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-vbnet.min.js" defer></script>
 
     <!-- Theme + culture + keyboard helpers (must load before first paint). -->
     <script src="js/theme.js"></script>
     <script src="js/culture.js"></script>
     <script src="js/keyboard.js"></script>
     <script src="js/files.js"></script>
+    <script src="js/scroll.js"></script>
     <script src="js/prism-helper.js"></script>
 
     <!-- Apply persisted theme to <html> BEFORE CSS paints, so the loading

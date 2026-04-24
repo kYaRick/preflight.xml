@@ -1,59 +1,195 @@
 @page "/docs/{Slug}"
+@using Preflight.App.Content
+@using System.Globalization
+@using Markdig
 @inject IStringLocalizer<SharedResources> L
+@inject HttpClient Http
 
 <PageTitle>@_name · @L["Docs.Title"]</PageTitle>
 
-<div class="pf-docs-entry" style="padding: 24px 16px; max-width: 960px; margin: 0 auto;">
+<div class="pf-docs-entry" style="padding: 16px; max-width: 1400px; margin: 0 auto;">
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
         <FluentAnchor Href="/docs" Appearance="Appearance.Outline">← @L["Docs.BackToIndex"]</FluentAnchor>
+        @if (IsKnownSection)
+        {
+            <FluentAnchor Href="@($"/advanced/{Slug}")" Appearance="Appearance.Outline">⚙️ @L[@"Docs.OpenInAdvanced"]</FluentAnchor>
+        }
         <FluentSpacer />
+        <FluentAnchor Href="/" Appearance="Appearance.Outline">← @L["Common.BackToHome"]</FluentAnchor>
     </FluentStack>
 
-    <FluentLabel Typo="Typography.PageTitle" Style="margin-top: 16px;">@_icon @_name</FluentLabel>
-    <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 24px 0;">@_description</FluentLabel>
+    <FluentGrid Spacing="3" Style="margin-top: 12px; align-items: flex-start;">
 
-    @if (_section is not null)
-    {
-        <SectionView Section="@_section" ViewMode="SectionView.SectionMode.Docs" ShowHeader="false" />
-    }
-    else
-    {
-        <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
-            @L["Docs.Entry.ComingSoon"]
-        </FluentMessageBar>
-    }
+        <!-- Sidebar: filterable, toggleable, matches /advanced exactly so muscle
+             memory carries over between the editor and the docs. -->
+        <FluentGridItem xs="12" md="3">
+            <FluentCard Class="pf-nav-card" Style="padding: 6px; position: sticky; top: 16px;">
+                <div class="pf-nav-toolbar">
+                    <div class="pf-nav-search">
+                        <span class="pf-nav-search__icon" aria-hidden="true">🔎</span>
+                        <input type="search"
+                               class="pf-nav-search__input"
+                               placeholder="@L[@"Docs.SidebarSearch"]"
+                               value="@_filter"
+                               @oninput="OnFilterChanged"
+                               aria-label="@L[@"Docs.SidebarSearch"]" />
+                        @if (!string.IsNullOrEmpty(_filter))
+                        {
+                            <button type="button" class="pf-nav-search__clear" aria-label="Clear" @onclick="ClearFilter">✕</button>
+                        }
+                    </div>
+                    <button type="button"
+                            class="pf-nav-toggle @(_grouped ? "is-active" : null)"
+                            title="@L[@"Advanced.SidebarGrouped"]"
+                            @onclick="ToggleGrouping">
+                        @(_grouped ? "▤" : "≡")
+                    </button>
+                </div>
+
+                <nav class="pf-nav-groups" aria-label="@L[@"Docs.Title"]">
+                    @if (_grouped && string.IsNullOrEmpty(_filter))
+                    {
+                        @foreach (var group in SectionRegistry.Groups)
+                        {
+                            var isOpen = group.SectionIds.Contains(Slug, StringComparer.Ordinal);
+                            <details class="pf-nav-group" open="@isOpen">
+                                <summary class="pf-nav-group__summary">
+                                    <span class="pf-nav-group__icon" aria-hidden="true">@group.Emoji</span>
+                                    <span class="pf-nav-group__title">@L[group.TitleKey]</span>
+                                    <span class="pf-nav-group__count">@group.SectionIds.Count</span>
+                                </summary>
+                                <ul class="pf-nav-group__list">
+                                    @foreach (var id in group.SectionIds)
+                                    {
+                                        <li>
+                                            <NavLink class="pf-nav-group__link" href="@($"/docs/{id}")" Match="NavLinkMatch.All">
+                                                @L[$"Advanced.Section.{id}"]
+                                            </NavLink>
+                                        </li>
+                                    }
+                                </ul>
+                            </details>
+                        }
+                    }
+                    else
+                    {
+                        <ul class="pf-nav-flat">
+                            @foreach (var id in FilteredIds())
+                            {
+                                <li>
+                                    <NavLink class="pf-nav-group__link" href="@($"/docs/{id}")" Match="NavLinkMatch.All">
+                                        @L[$"Advanced.Section.{id}"]
+                                    </NavLink>
+                                </li>
+                            }
+                            @if (!FilteredIds().Any())
+                            {
+                                <li class="pf-nav-flat__empty">@L[@"Advanced.SidebarEmpty"]</li>
+                            }
+                        </ul>
+                    }
+                </nav>
+            </FluentCard>
+        </FluentGridItem>
+
+        <!-- Main content -->
+        <FluentGridItem xs="12" md="9">
+            <FluentLabel Typo="Typography.PageTitle">@_name</FluentLabel>
+            <FluentLabel Typo="Typography.Body" Style="margin: 4px 0 16px 0; opacity: 0.8;">@_description</FluentLabel>
+
+            @if (_section is not null)
+            {
+                <SectionView Section="@_section" ViewMode="SectionView.SectionMode.Docs" ShowHeader="false" />
+            }
+            else if (_articleHtml is not null)
+            {
+                <section class="pf-section__intro">
+                    @((MarkupString)_articleHtml)
+                </section>
+            }
+            else
+            {
+                <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
+                    @L["Docs.Entry.ComingSoon"]
+                </FluentMessageBar>
+            }
+        </FluentGridItem>
+    </FluentGrid>
 </div>
 
 @code {
     [Parameter] public string Slug { get; set; } = "";
 
-    private string _icon = "📖";
     private string _name = "";
     private string _description = "";
     private SectionDefinition? _section;
+    private string? _articleHtml;
+    private string _filter = "";
+    private bool _grouped = true;
 
-    protected override void OnParametersSet()
+    private bool IsKnownSection => SectionRegistry.AllSectionIds.Contains(Slug, StringComparer.Ordinal);
+
+    private void OnFilterChanged(ChangeEventArgs e) => _filter = (e.Value as string) ?? "";
+    private void ClearFilter() => _filter = "";
+    private void ToggleGrouping() => _grouped = !_grouped;
+
+    private IEnumerable<string> FilteredIds()
     {
-        _section = Slug switch
+        if (string.IsNullOrWhiteSpace(_filter)) return SectionRegistry.AllSectionIds;
+        var needle = _filter.Trim();
+        return SectionRegistry.AllSectionIds.Where(id =>
         {
-            "region" => RegionSection.Definition,
-            _ => null,
-        };
+            if (id.Contains(needle, StringComparison.OrdinalIgnoreCase)) return true;
+            var label = (string)L[$"Advanced.Section.{id}"];
+            return label.Contains(needle, StringComparison.OrdinalIgnoreCase);
+        });
+    }
 
-        (_icon, var nameKey, var descKey) = Slug switch
+    protected override async Task OnParametersSetAsync()
+    {
+        _section = SectionRegistry.TryGet(Slug);
+        _articleHtml = IsKnownSection ? await TryRenderMarkdownAsync($"content/sections/{Slug}.{{locale}}.md") : null;
+
+        if (!IsKnownSection)
         {
-            "region"    => ("🌍", "Docs.Topic.Region.Name",    "Docs.Topic.Region.Description"),
-            "disk"      => ("💽", "Docs.Topic.Disk.Name",      "Docs.Topic.Disk.Description"),
-            "users"     => ("👤", "Docs.Topic.Users.Name",     "Docs.Topic.Users.Description"),
-            "edition"   => ("🪟", "Docs.Topic.Edition.Name",   "Docs.Topic.Edition.Description"),
-            "privacy"   => ("🔒", "Docs.Topic.Privacy.Name",   "Docs.Topic.Privacy.Description"),
-            "security"  => ("🛡️", "Docs.Topic.Security.Name",  "Docs.Topic.Security.Description"),
-            "bloatware" => ("🧼", "Docs.Topic.Bloatware.Name", "Docs.Topic.Bloatware.Description"),
-            "tweaks"    => ("🔧", "Docs.Topic.Tweaks.Name",    "Docs.Topic.Tweaks.Description"),
-            "vm"        => ("🖥️", "Docs.Topic.Vm.Name",        "Docs.Topic.Vm.Description"),
-            _           => ("📄", "Docs.Entry.Unknown",        "Docs.Entry.UnknownDescription"),
-        };
-        _name = L[nameKey];
-        _description = L[descKey];
+            _name = L["Docs.Entry.Unknown"];
+            _description = L["Docs.Entry.UnknownDescription"];
+            return;
+        }
+
+        _name = L[$"Advanced.Section.{Slug}"];
+        var subtitle = L[$"Section.{Slug}.Subtitle"];
+        _description = subtitle.ResourceNotFound
+            ? L["Docs.Entry.ComingSoon"]
+            : subtitle.Value;
+    }
+
+    private async Task<string?> TryRenderMarkdownAsync(string pathTemplate)
+    {
+        var locale = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        var path = pathTemplate.Replace("{locale}", locale, StringComparison.Ordinal);
+
+        try
+        {
+            var md = await Http.GetStringAsync(path);
+            return Markdown.ToHtml(md);
+        }
+        catch (HttpRequestException)
+        {
+            if (locale != "en")
+            {
+                try
+                {
+                    var fallback = await Http.GetStringAsync(pathTemplate.Replace("{locale}", "en", StringComparison.Ordinal));
+                    return Markdown.ToHtml(fallback);
+                }
+                catch (HttpRequestException)
+                {
+                    return null;
+                }
+            }
+
+            return null;
+        }
     }
 }

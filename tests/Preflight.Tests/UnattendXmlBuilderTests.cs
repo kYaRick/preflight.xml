@@ -53,7 +53,8 @@ public sealed class UnattendXmlBuilderTests
             .First(s => (string?)s.Attribute("pass") == "oobeSystem")
             .Elements(Ns + "component")
             .First(c => (string?)c.Attribute("name") == "Microsoft-Windows-International-Core");
-        Assert.Equal("uk-UA", (string?)oobe.Element(Ns + "InputLocale"));
+        // InputLocale is the keyboard layout ID in LCID:KeyboardId format, not a BCP-47 tag.
+        Assert.Equal("0422:00000422", (string?)oobe.Element(Ns + "InputLocale"));
         Assert.Equal("uk-UA", (string?)oobe.Element(Ns + "UserLocale"));
     }
 
@@ -74,7 +75,8 @@ public sealed class UnattendXmlBuilderTests
         var doc = Build(config);
 
         var productKey = doc.Descendants(Ns + "ProductKey").Single();
-        Assert.True(string.IsNullOrEmpty(productKey.Element(Ns + "Key")?.Value));
+        // Interactive mode emits the generic dummy key so Windows Setup shows the key prompt.
+        Assert.Equal("00000-00000-00000-00000-00000", productKey.Element(Ns + "Key")?.Value);
         Assert.Equal("Always", (string?)productKey.Element(Ns + "WillShowUI"));
     }
 
@@ -96,7 +98,7 @@ public sealed class UnattendXmlBuilderTests
     public void Obscured_password_is_Base64_of_UTF16LE_plaintext_plus_elementName()
     {
         var config = new UnattendConfig { FirstLogon = { ObscurePasswordsWithBase64 = true } };
-        config.Users.Add(new UserAccount { Name = "u", Password = "hunter2", Group = AccountGroup.Users });
+        config.Users.Add(new UserAccount { Name = "u", Password = "hunter2", Group = AccountGroup.Administrators });
 
         var doc = Build(config);
 
@@ -108,46 +110,49 @@ public sealed class UnattendXmlBuilderTests
         var expected = Convert.ToBase64String(Encoding.Unicode.GetBytes("hunter2" + "Password"));
         Assert.Equal(expected, passwordValue);
 
-        Assert.Equal("false", (string?)doc.Descendants(Ns + "Password").Single().Element(Ns + "PlainText"));
+        var accountPassword = doc.Descendants(Ns + "LocalAccount").Single().Element(Ns + "Password")!;
+        Assert.Equal("false", (string?)accountPassword.Element(Ns + "PlainText"));
     }
 
     [Fact]
     public void Plaintext_password_is_emitted_as_is()
     {
         var config = new UnattendConfig { FirstLogon = { ObscurePasswordsWithBase64 = false } };
-        config.Users.Add(new UserAccount { Name = "u", Password = "pw", Group = AccountGroup.Users });
+        config.Users.Add(new UserAccount { Name = "u", Password = "pw", Group = AccountGroup.Administrators });
 
         var doc = Build(config);
 
-        Assert.Equal("pw", (string?)doc.Descendants(Ns + "Password").Single().Element(Ns + "Value"));
-        Assert.Equal("true", (string?)doc.Descendants(Ns + "Password").Single().Element(Ns + "PlainText"));
+        var accountPassword = doc.Descendants(Ns + "LocalAccount").Single().Element(Ns + "Password")!;
+        Assert.Equal("pw", (string?)accountPassword.Element(Ns + "Value"));
+        Assert.Equal("true", (string?)accountPassword.Element(Ns + "PlainText"));
     }
 
     [Fact]
-    public void Bloatware_selections_emit_FirstLogonCommand()
+    public void Bloatware_selections_embed_package_selectors_in_xml()
     {
         var config = new UnattendConfig();
-        config.Bloatware.AppsToRemove.Add("Microsoft.BingNews");
-        config.Bloatware.AppsToRemove.Add("Microsoft.GamingApp");
+        // Use catalog IDs ("Remove{DisplayName}"), not package selectors directly.
+        config.Bloatware.AppsToRemove.Add("RemoveNews");     // selector: Microsoft.BingNews
+        config.Bloatware.AppsToRemove.Add("RemoveXboxApps"); // selector: Microsoft.GamingApp
 
-        var doc = Build(config);
+        var xml = new UnattendXmlBuilder().Build(config);
 
-        var cmd = doc.Descendants(Ns + "SynchronousCommand").Single();
-        Assert.Equal("1", (string?)cmd.Element(Ns + "Order"));
-        var line = cmd.Element(Ns + "CommandLine")?.Value ?? "";
-        Assert.Contains("Microsoft.BingNews", line, StringComparison.Ordinal);
-        Assert.Contains("Microsoft.GamingApp", line, StringComparison.Ordinal);
-        Assert.Contains("Remove-AppxPackage", line, StringComparison.Ordinal);
+        // Package selectors are embedded in a PS1 file inside the Extensions section.
+        Assert.Contains("Microsoft.BingNews", xml, StringComparison.Ordinal);
+        Assert.Contains("Microsoft.GamingApp", xml, StringComparison.Ordinal);
+        Assert.Contains("Remove-AppxProvisionedPackage", xml, StringComparison.Ordinal);
     }
 
     [Fact]
-    public void Disk_GPT_targets_partition_3_MBR_targets_partition_1()
+    public void Disk_AutoWipe_GPT_targets_partition_3_MBR_targets_partition_2()
     {
-        var gpt = Build(new UnattendConfig { Disk = { PartitionStyle = PartitionStyle.Gpt } });
+        // AutoWipe mode is required to produce an unattended partition layout with an InstallTo element.
+        // GPT layout: EFI(1) + MSR(2) + Windows(3). MBR layout: System(1) + Windows(2).
+        var gpt = Build(new UnattendConfig { Disk = { Mode = DiskMode.AutoWipe, PartitionStyle = PartitionStyle.Gpt } });
         Assert.Equal("3", (string?)gpt.Descendants(Ns + "InstallTo").Single().Element(Ns + "PartitionID"));
 
-        var mbr = Build(new UnattendConfig { Disk = { PartitionStyle = PartitionStyle.Mbr } });
-        Assert.Equal("1", (string?)mbr.Descendants(Ns + "InstallTo").Single().Element(Ns + "PartitionID"));
+        var mbr = Build(new UnattendConfig { Disk = { Mode = DiskMode.AutoWipe, PartitionStyle = PartitionStyle.Mbr } });
+        Assert.Equal("2", (string?)mbr.Descendants(Ns + "InstallTo").Single().Element(Ns + "PartitionID"));
     }
 
     [Fact]

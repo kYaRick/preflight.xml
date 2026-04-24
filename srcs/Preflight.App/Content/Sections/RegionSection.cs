@@ -3,7 +3,7 @@ using Preflight.App.Models;
 namespace Preflight.App.Content.Sections;
 
 /// <summary>
-/// Region & language — the first vertical slice. Defines which options exist, where their
+/// Region & language - the first vertical slice. Defines which options exist, where their
 /// values come from, and how they're read/written on <see cref="UnattendConfig"/>.
 /// Rendered identically by <c>/docs/region</c> (read-only) and <c>/advanced/region</c> (editable);
 /// wizard steps pick subsets of <see cref="Definition.Options"/>.
@@ -23,7 +23,7 @@ public static class RegionSection
                 Id = "display-lang",
                 LabelKey = "Region.DisplayLanguage.Label",
                 DescriptionKey = "Region.DisplayLanguage.Description",
-                LearnMoreUrl = "https://learn.microsoft.com/windows-hardware/customize/desktop/unattend/microsoft-windows-international-core-uilanguage",
+                LearnMoreUrl = "/docs/region",
                 Kind = OptionKind.Dropdown,
                 JsonSource = "data/locales.json",
                 GetString = c => c.Region.DisplayLanguage,
@@ -34,7 +34,7 @@ public static class RegionSection
                 Id = "input-lang",
                 LabelKey = "Region.InputLanguage.Label",
                 DescriptionKey = "Region.InputLanguage.Description",
-                LearnMoreUrl = "https://learn.microsoft.com/windows-hardware/customize/desktop/unattend/microsoft-windows-international-core-inputlocale",
+                LearnMoreUrl = "/docs/region",
                 Kind = OptionKind.Dropdown,
                 JsonSource = "data/locales.json",
                 GetString = c => c.Region.InputLanguage,
@@ -45,7 +45,7 @@ public static class RegionSection
                 Id = "home-location",
                 LabelKey = "Region.HomeLocation.Label",
                 DescriptionKey = "Region.HomeLocation.Description",
-                LearnMoreUrl = "https://learn.microsoft.com/windows/win32/intl/table-of-geographical-locations",
+                LearnMoreUrl = "/docs/region",
                 Kind = OptionKind.Dropdown,
                 JsonSource = "data/geo-ids.json",
                 GetString = c => c.Region.HomeLocation,

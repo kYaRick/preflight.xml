@@ -1,0 +1,62 @@
+@using System.Net.Http.Json
+@using Preflight.App.Models
+@implements IDisposable
+@inject ModeService Mode
+@inject HttpClient Http
+@inject IStringLocalizer<SharedResources> L
+
+@* Start-menu folders advanced view. Mirrors DesktopIconsAdvanced - Mode radio on top, then a
+   conditional checkbox grid sourced from data/start-folders.json. The Bytes field is stripped
+   in wwwroot (the UI only needs Id/DisplayName); the Byte payload is rebuilt server-side by
+   schneegans when it maps back to CustomStartFolderSettings. *@
+<SectionView Section="@StartFoldersSection.Definition"
+             ViewMode="SectionView.SectionMode.Advanced"
+             ShowHeader="false" />
+
+@if (Mode.Config.StartFolders.Mode == StartFolderMode.Specific)
+{
+    <div class="pf-option" style="margin-top: 16px;">
+        <div class="pf-option__head">
+            <label class="pf-option__label">@L["StartFolders.VisibleFolders.Label"]</label>
+        </div>
+        <p class="pf-option__description">@L["StartFolders.VisibleFolders.Description"]</p>
+        <div class="pf-checkbox-group" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px 16px; margin-top: 8px;">
+            @foreach (var folder in _folders)
+            {
+                var id = folder.Id;
+                <FluentCheckbox Value="@IsVisible(id)"
+                                ValueChanged="@(v => SetVisible(id, v))"
+                                Label="@folder.DisplayName" />
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private record StartFolderEntry(string Id, string DisplayName);
+
+    private IReadOnlyList<StartFolderEntry> _folders = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Mode.StateChanged += OnChanged;
+        try
+        {
+            var entries = await Http.GetFromJsonAsync<List<StartFolderEntry>>("data/start-folders.json");
+            if (entries is not null) _folders = entries;
+        }
+        catch { _folders = []; }
+    }
+
+    private bool IsVisible(string id) => Mode.Config.StartFolders.VisibleFolders.Contains(id);
+
+    private void SetVisible(string id, bool value)
+    {
+        if (value) Mode.Config.StartFolders.VisibleFolders.Add(id);
+        else Mode.Config.StartFolders.VisibleFolders.Remove(id);
+        Mode.NotifyConfigChanged();
+    }
+
+    private void OnChanged() => InvokeAsync(StateHasChanged);
+    public void Dispose() => Mode.StateChanged -= OnChanged;
+}
