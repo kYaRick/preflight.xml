@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup Label="Blazor WebAssembly">
-        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.5" />
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.7" />
         <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer"
             Version="10.0.5" />
     </ItemGroup>
