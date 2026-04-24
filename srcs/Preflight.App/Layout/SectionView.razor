@@ -465,7 +465,7 @@
         var i = 0;
         builder.OpenComponent<FluentNumberField<int>>(i++);
         builder.AddAttribute(i++, "Value", current);
-        // FluentNumberField exposes Min/Max as string — pass invariant-culture text, not int.
+        // FluentNumberField exposes Min/Max as string - pass invariant-culture text, not int.
         if (option.Min is not null) builder.AddAttribute(i++, "Min", option.Min.Value.ToString(CultureInfo.InvariantCulture));
         if (option.Max is not null) builder.AddAttribute(i++, "Max", option.Max.Value.ToString(CultureInfo.InvariantCulture));
         builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<int>(this, v =>

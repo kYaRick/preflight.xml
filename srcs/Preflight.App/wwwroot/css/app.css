@@ -1211,8 +1211,8 @@ fluent-anchor[appearance="hypertext"]:hover {
     border-radius: var(--pf-radius-md);
 }
 
-.pf-section__intro p > img + em,
-.pf-section__intro p > img:first-child + em {
+.pf-section__intro p>img+em,
+.pf-section__intro p>img:first-child+em {
     display: block;
     color: var(--pf-text-muted);
     font-size: 0.86rem;
@@ -1305,43 +1305,86 @@ fluent-anchor[appearance="hypertext"]:hover {
 }
 
 /* Docs reading view: tighter vertical rhythm than the default .pf-section__intro,
-   which is tuned for the Advanced-mode context where there is also a form below. */
+   which is tuned for the Advanced-mode context where there is also a form below.
+   Docs pages are pure reading, so we match the rest of the app's body typography
+   (0.875rem / line-height 1.45) instead of the looser reading preset. */
+.pf-docs-entry>div>*+*,
 .pf-docs-entry .pf-section {
-    gap: 0.75rem;
+    gap: 0.5rem;
 }
 
 .pf-docs-entry .pf-section__intro {
-    padding: 0.875rem 1.125rem;
+    padding: 0.75rem 1rem;
 }
 
 .pf-docs-entry .pf-section__intro p,
 .pf-docs-entry .pf-section__intro li {
-    line-height: 1.55;
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
 }
 
 .pf-docs-entry .pf-section__intro p {
+    margin: 0.35rem 0;
+}
+
+.pf-docs-entry .pf-section__intro ul,
+.pf-docs-entry .pf-section__intro ol {
     margin: 0.5rem 0;
+    padding-left: 1.15rem;
 }
 
 .pf-docs-entry .pf-section__intro li+li {
-    margin-top: 0.3rem;
+    margin-top: 0.2rem;
 }
 
-.pf-docs-entry .pf-section__intro h2,
-.pf-docs-entry .pf-section__intro h3,
+.pf-docs-entry .pf-section__intro h2 {
+    font-size: 1.125rem;
+    margin: 0.75rem 0 0.2rem;
+}
+
+.pf-docs-entry .pf-section__intro h3 {
+    font-size: 1rem;
+    margin: 0.625rem 0 0.15rem;
+}
+
 .pf-docs-entry .pf-section__intro h4 {
-    margin: 1rem 0 0.375rem;
+    font-size: 0.95rem;
+    margin: 0.5rem 0 0.15rem;
+}
+
+.pf-docs-entry .pf-section__intro> :first-child,
+.pf-docs-entry .pf-section__intro> :first-child> :first-child {
+    margin-top: 0;
 }
 
 .pf-docs-entry .pf-option {
-    padding: 0.75rem 0.9rem;
-    gap: 0.45rem;
+    padding: 0.65rem 0.85rem;
+    gap: 0.35rem;
 }
 
 .pf-docs-entry .pf-option__description {
-    font-size: 0.875rem;
-    line-height: 1.5;
+    font-size: 0.82rem;
+    line-height: 1.45;
+}
+
+/* The main h1 + subtitle pair at the top of a Docs page is currently rendered by
+   FluentLabel as <h2 class="fluent-typography"> at 32px - too heavy for a docs
+   reference. Scale it down to the size we use for section titles elsewhere so the
+   page reads like polished reference, not landing-page marketing. The selector
+   targets FluentLabel's first heading inside the fluent-grid-item that holds the
+   main content column; intro <h1>/<h2> from markdown are left alone. */
+.pf-docs-entry fluent-grid-item>.fluent-typography,
+.pf-docs-entry fluent-grid-item>h1.fluent-typography,
+.pf-docs-entry fluent-grid-item>h2.fluent-typography,
+.pf-docs-entry>div>fluent-grid>fluent-grid-item h2.fluent-typography:first-of-type {
+    font-size: clamp(1.5rem, 2vw, 1.875rem) !important;
+    line-height: 1.15 !important;
+    font-weight: 700 !important;
+}
+
+.pf-docs-entry fluent-label[typo="Body"] .fluent-typography,
+.pf-docs-entry .fluent-typography+.fluent-typography {
+    font-size: 0.92rem;
 }
 
 /* Advanced page layout: allow all content to flow naturally.
@@ -1358,7 +1401,7 @@ fluent-card {
     align-items: flex-start !important;
 }
 
-.pf-advanced-shell fluent-grid-item > div {
+.pf-advanced-shell fluent-grid-item>div {
     align-self: flex-start;
 }
 
@@ -1367,23 +1410,37 @@ fluent-card {
 }
 
 /* ─── FluentSelect dropdown sizing ───────────────────────────
-   Limit dropdown height and add scrollbar for long option lists.
-   Primary path: FluentSelect shadow parts.
-   Fallback path: global role="listbox" selector. */
-fluent-select.pf-select::part(listbox) {
-    max-height: 240px;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
+   Long option lists (editions, time zones, components) have to stay
+   scrollable inside a fixed max-height box - otherwise the listbox
+   runs past the option card it's in and the panel beneath. Rules hit
+   every FluentSelect (not just .pf-select) because custom section
+   components mount bare FluentSelect and also need this behaviour.
 
-fluent-select.pf-select::part(positioning-region) {
-    max-height: 240px;
+   Three selector paths cover the Fluent v4 shadow DOM surface:
+   1. ::part(listbox) / ::part(positioning-region) - primary
+   2. role="listbox" - fallback for browsers that don't expose parts yet
+   3. fluent-select itself - make sure its stacking context can extend
+      beyond the surrounding card. */
+fluent-select::part(listbox),
+fluent-select::part(positioning-region) {
+    max-height: 240px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
 }
 
 [role="listbox"] {
-    max-height: 240px;
+    max-height: 240px !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
+    /* Must sit above the pf-option card (z-index 1) and the sticky nav card
+       (position sticky stacks at 0) so the list never hides behind either. */
+    z-index: 50;
+}
+
+/* FluentSelect's listbox is rendered inside the custom element, so the element
+   itself must not clip. Belt-and-braces with the global card override. */
+fluent-select {
+    overflow: visible !important;
 }
 
 /* Smooth scrolling for dropdown options */
@@ -1681,8 +1738,7 @@ fluent-select.pf-select::part(positioning-region) {
        Two-layer drop-shadow (small white highlight + larger accent halo)
        lifts the plane off the violet trail underneath so the nose always
        reads clearly. */
-    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95))
-            drop-shadow(0 0 14px var(--pf-accent));
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 14px var(--pf-accent));
     animation:
         planeFly 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards,
         planePulse 1.8s ease-in-out infinite;
@@ -1702,13 +1758,11 @@ fluent-select.pf-select::part(positioning-region) {
 
     0%,
     100% {
-        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95))
-                drop-shadow(0 0 12px var(--pf-accent));
+        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 12px var(--pf-accent));
     }
 
     50% {
-        filter: drop-shadow(0 0 4px rgba(255, 255, 255, 1))
-                drop-shadow(0 0 22px var(--pf-accent-strong, var(--pf-accent)));
+        filter: drop-shadow(0 0 4px rgba(255, 255, 255, 1)) drop-shadow(0 0 22px var(--pf-accent-strong, var(--pf-accent)));
     }
 }
 
@@ -2182,7 +2236,7 @@ html.theme-dark .pf-xml-code .token.regex {
 
 /* ─── XML preview FAB ─────────────────────────────────────
    A compact floating action button pinned to the bottom-right of the viewport.
-   Replaces the old sticky 3rd-column preview panel — the form now has that
+   Replaces the old sticky 3rd-column preview panel - the form now has that
    width to breathe in, and the XML is one click (or Ctrl+Shift+X) away. */
 .pf-xml-fab {
     position: fixed;
@@ -2263,17 +2317,33 @@ html.theme-dark .pf-xml-code .token.regex {
 }
 
 @keyframes xmlFabPulse {
-    0% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 0 0 var(--pf-accent-ring); }
-    50% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 0 10px transparent; }
-    100% { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 0 0 transparent; }
+    0% {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 0 0 var(--pf-accent-ring);
+    }
+
+    50% {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 0 10px transparent;
+    }
+
+    100% {
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 0 0 transparent;
+    }
 }
 
 @keyframes xmlFabCountBlink {
-    0%, 100% { color: var(--pf-text-subtle); }
-    30% { color: var(--pf-accent); }
+
+    0%,
+    100% {
+        color: var(--pf-text-subtle);
+    }
+
+    30% {
+        color: var(--pf-accent);
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
+
     .pf-xml-fab.is-pulsing,
     .pf-xml-fab.is-pulsing .pf-xml-fab__count {
         animation: none;
@@ -2390,7 +2460,7 @@ html.theme-dark .pf-xml-code .token.regex {
 
 /* The first group heading in a section doesn't need the top
    margin - the section's own spacing already handles it. */
-.pf-section__options > .pf-section__group-heading:first-child {
+.pf-section__options>.pf-section__group-heading:first-child {
     margin-top: 0;
 }
 
@@ -2457,6 +2527,165 @@ html.theme-dark .pf-xml-code .token.regex {
     width: 100%;
 }
 
+/* ─── Docs index toolbar (filter bar above the cards grid) ─── */
+.pf-docs-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 8px 12px;
+    background: var(--pf-card-bg);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+}
+
+.pf-docs-toolbar .pf-nav-search {
+    flex: 1 1 auto;
+    max-width: 520px;
+}
+
+.pf-docs-toolbar__count {
+    font-size: 0.8rem;
+    color: var(--pf-text-muted);
+    white-space: nowrap;
+}
+
+/* ─── Sidebar toolbar (filter + view toggle) ──────────────
+   Sits above the groups; small search input + single icon button to
+   flip between grouped and flat. Uses native <input type="search"> so
+   the OS-provided clear icon survives (plus our explicit ✕ when focus
+   is lost). Keeps the surface dense but not cramped. */
+.pf-nav-toolbar {
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+    padding: 4px 6px 8px;
+    border-bottom: 1px solid var(--pf-border);
+    margin-bottom: 4px;
+}
+
+.pf-nav-search {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+.pf-nav-search__icon {
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.85rem;
+    color: var(--pf-text-subtle);
+    pointer-events: none;
+}
+
+.pf-nav-search__input {
+    width: 100%;
+    padding: 6px 26px 6px 28px;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-sm);
+    color: var(--pf-text);
+    font-size: 0.86rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.15s var(--pf-ease), background 0.15s var(--pf-ease);
+}
+
+.pf-nav-search__input::placeholder {
+    color: var(--pf-text-muted);
+    opacity: 0.7;
+}
+
+.pf-nav-search__input:focus {
+    border-color: var(--pf-accent);
+    background: var(--pf-bg);
+}
+
+.pf-nav-search__input::-webkit-search-cancel-button {
+    display: none;
+}
+
+.pf-nav-search__clear {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    color: var(--pf-text-muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pf-nav-search__clear:hover {
+    color: var(--pf-text);
+    background: var(--pf-surface-2);
+}
+
+.pf-nav-toggle {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-sm);
+    color: var(--pf-text-muted);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: color 0.15s var(--pf-ease), background 0.15s var(--pf-ease), border-color 0.15s var(--pf-ease);
+}
+
+.pf-nav-toggle:hover {
+    color: var(--pf-text);
+    border-color: var(--pf-border-strong);
+}
+
+.pf-nav-toggle.is-active {
+    color: var(--pf-accent-strong);
+    border-color: var(--pf-accent);
+    background: rgba(var(--pf-accent-rgb), 0.12);
+}
+
+.pf-nav-flat {
+    list-style: none;
+    margin: 0;
+    padding: 2px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.pf-nav-flat__empty {
+    padding: 12px 10px;
+    text-align: center;
+    color: var(--pf-text-muted);
+    font-size: 0.85rem;
+}
+
+/* Prev/Next nav at the bottom of each Advanced section - same palette as the
+   Advanced.Preview modal buttons for visual continuity. */
+.pf-section-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid var(--pf-border);
+}
+
 /* ─── Advanced sidebar (grouped nav) ──────────────────────
    The 28 sections live under ~6 collapsible groups so the list reads
    as chapters, not a wall of links. Native <details> handles open/close;
@@ -2497,8 +2726,13 @@ html.theme-dark .pf-xml-code .token.regex {
     transition: color 0.15s var(--pf-ease), background 0.15s var(--pf-ease);
 }
 
-.pf-nav-group__summary::-webkit-details-marker { display: none; }
-.pf-nav-group__summary::marker { content: ''; }
+.pf-nav-group__summary::-webkit-details-marker {
+    display: none;
+}
+
+.pf-nav-group__summary::marker {
+    content: '';
+}
 
 .pf-nav-group__summary::after {
     content: '▾';
@@ -2509,7 +2743,7 @@ html.theme-dark .pf-xml-code .token.regex {
     transition: transform 0.2s var(--pf-ease);
 }
 
-.pf-nav-group[open] > .pf-nav-group__summary::after {
+.pf-nav-group[open]>.pf-nav-group__summary::after {
     transform: rotate(0deg);
 }
 
@@ -2584,9 +2818,9 @@ html.theme-dark .pf-xml-code .token.regex {
     display: block;
     border-radius: var(--pf-radius-md);
     background: linear-gradient(90deg,
-        var(--pf-surface-2) 0%,
-        rgba(var(--pf-accent-rgb, 139, 92, 246), 0.08) 50%,
-        var(--pf-surface-2) 100%);
+            var(--pf-surface-2) 0%,
+            rgba(var(--pf-accent-rgb, 139, 92, 246), 0.08) 50%,
+            var(--pf-surface-2) 100%);
     background-size: 200% 100%;
     animation: pfSkeletonShimmer 1.4s ease-in-out infinite;
     border: 1px solid var(--pf-border);
@@ -2598,12 +2832,20 @@ html.theme-dark .pf-xml-code .token.regex {
 }
 
 @keyframes pfSkeletonShimmer {
-    0% { background-position: 100% 0; }
-    100% { background-position: -100% 0; }
+    0% {
+        background-position: 100% 0;
+    }
+
+    100% {
+        background-position: -100% 0;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .pf-skeleton { animation: none; background: var(--pf-surface-2); }
+    .pf-skeleton {
+        animation: none;
+        background: var(--pf-surface-2);
+    }
 }
 
 /* ─── Custom scripts section ──────────────────────────────
@@ -2676,6 +2918,35 @@ html.theme-dark .pf-xml-code .token.regex {
     min-width: 26px;
 }
 
+.pf-components {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.pf-component-slot {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 0.85rem 0.95rem;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+}
+
+.pf-component-slot__head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.pf-component-slot__num {
+    font-family: var(--pf-font-mono);
+    font-size: 0.85rem;
+    color: var(--pf-text-muted);
+    min-width: 26px;
+}
+
 .pf-scripts-global {
     display: flex;
     flex-direction: column;
@@ -2704,7 +2975,7 @@ html.theme-dark .pf-xml-code .token.regex {
     gap: 0.875rem;
 }
 
-.pf-section--advanced .pf-users__block + .pf-users__block {
+.pf-section--advanced .pf-users__block+.pf-users__block {
     margin-top: 0.25rem;
 }
 
@@ -2715,7 +2986,12 @@ html.theme-dark .pf-xml-code .token.regex {
 /* Accounts table: wraps so narrow viewports scroll rather than squish
    the cells. Header row uses the muted palette so it reads as chrome. */
 .pf-users__table-wrap {
-    overflow-x: auto;
+    /* No overflow clipping: setting overflow-x: auto here implicitly coerced
+       overflow-y to auto (CSS spec - can't mix visible with a scrolling axis),
+       which chopped the Group dropdown's listbox at the table's bottom edge.
+       The table is narrow enough on any real viewport that horizontal overflow
+       isn't an issue; if it ever happens the page scrolls instead of the wrap. */
+    overflow: visible;
     border: 1px solid var(--pf-border);
     border-radius: var(--pf-radius-md);
     background: rgba(var(--pf-bg-rgb), 0.4);
@@ -2745,7 +3021,7 @@ html.theme-dark .pf-xml-code .token.regex {
     border-bottom: 1px solid var(--pf-border);
 }
 
-.pf-users__table tbody tr + tr td {
+.pf-users__table tbody tr+tr td {
     border-top: 1px solid var(--pf-border);
 }
 
@@ -2882,4 +3158,3 @@ html.theme-dark .pf-xml-code .token.regex {
     padding: 2px;
     object-fit: contain;
 }
-

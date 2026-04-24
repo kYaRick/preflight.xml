@@ -10,36 +10,83 @@
 <div class="pf-docs-entry" style="padding: 16px; max-width: 1400px; margin: 0 auto;">
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
         <FluentAnchor Href="/docs" Appearance="Appearance.Outline">← @L["Docs.BackToIndex"]</FluentAnchor>
+        @if (IsKnownSection)
+        {
+            <FluentAnchor Href="@($"/advanced/{Slug}")" Appearance="Appearance.Outline">⚙️ @L[@"Docs.OpenInAdvanced"]</FluentAnchor>
+        }
         <FluentSpacer />
-        <FluentAnchor Href="/" Appearance="Appearance.Lightweight">@L["Common.BackToHome"]</FluentAnchor>
+        <FluentAnchor Href="/" Appearance="Appearance.Outline">← @L["Common.BackToHome"]</FluentAnchor>
     </FluentStack>
 
     <FluentGrid Spacing="3" Style="margin-top: 12px; align-items: flex-start;">
 
-        <!-- Sidebar: sections grouped by install phase, matching /advanced. -->
+        <!-- Sidebar: filterable, toggleable, matches /advanced exactly so muscle
+             memory carries over between the editor and the docs. -->
         <FluentGridItem xs="12" md="3">
             <FluentCard Class="pf-nav-card" Style="padding: 6px; position: sticky; top: 16px;">
+                <div class="pf-nav-toolbar">
+                    <div class="pf-nav-search">
+                        <span class="pf-nav-search__icon" aria-hidden="true">🔎</span>
+                        <input type="search"
+                               class="pf-nav-search__input"
+                               placeholder="@L[@"Docs.SidebarSearch"]"
+                               value="@_filter"
+                               @oninput="OnFilterChanged"
+                               aria-label="@L[@"Docs.SidebarSearch"]" />
+                        @if (!string.IsNullOrEmpty(_filter))
+                        {
+                            <button type="button" class="pf-nav-search__clear" aria-label="Clear" @onclick="ClearFilter">✕</button>
+                        }
+                    </div>
+                    <button type="button"
+                            class="pf-nav-toggle @(_grouped ? "is-active" : null)"
+                            title="@L[@"Advanced.SidebarGrouped"]"
+                            @onclick="ToggleGrouping">
+                        @(_grouped ? "▤" : "≡")
+                    </button>
+                </div>
+
                 <nav class="pf-nav-groups" aria-label="@L[@"Docs.Title"]">
-                    @foreach (var group in SectionRegistry.Groups)
+                    @if (_grouped && string.IsNullOrEmpty(_filter))
                     {
-                        var isOpen = group.SectionIds.Contains(Slug, StringComparer.Ordinal);
-                        <details class="pf-nav-group" open="@isOpen">
-                            <summary class="pf-nav-group__summary">
-                                <span class="pf-nav-group__icon" aria-hidden="true">@group.Emoji</span>
-                                <span class="pf-nav-group__title">@L[group.TitleKey]</span>
-                                <span class="pf-nav-group__count">@group.SectionIds.Count</span>
-                            </summary>
-                            <ul class="pf-nav-group__list">
-                                @foreach (var id in group.SectionIds)
-                                {
-                                    <li>
-                                        <NavLink class="pf-nav-group__link" href="@($"/docs/{id}")" Match="NavLinkMatch.All">
-                                            @L[$"Advanced.Section.{id}"]
-                                        </NavLink>
-                                    </li>
-                                }
-                            </ul>
-                        </details>
+                        @foreach (var group in SectionRegistry.Groups)
+                        {
+                            var isOpen = group.SectionIds.Contains(Slug, StringComparer.Ordinal);
+                            <details class="pf-nav-group" open="@isOpen">
+                                <summary class="pf-nav-group__summary">
+                                    <span class="pf-nav-group__icon" aria-hidden="true">@group.Emoji</span>
+                                    <span class="pf-nav-group__title">@L[group.TitleKey]</span>
+                                    <span class="pf-nav-group__count">@group.SectionIds.Count</span>
+                                </summary>
+                                <ul class="pf-nav-group__list">
+                                    @foreach (var id in group.SectionIds)
+                                    {
+                                        <li>
+                                            <NavLink class="pf-nav-group__link" href="@($"/docs/{id}")" Match="NavLinkMatch.All">
+                                                @L[$"Advanced.Section.{id}"]
+                                            </NavLink>
+                                        </li>
+                                    }
+                                </ul>
+                            </details>
+                        }
+                    }
+                    else
+                    {
+                        <ul class="pf-nav-flat">
+                            @foreach (var id in FilteredIds())
+                            {
+                                <li>
+                                    <NavLink class="pf-nav-group__link" href="@($"/docs/{id}")" Match="NavLinkMatch.All">
+                                        @L[$"Advanced.Section.{id}"]
+                                    </NavLink>
+                                </li>
+                            }
+                            @if (!FilteredIds().Any())
+                            {
+                                <li class="pf-nav-flat__empty">@L[@"Advanced.SidebarEmpty"]</li>
+                            }
+                        </ul>
                     }
                 </nav>
             </FluentCard>
@@ -77,14 +124,33 @@
     private string _description = "";
     private SectionDefinition? _section;
     private string? _articleHtml;
+    private string _filter = "";
+    private bool _grouped = true;
+
+    private bool IsKnownSection => SectionRegistry.AllSectionIds.Contains(Slug, StringComparer.Ordinal);
+
+    private void OnFilterChanged(ChangeEventArgs e) => _filter = (e.Value as string) ?? "";
+    private void ClearFilter() => _filter = "";
+    private void ToggleGrouping() => _grouped = !_grouped;
+
+    private IEnumerable<string> FilteredIds()
+    {
+        if (string.IsNullOrWhiteSpace(_filter)) return SectionRegistry.AllSectionIds;
+        var needle = _filter.Trim();
+        return SectionRegistry.AllSectionIds.Where(id =>
+        {
+            if (id.Contains(needle, StringComparison.OrdinalIgnoreCase)) return true;
+            var label = (string)L[$"Advanced.Section.{id}"];
+            return label.Contains(needle, StringComparison.OrdinalIgnoreCase);
+        });
+    }
 
     protected override async Task OnParametersSetAsync()
     {
-        var isKnown = SectionRegistry.AllSectionIds.Contains(Slug, StringComparer.Ordinal);
         _section = SectionRegistry.TryGet(Slug);
-        _articleHtml = isKnown ? await TryRenderMarkdownAsync($"content/sections/{Slug}.{{locale}}.md") : null;
+        _articleHtml = IsKnownSection ? await TryRenderMarkdownAsync($"content/sections/{Slug}.{{locale}}.md") : null;
 
-        if (!isKnown)
+        if (!IsKnownSection)
         {
             _name = L["Docs.Entry.Unknown"];
             _description = L["Docs.Entry.UnknownDescription"];

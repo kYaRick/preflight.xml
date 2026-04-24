@@ -4,7 +4,7 @@ using Preflight.App.Services;
 namespace Preflight.App.Content.Sections;
 
 /// <summary>
-/// Bloatware removal — a single <see cref="OptionKind.CheckboxGroup"/> backed by the 40+
+/// Bloatware removal - a single <see cref="OptionKind.CheckboxGroup"/> backed by the 40+
 /// entries from <see cref="BloatwareCatalog"/>. The catalog instance is injected by the
 /// <c>.razor</c> companion (which is the only DI-aware surface here); it calls
 /// <see cref="Build"/> once per section load to bake the <see cref="SectionDefinition"/>.

@@ -1,7 +1,7 @@
 # Start Menu
 
 ## What this section changes
-Controls how the **Start menu** and **taskbar** look on first boot — search box,
+Controls how the **Start menu** and **taskbar** look on first boot - search box,
 pinned icons, widgets, tiles (Windows 10) and Start pins (Windows 11).
 
 ## Taskbar search box variants
@@ -9,16 +9,16 @@ Windows gives four choices for how the search element is rendered next to Start.
 Pick the one that matches your install:
 
 ![Full search box](content/images/taskbar-search-box.png)
-*Full box — the default on fresh Windows 11 installs.*
+*Full box - the default on fresh Windows 11 installs.*
 
 ![Search icon + label](content/images/taskbar-search-label.png)
-*Icon + label — a compact variant that still shouts "search here".*
+*Icon + label - a compact variant that still shouts "search here".*
 
 ![Search icon only](content/images/taskbar-search-icon.png)
-*Icon only — the Windows 10 default.*
+*Icon only - the Windows 10 default.*
 
 ![Search hidden](content/images/taskbar-search-hide.png)
-*Hidden — zero taskbar space used; search is still reachable via `Win` key.*
+*Hidden - zero taskbar space used; search is still reachable via `Win` key.*
 
 ## Why you might use it
 - Keep the Start/taskbar chrome consistent across many devices.

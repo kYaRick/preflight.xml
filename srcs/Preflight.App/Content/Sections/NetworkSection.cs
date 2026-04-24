@@ -3,7 +3,7 @@ using Preflight.App.Models;
 namespace Preflight.App.Content.Sections;
 
 /// <summary>
-/// Wi-Fi configuration — four modes (Interactive / Skip / Configure / ProfileXml) with
+/// Wi-Fi configuration - four modes (Interactive / Skip / Configure / ProfileXml) with
 /// mode-specific follow-up fields that appear only when relevant. The <c>.razor</c>
 /// companion mounts a single <see cref="Layout.SectionView"/> against <see cref="Definition"/>;
 /// the per-mode reveals are handled by <see cref="OptionDefinition.VisibleWhen"/>.

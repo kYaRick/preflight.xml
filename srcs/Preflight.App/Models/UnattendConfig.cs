@@ -735,9 +735,10 @@ public enum AppLockerMode
 
 public sealed class XmlComponentsSettings
 {
-    // Seed 3 empty slots - the UI renders slot-by-slot and the adapter skips any slot
-    // where ComponentId or Xml is empty. Trimming / expanding slots can come later.
-    public List<XmlComponentEntry> Entries { get; init; } = [new(), new(), new()];
+    // Empty by default - rows are added on demand via the Add-component button in the UI.
+    // The adapter ignores any row whose ComponentId or Xml is blank, so dropping the
+    // three seeded placeholders just removes UI noise; it's not a behaviour change.
+    public List<XmlComponentEntry> Entries { get; init; } = [];
 }
 
 public sealed class XmlComponentEntry

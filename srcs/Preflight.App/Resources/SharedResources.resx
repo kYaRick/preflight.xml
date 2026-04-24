@@ -293,19 +293,22 @@
     <value>Display language</value>
   </data>
   <data name="Region.DisplayLanguage.Description">
-    <value>The language Windows uses for its UI: Settings, File Explorer, dialogs. Setup looks for a matching language pack in the install image.</value>
+    <value>The language Windows uses for its UI: Settings, File Explorer, dialogs. Setup looks for a
+      matching language pack in the install image.</value>
   </data>
   <data name="Region.InputLanguage.Label">
     <value>Input language (keyboard)</value>
   </data>
   <data name="Region.InputLanguage.Description">
-    <value>The keyboard layout active on first boot. Independent of the display language - a user in Germany might want English UI with a German keyboard.</value>
+    <value>The keyboard layout active on first boot. Independent of the display language - a user in
+      Germany might want English UI with a German keyboard.</value>
   </data>
   <data name="Region.HomeLocation.Label">
     <value>Home location</value>
   </data>
   <data name="Region.HomeLocation.Description">
-    <value>Country / region code used for date, currency, and measurement formatting, plus region-aware features like the Microsoft Store.</value>
+    <value>Country / region code used for date, currency, and measurement formatting, plus
+      region-aware features like the Microsoft Store.</value>
   </data>
   <data name="Section.region.Subtitle">
     <value>Language, keyboard, and regional formatting Windows applies on first boot.</value>
@@ -340,7 +343,8 @@
     <value>Advanced editor</value>
   </data>
   <data name="Advanced.Subtitle">
-    <value>Full manual control. All options in one place. Press Ctrl+Shift+X or the floating button to preview the XML.</value>
+    <value>Full manual control. All options in one place. Press Ctrl+Shift+X or the floating button
+      to preview the XML.</value>
   </data>
   <data name="Advanced.Preview.Title">
     <value>Live preview</value>
@@ -474,13 +478,15 @@
     <value>System (Specialize pass)</value>
   </data>
   <data name="Scripts.Phase.System.Description">
-    <value>Runs in the SYSTEM context before any user profile exists. Use for domain join, driver install, service configuration.</value>
+    <value>Runs in the SYSTEM context before any user profile exists. Use for domain join, driver
+      install, service configuration.</value>
   </data>
   <data name="Scripts.Phase.DefaultUser.Label">
     <value>Default user</value>
   </data>
   <data name="Scripts.Phase.DefaultUser.Description">
-    <value>Edits the Default User hive so settings apply to every new profile. Only Registry, Cmd and PowerShell are allowed here.</value>
+    <value>Edits the Default User hive so settings apply to every new profile. Only Registry, Cmd
+      and PowerShell are allowed here.</value>
   </data>
   <data name="Scripts.Phase.FirstLogon.Label">
     <value>First logon</value>
@@ -508,21 +514,21 @@
   </data>
   <data name="Scripts.Type.Cmd.Placeholder">
     <value>@echo off
-rem Commands run as SYSTEM…</value>
+      rem Commands run as SYSTEM…</value>
   </data>
   <data name="Scripts.Type.PowerShell.Placeholder">
     <value># PowerShell, runs as SYSTEM
-Write-Host 'Hello from preflight.xml'</value>
+      Write-Host 'Hello from preflight.xml'</value>
   </data>
   <data name="Scripts.Type.Registry.Placeholder">
     <value>Windows Registry Editor Version 5.00
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\MyKey]
-"Value"="example"</value>
+      [HKEY_LOCAL_MACHINE\SOFTWARE\MyKey]
+      "Value"="example"</value>
   </data>
   <data name="Scripts.Type.VbScript.Placeholder">
     <value>' VBScript
-WScript.Echo "Hello"</value>
+      WScript.Echo "Hello"</value>
   </data>
   <data name="Scripts.Slot.Clear">
     <value>Clear</value>
@@ -551,7 +557,8 @@ WScript.Echo "Hello"</value>
     <value>Mode</value>
   </data>
   <data name="Wdac.Mode.Description">
-    <value>Choose "Not configured" to skip WDAC entirely, or "Basic" to deploy a built-in policy allowing Windows, Program Files and Program Files (x86), with known write-able folders denied.</value>
+    <value>Choose "Not configured" to skip WDAC entirely, or "Basic" to deploy a built-in policy
+      allowing Windows, Program Files and Program Files (x86), with known write-able folders denied.</value>
   </data>
   <data name="Wdac.Mode.NotConfigured">
     <value>Not configured</value>
@@ -563,7 +570,8 @@ WScript.Echo "Hello"</value>
     <value>Enforcement</value>
   </data>
   <data name="Wdac.Enforcement.Description">
-    <value>Audit logs violations without blocking, "Enforce" blocks. Only applies when Mode = Basic policy.</value>
+    <value>Audit logs violations without blocking, "Enforce" blocks. Only applies when Mode = Basic
+      policy.</value>
   </data>
   <data name="Wdac.Enforcement.Audit">
     <value>Audit only</value>
@@ -595,7 +603,8 @@ WScript.Echo "Hello"</value>
     <value>Mode</value>
   </data>
   <data name="AppLocker.Mode.Description">
-    <value>"Not configured" skips AppLocker. "Custom XML" deploys the policy you paste below; it's validated against Microsoft's schema at generation time.</value>
+    <value>"Not configured" skips AppLocker. "Custom XML" deploys the policy you paste below; it's
+      validated against Microsoft's schema at generation time.</value>
   </data>
   <data name="AppLocker.Mode.NotConfigured">
     <value>Not configured</value>
@@ -607,7 +616,8 @@ WScript.Echo "Hello"</value>
     <value>Policy XML</value>
   </data>
   <data name="AppLocker.PolicyXml.Description">
-    <value>An AppLockerPolicy document. Invalid XML is reported in the generated autounattend as a comment.</value>
+    <value>An AppLockerPolicy document. Invalid XML is reported in the generated autounattend as a
+      comment.</value>
   </data>
 
   <!-- ═══ Components section ══════════════════════════════════ -->
@@ -615,7 +625,8 @@ WScript.Echo "Hello"</value>
     <value>Inject raw autounattend.xml fragments into chosen components.</value>
   </data>
   <data name="Components.Help">
-    <value>For each slot, pick a component + pass combination and paste the child XML that should appear inside the &lt;component&gt; element. Leave slots empty to skip.</value>
+    <value>For each slot, pick a component + pass combination and paste the child XML that should
+      appear inside the &lt;component&gt; element. Leave slots empty to skip.</value>
   </data>
   <data name="Components.ComponentId.Label">
     <value>Component / pass</value>
@@ -627,12 +638,23 @@ WScript.Echo "Hello"</value>
     <value>&lt;SomeElement&gt;value&lt;/SomeElement&gt;</value>
   </data>
   <data name="Components.None">
-    <value>— Not selected —</value>
+    <value>- Not selected -</value>
+  </data>
+  <data name="Components.Add">
+    <value>Add component</value>
+  </data>
+  <data name="Components.Remove">
+    <value>Remove component</value>
+  </data>
+  <data name="Components.Empty">
+    <value>No components yet. Click "Add component" when you want to inject raw XML into a specific
+      component / pass.</value>
   </data>
 
   <!-- ═══ System tweaks section ═══════════════════════════════ -->
   <data name="Section.tweaks.Subtitle">
-    <value>Registry-level polish applied at first boot: Explorer defaults, Edge behaviour, performance tweaks.</value>
+    <value>Registry-level polish applied at first boot: Explorer defaults, Edge behaviour,
+      performance tweaks.</value>
   </data>
   <data name="Tweaks.Group.Shell">
     <value>File Explorer and shell</value>
@@ -745,19 +767,22 @@ WScript.Echo "Hello"</value>
     <value>Install VirtualBox Guest Additions</value>
   </data>
   <data name="VmSupport.VirtualBoxGuestAdditions.Description">
-    <value>Downloads and installs Oracle's Guest Additions: seamless mouse, clipboard, shared folders.</value>
+    <value>Downloads and installs Oracle's Guest Additions: seamless mouse, clipboard, shared
+      folders.</value>
   </data>
   <data name="VmSupport.VmwareTools.Label">
     <value>Install VMware Tools</value>
   </data>
   <data name="VmSupport.VmwareTools.Description">
-    <value>Downloads and installs VMware's guest tools: paravirtual drivers, clipboard, resolution sync.</value>
+    <value>Downloads and installs VMware's guest tools: paravirtual drivers, clipboard, resolution
+      sync.</value>
   </data>
   <data name="VmSupport.VirtIoAndQemuAgent.Label">
     <value>Install VirtIO drivers and QEMU guest agent</value>
   </data>
   <data name="VmSupport.VirtIoAndQemuAgent.Description">
-    <value>For Proxmox / KVM: installs the signed VirtIO drivers and qemu-guest-agent service at first logon.</value>
+    <value>For Proxmox / KVM: installs the signed VirtIO drivers and qemu-guest-agent service at
+      first logon.</value>
   </data>
   <data name="VmSupport.ParallelsTools.Label">
     <value>Install Parallels Tools</value>
@@ -774,7 +799,8 @@ WScript.Echo "Hello"</value>
     <value>Express settings prompt</value>
   </data>
   <data name="ExpressSettings.Mode.Description">
-    <value>Decide whether Setup asks about express settings, accepts all defaults, or opts out of all of them.</value>
+    <value>Decide whether Setup asks about express settings, accepts all defaults, or opts out of
+      all of them.</value>
   </data>
   <data name="ExpressSettings.Mode.Interactive">
     <value>Ask me during setup</value>
@@ -788,7 +814,8 @@ WScript.Echo "Hello"</value>
 
   <!-- ═══ Lock keys section ═══════════════════════════════════ -->
   <data name="Section.lock-keys.Subtitle">
-    <value>Configure Caps Lock, Num Lock, and Scroll Lock initial state and whether the physical key is active.</value>
+    <value>Configure Caps Lock, Num Lock, and Scroll Lock initial state and whether the physical key
+      is active.</value>
   </data>
   <data name="LockKeys.Mode.Label">
     <value>Lock key behaviour</value>
@@ -955,7 +982,8 @@ WScript.Echo "Hello"</value>
 
   <!-- ═══ Section subtitles ══════════════════════════════════ -->
   <data name="Section.bloatware.Subtitle">
-    <value>Remove preinstalled apps - Copilot, Cortana, Bing search, Teams, widgets and other bundled stock.</value>
+    <value>Remove preinstalled apps - Copilot, Cortana, Bing search, Teams, widgets and other
+      bundled stock.</value>
   </data>
   <data name="Section.compact-os.Subtitle">
     <value>Whether Windows keeps its files in the compressed WIMBOOT layout after install.</value>
@@ -979,13 +1007,15 @@ WScript.Echo "Hello"</value>
     <value>Which folder shortcuts appear next to the power button in the Windows 11 Start menu.</value>
   </data>
   <data name="Section.network.Subtitle">
-    <value>Wi-Fi behaviour during OOBE: ask interactively, skip, pre-configure or inject a profile XML.</value>
+    <value>Wi-Fi behaviour during OOBE: ask interactively, skip, pre-configure or inject a profile
+      XML.</value>
   </data>
   <data name="Section.processor-archs.Subtitle">
     <value>Which processor architectures the generated autounattend.xml targets.</value>
   </data>
   <data name="Section.setup-settings.Subtitle">
-    <value>Setup-time toggles: Windows 11 requirement bypass, OOBE tweaks, PowerShell window visibility.</value>
+    <value>Setup-time toggles: Windows 11 requirement bypass, OOBE tweaks, PowerShell window
+      visibility.</value>
   </data>
   <data name="Section.source-image.Subtitle">
     <value>Which image inside install.wim Setup picks - automatic, by index, or by name.</value>
@@ -1007,347 +1037,961 @@ WScript.Echo "Hello"</value>
   </data>
 
   <!-- ═══ Source image ═══════════════════════════════════════ -->
-  <data name="SourceImage.Mode.Label"><value>Image selection</value></data>
-  <data name="SourceImage.Mode.Description"><value>How Setup picks an image inside install.wim: the first one, a fixed index, or a name match.</value></data>
-  <data name="SourceImage.Mode.Automatic"><value>Automatic (first image)</value></data>
-  <data name="SourceImage.Mode.ByIndex"><value>By index</value></data>
-  <data name="SourceImage.Mode.ByName"><value>By name</value></data>
-  <data name="SourceImage.ImageIndex.Label"><value>Image index</value></data>
-  <data name="SourceImage.ImageIndex.Description"><value>1-based position of the image inside install.wim.</value></data>
-  <data name="SourceImage.ImageName.Label"><value>Image name</value></data>
-  <data name="SourceImage.ImageName.Description"><value>Exact image name as it appears in install.wim (e.g. &quot;Windows 11 Pro&quot;).</value></data>
-  <data name="SourceImage.ImageName.Placeholder"><value>Windows 11 Pro</value></data>
+  <data name="SourceImage.Mode.Label">
+    <value>Image selection</value>
+  </data>
+  <data name="SourceImage.Mode.Description">
+    <value>How Setup picks an image inside install.wim: the first one, a fixed index, or a name
+      match.</value>
+  </data>
+  <data name="SourceImage.Mode.Automatic">
+    <value>Automatic (first image)</value>
+  </data>
+  <data name="SourceImage.Mode.ByIndex">
+    <value>By index</value>
+  </data>
+  <data name="SourceImage.Mode.ByName">
+    <value>By name</value>
+  </data>
+  <data name="SourceImage.ImageIndex.Label">
+    <value>Image index</value>
+  </data>
+  <data name="SourceImage.ImageIndex.Description">
+    <value>1-based position of the image inside install.wim.</value>
+  </data>
+  <data name="SourceImage.ImageName.Label">
+    <value>Image name</value>
+  </data>
+  <data name="SourceImage.ImageName.Description">
+    <value>Exact image name as it appears in install.wim (e.g. &quot;Windows 11 Pro&quot;).</value>
+  </data>
+  <data name="SourceImage.ImageName.Placeholder">
+    <value>Windows 11 Pro</value>
+  </data>
 
   <!-- ═══ Compact OS ═════════════════════════════════════════ -->
-  <data name="CompactOs.Mode.Label"><value>Compact OS mode</value></data>
-  <data name="CompactOs.Mode.Description"><value>Default follows Windows' own heuristic (small disks only). Enabled always compresses, Disabled never does.</value></data>
-  <data name="CompactOs.Mode.Default"><value>Default (auto)</value></data>
-  <data name="CompactOs.Mode.Enabled"><value>Enabled</value></data>
-  <data name="CompactOs.Mode.Disabled"><value>Disabled</value></data>
+  <data name="CompactOs.Mode.Label">
+    <value>Compact OS mode</value>
+  </data>
+  <data name="CompactOs.Mode.Description">
+    <value>Default follows Windows' own heuristic (small disks only). Enabled always compresses,
+      Disabled never does.</value>
+  </data>
+  <data name="CompactOs.Mode.Default">
+    <value>Default (auto)</value>
+  </data>
+  <data name="CompactOs.Mode.Enabled">
+    <value>Enabled</value>
+  </data>
+  <data name="CompactOs.Mode.Disabled">
+    <value>Disabled</value>
+  </data>
 
   <!-- ═══ Desktop icons ══════════════════════════════════════ -->
-  <data name="DesktopIcons.Mode.Label"><value>Icon selection</value></data>
-  <data name="DesktopIcons.Mode.Description"><value>Default leaves Windows' choices alone. Specific pins an exact set from the list below.</value></data>
-  <data name="DesktopIcons.Mode.Default"><value>Default</value></data>
-  <data name="DesktopIcons.Mode.Specific"><value>Specific set</value></data>
-  <data name="DesktopIcons.DeleteEdge.Label"><value>Delete the Microsoft Edge desktop icon</value></data>
-  <data name="DesktopIcons.DeleteEdge.Description"><value>Removes the Edge shortcut for every new user profile.</value></data>
+  <data name="DesktopIcons.Mode.Label">
+    <value>Icon selection</value>
+  </data>
+  <data name="DesktopIcons.Mode.Description">
+    <value>Default leaves Windows' choices alone. Specific pins an exact set from the list below.</value>
+  </data>
+  <data name="DesktopIcons.Mode.Default">
+    <value>Default</value>
+  </data>
+  <data name="DesktopIcons.Mode.Specific">
+    <value>Specific set</value>
+  </data>
+  <data name="DesktopIcons.DeleteEdge.Label">
+    <value>Delete the Microsoft Edge desktop icon</value>
+  </data>
+  <data name="DesktopIcons.DeleteEdge.Description">
+    <value>Removes the Edge shortcut for every new user profile.</value>
+  </data>
 
   <!-- ═══ Disk ═══════════════════════════════════════════════ -->
-  <data name="Disk.Mode.Description"><value>Interactive lets Setup ask, AutoWipe formats the first disk silently, CustomScript runs your own diskpart script.</value></data>
-  <data name="Disk.Mode.Interactive"><value>Interactive (ask at install)</value></data>
-  <data name="Disk.Mode.AutoWipe"><value>Wipe and install automatically</value></data>
-  <data name="Disk.Mode.CustomScript"><value>Custom diskpart script</value></data>
-  <data name="Disk.PartitionStyle.Description"><value>GPT is required for modern UEFI systems and Windows 11. MBR is legacy BIOS only.</value></data>
-  <data name="Disk.PartitionStyle.Gpt"><value>GPT (UEFI)</value></data>
-  <data name="Disk.PartitionStyle.Mbr"><value>MBR (legacy BIOS)</value></data>
-  <data name="Disk.EspSize.Label"><value>EFI System Partition size (MB)</value></data>
-  <data name="Disk.EspSize.Description"><value>Size of the ESP in megabytes. 300 is Microsoft's default, 100-512 is the usual range.</value></data>
-  <data name="Disk.Recovery.Label"><value>Recovery environment</value></data>
-  <data name="Disk.Recovery.Description"><value>Where Windows puts WinRE. A dedicated partition is the default; folder saves space; none skips WinRE entirely.</value></data>
-  <data name="Disk.Recovery.Partition"><value>Dedicated recovery partition</value></data>
-  <data name="Disk.Recovery.Folder"><value>Inside the Windows partition</value></data>
-  <data name="Disk.Recovery.None"><value>Do not install WinRE</value></data>
-  <data name="Disk.RecoverySize.Label"><value>Recovery partition size (MB)</value></data>
-  <data name="Disk.RecoverySize.Description"><value>Size of the dedicated recovery partition. 990 MB is the Windows 11 default.</value></data>
-  <data name="Disk.CustomScript.Label"><value>Custom diskpart script</value></data>
-  <data name="Disk.CustomScript.Description"><value>Only used when Disk mode is &quot;Custom diskpart script&quot;. Your script replaces the default partitioning logic.</value></data>
-  <data name="Disk.CustomScript.Placeholder"><value>select disk 0
-clean
-convert gpt
-...</value></data>
-  <data name="Disk.InstallDiskIndex.Label"><value>Install disk index</value></data>
-  <data name="Disk.InstallDiskIndex.Description"><value>Zero-based disk index Setup writes Windows to. 0 is the first physical disk.</value></data>
-  <data name="Disk.InstallPartitionIndex.Label"><value>Install partition index</value></data>
-  <data name="Disk.InstallPartitionIndex.Description"><value>1-based partition index on the chosen disk. Ignored for AutoWipe mode.</value></data>
+  <data name="Disk.Mode.Description">
+    <value>Interactive lets Setup ask, AutoWipe formats the first disk silently, CustomScript runs
+      your own diskpart script.</value>
+  </data>
+  <data name="Disk.Mode.Interactive">
+    <value>Interactive (ask at install)</value>
+  </data>
+  <data name="Disk.Mode.AutoWipe">
+    <value>Wipe and install automatically</value>
+  </data>
+  <data name="Disk.Mode.CustomScript">
+    <value>Custom diskpart script</value>
+  </data>
+  <data name="Disk.PartitionStyle.Description">
+    <value>GPT is required for modern UEFI systems and Windows 11. MBR is legacy BIOS only.</value>
+  </data>
+  <data name="Disk.PartitionStyle.Gpt">
+    <value>GPT (UEFI)</value>
+  </data>
+  <data name="Disk.PartitionStyle.Mbr">
+    <value>MBR (legacy BIOS)</value>
+  </data>
+  <data name="Disk.EspSize.Label">
+    <value>EFI System Partition size (MB)</value>
+  </data>
+  <data name="Disk.EspSize.Description">
+    <value>Size of the ESP in megabytes. 300 is Microsoft's default, 100-512 is the usual range.</value>
+  </data>
+  <data name="Disk.Recovery.Label">
+    <value>Recovery environment</value>
+  </data>
+  <data name="Disk.Recovery.Description">
+    <value>Where Windows puts WinRE. A dedicated partition is the default; folder saves space; none
+      skips WinRE entirely.</value>
+  </data>
+  <data name="Disk.Recovery.Partition">
+    <value>Dedicated recovery partition</value>
+  </data>
+  <data name="Disk.Recovery.Folder">
+    <value>Inside the Windows partition</value>
+  </data>
+  <data name="Disk.Recovery.None">
+    <value>Do not install WinRE</value>
+  </data>
+  <data name="Disk.RecoverySize.Label">
+    <value>Recovery partition size (MB)</value>
+  </data>
+  <data name="Disk.RecoverySize.Description">
+    <value>Size of the dedicated recovery partition. 990 MB is the Windows 11 default.</value>
+  </data>
+  <data name="Disk.CustomScript.Label">
+    <value>Custom diskpart script</value>
+  </data>
+  <data name="Disk.CustomScript.Description">
+    <value>Only used when Disk mode is &quot;Custom diskpart script&quot;. Your script replaces the
+      default partitioning logic.</value>
+  </data>
+  <data name="Disk.CustomScript.Placeholder">
+    <value>select disk 0
+      clean
+      convert gpt
+      ...</value>
+  </data>
+  <data name="Disk.InstallDiskIndex.Label">
+    <value>Install disk index</value>
+  </data>
+  <data name="Disk.InstallDiskIndex.Description">
+    <value>Zero-based disk index Setup writes Windows to. 0 is the first physical disk.</value>
+  </data>
+  <data name="Disk.InstallPartitionIndex.Label">
+    <value>Install partition index</value>
+  </data>
+  <data name="Disk.InstallPartitionIndex.Description">
+    <value>1-based partition index on the chosen disk. Ignored for AutoWipe mode.</value>
+  </data>
 
   <!-- ═══ Edition ════════════════════════════════════════════ -->
-  <data name="Edition.KeyMode.Label"><value>Product key source</value></data>
-  <data name="Edition.KeyMode.Description"><value>Generic uses Microsoft's edition-switch keys. Custom embeds your key. Interactive prompts Setup. FromBios reads the key from UEFI / MSDM.</value></data>
-  <data name="Edition.KeyMode.Generic"><value>Generic (edition-switch)</value></data>
-  <data name="Edition.KeyMode.Custom"><value>Custom key</value></data>
-  <data name="Edition.KeyMode.Interactive"><value>Ask during Setup</value></data>
-  <data name="Edition.KeyMode.FromBios"><value>Read from BIOS / UEFI</value></data>
-  <data name="Edition.ProductKey.Label"><value>Product key</value></data>
-  <data name="Edition.ProductKey.Description"><value>25-character product key. Only used when &quot;Custom key&quot; is selected.</value></data>
-  <data name="Edition.ProductKey.Placeholder"><value>XXXXX-XXXXX-XXXXX-XXXXX-XXXXX</value></data>
-  <data name="Edition.Edition.Description"><value>Which Windows edition Setup installs. Must be available inside the source install.wim.</value></data>
+  <data name="Edition.KeyMode.Label">
+    <value>Product key source</value>
+  </data>
+  <data name="Edition.KeyMode.Description">
+    <value>Generic uses Microsoft's edition-switch keys. Custom embeds your key. Interactive prompts
+      Setup. FromBios reads the key from UEFI / MSDM.</value>
+  </data>
+  <data name="Edition.KeyMode.Generic">
+    <value>Generic (edition-switch)</value>
+  </data>
+  <data name="Edition.KeyMode.Custom">
+    <value>Custom key</value>
+  </data>
+  <data name="Edition.KeyMode.Interactive">
+    <value>Ask during Setup</value>
+  </data>
+  <data name="Edition.KeyMode.FromBios">
+    <value>Read from BIOS / UEFI</value>
+  </data>
+  <data name="Edition.ProductKey.Label">
+    <value>Product key</value>
+  </data>
+  <data name="Edition.ProductKey.Description">
+    <value>25-character product key. Only used when &quot;Custom key&quot; is selected.</value>
+  </data>
+  <data name="Edition.ProductKey.Placeholder">
+    <value>XXXXX-XXXXX-XXXXX-XXXXX-XXXXX</value>
+  </data>
+  <data name="Edition.Edition.Description">
+    <value>Which Windows edition Setup installs. Must be available inside the source install.wim.</value>
+  </data>
 
   <!-- ═══ File Explorer ══════════════════════════════════════ -->
-  <data name="Explorer.HideFiles.Label"><value>Hidden files visibility</value></data>
-  <data name="Explorer.HideFiles.Description"><value>Controls whether Explorer shows hidden and OS-protected files.</value></data>
-  <data name="Explorer.HideFiles.Hidden"><value>Hide hidden + OS files</value></data>
-  <data name="Explorer.HideFiles.OsOnly"><value>Show hidden, hide OS-protected</value></data>
-  <data name="Explorer.HideFiles.ShowAll"><value>Show everything</value></data>
-  <data name="Explorer.ClassicContextMenu.Label"><value>Restore the classic context menu</value></data>
-  <data name="Explorer.ClassicContextMenu.Description"><value>Brings back the Windows 10 full right-click menu instead of the Windows 11 condensed one.</value></data>
-  <data name="Explorer.ShowFileExtensions.Label"><value>Show file extensions</value></data>
-  <data name="Explorer.ShowFileExtensions.Description"><value>Always reveal extensions like .exe or .docx in Explorer.</value></data>
-  <data name="Explorer.HideInfoTip.Label"><value>Hide Explorer tooltips</value></data>
-  <data name="Explorer.HideInfoTip.Description"><value>Suppress the hover tooltips on files and folders.</value></data>
-  <data name="Explorer.LaunchToThisPC.Label"><value>Open Explorer to &quot;This PC&quot;</value></data>
-  <data name="Explorer.LaunchToThisPC.Description"><value>New Explorer windows start at This PC instead of Quick Access.</value></data>
-  <data name="Explorer.ShowEndTask.Label"><value>Enable &quot;End task&quot; in the taskbar menu</value></data>
-  <data name="Explorer.ShowEndTask.Description"><value>Adds an End task entry to the right-click menu of running apps in the taskbar.</value></data>
+  <data name="Explorer.HideFiles.Label">
+    <value>Hidden files visibility</value>
+  </data>
+  <data name="Explorer.HideFiles.Description">
+    <value>Controls whether Explorer shows hidden and OS-protected files.</value>
+  </data>
+  <data name="Explorer.HideFiles.Hidden">
+    <value>Hide hidden + OS files</value>
+  </data>
+  <data name="Explorer.HideFiles.OsOnly">
+    <value>Show hidden, hide OS-protected</value>
+  </data>
+  <data name="Explorer.HideFiles.ShowAll">
+    <value>Show everything</value>
+  </data>
+  <data name="Explorer.ClassicContextMenu.Label">
+    <value>Restore the classic context menu</value>
+  </data>
+  <data name="Explorer.ClassicContextMenu.Description">
+    <value>Brings back the Windows 10 full right-click menu instead of the Windows 11 condensed one.</value>
+  </data>
+  <data name="Explorer.ShowFileExtensions.Label">
+    <value>Show file extensions</value>
+  </data>
+  <data name="Explorer.ShowFileExtensions.Description">
+    <value>Always reveal extensions like .exe or .docx in Explorer.</value>
+  </data>
+  <data name="Explorer.HideInfoTip.Label">
+    <value>Hide Explorer tooltips</value>
+  </data>
+  <data name="Explorer.HideInfoTip.Description">
+    <value>Suppress the hover tooltips on files and folders.</value>
+  </data>
+  <data name="Explorer.LaunchToThisPC.Label">
+    <value>Open Explorer to &quot;This PC&quot;</value>
+  </data>
+  <data name="Explorer.LaunchToThisPC.Description">
+    <value>New Explorer windows start at This PC instead of Quick Access.</value>
+  </data>
+  <data name="Explorer.ShowEndTask.Label">
+    <value>Enable &quot;End task&quot; in the taskbar menu</value>
+  </data>
+  <data name="Explorer.ShowEndTask.Description">
+    <value>Adds an End task entry to the right-click menu of running apps in the taskbar.</value>
+  </data>
 
   <!-- ═══ Network / Wi-Fi ════════════════════════════════════ -->
-  <data name="Network.WifiMode.Label"><value>Wi-Fi during OOBE</value></data>
-  <data name="Network.WifiMode.Description"><value>Interactive prompts the user. Skip bypasses the screen entirely. Configure embeds an SSID + password. ProfileXml injects a full Windows Wi-Fi profile.</value></data>
-  <data name="Network.WifiMode.Interactive"><value>Ask during Setup</value></data>
-  <data name="Network.WifiMode.Skip"><value>Skip network screen</value></data>
-  <data name="Network.WifiMode.Configure"><value>Pre-configure SSID</value></data>
-  <data name="Network.WifiMode.ProfileXml"><value>Inject profile XML</value></data>
-  <data name="Network.Ssid.Label"><value>SSID</value></data>
-  <data name="Network.SsidHidden.Label"><value>Network is hidden (does not broadcast)</value></data>
-  <data name="Network.Auth.Label"><value>Authentication</value></data>
-  <data name="Network.Auth.Open"><value>Open (no password)</value></data>
-  <data name="Network.Auth.Wpa2Personal"><value>WPA2-Personal</value></data>
-  <data name="Network.Auth.Wpa3Personal"><value>WPA3-Personal</value></data>
-  <data name="Network.Password.Label"><value>Password</value></data>
-  <data name="Network.ProfileXml.Label"><value>Wi-Fi profile XML</value></data>
-  <data name="Network.ProfileXml.Description"><value>Paste the output of &quot;netsh wlan export profile&quot;. Credentials will be embedded in autounattend.xml.</value></data>
+  <data name="Network.WifiMode.Label">
+    <value>Wi-Fi during OOBE</value>
+  </data>
+  <data name="Network.WifiMode.Description">
+    <value>Interactive prompts the user. Skip bypasses the screen entirely. Configure embeds an SSID
+      + password. ProfileXml injects a full Windows Wi-Fi profile.</value>
+  </data>
+  <data name="Network.WifiMode.Interactive">
+    <value>Ask during Setup</value>
+  </data>
+  <data name="Network.WifiMode.Skip">
+    <value>Skip network screen</value>
+  </data>
+  <data name="Network.WifiMode.Configure">
+    <value>Pre-configure SSID</value>
+  </data>
+  <data name="Network.WifiMode.ProfileXml">
+    <value>Inject profile XML</value>
+  </data>
+  <data name="Network.Ssid.Label">
+    <value>SSID</value>
+  </data>
+  <data name="Network.SsidHidden.Label">
+    <value>Network is hidden (does not broadcast)</value>
+  </data>
+  <data name="Network.Auth.Label">
+    <value>Authentication</value>
+  </data>
+  <data name="Network.Auth.Open">
+    <value>Open (no password)</value>
+  </data>
+  <data name="Network.Auth.Wpa2Personal">
+    <value>WPA2-Personal</value>
+  </data>
+  <data name="Network.Auth.Wpa3Personal">
+    <value>WPA3-Personal</value>
+  </data>
+  <data name="Network.Password.Label">
+    <value>Password</value>
+  </data>
+  <data name="Network.ProfileXml.Label">
+    <value>Wi-Fi profile XML</value>
+  </data>
+  <data name="Network.ProfileXml.Description">
+    <value>Paste the output of &quot;netsh wlan export profile&quot;. Credentials will be embedded
+      in autounattend.xml.</value>
+  </data>
 
   <!-- ═══ Personalization: Colors ═══════════════════════════ -->
-  <data name="Personalization.Colors.Title"><value>🎨 Colors &amp; theme</value></data>
-  <data name="Personalization.Colors.Subtitle"><value>System / app theme, accent colour, taskbar translucency.</value></data>
-  <data name="Personalization.Colors.Mode.Label"><value>Mode</value></data>
-  <data name="Personalization.Colors.Mode.Default"><value>Default</value></data>
-  <data name="Personalization.Colors.Mode.Custom"><value>Custom</value></data>
-  <data name="Personalization.Colors.TaskbarAndStartTheme.Label"><value>Taskbar &amp; Start theme</value></data>
-  <data name="Personalization.Colors.Theme.Dark"><value>Dark</value></data>
-  <data name="Personalization.Colors.Theme.Light"><value>Light</value></data>
-  <data name="Personalization.Colors.AppsTheme.Label"><value>Apps theme</value></data>
-  <data name="Personalization.Colors.AccentColor.Label"><value>Accent color</value></data>
-  <data name="Personalization.Colors.AccentColor.Description"><value>Hex value (e.g. #0078D4). Used wherever Windows shows the accent colour.</value></data>
-  <data name="Personalization.Colors.AccentOnStartAndTaskbar.Label"><value>Apply accent to Start &amp; taskbar</value></data>
-  <data name="Personalization.Colors.AccentOnTitleBars.Label"><value>Apply accent to window title bars</value></data>
-  <data name="Personalization.Colors.Translucent.Label"><value>Translucent taskbar &amp; Start</value></data>
+  <data name="Personalization.Colors.Title">
+    <value>🎨 Colors &amp; theme</value>
+  </data>
+  <data name="Personalization.Colors.Subtitle">
+    <value>System / app theme, accent colour, taskbar translucency.</value>
+  </data>
+  <data name="Personalization.Colors.Mode.Label">
+    <value>Mode</value>
+  </data>
+  <data name="Personalization.Colors.Mode.Default">
+    <value>Default</value>
+  </data>
+  <data name="Personalization.Colors.Mode.Custom">
+    <value>Custom</value>
+  </data>
+  <data name="Personalization.Colors.TaskbarAndStartTheme.Label">
+    <value>Taskbar &amp; Start theme</value>
+  </data>
+  <data name="Personalization.Colors.Theme.Dark">
+    <value>Dark</value>
+  </data>
+  <data name="Personalization.Colors.Theme.Light">
+    <value>Light</value>
+  </data>
+  <data name="Personalization.Colors.AppsTheme.Label">
+    <value>Apps theme</value>
+  </data>
+  <data name="Personalization.Colors.AccentColor.Label">
+    <value>Accent color</value>
+  </data>
+  <data name="Personalization.Colors.AccentColor.Description">
+    <value>Hex value (e.g. #0078D4). Used wherever Windows shows the accent colour.</value>
+  </data>
+  <data name="Personalization.Colors.AccentOnStartAndTaskbar.Label">
+    <value>Apply accent to Start &amp; taskbar</value>
+  </data>
+  <data name="Personalization.Colors.AccentOnTitleBars.Label">
+    <value>Apply accent to window title bars</value>
+  </data>
+  <data name="Personalization.Colors.Translucent.Label">
+    <value>Translucent taskbar &amp; Start</value>
+  </data>
 
   <!-- ═══ Personalization: Wallpaper ═════════════════════════ -->
-  <data name="Personalization.Wallpaper.Title"><value>🖼️ Wallpaper</value></data>
-  <data name="Personalization.Wallpaper.Subtitle"><value>Default image, solid colour, or a custom script.</value></data>
-  <data name="Personalization.Wallpaper.Mode.Label"><value>Mode</value></data>
-  <data name="Personalization.Wallpaper.Mode.Default"><value>Default wallpaper</value></data>
-  <data name="Personalization.Wallpaper.Mode.SolidColor"><value>Solid colour</value></data>
-  <data name="Personalization.Wallpaper.Mode.Script"><value>Custom script</value></data>
-  <data name="Personalization.Wallpaper.SolidColor.Label"><value>Wallpaper colour</value></data>
-  <data name="Personalization.Wallpaper.SolidColor.Description"><value>Hex colour used as a full-screen solid wallpaper.</value></data>
-  <data name="Personalization.Wallpaper.Script.Label"><value>Wallpaper script</value></data>
-  <data name="Personalization.Wallpaper.Script.Description"><value>Cmd / PowerShell that copies or downloads the wallpaper file and applies it.</value></data>
+  <data name="Personalization.Wallpaper.Title">
+    <value>🖼️ Wallpaper</value>
+  </data>
+  <data name="Personalization.Wallpaper.Subtitle">
+    <value>Default image, solid colour, or a custom script.</value>
+  </data>
+  <data name="Personalization.Wallpaper.Mode.Label">
+    <value>Mode</value>
+  </data>
+  <data name="Personalization.Wallpaper.Mode.Default">
+    <value>Default wallpaper</value>
+  </data>
+  <data name="Personalization.Wallpaper.Mode.SolidColor">
+    <value>Solid colour</value>
+  </data>
+  <data name="Personalization.Wallpaper.Mode.Script">
+    <value>Custom script</value>
+  </data>
+  <data name="Personalization.Wallpaper.SolidColor.Label">
+    <value>Wallpaper colour</value>
+  </data>
+  <data name="Personalization.Wallpaper.SolidColor.Description">
+    <value>Hex colour used as a full-screen solid wallpaper.</value>
+  </data>
+  <data name="Personalization.Wallpaper.Script.Label">
+    <value>Wallpaper script</value>
+  </data>
+  <data name="Personalization.Wallpaper.Script.Description">
+    <value>Cmd / PowerShell that copies or downloads the wallpaper file and applies it.</value>
+  </data>
 
   <!-- ═══ Personalization: Lock screen ═══════════════════════ -->
-  <data name="Personalization.LockScreen.Title"><value>🔒 Lock screen</value></data>
-  <data name="Personalization.LockScreen.Subtitle"><value>Default Windows image or a custom-scripted one.</value></data>
-  <data name="Personalization.LockScreen.Mode.Label"><value>Mode</value></data>
-  <data name="Personalization.LockScreen.Mode.Default"><value>Default</value></data>
-  <data name="Personalization.LockScreen.Mode.Script"><value>Custom script</value></data>
-  <data name="Personalization.LockScreen.Script.Label"><value>Lock-screen script</value></data>
-  <data name="Personalization.LockScreen.Script.Description"><value>Cmd / PowerShell that sets the lock-screen image at first boot.</value></data>
+  <data name="Personalization.LockScreen.Title">
+    <value>🔒 Lock screen</value>
+  </data>
+  <data name="Personalization.LockScreen.Subtitle">
+    <value>Default Windows image or a custom-scripted one.</value>
+  </data>
+  <data name="Personalization.LockScreen.Mode.Label">
+    <value>Mode</value>
+  </data>
+  <data name="Personalization.LockScreen.Mode.Default">
+    <value>Default</value>
+  </data>
+  <data name="Personalization.LockScreen.Mode.Script">
+    <value>Custom script</value>
+  </data>
+  <data name="Personalization.LockScreen.Script.Label">
+    <value>Lock-screen script</value>
+  </data>
+  <data name="Personalization.LockScreen.Script.Description">
+    <value>Cmd / PowerShell that sets the lock-screen image at first boot.</value>
+  </data>
 
   <!-- ═══ Processor architectures ════════════════════════════ -->
-  <data name="ProcessorArchs.Architectures.Label"><value>Target architectures</value></data>
-  <data name="ProcessorArchs.Architectures.Description"><value>Which CPU architectures the generated autounattend.xml has component entries for. Pick at least one.</value></data>
-  <data name="ProcessorArchs.X86.Label"><value>x86 (32-bit)</value></data>
-  <data name="ProcessorArchs.Amd64.Label"><value>amd64 (64-bit Intel/AMD)</value></data>
-  <data name="ProcessorArchs.Arm64.Label"><value>arm64</value></data>
+  <data name="ProcessorArchs.Architectures.Label">
+    <value>Target architectures</value>
+  </data>
+  <data name="ProcessorArchs.Architectures.Description">
+    <value>Which CPU architectures the generated autounattend.xml has component entries for. Pick at
+      least one.</value>
+  </data>
+  <data name="ProcessorArchs.X86.Label">
+    <value>x86 (32-bit)</value>
+  </data>
+  <data name="ProcessorArchs.Amd64.Label">
+    <value>amd64 (64-bit Intel/AMD)</value>
+  </data>
+  <data name="ProcessorArchs.Arm64.Label">
+    <value>arm64</value>
+  </data>
 
   <!-- ═══ Setup settings ═════════════════════════════════════ -->
-  <data name="Setup.BypassRequirementsCheck.Label"><value>Bypass Windows 11 hardware requirement checks</value></data>
-  <data name="Setup.BypassRequirementsCheck.Description"><value>Skip the TPM 2.0, Secure Boot, CPU and RAM checks so Setup runs on unsupported hardware.</value></data>
-  <data name="Setup.BypassNetworkCheck.Label"><value>Bypass the OOBE network requirement</value></data>
-  <data name="Setup.BypassNetworkCheck.Description"><value>Allow completing OOBE offline, without a Microsoft account prompt.</value></data>
-  <data name="Setup.UseConfigurationSet.Label"><value>Use ConfigurationSet (external pass files)</value></data>
-  <data name="Setup.UseConfigurationSet.Description"><value>Split autounattend into one main file + per-pass side files. Only needed for advanced deployments.</value></data>
-  <data name="Setup.HidePowerShellWindows.Label"><value>Hide PowerShell windows during Setup</value></data>
-  <data name="Setup.HidePowerShellWindows.Description"><value>Run first-boot scripts silently instead of flashing a console.</value></data>
-  <data name="Setup.KeepSensitiveFiles.Label"><value>Keep autounattend.xml on disk after install</value></data>
-  <data name="Setup.KeepSensitiveFiles.Description"><value>By default, Windows deletes the answer file. Disabling this leaves credentials readable - do NOT ship images this way.</value></data>
-  <data name="Setup.UseNarrator.Label"><value>Start Narrator on OOBE</value></data>
-  <data name="Setup.UseNarrator.Description"><value>Useful for imaging kiosks and accessibility setups.</value></data>
+  <data name="Setup.BypassRequirementsCheck.Label">
+    <value>Bypass Windows 11 hardware requirement checks</value>
+  </data>
+  <data name="Setup.BypassRequirementsCheck.Description">
+    <value>Skip the TPM 2.0, Secure Boot, CPU and RAM checks so Setup runs on unsupported hardware.</value>
+  </data>
+  <data name="Setup.BypassNetworkCheck.Label">
+    <value>Bypass the OOBE network requirement</value>
+  </data>
+  <data name="Setup.BypassNetworkCheck.Description">
+    <value>Allow completing OOBE offline, without a Microsoft account prompt.</value>
+  </data>
+  <data name="Setup.UseConfigurationSet.Label">
+    <value>Use ConfigurationSet (external pass files)</value>
+  </data>
+  <data name="Setup.UseConfigurationSet.Description">
+    <value>Split autounattend into one main file + per-pass side files. Only needed for advanced
+      deployments.</value>
+  </data>
+  <data name="Setup.HidePowerShellWindows.Label">
+    <value>Hide PowerShell windows during Setup</value>
+  </data>
+  <data name="Setup.HidePowerShellWindows.Description">
+    <value>Run first-boot scripts silently instead of flashing a console.</value>
+  </data>
+  <data name="Setup.KeepSensitiveFiles.Label">
+    <value>Keep autounattend.xml on disk after install</value>
+  </data>
+  <data name="Setup.KeepSensitiveFiles.Description">
+    <value>By default, Windows deletes the answer file. Disabling this leaves credentials readable -
+      do NOT ship images this way.</value>
+  </data>
+  <data name="Setup.UseNarrator.Label">
+    <value>Start Narrator on OOBE</value>
+  </data>
+  <data name="Setup.UseNarrator.Description">
+    <value>Useful for imaging kiosks and accessibility setups.</value>
+  </data>
 
   <!-- ═══ Start menu / taskbar ═══════════════════════════════ -->
-  <data name="StartMenu.TaskbarSearch.Label"><value>Taskbar search</value></data>
-  <data name="StartMenu.TaskbarSearch.Description"><value>How the search control is displayed next to Start.</value></data>
-  <data name="StartMenu.TaskbarSearch.Hide"><value>Hidden</value></data>
-  <data name="StartMenu.TaskbarSearch.Icon"><value>Icon only</value></data>
-  <data name="StartMenu.TaskbarSearch.Box"><value>Full search box</value></data>
-  <data name="StartMenu.TaskbarSearch.Label_"><value>Icon + label</value></data>
-  <data name="StartMenu.TaskbarIcons.Label"><value>Pinned taskbar icons</value></data>
-  <data name="StartMenu.TaskbarIcons.Description"><value>Default keeps Windows' pins, RemoveAll clears them, CustomXml deploys your own layout.</value></data>
-  <data name="StartMenu.TaskbarIcons.Default"><value>Default</value></data>
-  <data name="StartMenu.TaskbarIcons.RemoveAll"><value>Remove all</value></data>
-  <data name="StartMenu.TaskbarIcons.CustomXml"><value>Custom XML</value></data>
-  <data name="StartMenu.TaskbarIconsXml.Label"><value>Taskbar layout XML</value></data>
-  <data name="StartMenu.TaskbarIconsXml.Description"><value>LayoutModificationTemplate / CustomTaskbarLayoutCollection XML.</value></data>
-  <data name="StartMenu.DisableWidgets.Label"><value>Disable the Widgets board</value></data>
-  <data name="StartMenu.DisableWidgets.Description"><value>Removes the Widgets entry from the taskbar.</value></data>
-  <data name="StartMenu.LeftTaskbar.Label"><value>Left-align taskbar icons</value></data>
-  <data name="StartMenu.LeftTaskbar.Description"><value>Pin taskbar icons to the left instead of centering them.</value></data>
-  <data name="StartMenu.HideTaskViewButton.Label"><value>Hide the Task View button</value></data>
-  <data name="StartMenu.HideTaskViewButton.Description"><value>Removes the virtual-desktop switcher icon from the taskbar.</value></data>
-  <data name="StartMenu.ShowAllTrayIcons.Label"><value>Show all tray icons</value></data>
-  <data name="StartMenu.ShowAllTrayIcons.Description"><value>Always expand the notification area instead of hiding overflow icons.</value></data>
-  <data name="StartMenu.DisableBingResults.Label"><value>Hide Bing results in Start search</value></data>
-  <data name="StartMenu.DisableBingResults.Description"><value>Stops the Start menu from mixing web results into local search.</value></data>
-  <data name="StartMenu.StartTiles.Label"><value>Start tiles (Win10 style)</value></data>
-  <data name="StartMenu.StartTiles.Description"><value>Only relevant on Windows 10. Default keeps the shipped tiles, RemoveAll clears them, CustomXml deploys a StartLayout XML.</value></data>
-  <data name="StartMenu.StartTiles.Default"><value>Default</value></data>
-  <data name="StartMenu.StartTiles.RemoveAll"><value>Remove all</value></data>
-  <data name="StartMenu.StartTiles.CustomXml"><value>Custom XML</value></data>
-  <data name="StartMenu.StartTilesXml.Label"><value>Start tiles XML</value></data>
-  <data name="StartMenu.StartTilesXml.Description"><value>LayoutModificationTemplate / DefaultLayoutOverride XML.</value></data>
-  <data name="StartMenu.StartPins.Label"><value>Start pins (Win11)</value></data>
-  <data name="StartMenu.StartPins.Description"><value>Default keeps Microsoft's pins, RemoveAll empties the Pinned area, CustomJson deploys your own start2.json.</value></data>
-  <data name="StartMenu.StartPins.Default"><value>Default</value></data>
-  <data name="StartMenu.StartPins.RemoveAll"><value>Remove all</value></data>
-  <data name="StartMenu.StartPins.CustomJson"><value>Custom JSON</value></data>
-  <data name="StartMenu.StartPinsJson.Label"><value>start2.json</value></data>
-  <data name="StartMenu.StartPinsJson.Description"><value>Full start2.bin-equivalent JSON deployed to %LOCALAPPDATA%\Packages\...\Start\.</value></data>
+  <data name="StartMenu.TaskbarSearch.Label">
+    <value>Taskbar search</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Description">
+    <value>How the search control is displayed next to Start.</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Hide">
+    <value>Hidden</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Icon">
+    <value>Icon only</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Box">
+    <value>Full search box</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Label_">
+    <value>Icon + label</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.Label">
+    <value>Pinned taskbar icons</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.Description">
+    <value>Default keeps Windows' pins, RemoveAll clears them, CustomXml deploys your own layout.</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.Default">
+    <value>Default</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.RemoveAll">
+    <value>Remove all</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.CustomXml">
+    <value>Custom XML</value>
+  </data>
+  <data name="StartMenu.TaskbarIconsXml.Label">
+    <value>Taskbar layout XML</value>
+  </data>
+  <data name="StartMenu.TaskbarIconsXml.Description">
+    <value>LayoutModificationTemplate / CustomTaskbarLayoutCollection XML.</value>
+  </data>
+  <data name="StartMenu.DisableWidgets.Label">
+    <value>Disable the Widgets board</value>
+  </data>
+  <data name="StartMenu.DisableWidgets.Description">
+    <value>Removes the Widgets entry from the taskbar.</value>
+  </data>
+  <data name="StartMenu.LeftTaskbar.Label">
+    <value>Left-align taskbar icons</value>
+  </data>
+  <data name="StartMenu.LeftTaskbar.Description">
+    <value>Pin taskbar icons to the left instead of centering them.</value>
+  </data>
+  <data name="StartMenu.HideTaskViewButton.Label">
+    <value>Hide the Task View button</value>
+  </data>
+  <data name="StartMenu.HideTaskViewButton.Description">
+    <value>Removes the virtual-desktop switcher icon from the taskbar.</value>
+  </data>
+  <data name="StartMenu.ShowAllTrayIcons.Label">
+    <value>Show all tray icons</value>
+  </data>
+  <data name="StartMenu.ShowAllTrayIcons.Description">
+    <value>Always expand the notification area instead of hiding overflow icons.</value>
+  </data>
+  <data name="StartMenu.DisableBingResults.Label">
+    <value>Hide Bing results in Start search</value>
+  </data>
+  <data name="StartMenu.DisableBingResults.Description">
+    <value>Stops the Start menu from mixing web results into local search.</value>
+  </data>
+  <data name="StartMenu.StartTiles.Label">
+    <value>Start tiles (Win10 style)</value>
+  </data>
+  <data name="StartMenu.StartTiles.Description">
+    <value>Only relevant on Windows 10. Default keeps the shipped tiles, RemoveAll clears them,
+      CustomXml deploys a StartLayout XML.</value>
+  </data>
+  <data name="StartMenu.StartTiles.Default">
+    <value>Default</value>
+  </data>
+  <data name="StartMenu.StartTiles.RemoveAll">
+    <value>Remove all</value>
+  </data>
+  <data name="StartMenu.StartTiles.CustomXml">
+    <value>Custom XML</value>
+  </data>
+  <data name="StartMenu.StartTilesXml.Label">
+    <value>Start tiles XML</value>
+  </data>
+  <data name="StartMenu.StartTilesXml.Description">
+    <value>LayoutModificationTemplate / DefaultLayoutOverride XML.</value>
+  </data>
+  <data name="StartMenu.StartPins.Label">
+    <value>Start pins (Win11)</value>
+  </data>
+  <data name="StartMenu.StartPins.Description">
+    <value>Default keeps Microsoft's pins, RemoveAll empties the Pinned area, CustomJson deploys
+      your own start2.json.</value>
+  </data>
+  <data name="StartMenu.StartPins.Default">
+    <value>Default</value>
+  </data>
+  <data name="StartMenu.StartPins.RemoveAll">
+    <value>Remove all</value>
+  </data>
+  <data name="StartMenu.StartPins.CustomJson">
+    <value>Custom JSON</value>
+  </data>
+  <data name="StartMenu.StartPinsJson.Label">
+    <value>start2.json</value>
+  </data>
+  <data name="StartMenu.StartPinsJson.Description">
+    <value>Full start2.bin-equivalent JSON deployed to %LOCALAPPDATA%\Packages\...\Start\.</value>
+  </data>
 
   <!-- ═══ Start menu folders (Win11) ═════════════════════════ -->
-  <data name="StartFolders.Mode.Label"><value>Folder shortcuts</value></data>
-  <data name="StartFolders.Mode.Description"><value>Default follows Windows. Specific pins exactly the set you tick below.</value></data>
-  <data name="StartFolders.Mode.Default"><value>Default</value></data>
-  <data name="StartFolders.Mode.Specific"><value>Specific set</value></data>
+  <data name="StartFolders.Mode.Label">
+    <value>Folder shortcuts</value>
+  </data>
+  <data name="StartFolders.Mode.Description">
+    <value>Default follows Windows. Specific pins exactly the set you tick below.</value>
+  </data>
+  <data name="StartFolders.Mode.Default">
+    <value>Default</value>
+  </data>
+  <data name="StartFolders.Mode.Specific">
+    <value>Specific set</value>
+  </data>
 
   <!-- ═══ Visual effects ═════════════════════════════════════ -->
-  <data name="VisualEffects.Preset.Label"><value>Preset</value></data>
-  <data name="VisualEffects.Preset.Description"><value>Pick a stock SystemPropertiesPerformance preset, or Custom to hand-toggle each effect.</value></data>
-  <data name="VisualEffects.Preset.Default"><value>Let Windows choose (default)</value></data>
-  <data name="VisualEffects.Preset.BestAppearance"><value>Best appearance</value></data>
-  <data name="VisualEffects.Preset.BestPerformance"><value>Best performance</value></data>
-  <data name="VisualEffects.Preset.Custom"><value>Custom (select below)</value></data>
+  <data name="VisualEffects.Preset.Label">
+    <value>Preset</value>
+  </data>
+  <data name="VisualEffects.Preset.Description">
+    <value>Pick a stock SystemPropertiesPerformance preset, or Custom to hand-toggle each effect.</value>
+  </data>
+  <data name="VisualEffects.Preset.Default">
+    <value>Let Windows choose (default)</value>
+  </data>
+  <data name="VisualEffects.Preset.BestAppearance">
+    <value>Best appearance</value>
+  </data>
+  <data name="VisualEffects.Preset.BestPerformance">
+    <value>Best performance</value>
+  </data>
+  <data name="VisualEffects.Preset.Custom">
+    <value>Custom (select below)</value>
+  </data>
 
   <!-- ═══ Users ══════════════════════════════════════════════ -->
-  <data name="Users.Accounts.Title"><value>Local accounts</value></data>
-  <data name="Users.Accounts.Description"><value>One row per account Setup creates. At least one account should be an administrator.</value></data>
-  <data name="Users.Accounts.Empty"><value>No accounts yet. Add one below or pick a preset.</value></data>
-  <data name="Users.Accounts.Add"><value>Add account</value></data>
-  <data name="Users.Accounts.Remove"><value>Remove</value></data>
-  <data name="Users.Account.Username"><value>Username</value></data>
-  <data name="Users.Account.DisplayName"><value>Display name</value></data>
-  <data name="Users.Account.Password"><value>Password</value></data>
-  <data name="Users.Account.ShowPassword"><value>Show password</value></data>
-  <data name="Users.Account.HidePassword"><value>Hide password</value></data>
-  <data name="Users.Account.Group"><value>Group</value></data>
-  <data name="Users.Account.Group.Admin"><value>Administrators</value></data>
-  <data name="Users.Account.Group.User"><value>Users</value></data>
-  <data name="Users.FirstLogon.Title"><value>First-logon behaviour</value></data>
-  <data name="Users.FirstLogon.Description"><value>Which account (if any) logs in automatically the first time Windows boots.</value></data>
-  <data name="Users.FirstLogon.FirstAdmin"><value>First administrator above</value></data>
-  <data name="Users.FirstLogon.BuiltIn"><value>Built-in Administrator</value></data>
-  <data name="Users.FirstLogon.DoNotLogon"><value>Do not log anyone in</value></data>
-  <data name="Users.FirstLogon.BuiltInPassword"><value>Built-in Administrator password</value></data>
-  <data name="Users.FirstLogon.Obscure"><value>Obscure the password in autounattend.xml</value></data>
-  <data name="Users.FirstLogon.Obscure.Description"><value>Base64-encode so casual readers don't see it. Still trivially recoverable - do not treat as security.</value></data>
-  <data name="Users.FirstLogon.PromptMsa"><value>Show the Microsoft account sign-in prompt in OOBE</value></data>
-  <data name="Users.FirstLogon.PromptLocal"><value>Show the local-account creation prompt in OOBE</value></data>
-  <data name="Users.FirstLogon.PromptHint"><value>Both prompts apply only when first logon is set to "Do not log anyone in".</value></data>
-  <data name="Users.Expiration.Title"><value>Password expiration</value></data>
-  <data name="Users.Expiration.Description"><value>How long local account passwords stay valid.</value></data>
-  <data name="Users.Expiration.Default"><value>Windows default</value></data>
-  <data name="Users.Expiration.Never"><value>Never expire</value></data>
-  <data name="Users.Expiration.Custom"><value>Custom (days)</value></data>
-  <data name="Users.Expiration.Days"><value>Days until expiration</value></data>
-  <data name="Users.Lockout.Title"><value>Account lockout policy</value></data>
-  <data name="Users.Lockout.Description"><value>How Windows responds to a run of failed sign-ins.</value></data>
-  <data name="Users.Lockout.Default"><value>Windows default</value></data>
-  <data name="Users.Lockout.Disabled"><value>Disabled (no lockout)</value></data>
-  <data name="Users.Lockout.Custom"><value>Custom thresholds</value></data>
-  <data name="Users.Lockout.Disabled.Warning"><value>With lockout disabled, brute-force attempts against a local account are effectively unlimited.</value></data>
-  <data name="Users.Lockout.Attempts"><value>Bad attempts before lockout</value></data>
-  <data name="Users.Lockout.Window"><value>Observation window (minutes)</value></data>
-  <data name="Users.Lockout.Unlock"><value>Lockout duration (minutes)</value></data>
-  <data name="Users.Lockout.WindowHint"><value>The window is the time over which bad attempts are counted; the duration is how long the account stays locked.</value></data>
+  <data name="Users.Accounts.Title">
+    <value>Local accounts</value>
+  </data>
+  <data name="Users.Accounts.Description">
+    <value>One row per account Setup creates. At least one account should be an administrator.</value>
+  </data>
+  <data name="Users.Accounts.Empty">
+    <value>No accounts yet. Add one below or pick a preset.</value>
+  </data>
+  <data name="Users.Accounts.Add">
+    <value>Add account</value>
+  </data>
+  <data name="Users.Accounts.Remove">
+    <value>Remove</value>
+  </data>
+  <data name="Users.Account.Username">
+    <value>Username</value>
+  </data>
+  <data name="Users.Account.DisplayName">
+    <value>Display name</value>
+  </data>
+  <data name="Users.Account.Password">
+    <value>Password</value>
+  </data>
+  <data name="Users.Account.ShowPassword">
+    <value>Show password</value>
+  </data>
+  <data name="Users.Account.HidePassword">
+    <value>Hide password</value>
+  </data>
+  <data name="Users.Account.Group">
+    <value>Group</value>
+  </data>
+  <data name="Users.Account.Group.Admin">
+    <value>Administrators</value>
+  </data>
+  <data name="Users.Account.Group.User">
+    <value>Users</value>
+  </data>
+  <data name="Users.FirstLogon.Title">
+    <value>First-logon behaviour</value>
+  </data>
+  <data name="Users.FirstLogon.Description">
+    <value>Which account (if any) logs in automatically the first time Windows boots.</value>
+  </data>
+  <data name="Users.FirstLogon.FirstAdmin">
+    <value>First administrator above</value>
+  </data>
+  <data name="Users.FirstLogon.BuiltIn">
+    <value>Built-in Administrator</value>
+  </data>
+  <data name="Users.FirstLogon.DoNotLogon">
+    <value>Do not log anyone in</value>
+  </data>
+  <data name="Users.FirstLogon.BuiltInPassword">
+    <value>Built-in Administrator password</value>
+  </data>
+  <data name="Users.FirstLogon.Obscure">
+    <value>Obscure the password in autounattend.xml</value>
+  </data>
+  <data name="Users.FirstLogon.Obscure.Description">
+    <value>Base64-encode so casual readers don't see it. Still trivially recoverable - do not treat
+      as security.</value>
+  </data>
+  <data name="Users.FirstLogon.PromptMsa">
+    <value>Show the Microsoft account sign-in prompt in OOBE</value>
+  </data>
+  <data name="Users.FirstLogon.PromptLocal">
+    <value>Show the local-account creation prompt in OOBE</value>
+  </data>
+  <data name="Users.FirstLogon.PromptHint">
+    <value>Both prompts apply only when first logon is set to "Do not log anyone in".</value>
+  </data>
+  <data name="Users.Expiration.Title">
+    <value>Password expiration</value>
+  </data>
+  <data name="Users.Expiration.Description">
+    <value>How long local account passwords stay valid.</value>
+  </data>
+  <data name="Users.Expiration.Default">
+    <value>Windows default</value>
+  </data>
+  <data name="Users.Expiration.Never">
+    <value>Never expire</value>
+  </data>
+  <data name="Users.Expiration.Custom">
+    <value>Custom (days)</value>
+  </data>
+  <data name="Users.Expiration.Days">
+    <value>Days until expiration</value>
+  </data>
+  <data name="Users.Lockout.Title">
+    <value>Account lockout policy</value>
+  </data>
+  <data name="Users.Lockout.Description">
+    <value>How Windows responds to a run of failed sign-ins.</value>
+  </data>
+  <data name="Users.Lockout.Default">
+    <value>Windows default</value>
+  </data>
+  <data name="Users.Lockout.Disabled">
+    <value>Disabled (no lockout)</value>
+  </data>
+  <data name="Users.Lockout.Custom">
+    <value>Custom thresholds</value>
+  </data>
+  <data name="Users.Lockout.Disabled.Warning">
+    <value>With lockout disabled, brute-force attempts against a local account are effectively
+      unlimited.</value>
+  </data>
+  <data name="Users.Lockout.Attempts">
+    <value>Bad attempts before lockout</value>
+  </data>
+  <data name="Users.Lockout.Window">
+    <value>Observation window (minutes)</value>
+  </data>
+  <data name="Users.Lockout.Unlock">
+    <value>Lockout duration (minutes)</value>
+  </data>
+  <data name="Users.Lockout.WindowHint">
+    <value>The window is the time over which bad attempts are counted; the duration is how long the
+      account stays locked.</value>
+  </data>
 
   <!-- ═══ Computer name ══════════════════════════════════════ -->
-  <data name="ComputerName.Mode.Label"><value>Computer name source</value></data>
-  <data name="ComputerName.Mode.Description"><value>Random picks a fresh hostname each boot, Manual uses the exact value below, Script runs your generator.</value></data>
-  <data name="ComputerName.Mode.Random"><value>Random</value></data>
-  <data name="ComputerName.Mode.Manual"><value>Manual</value></data>
-  <data name="ComputerName.Mode.Script"><value>Script-generated</value></data>
-  <data name="ComputerName.Custom.Label"><value>Computer name</value></data>
-  <data name="ComputerName.Custom.Description"><value>Exact NetBIOS-compatible hostname. 1-15 characters.</value></data>
-  <data name="ComputerName.Script.Label"><value>Computer-name script</value></data>
-  <data name="ComputerName.Script.Description"><value>Cmd / PowerShell that writes the chosen hostname to the expected registry value.</value></data>
+  <data name="ComputerName.Mode.Label">
+    <value>Computer name source</value>
+  </data>
+  <data name="ComputerName.Mode.Description">
+    <value>Random picks a fresh hostname each boot, Manual uses the exact value below, Script runs
+      your generator.</value>
+  </data>
+  <data name="ComputerName.Mode.Random">
+    <value>Random</value>
+  </data>
+  <data name="ComputerName.Mode.Manual">
+    <value>Manual</value>
+  </data>
+  <data name="ComputerName.Mode.Script">
+    <value>Script-generated</value>
+  </data>
+  <data name="ComputerName.Custom.Label">
+    <value>Computer name</value>
+  </data>
+  <data name="ComputerName.Custom.Description">
+    <value>Exact NetBIOS-compatible hostname. 1-15 characters.</value>
+  </data>
+  <data name="ComputerName.Script.Label">
+    <value>Computer-name script</value>
+  </data>
+  <data name="ComputerName.Script.Description">
+    <value>Cmd / PowerShell that writes the chosen hostname to the expected registry value.</value>
+  </data>
 
   <!-- ═══ Time zone ══════════════════════════════════════════ -->
-  <data name="TimeZone.Mode.Label"><value>Time zone source</value></data>
-  <data name="TimeZone.Mode.Description"><value>Implicit uses the region's default time zone. Explicit pins the specific zone below.</value></data>
-  <data name="TimeZone.Mode.Implicit"><value>Implicit (from region)</value></data>
-  <data name="TimeZone.Mode.Explicit"><value>Explicit</value></data>
-  <data name="TimeZone.Zone.Label"><value>Time zone</value></data>
-  <data name="TimeZone.Zone.Description"><value>Windows tzid (e.g. &quot;Pacific Standard Time&quot;).</value></data>
+  <data name="TimeZone.Mode.Label">
+    <value>Time zone source</value>
+  </data>
+  <data name="TimeZone.Mode.Description">
+    <value>Implicit uses the region's default time zone. Explicit pins the specific zone below.</value>
+  </data>
+  <data name="TimeZone.Mode.Implicit">
+    <value>Implicit (from region)</value>
+  </data>
+  <data name="TimeZone.Mode.Explicit">
+    <value>Explicit</value>
+  </data>
+  <data name="TimeZone.Zone.Label">
+    <value>Time zone</value>
+  </data>
+  <data name="TimeZone.Zone.Description">
+    <value>Windows tzid (e.g. &quot;Pacific Standard Time&quot;).</value>
+  </data>
 
   <!-- ═══ Desktop icons (Specific grid) ══════════════════════ -->
-  <data name="DesktopIcons.VisibleIcons.Label"><value>Visible desktop icons</value></data>
-  <data name="DesktopIcons.VisibleIcons.Description"><value>Tick the icons Windows should show on the desktop. Unticked entries are hidden.</value></data>
+  <data name="DesktopIcons.VisibleIcons.Label">
+    <value>Visible desktop icons</value>
+  </data>
+  <data name="DesktopIcons.VisibleIcons.Description">
+    <value>Tick the icons Windows should show on the desktop. Unticked entries are hidden.</value>
+  </data>
 
   <!-- ═══ Start menu folders (Specific grid) ═════════════════ -->
-  <data name="StartFolders.VisibleFolders.Label"><value>Folder shortcuts</value></data>
-  <data name="StartFolders.VisibleFolders.Description"><value>Tick which folder shortcuts appear next to the power button.</value></data>
+  <data name="StartFolders.VisibleFolders.Label">
+    <value>Folder shortcuts</value>
+  </data>
+  <data name="StartFolders.VisibleFolders.Description">
+    <value>Tick which folder shortcuts appear next to the power button.</value>
+  </data>
 
   <!-- ═══ Bloatware (list UI chrome) ═════════════════════════ -->
-  <data name="Bloatware.SelectAll"><value>Select all</value></data>
-  <data name="Bloatware.ClearAll"><value>Clear all</value></data>
-  <data name="Bloatware.Selected"><value>Selected</value></data>
+  <data name="Bloatware.SelectAll">
+    <value>Select all</value>
+  </data>
+  <data name="Bloatware.ClearAll">
+    <value>Clear all</value>
+  </data>
+  <data name="Bloatware.Selected">
+    <value>Selected</value>
+  </data>
 
   <!-- ═══ Visual effects (per-effect checkboxes) ═════════════ -->
-  <data name="Section.personalization.Subtitle"><value>Theme, wallpaper and lock-screen overrides applied at first boot.</value></data>
-  <data name="VisualEffects.CustomEffects.Label"><value>Individual effects</value></data>
-  <data name="VisualEffects.CustomEffects.Description"><value>Tick each effect you want enabled. Unticked effects are explicitly disabled.</value></data>
-  <data name="VisualEffects.Effect.ControlAnimations"><value>Animate controls and elements inside windows</value></data>
-  <data name="VisualEffects.Effect.AnimateMinMax"><value>Animate windows when minimizing and maximizing</value></data>
-  <data name="VisualEffects.Effect.TaskbarAnimations"><value>Taskbar animations</value></data>
-  <data name="VisualEffects.Effect.DWMAeroPeekEnabled"><value>Aero Peek (preview desktop on hover)</value></data>
-  <data name="VisualEffects.Effect.MenuAnimation"><value>Fade or slide menus into view</value></data>
-  <data name="VisualEffects.Effect.TooltipAnimation"><value>Fade or slide tooltips into view</value></data>
-  <data name="VisualEffects.Effect.SelectionFade"><value>Fade out menu items after clicking</value></data>
-  <data name="VisualEffects.Effect.DWMSaveThumbnailEnabled"><value>Save taskbar thumbnail previews</value></data>
-  <data name="VisualEffects.Effect.CursorShadow"><value>Show shadows under mouse pointer</value></data>
-  <data name="VisualEffects.Effect.ListviewShadow"><value>Show shadows under window</value></data>
-  <data name="VisualEffects.Effect.ThumbnailsOrIcon"><value>Show thumbnails instead of icons</value></data>
-  <data name="VisualEffects.Effect.ListviewAlphaSelect"><value>Show translucent selection rectangle</value></data>
-  <data name="VisualEffects.Effect.DragFullWindows"><value>Show window contents while dragging</value></data>
-  <data name="VisualEffects.Effect.ComboBoxAnimation"><value>Slide open combo boxes</value></data>
-  <data name="VisualEffects.Effect.FontSmoothing"><value>Smooth edges of screen fonts</value></data>
-  <data name="VisualEffects.Effect.ListBoxSmoothScrolling"><value>Smooth-scroll list boxes</value></data>
-  <data name="VisualEffects.Effect.DropShadow"><value>Drop shadow on desktop icon labels</value></data>
+  <data name="Section.personalization.Subtitle">
+    <value>Theme, wallpaper and lock-screen overrides applied at first boot.</value>
+  </data>
+  <data name="VisualEffects.CustomEffects.Label">
+    <value>Individual effects</value>
+  </data>
+  <data name="VisualEffects.CustomEffects.Description">
+    <value>Tick each effect you want enabled. Unticked effects are explicitly disabled.</value>
+  </data>
+  <data name="VisualEffects.Effect.ControlAnimations">
+    <value>Animate controls and elements inside windows</value>
+  </data>
+  <data name="VisualEffects.Effect.AnimateMinMax">
+    <value>Animate windows when minimizing and maximizing</value>
+  </data>
+  <data name="VisualEffects.Effect.TaskbarAnimations">
+    <value>Taskbar animations</value>
+  </data>
+  <data name="VisualEffects.Effect.DWMAeroPeekEnabled">
+    <value>Aero Peek (preview desktop on hover)</value>
+  </data>
+  <data name="VisualEffects.Effect.MenuAnimation">
+    <value>Fade or slide menus into view</value>
+  </data>
+  <data name="VisualEffects.Effect.TooltipAnimation">
+    <value>Fade or slide tooltips into view</value>
+  </data>
+  <data name="VisualEffects.Effect.SelectionFade">
+    <value>Fade out menu items after clicking</value>
+  </data>
+  <data name="VisualEffects.Effect.DWMSaveThumbnailEnabled">
+    <value>Save taskbar thumbnail previews</value>
+  </data>
+  <data name="VisualEffects.Effect.CursorShadow">
+    <value>Show shadows under mouse pointer</value>
+  </data>
+  <data name="VisualEffects.Effect.ListviewShadow">
+    <value>Show shadows under window</value>
+  </data>
+  <data name="VisualEffects.Effect.ThumbnailsOrIcon">
+    <value>Show thumbnails instead of icons</value>
+  </data>
+  <data name="VisualEffects.Effect.ListviewAlphaSelect">
+    <value>Show translucent selection rectangle</value>
+  </data>
+  <data name="VisualEffects.Effect.DragFullWindows">
+    <value>Show window contents while dragging</value>
+  </data>
+  <data name="VisualEffects.Effect.ComboBoxAnimation">
+    <value>Slide open combo boxes</value>
+  </data>
+  <data name="VisualEffects.Effect.FontSmoothing">
+    <value>Smooth edges of screen fonts</value>
+  </data>
+  <data name="VisualEffects.Effect.ListBoxSmoothScrolling">
+    <value>Smooth-scroll list boxes</value>
+  </data>
+  <data name="VisualEffects.Effect.DropShadow">
+    <value>Drop shadow on desktop icon labels</value>
+  </data>
 
   <!-- ═══ Wizard review additions ════════════════════════════ -->
-  <data name="Wizard.Review.Preparing"><value>Preparing…</value></data>
-  <data name="Wizard.Review.Tweak"><value>Tweak in Advanced</value></data>
+  <data name="Wizard.Review.Preparing">
+    <value>Preparing…</value>
+  </data>
+  <data name="Wizard.Review.Tweak">
+    <value>Tweak in Advanced</value>
+  </data>
 
   <!-- ═══ Advanced side-nav groups ═══════════════════════════ -->
-  <data name="Advanced.Group.SetupId"><value>Setup &amp; identity</value></data>
-  <data name="Advanced.Group.Install"><value>Install &amp; image</value></data>
-  <data name="Advanced.Group.System"><value>System &amp; security</value></data>
-  <data name="Advanced.Group.Desktop"><value>Desktop &amp; personalization</value></data>
-  <data name="Advanced.Group.Advanced"><value>Advanced features</value></data>
-  <data name="Advanced.Group.Users"><value>Users</value></data>
+  <data name="Advanced.SidebarSearch">
+    <value>Filter sections…</value>
+  </data>
+  <data name="Advanced.SidebarGrouped">
+    <value>Toggle grouped / flat view</value>
+  </data>
+  <data name="Advanced.SidebarEmpty">
+    <value>No sections match.</value>
+  </data>
+  <data name="Docs.SidebarSearch">
+    <value>Search docs…</value>
+  </data>
+  <data name="Docs.OpenInAdvanced">
+    <value>Edit in Advanced</value>
+  </data>
+  <data name="Docs.ResultsCount">
+    <value>{0} of {1}</value>
+  </data>
+  <data name="Docs.NoResults">
+    <value>Nothing matches "{0}". Try a different term.</value>
+  </data>
+  <data name="Advanced.Group.SetupId">
+    <value>Setup &amp; identity</value>
+  </data>
+  <data name="Advanced.Group.Install">
+    <value>Install &amp; image</value>
+  </data>
+  <data name="Advanced.Group.System">
+    <value>System &amp; security</value>
+  </data>
+  <data name="Advanced.Group.Desktop">
+    <value>Desktop &amp; personalization</value>
+  </data>
+  <data name="Advanced.Group.Advanced">
+    <value>Advanced features</value>
+  </data>
+  <data name="Advanced.Group.Users">
+    <value>Users</value>
+  </data>
 
   <!-- ═══ Import XML ═════════════════════════════════════════ -->
-  <data name="Landing.Import.Reading"><value>Reading file…</value></data>
-  <data name="Landing.Import.Success"><value>Imported {0}. Opening Advanced editor.</value></data>
-  <data name="Landing.Import.Partial"><value>Partial import from {0} — some sections defaulted.</value></data>
-  <data name="Landing.Import.Failed"><value>Import failed: {0}</value></data>
+  <data name="Landing.Import.Reading">
+    <value>Reading file…</value>
+  </data>
+  <data name="Landing.Import.Success">
+    <value>Imported {0}. Opening Advanced editor.</value>
+  </data>
+  <data name="Landing.Import.Partial">
+    <value>Partial import from {0} - some sections defaulted.</value>
+  </data>
+  <data name="Landing.Import.Failed">
+    <value>Import failed: {0}</value>
+  </data>
 
   <!-- ═══ Windows PE ═════════════════════════════════════════ -->
-  <data name="Pe.Mode.Label"><value>PE behaviour</value></data>
-  <data name="Pe.Mode.Description"><value>Default uses the built-in PE pass. Generated writes diskpart + partitioning for you. Custom runs the cmd script you supply.</value></data>
-  <data name="Pe.Mode.Default"><value>Default</value></data>
-  <data name="Pe.Mode.Generated"><value>Generated (diskpart + partitioning)</value></data>
-  <data name="Pe.Mode.Custom"><value>Custom cmd script</value></data>
-  <data name="Pe.Disable8Dot3.Label"><value>Disable 8.3 short names on NTFS</value></data>
-  <data name="Pe.Disable8Dot3.Description"><value>Speeds up filesystem metadata at the cost of compatibility with 16-bit / very old apps.</value></data>
-  <data name="Pe.PauseBeforePartition.Label"><value>Pause before partitioning</value></data>
-  <data name="Pe.PauseBeforePartition.Description"><value>Drops to a cmd prompt just before Setup touches the disk - useful for debugging images.</value></data>
-  <data name="Pe.PauseBeforeReboot.Label"><value>Pause before rebooting out of PE</value></data>
-  <data name="Pe.PauseBeforeReboot.Description"><value>Drops to a cmd prompt after the PE pass finishes but before the first reboot.</value></data>
-  <data name="Pe.CustomCmd.Label"><value>Custom PE script</value></data>
-  <data name="Pe.CustomCmd.Description"><value>Only used when PE mode is &quot;Custom cmd script&quot;. Must end with an exit that is understood by Setup.</value></data>
-  <data name="Pe.CustomCmd.Placeholder"><value>@echo off
-rem Runs inside Windows PE before install...
-exit 0</value></data>
+  <data name="Pe.Mode.Label">
+    <value>PE behaviour</value>
+  </data>
+  <data name="Pe.Mode.Description">
+    <value>Default uses the built-in PE pass. Generated writes diskpart + partitioning for you.
+      Custom runs the cmd script you supply.</value>
+  </data>
+  <data name="Pe.Mode.Default">
+    <value>Default</value>
+  </data>
+  <data name="Pe.Mode.Generated">
+    <value>Generated (diskpart + partitioning)</value>
+  </data>
+  <data name="Pe.Mode.Custom">
+    <value>Custom cmd script</value>
+  </data>
+  <data name="Pe.Disable8Dot3.Label">
+    <value>Disable 8.3 short names on NTFS</value>
+  </data>
+  <data name="Pe.Disable8Dot3.Description">
+    <value>Speeds up filesystem metadata at the cost of compatibility with 16-bit / very old apps.</value>
+  </data>
+  <data name="Pe.PauseBeforePartition.Label">
+    <value>Pause before partitioning</value>
+  </data>
+  <data name="Pe.PauseBeforePartition.Description">
+    <value>Drops to a cmd prompt just before Setup touches the disk - useful for debugging images.</value>
+  </data>
+  <data name="Pe.PauseBeforeReboot.Label">
+    <value>Pause before rebooting out of PE</value>
+  </data>
+  <data name="Pe.PauseBeforeReboot.Description">
+    <value>Drops to a cmd prompt after the PE pass finishes but before the first reboot.</value>
+  </data>
+  <data name="Pe.CustomCmd.Label">
+    <value>Custom PE script</value>
+  </data>
+  <data name="Pe.CustomCmd.Description">
+    <value>Only used when PE mode is &quot;Custom cmd script&quot;. Must end with an exit that is
+      understood by Setup.</value>
+  </data>
+  <data name="Pe.CustomCmd.Placeholder">
+    <value>@echo off
+      rem Runs inside Windows PE before install...
+      exit 0</value>
+  </data>
 
 </root>

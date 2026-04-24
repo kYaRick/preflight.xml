@@ -7,8 +7,14 @@
     rendered headerless so they read as a continuation of the Privacy block.
 *@
 
-<FluentCard Style="padding: 24px;">
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+<FluentCard Style="padding: 24px; width: 100%;">
+    @*
+        Plain CSS flex column rather than FluentStack because FluentStack's default
+        horizontal alignment on a vertical stack lets children pick their own width
+        (which left-shifted Express settings on narrower rows). Explicit full-width
+        children align the radios + section title + subtitle on the same grid.
+    *@
+    <div style="display: flex; flex-direction: column; gap: 20px; width: 100%;">
         <SectionView Section="@ExpressSettingsSection.Definition"
                      ViewMode="SectionView.SectionMode.Advanced" />
 
@@ -16,5 +22,5 @@
                      ViewMode="SectionView.SectionMode.Advanced"
                      ShowHeader="false"
                      OptionIds="@(new[] { "bypass-requirements-check", "bypass-network-check", "keep-sensitive-files" })" />
-    </FluentStack>
+    </div>
 </FluentCard>

@@ -11,47 +11,58 @@
         <FluentAnchor Href="/" Appearance="Appearance.Outline">← @L["Common.BackToHome"]</FluentAnchor>
     </FluentStack>
 
-    <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 24px 0;">@L["Docs.Subtitle"]</FluentLabel>
+    <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 16px 0;">@L["Docs.Subtitle"]</FluentLabel>
 
-    <FluentGrid Spacing="3">
+    @*
+        Search filters the cards grid by title + subtitle match (case insensitive).
+        Sidebar was removed earlier because it duplicated the cards; this brings
+        back the useful half of that sidebar (filter) without the wall-of-links.
+        Filter lives inline with the grid so it stays visible while scrolling.
+    *@
+    <div class="pf-docs-toolbar">
+        <div class="pf-nav-search">
+            <span class="pf-nav-search__icon" aria-hidden="true">🔎</span>
+            <input type="search"
+                   class="pf-nav-search__input"
+                   placeholder="@L[@"Docs.SidebarSearch"]"
+                   value="@_filter"
+                   @oninput="OnFilterChanged"
+                   aria-label="@L[@"Docs.SidebarSearch"]" />
+            @if (!string.IsNullOrEmpty(_filter))
+            {
+                <button type="button" class="pf-nav-search__clear" aria-label="Clear" @onclick="ClearFilter">✕</button>
+            }
+        </div>
+        <span class="pf-docs-toolbar__count">
+            @(string.Format(L[@"Docs.ResultsCount"].Value, _filteredTopics.Count, _topics.Count))
+        </span>
+    </div>
 
-        <!-- Sidebar: category list -->
-        <FluentGridItem xs="12" md="3">
-            <FluentCard Style="padding: 8px;">
-                <FluentNavMenu>
-                    @foreach (var topic in _topics)
-                    {
-                        <FluentNavLink Href="@($"/docs/{topic.Slug}")" Match="NavLinkMatch.All">
+    <FluentGrid Spacing="2">
+        @foreach (var topic in _filteredTopics)
+        {
+            <FluentGridItem xs="12" sm="6" md="4" lg="3">
+                <FluentCard Class="pf-card--interactive" Style="padding: 20px; height: 100%;"
+                            @onclick="() => GoToTopic(topic.Slug)">
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
+                        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
                             @L[$"Advanced.Section.{topic.Slug}"]
-                        </FluentNavLink>
-                    }
-                </FluentNavMenu>
-            </FluentCard>
-        </FluentGridItem>
-
-        <!-- Main: topic cards grid -->
-        <FluentGridItem xs="12" md="9">
-            <FluentGrid Spacing="2">
-                @foreach (var topic in _topics)
-                {
-                    <FluentGridItem xs="12" sm="6" lg="4">
-                        <FluentCard Class="pf-card--interactive" Style="padding: 20px; height: 100%;"
-                                    @onclick="() => GoToTopic(topic.Slug)">
-                            <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
-                                <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
-                                    @L[$"Advanced.Section.{topic.Slug}"]
-                                </FluentLabel>
-                                <FluentLabel Typo="Typography.Body">
-                                    @GetSectionSubtitle(topic.Slug)
-                                </FluentLabel>
-                            </FluentStack>
-                        </FluentCard>
-                    </FluentGridItem>
-                }
-            </FluentGrid>
-        </FluentGridItem>
-
+                        </FluentLabel>
+                        <FluentLabel Typo="Typography.Body">
+                            @GetSectionSubtitle(topic.Slug)
+                        </FluentLabel>
+                    </FluentStack>
+                </FluentCard>
+            </FluentGridItem>
+        }
     </FluentGrid>
+
+    @if (_filteredTopics.Count == 0)
+    {
+        <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false" Style="margin-top: 16px;">
+            @string.Format(L[@"Docs.NoResults"].Value, _filter)
+        </FluentMessageBar>
+    }
 </div>
 
 @code {
@@ -63,6 +74,39 @@
 
     private static readonly IReadOnlyList<DocTopic> _topics =
         SectionRegistry.AllSectionIds.Select(static id => new DocTopic(id)).ToArray();
+
+    private string _filter = "";
+    private IReadOnlyList<DocTopic> _filteredTopics = _topics;
+
+    private void OnFilterChanged(ChangeEventArgs e)
+    {
+        _filter = (e.Value as string) ?? "";
+        RecomputeFilter();
+    }
+
+    private void ClearFilter()
+    {
+        _filter = "";
+        RecomputeFilter();
+    }
+
+    private void RecomputeFilter()
+    {
+        if (string.IsNullOrWhiteSpace(_filter))
+        {
+            _filteredTopics = _topics;
+            return;
+        }
+        var needle = _filter.Trim();
+        _filteredTopics = _topics.Where(t =>
+        {
+            if (t.Slug.Contains(needle, StringComparison.OrdinalIgnoreCase)) return true;
+            var label = (string)L[$"Advanced.Section.{t.Slug}"];
+            if (label.Contains(needle, StringComparison.OrdinalIgnoreCase)) return true;
+            var subtitle = GetSectionSubtitle(t.Slug);
+            return subtitle.Contains(needle, StringComparison.OrdinalIgnoreCase);
+        }).ToArray();
+    }
 
     private string GetSectionSubtitle(string slug)
     {

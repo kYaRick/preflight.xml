@@ -295,22 +295,26 @@
     <value>Мова інтерфейсу</value>
   </data>
   <data name="Region.DisplayLanguage.Description">
-    <value>Мова, якою Windows показує свій UI: Параметри, Провідник, діалоги. Setup шукає відповідний мовний пакет в образі.</value>
+    <value>Мова, якою Windows показує свій UI: Параметри, Провідник, діалоги. Setup шукає
+      відповідний мовний пакет в образі.</value>
   </data>
   <data name="Region.InputLanguage.Label">
     <value>Мова вводу (клавіатура)</value>
   </data>
   <data name="Region.InputLanguage.Description">
-    <value>Розкладка клавіатури на першому завантаженні. Незалежна від мови інтерфейсу - користувач у Німеччині може хотіти англійський UI з німецькою розкладкою.</value>
+    <value>Розкладка клавіатури на першому завантаженні. Незалежна від мови інтерфейсу - користувач
+      у Німеччині може хотіти англійський UI з німецькою розкладкою.</value>
   </data>
   <data name="Region.HomeLocation.Label">
     <value>Країна / регіон</value>
   </data>
   <data name="Region.HomeLocation.Description">
-    <value>Код країни / регіону для форматування дат, валюти й одиниць вимірювання, а також для регіонально-залежних сервісів (наприклад, Microsoft Store).</value>
+    <value>Код країни / регіону для форматування дат, валюти й одиниць вимірювання, а також для
+      регіонально-залежних сервісів (наприклад, Microsoft Store).</value>
   </data>
   <data name="Section.region.Subtitle">
-    <value>Мова, клавіатура й регіональне форматування - все що Windows застосує на першому завантаженні.</value>
+    <value>Мова, клавіатура й регіональне форматування - все що Windows застосує на першому
+      завантаженні.</value>
   </data>
   <data name="Section.LearnMore">
     <value>Дізнатись більше ↗</value>
@@ -342,7 +346,8 @@
     <value>Розширений редактор</value>
   </data>
   <data name="Advanced.Subtitle">
-    <value>Повний ручний контроль. Усі опції в одному місці. Натисни Ctrl+Shift+X або плаваючу кнопку, щоб переглянути XML.</value>
+    <value>Повний ручний контроль. Усі опції в одному місці. Натисни Ctrl+Shift+X або плаваючу
+      кнопку, щоб переглянути XML.</value>
   </data>
   <data name="Advanced.Preview.Title">
     <value>Живе превʼю</value>
@@ -482,7 +487,8 @@
     <value>Default user</value>
   </data>
   <data name="Scripts.Phase.DefaultUser.Description">
-    <value>Редагує гілку Default User, щоб налаштування потрапили у кожен новий профіль. Дозволено лише Registry, Cmd і PowerShell.</value>
+    <value>Редагує гілку Default User, щоб налаштування потрапили у кожен новий профіль. Дозволено
+      лише Registry, Cmd і PowerShell.</value>
   </data>
   <data name="Scripts.Phase.FirstLogon.Label">
     <value>Перший вхід</value>
@@ -510,21 +516,21 @@
   </data>
   <data name="Scripts.Type.Cmd.Placeholder">
     <value>@echo off
-rem Команди виконуються як SYSTEM…</value>
+      rem Команди виконуються як SYSTEM…</value>
   </data>
   <data name="Scripts.Type.PowerShell.Placeholder">
     <value># PowerShell, виконується як SYSTEM
-Write-Host 'Hello from preflight.xml'</value>
+      Write-Host 'Hello from preflight.xml'</value>
   </data>
   <data name="Scripts.Type.Registry.Placeholder">
     <value>Windows Registry Editor Version 5.00
 
-[HKEY_LOCAL_MACHINE\SOFTWARE\MyKey]
-"Value"="example"</value>
+      [HKEY_LOCAL_MACHINE\SOFTWARE\MyKey]
+      "Value"="example"</value>
   </data>
   <data name="Scripts.Type.VbScript.Placeholder">
     <value>' VBScript
-WScript.Echo "Hello"</value>
+      WScript.Echo "Hello"</value>
   </data>
   <data name="Scripts.Slot.Clear">
     <value>Очистити</value>
@@ -565,7 +571,8 @@ WScript.Echo "Hello"</value>
     <value>Застосування</value>
   </data>
   <data name="Wdac.Enforcement.Description">
-    <value>«Тільки аудит» логує порушення, «Застосовувати» блокує. Дійсне лише у режимі «Базова політика».</value>
+    <value>«Тільки аудит» логує порушення, «Застосовувати» блокує. Дійсне лише у режимі «Базова
+      політика».</value>
   </data>
   <data name="Wdac.Enforcement.Audit">
     <value>Лише аудит</value>
@@ -597,7 +604,8 @@ WScript.Echo "Hello"</value>
     <value>Режим</value>
   </data>
   <data name="AppLocker.Mode.Description">
-    <value>«Не налаштовано» пропускає AppLocker. «Власний XML» розгортає вставлену політику; її перевіряють за схемою Microsoft.</value>
+    <value>«Не налаштовано» пропускає AppLocker. «Власний XML» розгортає вставлену політику; її
+      перевіряють за схемою Microsoft.</value>
   </data>
   <data name="AppLocker.Mode.NotConfigured">
     <value>Не налаштовано</value>
@@ -609,7 +617,8 @@ WScript.Echo "Hello"</value>
     <value>XML політики</value>
   </data>
   <data name="AppLocker.PolicyXml.Description">
-    <value>Документ AppLockerPolicy. Про некоректний XML ви дізнаєтесь у вигляді коментаря у згенерованому autounattend.</value>
+    <value>Документ AppLockerPolicy. Про некоректний XML ви дізнаєтесь у вигляді коментаря у
+      згенерованому autounattend.</value>
   </data>
 
   <!-- ═══ Components section ══════════════════════════════════ -->
@@ -617,7 +626,8 @@ WScript.Echo "Hello"</value>
     <value>Вставте сирі фрагменти autounattend.xml у вибрані компоненти.</value>
   </data>
   <data name="Components.Help">
-    <value>Для кожного слоту виберіть комбінацію компонента і паса та вставте дочірній XML, який має зʼявитися всередині елемента &lt;component&gt;. Порожні слоти пропускаються.</value>
+    <value>Для кожного слоту виберіть комбінацію компонента і паса та вставте дочірній XML, який має
+      зʼявитися всередині елемента &lt;component&gt;. Порожні слоти пропускаються.</value>
   </data>
   <data name="Components.ComponentId.Label">
     <value>Компонент / пас</value>
@@ -629,7 +639,17 @@ WScript.Echo "Hello"</value>
     <value>&lt;SomeElement&gt;value&lt;/SomeElement&gt;</value>
   </data>
   <data name="Components.None">
-    <value>— Не вибрано —</value>
+    <value>- Не вибрано -</value>
+  </data>
+  <data name="Components.Add">
+    <value>Додати компонент</value>
+  </data>
+  <data name="Components.Remove">
+    <value>Видалити компонент</value>
+  </data>
+  <data name="Components.Empty">
+    <value>Компонентів немає. Натисніть "Додати компонент" коли треба вставити сирий XML у
+      конкретний component / pass.</value>
   </data>
 
   <!-- ═══ System tweaks section ═══════════════════════════════ -->
@@ -741,7 +761,7 @@ WScript.Echo "Hello"</value>
 
   <!-- ═══ VM support section ══════════════════════════════════ -->
   <data name="Section.vm-support.Subtitle">
-    <value>Автоматично встановити гостьові інструменти, якщо ціль — віртуальна машина.</value>
+    <value>Автоматично встановити гостьові інструменти, якщо ціль - віртуальна машина.</value>
   </data>
   <data name="VmSupport.VirtualBoxGuestAdditions.Label">
     <value>Встановити VirtualBox Guest Additions</value>
@@ -753,7 +773,8 @@ WScript.Echo "Hello"</value>
     <value>Встановити VMware Tools</value>
   </data>
   <data name="VmSupport.VmwareTools.Description">
-    <value>Завантажує й встановлює VMware Tools: паравіртуальні драйвери, буфер обміну, синхронізація роздільної здатності.</value>
+    <value>Завантажує й встановлює VMware Tools: паравіртуальні драйвери, буфер обміну,
+      синхронізація роздільної здатності.</value>
   </data>
   <data name="VmSupport.VirtIoAndQemuAgent.Label">
     <value>Встановити драйвери VirtIO і QEMU guest agent</value>
@@ -975,13 +996,15 @@ WScript.Echo "Hello"</value>
     <value>Обробка ключа продукту та яку редакцію Windows установить Setup.</value>
   </data>
   <data name="Section.explorer.Subtitle">
-    <value>Налаштування Провідника й оболонки: приховані файли, розширення, контекстне меню, підказки.</value>
+    <value>Налаштування Провідника й оболонки: приховані файли, розширення, контекстне меню,
+      підказки.</value>
   </data>
   <data name="Section.start-folders.Subtitle">
     <value>Які ярлики папок зʼявляються поруч з кнопкою живлення у меню Пуск Windows 11.</value>
   </data>
   <data name="Section.network.Subtitle">
-    <value>Поведінка Wi-Fi під час OOBE: запитувати, пропустити, попередньо налаштувати або імпортувати профіль XML.</value>
+    <value>Поведінка Wi-Fi під час OOBE: запитувати, пропустити, попередньо налаштувати або
+      імпортувати профіль XML.</value>
   </data>
   <data name="Section.processor-archs.Subtitle">
     <value>Для яких архітектур процесора генерується autounattend.xml.</value>
@@ -1005,351 +1028,975 @@ WScript.Echo "Hello"</value>
     <value>Анімації / тіні / прозорість - готовий пресет або ручний вибір.</value>
   </data>
   <data name="Section.windows-pe.Subtitle">
-    <value>Що робить Windows PE перед встановленням: за замовчуванням, згенерований diskpart, або власний cmd-скрипт.</value>
+    <value>Що робить Windows PE перед встановленням: за замовчуванням, згенерований diskpart, або
+      власний cmd-скрипт.</value>
   </data>
 
   <!-- ═══ Source image ═══════════════════════════════════════ -->
-  <data name="SourceImage.Mode.Label"><value>Вибір образу</value></data>
-  <data name="SourceImage.Mode.Description"><value>Як Setup обирає образ усередині install.wim: перший доступний, фіксований індекс, або збіг за назвою.</value></data>
-  <data name="SourceImage.Mode.Automatic"><value>Автоматично (перший образ)</value></data>
-  <data name="SourceImage.Mode.ByIndex"><value>За індексом</value></data>
-  <data name="SourceImage.Mode.ByName"><value>За назвою</value></data>
-  <data name="SourceImage.ImageIndex.Label"><value>Індекс образу</value></data>
-  <data name="SourceImage.ImageIndex.Description"><value>Позиція образу в install.wim (починаючи з 1).</value></data>
-  <data name="SourceImage.ImageName.Label"><value>Назва образу</value></data>
-  <data name="SourceImage.ImageName.Description"><value>Точна назва образу, як у install.wim (наприклад, &quot;Windows 11 Pro&quot;).</value></data>
-  <data name="SourceImage.ImageName.Placeholder"><value>Windows 11 Pro</value></data>
+  <data name="SourceImage.Mode.Label">
+    <value>Вибір образу</value>
+  </data>
+  <data name="SourceImage.Mode.Description">
+    <value>Як Setup обирає образ усередині install.wim: перший доступний, фіксований індекс, або
+      збіг за назвою.</value>
+  </data>
+  <data name="SourceImage.Mode.Automatic">
+    <value>Автоматично (перший образ)</value>
+  </data>
+  <data name="SourceImage.Mode.ByIndex">
+    <value>За індексом</value>
+  </data>
+  <data name="SourceImage.Mode.ByName">
+    <value>За назвою</value>
+  </data>
+  <data name="SourceImage.ImageIndex.Label">
+    <value>Індекс образу</value>
+  </data>
+  <data name="SourceImage.ImageIndex.Description">
+    <value>Позиція образу в install.wim (починаючи з 1).</value>
+  </data>
+  <data name="SourceImage.ImageName.Label">
+    <value>Назва образу</value>
+  </data>
+  <data name="SourceImage.ImageName.Description">
+    <value>Точна назва образу, як у install.wim (наприклад, &quot;Windows 11 Pro&quot;).</value>
+  </data>
+  <data name="SourceImage.ImageName.Placeholder">
+    <value>Windows 11 Pro</value>
+  </data>
 
   <!-- ═══ Compact OS ═════════════════════════════════════════ -->
-  <data name="CompactOs.Mode.Label"><value>Режим Compact OS</value></data>
-  <data name="CompactOs.Mode.Description"><value>За замовчуванням використовується евристика Windows (малі диски). Увімкнено - завжди стискати, Вимкнено - ніколи.</value></data>
-  <data name="CompactOs.Mode.Default"><value>За замовчуванням (авто)</value></data>
-  <data name="CompactOs.Mode.Enabled"><value>Увімкнено</value></data>
-  <data name="CompactOs.Mode.Disabled"><value>Вимкнено</value></data>
+  <data name="CompactOs.Mode.Label">
+    <value>Режим Compact OS</value>
+  </data>
+  <data name="CompactOs.Mode.Description">
+    <value>За замовчуванням використовується евристика Windows (малі диски). Увімкнено - завжди
+      стискати, Вимкнено - ніколи.</value>
+  </data>
+  <data name="CompactOs.Mode.Default">
+    <value>За замовчуванням (авто)</value>
+  </data>
+  <data name="CompactOs.Mode.Enabled">
+    <value>Увімкнено</value>
+  </data>
+  <data name="CompactOs.Mode.Disabled">
+    <value>Вимкнено</value>
+  </data>
 
   <!-- ═══ Desktop icons ══════════════════════════════════════ -->
-  <data name="DesktopIcons.Mode.Label"><value>Вибір значків</value></data>
-  <data name="DesktopIcons.Mode.Description"><value>За замовчуванням - як Windows вирішує сам. Specific - закріпити конкретний набір зі списку нижче.</value></data>
-  <data name="DesktopIcons.Mode.Default"><value>За замовчуванням</value></data>
-  <data name="DesktopIcons.Mode.Specific"><value>Конкретний набір</value></data>
-  <data name="DesktopIcons.DeleteEdge.Label"><value>Видалити ярлик Microsoft Edge з робочого стола</value></data>
-  <data name="DesktopIcons.DeleteEdge.Description"><value>Прибрати ярлик Edge для кожного нового профілю.</value></data>
+  <data name="DesktopIcons.Mode.Label">
+    <value>Вибір значків</value>
+  </data>
+  <data name="DesktopIcons.Mode.Description">
+    <value>За замовчуванням - як Windows вирішує сам. Specific - закріпити конкретний набір зі
+      списку нижче.</value>
+  </data>
+  <data name="DesktopIcons.Mode.Default">
+    <value>За замовчуванням</value>
+  </data>
+  <data name="DesktopIcons.Mode.Specific">
+    <value>Конкретний набір</value>
+  </data>
+  <data name="DesktopIcons.DeleteEdge.Label">
+    <value>Видалити ярлик Microsoft Edge з робочого стола</value>
+  </data>
+  <data name="DesktopIcons.DeleteEdge.Description">
+    <value>Прибрати ярлик Edge для кожного нового профілю.</value>
+  </data>
 
   <!-- ═══ Disk ═══════════════════════════════════════════════ -->
-  <data name="Disk.Mode.Description"><value>Interactive - Setup запитає. AutoWipe - тихо форматує перший диск. CustomScript - запускає ваш diskpart-скрипт.</value></data>
-  <data name="Disk.Mode.Interactive"><value>Інтерактивний (запит під час встановлення)</value></data>
-  <data name="Disk.Mode.AutoWipe"><value>Очистити й встановити автоматично</value></data>
-  <data name="Disk.Mode.CustomScript"><value>Власний diskpart-скрипт</value></data>
-  <data name="Disk.PartitionStyle.Description"><value>GPT потрібен для сучасних UEFI-систем і Windows 11. MBR - лише застарілий BIOS.</value></data>
-  <data name="Disk.PartitionStyle.Gpt"><value>GPT (UEFI)</value></data>
-  <data name="Disk.PartitionStyle.Mbr"><value>MBR (застарілий BIOS)</value></data>
-  <data name="Disk.EspSize.Label"><value>Розмір EFI System Partition (МБ)</value></data>
-  <data name="Disk.EspSize.Description"><value>Розмір ESP у мегабайтах. 300 - значення за замовчуванням від Microsoft, звичний діапазон 100-512.</value></data>
-  <data name="Disk.Recovery.Label"><value>Середовище відновлення</value></data>
-  <data name="Disk.Recovery.Description"><value>Де Windows розміщує WinRE. Окремий розділ - стандарт, папка економить місце, без WinRE - не встановлювати.</value></data>
-  <data name="Disk.Recovery.Partition"><value>Окремий розділ відновлення</value></data>
-  <data name="Disk.Recovery.Folder"><value>У розділі Windows</value></data>
-  <data name="Disk.Recovery.None"><value>Не встановлювати WinRE</value></data>
-  <data name="Disk.RecoverySize.Label"><value>Розмір розділу відновлення (МБ)</value></data>
-  <data name="Disk.RecoverySize.Description"><value>Розмір окремого розділу відновлення. 990 МБ - стандарт для Windows 11.</value></data>
-  <data name="Disk.CustomScript.Label"><value>Власний diskpart-скрипт</value></data>
-  <data name="Disk.CustomScript.Description"><value>Використовується лише коли режим диска - &quot;Власний diskpart-скрипт&quot;. Ваш скрипт замінює стандартну логіку розбиття.</value></data>
-  <data name="Disk.CustomScript.Placeholder"><value>select disk 0
-clean
-convert gpt
-...</value></data>
-  <data name="Disk.InstallDiskIndex.Label"><value>Індекс диска для встановлення</value></data>
-  <data name="Disk.InstallDiskIndex.Description"><value>Індекс фізичного диска (з нуля), куди Setup записує Windows. 0 - перший диск.</value></data>
-  <data name="Disk.InstallPartitionIndex.Label"><value>Індекс розділу для встановлення</value></data>
-  <data name="Disk.InstallPartitionIndex.Description"><value>Індекс розділу на обраному диску (з 1). Ігнорується в режимі AutoWipe.</value></data>
+  <data name="Disk.Mode.Description">
+    <value>Interactive - Setup запитає. AutoWipe - тихо форматує перший диск. CustomScript -
+      запускає ваш diskpart-скрипт.</value>
+  </data>
+  <data name="Disk.Mode.Interactive">
+    <value>Інтерактивний (запит під час встановлення)</value>
+  </data>
+  <data name="Disk.Mode.AutoWipe">
+    <value>Очистити й встановити автоматично</value>
+  </data>
+  <data name="Disk.Mode.CustomScript">
+    <value>Власний diskpart-скрипт</value>
+  </data>
+  <data name="Disk.PartitionStyle.Description">
+    <value>GPT потрібен для сучасних UEFI-систем і Windows 11. MBR - лише застарілий BIOS.</value>
+  </data>
+  <data name="Disk.PartitionStyle.Gpt">
+    <value>GPT (UEFI)</value>
+  </data>
+  <data name="Disk.PartitionStyle.Mbr">
+    <value>MBR (застарілий BIOS)</value>
+  </data>
+  <data name="Disk.EspSize.Label">
+    <value>Розмір EFI System Partition (МБ)</value>
+  </data>
+  <data name="Disk.EspSize.Description">
+    <value>Розмір ESP у мегабайтах. 300 - значення за замовчуванням від Microsoft, звичний діапазон
+      100-512.</value>
+  </data>
+  <data name="Disk.Recovery.Label">
+    <value>Середовище відновлення</value>
+  </data>
+  <data name="Disk.Recovery.Description">
+    <value>Де Windows розміщує WinRE. Окремий розділ - стандарт, папка економить місце, без WinRE -
+      не встановлювати.</value>
+  </data>
+  <data name="Disk.Recovery.Partition">
+    <value>Окремий розділ відновлення</value>
+  </data>
+  <data name="Disk.Recovery.Folder">
+    <value>У розділі Windows</value>
+  </data>
+  <data name="Disk.Recovery.None">
+    <value>Не встановлювати WinRE</value>
+  </data>
+  <data name="Disk.RecoverySize.Label">
+    <value>Розмір розділу відновлення (МБ)</value>
+  </data>
+  <data name="Disk.RecoverySize.Description">
+    <value>Розмір окремого розділу відновлення. 990 МБ - стандарт для Windows 11.</value>
+  </data>
+  <data name="Disk.CustomScript.Label">
+    <value>Власний diskpart-скрипт</value>
+  </data>
+  <data name="Disk.CustomScript.Description">
+    <value>Використовується лише коли режим диска - &quot;Власний diskpart-скрипт&quot;. Ваш скрипт
+      замінює стандартну логіку розбиття.</value>
+  </data>
+  <data name="Disk.CustomScript.Placeholder">
+    <value>select disk 0
+      clean
+      convert gpt
+      ...</value>
+  </data>
+  <data name="Disk.InstallDiskIndex.Label">
+    <value>Індекс диска для встановлення</value>
+  </data>
+  <data name="Disk.InstallDiskIndex.Description">
+    <value>Індекс фізичного диска (з нуля), куди Setup записує Windows. 0 - перший диск.</value>
+  </data>
+  <data name="Disk.InstallPartitionIndex.Label">
+    <value>Індекс розділу для встановлення</value>
+  </data>
+  <data name="Disk.InstallPartitionIndex.Description">
+    <value>Індекс розділу на обраному диску (з 1). Ігнорується в режимі AutoWipe.</value>
+  </data>
 
   <!-- ═══ Edition ════════════════════════════════════════════ -->
-  <data name="Edition.KeyMode.Label"><value>Джерело ключа продукту</value></data>
-  <data name="Edition.KeyMode.Description"><value>Generic - ключі Microsoft для вибору редакції. Custom - ваш власний. Interactive - Setup запитає. FromBios - читає ключ з UEFI / MSDM.</value></data>
-  <data name="Edition.KeyMode.Generic"><value>Generic (для вибору редакції)</value></data>
-  <data name="Edition.KeyMode.Custom"><value>Власний ключ</value></data>
-  <data name="Edition.KeyMode.Interactive"><value>Запитати під час Setup</value></data>
-  <data name="Edition.KeyMode.FromBios"><value>Прочитати з BIOS / UEFI</value></data>
-  <data name="Edition.ProductKey.Label"><value>Ключ продукту</value></data>
-  <data name="Edition.ProductKey.Description"><value>25-символьний ключ продукту. Використовується тільки для &quot;Власного ключа&quot;.</value></data>
-  <data name="Edition.ProductKey.Placeholder"><value>XXXXX-XXXXX-XXXXX-XXXXX-XXXXX</value></data>
-  <data name="Edition.Edition.Description"><value>Яку редакцію Windows встановлює Setup. Має бути доступна всередині install.wim.</value></data>
+  <data name="Edition.KeyMode.Label">
+    <value>Джерело ключа продукту</value>
+  </data>
+  <data name="Edition.KeyMode.Description">
+    <value>Generic - ключі Microsoft для вибору редакції. Custom - ваш власний. Interactive - Setup
+      запитає. FromBios - читає ключ з UEFI / MSDM.</value>
+  </data>
+  <data name="Edition.KeyMode.Generic">
+    <value>Generic (для вибору редакції)</value>
+  </data>
+  <data name="Edition.KeyMode.Custom">
+    <value>Власний ключ</value>
+  </data>
+  <data name="Edition.KeyMode.Interactive">
+    <value>Запитати під час Setup</value>
+  </data>
+  <data name="Edition.KeyMode.FromBios">
+    <value>Прочитати з BIOS / UEFI</value>
+  </data>
+  <data name="Edition.ProductKey.Label">
+    <value>Ключ продукту</value>
+  </data>
+  <data name="Edition.ProductKey.Description">
+    <value>25-символьний ключ продукту. Використовується тільки для &quot;Власного ключа&quot;.</value>
+  </data>
+  <data name="Edition.ProductKey.Placeholder">
+    <value>XXXXX-XXXXX-XXXXX-XXXXX-XXXXX</value>
+  </data>
+  <data name="Edition.Edition.Description">
+    <value>Яку редакцію Windows встановлює Setup. Має бути доступна всередині install.wim.</value>
+  </data>
 
   <!-- ═══ File Explorer ══════════════════════════════════════ -->
-  <data name="Explorer.HideFiles.Label"><value>Видимість прихованих файлів</value></data>
-  <data name="Explorer.HideFiles.Description"><value>Чи показує Провідник приховані та захищені файли ОС.</value></data>
-  <data name="Explorer.HideFiles.Hidden"><value>Приховувати приховані + файли ОС</value></data>
-  <data name="Explorer.HideFiles.OsOnly"><value>Показувати приховані, ховати файли ОС</value></data>
-  <data name="Explorer.HideFiles.ShowAll"><value>Показувати все</value></data>
-  <data name="Explorer.ClassicContextMenu.Label"><value>Повернути класичне контекстне меню</value></data>
-  <data name="Explorer.ClassicContextMenu.Description"><value>Повертає повне меню правого кліку з Windows 10 замість скороченого Windows 11.</value></data>
-  <data name="Explorer.ShowFileExtensions.Label"><value>Показувати розширення файлів</value></data>
-  <data name="Explorer.ShowFileExtensions.Description"><value>Завжди відображати розширення на зразок .exe чи .docx у Провіднику.</value></data>
-  <data name="Explorer.HideInfoTip.Label"><value>Приховати підказки Провідника</value></data>
-  <data name="Explorer.HideInfoTip.Description"><value>Вимкнути наведені підказки на файлах і папках.</value></data>
-  <data name="Explorer.LaunchToThisPC.Label"><value>Відкривати Провідник на &quot;Цей компʼютер&quot;</value></data>
-  <data name="Explorer.LaunchToThisPC.Description"><value>Нові вікна Провідника стартують на Цей компʼютер замість Швидкого доступу.</value></data>
-  <data name="Explorer.ShowEndTask.Label"><value>Увімкнути &quot;Завершити завдання&quot; у меню панелі завдань</value></data>
-  <data name="Explorer.ShowEndTask.Description"><value>Додає пункт Завершити завдання у контекстне меню запущених програм на панелі завдань.</value></data>
+  <data name="Explorer.HideFiles.Label">
+    <value>Видимість прихованих файлів</value>
+  </data>
+  <data name="Explorer.HideFiles.Description">
+    <value>Чи показує Провідник приховані та захищені файли ОС.</value>
+  </data>
+  <data name="Explorer.HideFiles.Hidden">
+    <value>Приховувати приховані + файли ОС</value>
+  </data>
+  <data name="Explorer.HideFiles.OsOnly">
+    <value>Показувати приховані, ховати файли ОС</value>
+  </data>
+  <data name="Explorer.HideFiles.ShowAll">
+    <value>Показувати все</value>
+  </data>
+  <data name="Explorer.ClassicContextMenu.Label">
+    <value>Повернути класичне контекстне меню</value>
+  </data>
+  <data name="Explorer.ClassicContextMenu.Description">
+    <value>Повертає повне меню правого кліку з Windows 10 замість скороченого Windows 11.</value>
+  </data>
+  <data name="Explorer.ShowFileExtensions.Label">
+    <value>Показувати розширення файлів</value>
+  </data>
+  <data name="Explorer.ShowFileExtensions.Description">
+    <value>Завжди відображати розширення на зразок .exe чи .docx у Провіднику.</value>
+  </data>
+  <data name="Explorer.HideInfoTip.Label">
+    <value>Приховати підказки Провідника</value>
+  </data>
+  <data name="Explorer.HideInfoTip.Description">
+    <value>Вимкнути наведені підказки на файлах і папках.</value>
+  </data>
+  <data name="Explorer.LaunchToThisPC.Label">
+    <value>Відкривати Провідник на &quot;Цей компʼютер&quot;</value>
+  </data>
+  <data name="Explorer.LaunchToThisPC.Description">
+    <value>Нові вікна Провідника стартують на Цей компʼютер замість Швидкого доступу.</value>
+  </data>
+  <data name="Explorer.ShowEndTask.Label">
+    <value>Увімкнути &quot;Завершити завдання&quot; у меню панелі завдань</value>
+  </data>
+  <data name="Explorer.ShowEndTask.Description">
+    <value>Додає пункт Завершити завдання у контекстне меню запущених програм на панелі завдань.</value>
+  </data>
 
   <!-- ═══ Network / Wi-Fi ════════════════════════════════════ -->
-  <data name="Network.WifiMode.Label"><value>Wi-Fi під час OOBE</value></data>
-  <data name="Network.WifiMode.Description"><value>Interactive - запитати у користувача. Skip - пропустити екран. Configure - задати SSID + пароль. ProfileXml - імпортувати повний профіль Wi-Fi.</value></data>
-  <data name="Network.WifiMode.Interactive"><value>Запитати під час Setup</value></data>
-  <data name="Network.WifiMode.Skip"><value>Пропустити мережевий екран</value></data>
-  <data name="Network.WifiMode.Configure"><value>Задати SSID</value></data>
-  <data name="Network.WifiMode.ProfileXml"><value>Імпортувати профіль XML</value></data>
-  <data name="Network.Ssid.Label"><value>SSID</value></data>
-  <data name="Network.SsidHidden.Label"><value>Мережа прихована (не транслює SSID)</value></data>
-  <data name="Network.Auth.Label"><value>Автентифікація</value></data>
-  <data name="Network.Auth.Open"><value>Відкрита (без пароля)</value></data>
-  <data name="Network.Auth.Wpa2Personal"><value>WPA2-Personal</value></data>
-  <data name="Network.Auth.Wpa3Personal"><value>WPA3-Personal</value></data>
-  <data name="Network.Password.Label"><value>Пароль</value></data>
-  <data name="Network.ProfileXml.Label"><value>XML профілю Wi-Fi</value></data>
-  <data name="Network.ProfileXml.Description"><value>Вставте результат &quot;netsh wlan export profile&quot;. Облікові дані потраплять у autounattend.xml.</value></data>
+  <data name="Network.WifiMode.Label">
+    <value>Wi-Fi під час OOBE</value>
+  </data>
+  <data name="Network.WifiMode.Description">
+    <value>Interactive - запитати у користувача. Skip - пропустити екран. Configure - задати SSID +
+      пароль. ProfileXml - імпортувати повний профіль Wi-Fi.</value>
+  </data>
+  <data name="Network.WifiMode.Interactive">
+    <value>Запитати під час Setup</value>
+  </data>
+  <data name="Network.WifiMode.Skip">
+    <value>Пропустити мережевий екран</value>
+  </data>
+  <data name="Network.WifiMode.Configure">
+    <value>Задати SSID</value>
+  </data>
+  <data name="Network.WifiMode.ProfileXml">
+    <value>Імпортувати профіль XML</value>
+  </data>
+  <data name="Network.Ssid.Label">
+    <value>SSID</value>
+  </data>
+  <data name="Network.SsidHidden.Label">
+    <value>Мережа прихована (не транслює SSID)</value>
+  </data>
+  <data name="Network.Auth.Label">
+    <value>Автентифікація</value>
+  </data>
+  <data name="Network.Auth.Open">
+    <value>Відкрита (без пароля)</value>
+  </data>
+  <data name="Network.Auth.Wpa2Personal">
+    <value>WPA2-Personal</value>
+  </data>
+  <data name="Network.Auth.Wpa3Personal">
+    <value>WPA3-Personal</value>
+  </data>
+  <data name="Network.Password.Label">
+    <value>Пароль</value>
+  </data>
+  <data name="Network.ProfileXml.Label">
+    <value>XML профілю Wi-Fi</value>
+  </data>
+  <data name="Network.ProfileXml.Description">
+    <value>Вставте результат &quot;netsh wlan export profile&quot;. Облікові дані потраплять у
+      autounattend.xml.</value>
+  </data>
 
   <!-- ═══ Personalization: Colors ═══════════════════════════ -->
-  <data name="Personalization.Colors.Title"><value>🎨 Кольори і тема</value></data>
-  <data name="Personalization.Colors.Subtitle"><value>Тема системи / програм, акцентний колір, прозорість панелі завдань.</value></data>
-  <data name="Personalization.Colors.Mode.Label"><value>Режим</value></data>
-  <data name="Personalization.Colors.Mode.Default"><value>За замовчуванням</value></data>
-  <data name="Personalization.Colors.Mode.Custom"><value>Користувацький</value></data>
-  <data name="Personalization.Colors.TaskbarAndStartTheme.Label"><value>Тема панелі завдань і Пуск</value></data>
-  <data name="Personalization.Colors.Theme.Dark"><value>Темна</value></data>
-  <data name="Personalization.Colors.Theme.Light"><value>Світла</value></data>
-  <data name="Personalization.Colors.AppsTheme.Label"><value>Тема програм</value></data>
-  <data name="Personalization.Colors.AccentColor.Label"><value>Акцентний колір</value></data>
-  <data name="Personalization.Colors.AccentColor.Description"><value>Значення у форматі HEX (наприклад, #0078D4). Застосовується скрізь, де Windows показує акцентний колір.</value></data>
-  <data name="Personalization.Colors.AccentOnStartAndTaskbar.Label"><value>Застосувати акцент до Пуск і панелі завдань</value></data>
-  <data name="Personalization.Colors.AccentOnTitleBars.Label"><value>Застосувати акцент до заголовків вікон</value></data>
-  <data name="Personalization.Colors.Translucent.Label"><value>Прозора панель завдань і Пуск</value></data>
+  <data name="Personalization.Colors.Title">
+    <value>🎨 Кольори і тема</value>
+  </data>
+  <data name="Personalization.Colors.Subtitle">
+    <value>Тема системи / програм, акцентний колір, прозорість панелі завдань.</value>
+  </data>
+  <data name="Personalization.Colors.Mode.Label">
+    <value>Режим</value>
+  </data>
+  <data name="Personalization.Colors.Mode.Default">
+    <value>За замовчуванням</value>
+  </data>
+  <data name="Personalization.Colors.Mode.Custom">
+    <value>Користувацький</value>
+  </data>
+  <data name="Personalization.Colors.TaskbarAndStartTheme.Label">
+    <value>Тема панелі завдань і Пуск</value>
+  </data>
+  <data name="Personalization.Colors.Theme.Dark">
+    <value>Темна</value>
+  </data>
+  <data name="Personalization.Colors.Theme.Light">
+    <value>Світла</value>
+  </data>
+  <data name="Personalization.Colors.AppsTheme.Label">
+    <value>Тема програм</value>
+  </data>
+  <data name="Personalization.Colors.AccentColor.Label">
+    <value>Акцентний колір</value>
+  </data>
+  <data name="Personalization.Colors.AccentColor.Description">
+    <value>Значення у форматі HEX (наприклад, #0078D4). Застосовується скрізь, де Windows показує
+      акцентний колір.</value>
+  </data>
+  <data name="Personalization.Colors.AccentOnStartAndTaskbar.Label">
+    <value>Застосувати акцент до Пуск і панелі завдань</value>
+  </data>
+  <data name="Personalization.Colors.AccentOnTitleBars.Label">
+    <value>Застосувати акцент до заголовків вікон</value>
+  </data>
+  <data name="Personalization.Colors.Translucent.Label">
+    <value>Прозора панель завдань і Пуск</value>
+  </data>
 
   <!-- ═══ Personalization: Wallpaper ═════════════════════════ -->
-  <data name="Personalization.Wallpaper.Title"><value>🖼️ Шпалери</value></data>
-  <data name="Personalization.Wallpaper.Subtitle"><value>Стандартне зображення, суцільний колір, або власний скрипт.</value></data>
-  <data name="Personalization.Wallpaper.Mode.Label"><value>Режим</value></data>
-  <data name="Personalization.Wallpaper.Mode.Default"><value>Стандартні шпалери</value></data>
-  <data name="Personalization.Wallpaper.Mode.SolidColor"><value>Суцільний колір</value></data>
-  <data name="Personalization.Wallpaper.Mode.Script"><value>Власний скрипт</value></data>
-  <data name="Personalization.Wallpaper.SolidColor.Label"><value>Колір шпалер</value></data>
-  <data name="Personalization.Wallpaper.SolidColor.Description"><value>HEX-колір, який ставиться на весь екран замість зображення.</value></data>
-  <data name="Personalization.Wallpaper.Script.Label"><value>Скрипт шпалер</value></data>
-  <data name="Personalization.Wallpaper.Script.Description"><value>Cmd / PowerShell, що копіює або завантажує файл шпалер і застосовує його.</value></data>
+  <data name="Personalization.Wallpaper.Title">
+    <value>🖼️ Шпалери</value>
+  </data>
+  <data name="Personalization.Wallpaper.Subtitle">
+    <value>Стандартне зображення, суцільний колір, або власний скрипт.</value>
+  </data>
+  <data name="Personalization.Wallpaper.Mode.Label">
+    <value>Режим</value>
+  </data>
+  <data name="Personalization.Wallpaper.Mode.Default">
+    <value>Стандартні шпалери</value>
+  </data>
+  <data name="Personalization.Wallpaper.Mode.SolidColor">
+    <value>Суцільний колір</value>
+  </data>
+  <data name="Personalization.Wallpaper.Mode.Script">
+    <value>Власний скрипт</value>
+  </data>
+  <data name="Personalization.Wallpaper.SolidColor.Label">
+    <value>Колір шпалер</value>
+  </data>
+  <data name="Personalization.Wallpaper.SolidColor.Description">
+    <value>HEX-колір, який ставиться на весь екран замість зображення.</value>
+  </data>
+  <data name="Personalization.Wallpaper.Script.Label">
+    <value>Скрипт шпалер</value>
+  </data>
+  <data name="Personalization.Wallpaper.Script.Description">
+    <value>Cmd / PowerShell, що копіює або завантажує файл шпалер і застосовує його.</value>
+  </data>
 
   <!-- ═══ Personalization: Lock screen ═══════════════════════ -->
-  <data name="Personalization.LockScreen.Title"><value>🔒 Екран блокування</value></data>
-  <data name="Personalization.LockScreen.Subtitle"><value>Стандартне зображення Windows або згенероване скриптом.</value></data>
-  <data name="Personalization.LockScreen.Mode.Label"><value>Режим</value></data>
-  <data name="Personalization.LockScreen.Mode.Default"><value>За замовчуванням</value></data>
-  <data name="Personalization.LockScreen.Mode.Script"><value>Власний скрипт</value></data>
-  <data name="Personalization.LockScreen.Script.Label"><value>Скрипт екрана блокування</value></data>
-  <data name="Personalization.LockScreen.Script.Description"><value>Cmd / PowerShell, що встановлює зображення екрана блокування на першому завантаженні.</value></data>
+  <data name="Personalization.LockScreen.Title">
+    <value>🔒 Екран блокування</value>
+  </data>
+  <data name="Personalization.LockScreen.Subtitle">
+    <value>Стандартне зображення Windows або згенероване скриптом.</value>
+  </data>
+  <data name="Personalization.LockScreen.Mode.Label">
+    <value>Режим</value>
+  </data>
+  <data name="Personalization.LockScreen.Mode.Default">
+    <value>За замовчуванням</value>
+  </data>
+  <data name="Personalization.LockScreen.Mode.Script">
+    <value>Власний скрипт</value>
+  </data>
+  <data name="Personalization.LockScreen.Script.Label">
+    <value>Скрипт екрана блокування</value>
+  </data>
+  <data name="Personalization.LockScreen.Script.Description">
+    <value>Cmd / PowerShell, що встановлює зображення екрана блокування на першому завантаженні.</value>
+  </data>
 
   <!-- ═══ Processor architectures ════════════════════════════ -->
-  <data name="ProcessorArchs.Architectures.Label"><value>Цільові архітектури</value></data>
-  <data name="ProcessorArchs.Architectures.Description"><value>Для яких архітектур CPU генерується autounattend.xml. Виберіть принаймні одну.</value></data>
-  <data name="ProcessorArchs.X86.Label"><value>x86 (32-біт)</value></data>
-  <data name="ProcessorArchs.Amd64.Label"><value>amd64 (64-біт Intel/AMD)</value></data>
-  <data name="ProcessorArchs.Arm64.Label"><value>arm64</value></data>
+  <data name="ProcessorArchs.Architectures.Label">
+    <value>Цільові архітектури</value>
+  </data>
+  <data name="ProcessorArchs.Architectures.Description">
+    <value>Для яких архітектур CPU генерується autounattend.xml. Виберіть принаймні одну.</value>
+  </data>
+  <data name="ProcessorArchs.X86.Label">
+    <value>x86 (32-біт)</value>
+  </data>
+  <data name="ProcessorArchs.Amd64.Label">
+    <value>amd64 (64-біт Intel/AMD)</value>
+  </data>
+  <data name="ProcessorArchs.Arm64.Label">
+    <value>arm64</value>
+  </data>
 
   <!-- ═══ Setup settings ═════════════════════════════════════ -->
-  <data name="Setup.BypassRequirementsCheck.Label"><value>Обхід вимог до апаратури Windows 11</value></data>
-  <data name="Setup.BypassRequirementsCheck.Description"><value>Пропустити перевірку TPM 2.0, Secure Boot, CPU і RAM - Setup запрацює на непідтримуваному залізі.</value></data>
-  <data name="Setup.BypassNetworkCheck.Label"><value>Обхід вимоги мережі в OOBE</value></data>
-  <data name="Setup.BypassNetworkCheck.Description"><value>Дозволити завершити OOBE офлайн, без запиту облікового запису Microsoft.</value></data>
-  <data name="Setup.UseConfigurationSet.Label"><value>Використовувати ConfigurationSet (зовнішні файли пасів)</value></data>
-  <data name="Setup.UseConfigurationSet.Description"><value>Розбити autounattend на головний файл + окремі на кожен пас. Потрібно лише для складних розгортань.</value></data>
-  <data name="Setup.HidePowerShellWindows.Label"><value>Приховати вікна PowerShell під час Setup</value></data>
-  <data name="Setup.HidePowerShellWindows.Description"><value>Запускати скрипти першого завантаження тихо, без відкриття консолі.</value></data>
-  <data name="Setup.KeepSensitiveFiles.Label"><value>Залишити autounattend.xml на диску після встановлення</value></data>
-  <data name="Setup.KeepSensitiveFiles.Description"><value>Стандартно Windows видаляє файл відповідей. Вимкнення залишає облікові дані відкритими - НЕ випускайте такі образи.</value></data>
-  <data name="Setup.UseNarrator.Label"><value>Запускати Екранний диктор в OOBE</value></data>
-  <data name="Setup.UseNarrator.Description"><value>Корисно для кіосків і налаштувань доступності.</value></data>
+  <data name="Setup.BypassRequirementsCheck.Label">
+    <value>Обхід вимог до апаратури Windows 11</value>
+  </data>
+  <data name="Setup.BypassRequirementsCheck.Description">
+    <value>Пропустити перевірку TPM 2.0, Secure Boot, CPU і RAM - Setup запрацює на непідтримуваному
+      залізі.</value>
+  </data>
+  <data name="Setup.BypassNetworkCheck.Label">
+    <value>Обхід вимоги мережі в OOBE</value>
+  </data>
+  <data name="Setup.BypassNetworkCheck.Description">
+    <value>Дозволити завершити OOBE офлайн, без запиту облікового запису Microsoft.</value>
+  </data>
+  <data name="Setup.UseConfigurationSet.Label">
+    <value>Використовувати ConfigurationSet (зовнішні файли пасів)</value>
+  </data>
+  <data name="Setup.UseConfigurationSet.Description">
+    <value>Розбити autounattend на головний файл + окремі на кожен пас. Потрібно лише для складних
+      розгортань.</value>
+  </data>
+  <data name="Setup.HidePowerShellWindows.Label">
+    <value>Приховати вікна PowerShell під час Setup</value>
+  </data>
+  <data name="Setup.HidePowerShellWindows.Description">
+    <value>Запускати скрипти першого завантаження тихо, без відкриття консолі.</value>
+  </data>
+  <data name="Setup.KeepSensitiveFiles.Label">
+    <value>Залишити autounattend.xml на диску після встановлення</value>
+  </data>
+  <data name="Setup.KeepSensitiveFiles.Description">
+    <value>Стандартно Windows видаляє файл відповідей. Вимкнення залишає облікові дані відкритими -
+      НЕ випускайте такі образи.</value>
+  </data>
+  <data name="Setup.UseNarrator.Label">
+    <value>Запускати Екранний диктор в OOBE</value>
+  </data>
+  <data name="Setup.UseNarrator.Description">
+    <value>Корисно для кіосків і налаштувань доступності.</value>
+  </data>
 
   <!-- ═══ Start menu / taskbar ═══════════════════════════════ -->
-  <data name="StartMenu.TaskbarSearch.Label"><value>Пошук на панелі завдань</value></data>
-  <data name="StartMenu.TaskbarSearch.Description"><value>Як елемент пошуку відображається поруч із Пуск.</value></data>
-  <data name="StartMenu.TaskbarSearch.Hide"><value>Приховати</value></data>
-  <data name="StartMenu.TaskbarSearch.Icon"><value>Лише значок</value></data>
-  <data name="StartMenu.TaskbarSearch.Box"><value>Повне поле пошуку</value></data>
-  <data name="StartMenu.TaskbarSearch.Label_"><value>Значок + підпис</value></data>
-  <data name="StartMenu.TaskbarIcons.Label"><value>Закріплені значки панелі завдань</value></data>
-  <data name="StartMenu.TaskbarIcons.Description"><value>Default залишає закріплення Windows, RemoveAll очищає їх, CustomXml розгортає ваш власний XML-макет.</value></data>
-  <data name="StartMenu.TaskbarIcons.Default"><value>За замовчуванням</value></data>
-  <data name="StartMenu.TaskbarIcons.RemoveAll"><value>Видалити всі</value></data>
-  <data name="StartMenu.TaskbarIcons.CustomXml"><value>Власний XML</value></data>
-  <data name="StartMenu.TaskbarIconsXml.Label"><value>XML макета панелі завдань</value></data>
-  <data name="StartMenu.TaskbarIconsXml.Description"><value>XML LayoutModificationTemplate / CustomTaskbarLayoutCollection.</value></data>
-  <data name="StartMenu.DisableWidgets.Label"><value>Вимкнути панель Віджетів</value></data>
-  <data name="StartMenu.DisableWidgets.Description"><value>Прибрати значок Віджетів з панелі завдань.</value></data>
-  <data name="StartMenu.LeftTaskbar.Label"><value>Значки панелі завдань ліворуч</value></data>
-  <data name="StartMenu.LeftTaskbar.Description"><value>Закріпити значки зліва замість центру.</value></data>
-  <data name="StartMenu.HideTaskViewButton.Label"><value>Приховати кнопку Подання завдань</value></data>
-  <data name="StartMenu.HideTaskViewButton.Description"><value>Прибрати значок перемикача віртуальних робочих столів з панелі завдань.</value></data>
-  <data name="StartMenu.ShowAllTrayIcons.Label"><value>Показувати всі значки трея</value></data>
-  <data name="StartMenu.ShowAllTrayIcons.Description"><value>Завжди розгортати область сповіщень замість приховування переповнення.</value></data>
-  <data name="StartMenu.DisableBingResults.Label"><value>Приховати Bing-результати у пошуку Пуск</value></data>
-  <data name="StartMenu.DisableBingResults.Description"><value>Не змішувати веб-результати з локальним пошуком у меню Пуск.</value></data>
-  <data name="StartMenu.StartTiles.Label"><value>Плитки Пуск (стиль Win10)</value></data>
-  <data name="StartMenu.StartTiles.Description"><value>Актуально лише для Windows 10. Default - залишити плитки, RemoveAll - очистити, CustomXml - розгорнути свій StartLayout XML.</value></data>
-  <data name="StartMenu.StartTiles.Default"><value>За замовчуванням</value></data>
-  <data name="StartMenu.StartTiles.RemoveAll"><value>Видалити всі</value></data>
-  <data name="StartMenu.StartTiles.CustomXml"><value>Власний XML</value></data>
-  <data name="StartMenu.StartTilesXml.Label"><value>XML плиток Пуск</value></data>
-  <data name="StartMenu.StartTilesXml.Description"><value>XML LayoutModificationTemplate / DefaultLayoutOverride.</value></data>
-  <data name="StartMenu.StartPins.Label"><value>Закріплення Пуск (Win11)</value></data>
-  <data name="StartMenu.StartPins.Description"><value>Default - залишити закріплення Microsoft, RemoveAll - очистити, CustomJson - розгорнути власний start2.json.</value></data>
-  <data name="StartMenu.StartPins.Default"><value>За замовчуванням</value></data>
-  <data name="StartMenu.StartPins.RemoveAll"><value>Видалити всі</value></data>
-  <data name="StartMenu.StartPins.CustomJson"><value>Власний JSON</value></data>
-  <data name="StartMenu.StartPinsJson.Label"><value>start2.json</value></data>
-  <data name="StartMenu.StartPinsJson.Description"><value>Повний JSON-еквівалент start2.bin, що розгортається у %LOCALAPPDATA%\Packages\...\Start\.</value></data>
+  <data name="StartMenu.TaskbarSearch.Label">
+    <value>Пошук на панелі завдань</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Description">
+    <value>Як елемент пошуку відображається поруч із Пуск.</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Hide">
+    <value>Приховати</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Icon">
+    <value>Лише значок</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Box">
+    <value>Повне поле пошуку</value>
+  </data>
+  <data name="StartMenu.TaskbarSearch.Label_">
+    <value>Значок + підпис</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.Label">
+    <value>Закріплені значки панелі завдань</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.Description">
+    <value>Default залишає закріплення Windows, RemoveAll очищає їх, CustomXml розгортає ваш власний
+      XML-макет.</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.Default">
+    <value>За замовчуванням</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.RemoveAll">
+    <value>Видалити всі</value>
+  </data>
+  <data name="StartMenu.TaskbarIcons.CustomXml">
+    <value>Власний XML</value>
+  </data>
+  <data name="StartMenu.TaskbarIconsXml.Label">
+    <value>XML макета панелі завдань</value>
+  </data>
+  <data name="StartMenu.TaskbarIconsXml.Description">
+    <value>XML LayoutModificationTemplate / CustomTaskbarLayoutCollection.</value>
+  </data>
+  <data name="StartMenu.DisableWidgets.Label">
+    <value>Вимкнути панель Віджетів</value>
+  </data>
+  <data name="StartMenu.DisableWidgets.Description">
+    <value>Прибрати значок Віджетів з панелі завдань.</value>
+  </data>
+  <data name="StartMenu.LeftTaskbar.Label">
+    <value>Значки панелі завдань ліворуч</value>
+  </data>
+  <data name="StartMenu.LeftTaskbar.Description">
+    <value>Закріпити значки зліва замість центру.</value>
+  </data>
+  <data name="StartMenu.HideTaskViewButton.Label">
+    <value>Приховати кнопку Подання завдань</value>
+  </data>
+  <data name="StartMenu.HideTaskViewButton.Description">
+    <value>Прибрати значок перемикача віртуальних робочих столів з панелі завдань.</value>
+  </data>
+  <data name="StartMenu.ShowAllTrayIcons.Label">
+    <value>Показувати всі значки трея</value>
+  </data>
+  <data name="StartMenu.ShowAllTrayIcons.Description">
+    <value>Завжди розгортати область сповіщень замість приховування переповнення.</value>
+  </data>
+  <data name="StartMenu.DisableBingResults.Label">
+    <value>Приховати Bing-результати у пошуку Пуск</value>
+  </data>
+  <data name="StartMenu.DisableBingResults.Description">
+    <value>Не змішувати веб-результати з локальним пошуком у меню Пуск.</value>
+  </data>
+  <data name="StartMenu.StartTiles.Label">
+    <value>Плитки Пуск (стиль Win10)</value>
+  </data>
+  <data name="StartMenu.StartTiles.Description">
+    <value>Актуально лише для Windows 10. Default - залишити плитки, RemoveAll - очистити, CustomXml
+      - розгорнути свій StartLayout XML.</value>
+  </data>
+  <data name="StartMenu.StartTiles.Default">
+    <value>За замовчуванням</value>
+  </data>
+  <data name="StartMenu.StartTiles.RemoveAll">
+    <value>Видалити всі</value>
+  </data>
+  <data name="StartMenu.StartTiles.CustomXml">
+    <value>Власний XML</value>
+  </data>
+  <data name="StartMenu.StartTilesXml.Label">
+    <value>XML плиток Пуск</value>
+  </data>
+  <data name="StartMenu.StartTilesXml.Description">
+    <value>XML LayoutModificationTemplate / DefaultLayoutOverride.</value>
+  </data>
+  <data name="StartMenu.StartPins.Label">
+    <value>Закріплення Пуск (Win11)</value>
+  </data>
+  <data name="StartMenu.StartPins.Description">
+    <value>Default - залишити закріплення Microsoft, RemoveAll - очистити, CustomJson - розгорнути
+      власний start2.json.</value>
+  </data>
+  <data name="StartMenu.StartPins.Default">
+    <value>За замовчуванням</value>
+  </data>
+  <data name="StartMenu.StartPins.RemoveAll">
+    <value>Видалити всі</value>
+  </data>
+  <data name="StartMenu.StartPins.CustomJson">
+    <value>Власний JSON</value>
+  </data>
+  <data name="StartMenu.StartPinsJson.Label">
+    <value>start2.json</value>
+  </data>
+  <data name="StartMenu.StartPinsJson.Description">
+    <value>Повний JSON-еквівалент start2.bin, що розгортається у %LOCALAPPDATA%\Packages\...\Start\.</value>
+  </data>
 
   <!-- ═══ Start menu folders (Win11) ═════════════════════════ -->
-  <data name="StartFolders.Mode.Label"><value>Ярлики папок</value></data>
-  <data name="StartFolders.Mode.Description"><value>Default - як у Windows. Specific - закріпити рівно той набір, який ви позначите нижче.</value></data>
-  <data name="StartFolders.Mode.Default"><value>За замовчуванням</value></data>
-  <data name="StartFolders.Mode.Specific"><value>Конкретний набір</value></data>
+  <data name="StartFolders.Mode.Label">
+    <value>Ярлики папок</value>
+  </data>
+  <data name="StartFolders.Mode.Description">
+    <value>Default - як у Windows. Specific - закріпити рівно той набір, який ви позначите нижче.</value>
+  </data>
+  <data name="StartFolders.Mode.Default">
+    <value>За замовчуванням</value>
+  </data>
+  <data name="StartFolders.Mode.Specific">
+    <value>Конкретний набір</value>
+  </data>
 
   <!-- ═══ Visual effects ═════════════════════════════════════ -->
-  <data name="VisualEffects.Preset.Label"><value>Пресет</value></data>
-  <data name="VisualEffects.Preset.Description"><value>Оберіть стандартний пресет SystemPropertiesPerformance або Custom - щоб вмикати ефекти вручну.</value></data>
-  <data name="VisualEffects.Preset.Default"><value>Як вирішить Windows (за замовчуванням)</value></data>
-  <data name="VisualEffects.Preset.BestAppearance"><value>Найкращий вигляд</value></data>
-  <data name="VisualEffects.Preset.BestPerformance"><value>Найкраща продуктивність</value></data>
-  <data name="VisualEffects.Preset.Custom"><value>Користувацький (обрати нижче)</value></data>
+  <data name="VisualEffects.Preset.Label">
+    <value>Пресет</value>
+  </data>
+  <data name="VisualEffects.Preset.Description">
+    <value>Оберіть стандартний пресет SystemPropertiesPerformance або Custom - щоб вмикати ефекти
+      вручну.</value>
+  </data>
+  <data name="VisualEffects.Preset.Default">
+    <value>Як вирішить Windows (за замовчуванням)</value>
+  </data>
+  <data name="VisualEffects.Preset.BestAppearance">
+    <value>Найкращий вигляд</value>
+  </data>
+  <data name="VisualEffects.Preset.BestPerformance">
+    <value>Найкраща продуктивність</value>
+  </data>
+  <data name="VisualEffects.Preset.Custom">
+    <value>Користувацький (обрати нижче)</value>
+  </data>
 
   <!-- ═══ Users ══════════════════════════════════════════════ -->
-  <data name="Users.Accounts.Title"><value>Локальні облікові записи</value></data>
-  <data name="Users.Accounts.Description"><value>Один рядок на кожен обліковий запис, який створить Setup. Принаймні один має бути адміністратором.</value></data>
-  <data name="Users.Accounts.Empty"><value>Облікових записів ще немає. Додайте нижче або оберіть пресет.</value></data>
-  <data name="Users.Accounts.Add"><value>Додати обліковий запис</value></data>
-  <data name="Users.Accounts.Remove"><value>Видалити</value></data>
-  <data name="Users.Account.Username"><value>Імʼя користувача</value></data>
-  <data name="Users.Account.DisplayName"><value>Відображуване імʼя</value></data>
-  <data name="Users.Account.Password"><value>Пароль</value></data>
-  <data name="Users.Account.ShowPassword"><value>Показати пароль</value></data>
-  <data name="Users.Account.HidePassword"><value>Приховати пароль</value></data>
-  <data name="Users.Account.Group"><value>Група</value></data>
-  <data name="Users.Account.Group.Admin"><value>Адміністратори</value></data>
-  <data name="Users.Account.Group.User"><value>Користувачі</value></data>
-  <data name="Users.FirstLogon.Title"><value>Поведінка першого входу</value></data>
-  <data name="Users.FirstLogon.Description"><value>Який обліковий запис (якщо будь-який) увійде автоматично при першому завантаженні Windows.</value></data>
-  <data name="Users.FirstLogon.FirstAdmin"><value>Перший адміністратор вище</value></data>
-  <data name="Users.FirstLogon.BuiltIn"><value>Вбудований Administrator</value></data>
-  <data name="Users.FirstLogon.DoNotLogon"><value>Не входити нікому</value></data>
-  <data name="Users.FirstLogon.BuiltInPassword"><value>Пароль вбудованого Administrator</value></data>
-  <data name="Users.FirstLogon.Obscure"><value>Затерти пароль у autounattend.xml</value></data>
-  <data name="Users.FirstLogon.Obscure.Description"><value>Base64-кодування, щоб випадковий читач не побачив. Легко відновлюється - не вважайте це безпекою.</value></data>
-  <data name="Users.FirstLogon.PromptMsa"><value>Показати запит Microsoft account в OOBE</value></data>
-  <data name="Users.FirstLogon.PromptLocal"><value>Показати запит створення локального акаунта в OOBE</value></data>
-  <data name="Users.FirstLogon.PromptHint"><value>Обидва запити діють лише коли перший вхід встановлено в "Не входити нікому".</value></data>
-  <data name="Users.Expiration.Title"><value>Термін дії пароля</value></data>
-  <data name="Users.Expiration.Description"><value>Як довго паролі локальних облікових записів залишаються дійсними.</value></data>
-  <data name="Users.Expiration.Default"><value>Стандарт Windows</value></data>
-  <data name="Users.Expiration.Never"><value>Ніколи не спливають</value></data>
-  <data name="Users.Expiration.Custom"><value>Власна кількість днів</value></data>
-  <data name="Users.Expiration.Days"><value>Днів до спливання</value></data>
-  <data name="Users.Lockout.Title"><value>Політика блокування облікового запису</value></data>
-  <data name="Users.Lockout.Description"><value>Як Windows реагує на серію невдалих входів.</value></data>
-  <data name="Users.Lockout.Default"><value>Стандарт Windows</value></data>
-  <data name="Users.Lockout.Disabled"><value>Вимкнено (без блокування)</value></data>
-  <data name="Users.Lockout.Custom"><value>Власні пороги</value></data>
-  <data name="Users.Lockout.Disabled.Warning"><value>Без блокування перебір паролів до локального акаунта фактично необмежений.</value></data>
-  <data name="Users.Lockout.Attempts"><value>Невдалих спроб до блокування</value></data>
-  <data name="Users.Lockout.Window"><value>Вікно спостереження (хвилини)</value></data>
-  <data name="Users.Lockout.Unlock"><value>Тривалість блокування (хвилини)</value></data>
-  <data name="Users.Lockout.WindowHint"><value>Вікно - час, протягом якого рахуються невдалі спроби; тривалість - як довго акаунт залишається заблокованим.</value></data>
+  <data name="Users.Accounts.Title">
+    <value>Локальні облікові записи</value>
+  </data>
+  <data name="Users.Accounts.Description">
+    <value>Один рядок на кожен обліковий запис, який створить Setup. Принаймні один має бути
+      адміністратором.</value>
+  </data>
+  <data name="Users.Accounts.Empty">
+    <value>Облікових записів ще немає. Додайте нижче або оберіть пресет.</value>
+  </data>
+  <data name="Users.Accounts.Add">
+    <value>Додати обліковий запис</value>
+  </data>
+  <data name="Users.Accounts.Remove">
+    <value>Видалити</value>
+  </data>
+  <data name="Users.Account.Username">
+    <value>Імʼя користувача</value>
+  </data>
+  <data name="Users.Account.DisplayName">
+    <value>Відображуване імʼя</value>
+  </data>
+  <data name="Users.Account.Password">
+    <value>Пароль</value>
+  </data>
+  <data name="Users.Account.ShowPassword">
+    <value>Показати пароль</value>
+  </data>
+  <data name="Users.Account.HidePassword">
+    <value>Приховати пароль</value>
+  </data>
+  <data name="Users.Account.Group">
+    <value>Група</value>
+  </data>
+  <data name="Users.Account.Group.Admin">
+    <value>Адміністратори</value>
+  </data>
+  <data name="Users.Account.Group.User">
+    <value>Користувачі</value>
+  </data>
+  <data name="Users.FirstLogon.Title">
+    <value>Поведінка першого входу</value>
+  </data>
+  <data name="Users.FirstLogon.Description">
+    <value>Який обліковий запис (якщо будь-який) увійде автоматично при першому завантаженні
+      Windows.</value>
+  </data>
+  <data name="Users.FirstLogon.FirstAdmin">
+    <value>Перший адміністратор вище</value>
+  </data>
+  <data name="Users.FirstLogon.BuiltIn">
+    <value>Вбудований Administrator</value>
+  </data>
+  <data name="Users.FirstLogon.DoNotLogon">
+    <value>Не входити нікому</value>
+  </data>
+  <data name="Users.FirstLogon.BuiltInPassword">
+    <value>Пароль вбудованого Administrator</value>
+  </data>
+  <data name="Users.FirstLogon.Obscure">
+    <value>Затерти пароль у autounattend.xml</value>
+  </data>
+  <data name="Users.FirstLogon.Obscure.Description">
+    <value>Base64-кодування, щоб випадковий читач не побачив. Легко відновлюється - не вважайте це
+      безпекою.</value>
+  </data>
+  <data name="Users.FirstLogon.PromptMsa">
+    <value>Показати запит Microsoft account в OOBE</value>
+  </data>
+  <data name="Users.FirstLogon.PromptLocal">
+    <value>Показати запит створення локального акаунта в OOBE</value>
+  </data>
+  <data name="Users.FirstLogon.PromptHint">
+    <value>Обидва запити діють лише коли перший вхід встановлено в "Не входити нікому".</value>
+  </data>
+  <data name="Users.Expiration.Title">
+    <value>Термін дії пароля</value>
+  </data>
+  <data name="Users.Expiration.Description">
+    <value>Як довго паролі локальних облікових записів залишаються дійсними.</value>
+  </data>
+  <data name="Users.Expiration.Default">
+    <value>Стандарт Windows</value>
+  </data>
+  <data name="Users.Expiration.Never">
+    <value>Ніколи не спливають</value>
+  </data>
+  <data name="Users.Expiration.Custom">
+    <value>Власна кількість днів</value>
+  </data>
+  <data name="Users.Expiration.Days">
+    <value>Днів до спливання</value>
+  </data>
+  <data name="Users.Lockout.Title">
+    <value>Політика блокування облікового запису</value>
+  </data>
+  <data name="Users.Lockout.Description">
+    <value>Як Windows реагує на серію невдалих входів.</value>
+  </data>
+  <data name="Users.Lockout.Default">
+    <value>Стандарт Windows</value>
+  </data>
+  <data name="Users.Lockout.Disabled">
+    <value>Вимкнено (без блокування)</value>
+  </data>
+  <data name="Users.Lockout.Custom">
+    <value>Власні пороги</value>
+  </data>
+  <data name="Users.Lockout.Disabled.Warning">
+    <value>Без блокування перебір паролів до локального акаунта фактично необмежений.</value>
+  </data>
+  <data name="Users.Lockout.Attempts">
+    <value>Невдалих спроб до блокування</value>
+  </data>
+  <data name="Users.Lockout.Window">
+    <value>Вікно спостереження (хвилини)</value>
+  </data>
+  <data name="Users.Lockout.Unlock">
+    <value>Тривалість блокування (хвилини)</value>
+  </data>
+  <data name="Users.Lockout.WindowHint">
+    <value>Вікно - час, протягом якого рахуються невдалі спроби; тривалість - як довго акаунт
+      залишається заблокованим.</value>
+  </data>
 
   <!-- ═══ Computer name ══════════════════════════════════════ -->
-  <data name="ComputerName.Mode.Label"><value>Джерело імені компʼютера</value></data>
-  <data name="ComputerName.Mode.Description"><value>Random - нове випадкове імʼя при кожному завантаженні. Manual - точне значення нижче. Script - запускає ваш генератор.</value></data>
-  <data name="ComputerName.Mode.Random"><value>Випадкове</value></data>
-  <data name="ComputerName.Mode.Manual"><value>Вручну</value></data>
-  <data name="ComputerName.Mode.Script"><value>Згенероване скриптом</value></data>
-  <data name="ComputerName.Custom.Label"><value>Імʼя компʼютера</value></data>
-  <data name="ComputerName.Custom.Description"><value>NetBIOS-сумісне імʼя, 1-15 символів.</value></data>
-  <data name="ComputerName.Script.Label"><value>Скрипт імені компʼютера</value></data>
-  <data name="ComputerName.Script.Description"><value>Cmd / PowerShell, що записує обране імʼя у відповідне значення реєстру.</value></data>
+  <data name="ComputerName.Mode.Label">
+    <value>Джерело імені компʼютера</value>
+  </data>
+  <data name="ComputerName.Mode.Description">
+    <value>Random - нове випадкове імʼя при кожному завантаженні. Manual - точне значення нижче.
+      Script - запускає ваш генератор.</value>
+  </data>
+  <data name="ComputerName.Mode.Random">
+    <value>Випадкове</value>
+  </data>
+  <data name="ComputerName.Mode.Manual">
+    <value>Вручну</value>
+  </data>
+  <data name="ComputerName.Mode.Script">
+    <value>Згенероване скриптом</value>
+  </data>
+  <data name="ComputerName.Custom.Label">
+    <value>Імʼя компʼютера</value>
+  </data>
+  <data name="ComputerName.Custom.Description">
+    <value>NetBIOS-сумісне імʼя, 1-15 символів.</value>
+  </data>
+  <data name="ComputerName.Script.Label">
+    <value>Скрипт імені компʼютера</value>
+  </data>
+  <data name="ComputerName.Script.Description">
+    <value>Cmd / PowerShell, що записує обране імʼя у відповідне значення реєстру.</value>
+  </data>
 
   <!-- ═══ Time zone ══════════════════════════════════════════ -->
-  <data name="TimeZone.Mode.Label"><value>Джерело часового поясу</value></data>
-  <data name="TimeZone.Mode.Description"><value>Implicit - часовий пояс за замовчуванням для регіону. Explicit - зафіксувати конкретний пояс.</value></data>
-  <data name="TimeZone.Mode.Implicit"><value>Неявно (за регіоном)</value></data>
-  <data name="TimeZone.Mode.Explicit"><value>Явно</value></data>
-  <data name="TimeZone.Zone.Label"><value>Часовий пояс</value></data>
-  <data name="TimeZone.Zone.Description"><value>Windows tzid (наприклад, &quot;FLE Standard Time&quot; для Києва).</value></data>
+  <data name="TimeZone.Mode.Label">
+    <value>Джерело часового поясу</value>
+  </data>
+  <data name="TimeZone.Mode.Description">
+    <value>Implicit - часовий пояс за замовчуванням для регіону. Explicit - зафіксувати конкретний
+      пояс.</value>
+  </data>
+  <data name="TimeZone.Mode.Implicit">
+    <value>Неявно (за регіоном)</value>
+  </data>
+  <data name="TimeZone.Mode.Explicit">
+    <value>Явно</value>
+  </data>
+  <data name="TimeZone.Zone.Label">
+    <value>Часовий пояс</value>
+  </data>
+  <data name="TimeZone.Zone.Description">
+    <value>Windows tzid (наприклад, &quot;FLE Standard Time&quot; для Києва).</value>
+  </data>
 
   <!-- ═══ Desktop icons (Specific grid) ══════════════════════ -->
-  <data name="DesktopIcons.VisibleIcons.Label"><value>Видимі значки робочого стола</value></data>
-  <data name="DesktopIcons.VisibleIcons.Description"><value>Позначте значки, які Windows має показувати на робочому столі. Непозначені приховуються.</value></data>
+  <data name="DesktopIcons.VisibleIcons.Label">
+    <value>Видимі значки робочого стола</value>
+  </data>
+  <data name="DesktopIcons.VisibleIcons.Description">
+    <value>Позначте значки, які Windows має показувати на робочому столі. Непозначені приховуються.</value>
+  </data>
 
   <!-- ═══ Start menu folders (Specific grid) ═════════════════ -->
-  <data name="StartFolders.VisibleFolders.Label"><value>Ярлики папок</value></data>
-  <data name="StartFolders.VisibleFolders.Description"><value>Позначте, які ярлики папок зʼявляться поруч з кнопкою живлення.</value></data>
+  <data name="StartFolders.VisibleFolders.Label">
+    <value>Ярлики папок</value>
+  </data>
+  <data name="StartFolders.VisibleFolders.Description">
+    <value>Позначте, які ярлики папок зʼявляться поруч з кнопкою живлення.</value>
+  </data>
 
   <!-- ═══ Bloatware (list UI chrome) ═════════════════════════ -->
-  <data name="Bloatware.SelectAll"><value>Обрати всі</value></data>
-  <data name="Bloatware.ClearAll"><value>Очистити</value></data>
-  <data name="Bloatware.Selected"><value>Обрано</value></data>
+  <data name="Bloatware.SelectAll">
+    <value>Обрати всі</value>
+  </data>
+  <data name="Bloatware.ClearAll">
+    <value>Очистити</value>
+  </data>
+  <data name="Bloatware.Selected">
+    <value>Обрано</value>
+  </data>
 
   <!-- ═══ Visual effects (per-effect checkboxes) ═════════════ -->
-  <data name="Section.personalization.Subtitle"><value>Тема, шпалери та екран блокування, які застосовуються на першому завантаженні.</value></data>
-  <data name="VisualEffects.CustomEffects.Label"><value>Окремі ефекти</value></data>
-  <data name="VisualEffects.CustomEffects.Description"><value>Позначте кожен ефект, який хочете увімкнути. Непозначені явно вимкнуться.</value></data>
-  <data name="VisualEffects.Effect.ControlAnimations"><value>Анімація елементів керування всередині вікон</value></data>
-  <data name="VisualEffects.Effect.AnimateMinMax"><value>Анімувати мінімізацію та максимізацію вікон</value></data>
-  <data name="VisualEffects.Effect.TaskbarAnimations"><value>Анімації панелі завдань</value></data>
-  <data name="VisualEffects.Effect.DWMAeroPeekEnabled"><value>Aero Peek (перегляд стола при наведенні)</value></data>
-  <data name="VisualEffects.Effect.MenuAnimation"><value>Плавне відкриття меню</value></data>
-  <data name="VisualEffects.Effect.TooltipAnimation"><value>Плавне відкриття підказок</value></data>
-  <data name="VisualEffects.Effect.SelectionFade"><value>Плавне затухання пунктів меню після кліку</value></data>
-  <data name="VisualEffects.Effect.DWMSaveThumbnailEnabled"><value>Зберігати мініатюри прев'ю панелі завдань</value></data>
-  <data name="VisualEffects.Effect.CursorShadow"><value>Тіні під вказівником миші</value></data>
-  <data name="VisualEffects.Effect.ListviewShadow"><value>Тіні під вікнами</value></data>
-  <data name="VisualEffects.Effect.ThumbnailsOrIcon"><value>Показувати мініатюри замість значків</value></data>
-  <data name="VisualEffects.Effect.ListviewAlphaSelect"><value>Напівпрозорий прямокутник виділення</value></data>
-  <data name="VisualEffects.Effect.DragFullWindows"><value>Показувати вміст вікна при перетягуванні</value></data>
-  <data name="VisualEffects.Effect.ComboBoxAnimation"><value>Плавне розкриття випадаючих списків</value></data>
-  <data name="VisualEffects.Effect.FontSmoothing"><value>Згладжувати краї екранних шрифтів</value></data>
-  <data name="VisualEffects.Effect.ListBoxSmoothScrolling"><value>Плавний скрол у списках</value></data>
-  <data name="VisualEffects.Effect.DropShadow"><value>Тінь під підписами значків стола</value></data>
+  <data name="Section.personalization.Subtitle">
+    <value>Тема, шпалери та екран блокування, які застосовуються на першому завантаженні.</value>
+  </data>
+  <data name="VisualEffects.CustomEffects.Label">
+    <value>Окремі ефекти</value>
+  </data>
+  <data name="VisualEffects.CustomEffects.Description">
+    <value>Позначте кожен ефект, який хочете увімкнути. Непозначені явно вимкнуться.</value>
+  </data>
+  <data name="VisualEffects.Effect.ControlAnimations">
+    <value>Анімація елементів керування всередині вікон</value>
+  </data>
+  <data name="VisualEffects.Effect.AnimateMinMax">
+    <value>Анімувати мінімізацію та максимізацію вікон</value>
+  </data>
+  <data name="VisualEffects.Effect.TaskbarAnimations">
+    <value>Анімації панелі завдань</value>
+  </data>
+  <data name="VisualEffects.Effect.DWMAeroPeekEnabled">
+    <value>Aero Peek (перегляд стола при наведенні)</value>
+  </data>
+  <data name="VisualEffects.Effect.MenuAnimation">
+    <value>Плавне відкриття меню</value>
+  </data>
+  <data name="VisualEffects.Effect.TooltipAnimation">
+    <value>Плавне відкриття підказок</value>
+  </data>
+  <data name="VisualEffects.Effect.SelectionFade">
+    <value>Плавне затухання пунктів меню після кліку</value>
+  </data>
+  <data name="VisualEffects.Effect.DWMSaveThumbnailEnabled">
+    <value>Зберігати мініатюри прев'ю панелі завдань</value>
+  </data>
+  <data name="VisualEffects.Effect.CursorShadow">
+    <value>Тіні під вказівником миші</value>
+  </data>
+  <data name="VisualEffects.Effect.ListviewShadow">
+    <value>Тіні під вікнами</value>
+  </data>
+  <data name="VisualEffects.Effect.ThumbnailsOrIcon">
+    <value>Показувати мініатюри замість значків</value>
+  </data>
+  <data name="VisualEffects.Effect.ListviewAlphaSelect">
+    <value>Напівпрозорий прямокутник виділення</value>
+  </data>
+  <data name="VisualEffects.Effect.DragFullWindows">
+    <value>Показувати вміст вікна при перетягуванні</value>
+  </data>
+  <data name="VisualEffects.Effect.ComboBoxAnimation">
+    <value>Плавне розкриття випадаючих списків</value>
+  </data>
+  <data name="VisualEffects.Effect.FontSmoothing">
+    <value>Згладжувати краї екранних шрифтів</value>
+  </data>
+  <data name="VisualEffects.Effect.ListBoxSmoothScrolling">
+    <value>Плавний скрол у списках</value>
+  </data>
+  <data name="VisualEffects.Effect.DropShadow">
+    <value>Тінь під підписами значків стола</value>
+  </data>
 
   <!-- ═══ Wizard review additions ════════════════════════════ -->
-  <data name="Wizard.Review.Preparing"><value>Підготовка…</value></data>
-  <data name="Wizard.Review.Tweak"><value>Підкрутити в Advanced</value></data>
+  <data name="Wizard.Review.Preparing">
+    <value>Підготовка…</value>
+  </data>
+  <data name="Wizard.Review.Tweak">
+    <value>Підкрутити в Advanced</value>
+  </data>
 
   <!-- ═══ Advanced side-nav groups ═══════════════════════════ -->
-  <data name="Advanced.Group.SetupId"><value>Налаштування і ідентифікація</value></data>
-  <data name="Advanced.Group.Install"><value>Встановлення і образ</value></data>
-  <data name="Advanced.Group.System"><value>Система і безпека</value></data>
-  <data name="Advanced.Group.Desktop"><value>Робочий стіл і персоналізація</value></data>
-  <data name="Advanced.Group.Advanced"><value>Розширені функції</value></data>
-  <data name="Advanced.Group.Users"><value>Користувачі</value></data>
+  <data name="Advanced.SidebarSearch">
+    <value>Фільтр секцій…</value>
+  </data>
+  <data name="Advanced.SidebarGrouped">
+    <value>Згорнути групи / плоский список</value>
+  </data>
+  <data name="Advanced.SidebarEmpty">
+    <value>Нічого не знайдено.</value>
+  </data>
+  <data name="Docs.SidebarSearch">
+    <value>Пошук у довідці…</value>
+  </data>
+  <data name="Docs.OpenInAdvanced">
+    <value>Редагувати в Advanced</value>
+  </data>
+  <data name="Docs.ResultsCount">
+    <value>{0} з {1}</value>
+  </data>
+  <data name="Docs.NoResults">
+    <value>Нічого не збіглося з "{0}". Спробуйте інший запит.</value>
+  </data>
+  <data name="Advanced.Group.SetupId">
+    <value>Налаштування і ідентифікація</value>
+  </data>
+  <data name="Advanced.Group.Install">
+    <value>Встановлення і образ</value>
+  </data>
+  <data name="Advanced.Group.System">
+    <value>Система і безпека</value>
+  </data>
+  <data name="Advanced.Group.Desktop">
+    <value>Робочий стіл і персоналізація</value>
+  </data>
+  <data name="Advanced.Group.Advanced">
+    <value>Розширені функції</value>
+  </data>
+  <data name="Advanced.Group.Users">
+    <value>Користувачі</value>
+  </data>
 
   <!-- ═══ Import XML ═════════════════════════════════════════ -->
-  <data name="Landing.Import.Reading"><value>Читання файлу…</value></data>
-  <data name="Landing.Import.Success"><value>Імпортовано {0}. Відкриваю Advanced editor.</value></data>
-  <data name="Landing.Import.Partial"><value>Частковий імпорт з {0} — частина секцій використає значення за замовчуванням.</value></data>
-  <data name="Landing.Import.Failed"><value>Імпорт не вдався: {0}</value></data>
+  <data name="Landing.Import.Reading">
+    <value>Читання файлу…</value>
+  </data>
+  <data name="Landing.Import.Success">
+    <value>Імпортовано {0}. Відкриваю Advanced editor.</value>
+  </data>
+  <data name="Landing.Import.Partial">
+    <value>Частковий імпорт з {0} - частина секцій використає значення за замовчуванням.</value>
+  </data>
+  <data name="Landing.Import.Failed">
+    <value>Імпорт не вдався: {0}</value>
+  </data>
 
   <!-- ═══ Windows PE ═════════════════════════════════════════ -->
-  <data name="Pe.Mode.Label"><value>Поведінка PE</value></data>
-  <data name="Pe.Mode.Description"><value>Default - стандартний PE-пас. Generated - згенерувати diskpart і розбиття. Custom - виконати ваш cmd-скрипт.</value></data>
-  <data name="Pe.Mode.Default"><value>За замовчуванням</value></data>
-  <data name="Pe.Mode.Generated"><value>Згенерований (diskpart + розбиття)</value></data>
-  <data name="Pe.Mode.Custom"><value>Власний cmd-скрипт</value></data>
-  <data name="Pe.Disable8Dot3.Label"><value>Вимкнути короткі імена 8.3 на NTFS</value></data>
-  <data name="Pe.Disable8Dot3.Description"><value>Пришвидшує метадані файлової системи ціною сумісності з 16-бітними / дуже старими програмами.</value></data>
-  <data name="Pe.PauseBeforePartition.Label"><value>Пауза перед розбиттям</value></data>
-  <data name="Pe.PauseBeforePartition.Description"><value>Зупинитись на cmd-підказці перед тим, як Setup торкнеться диска - зручно для налагодження образів.</value></data>
-  <data name="Pe.PauseBeforeReboot.Label"><value>Пауза перед виходом з PE</value></data>
-  <data name="Pe.PauseBeforeReboot.Description"><value>Зупинитись на cmd-підказці після завершення PE-паса перед першим перезавантаженням.</value></data>
-  <data name="Pe.CustomCmd.Label"><value>Власний скрипт PE</value></data>
-  <data name="Pe.CustomCmd.Description"><value>Використовується лише коли PE-режим - &quot;Власний cmd-скрипт&quot;. Має закінчуватись exit-кодом, зрозумілим для Setup.</value></data>
-  <data name="Pe.CustomCmd.Placeholder"><value>@echo off
-rem Виконується у Windows PE перед встановленням...
-exit 0</value></data>
+  <data name="Pe.Mode.Label">
+    <value>Поведінка PE</value>
+  </data>
+  <data name="Pe.Mode.Description">
+    <value>Default - стандартний PE-пас. Generated - згенерувати diskpart і розбиття. Custom -
+      виконати ваш cmd-скрипт.</value>
+  </data>
+  <data name="Pe.Mode.Default">
+    <value>За замовчуванням</value>
+  </data>
+  <data name="Pe.Mode.Generated">
+    <value>Згенерований (diskpart + розбиття)</value>
+  </data>
+  <data name="Pe.Mode.Custom">
+    <value>Власний cmd-скрипт</value>
+  </data>
+  <data name="Pe.Disable8Dot3.Label">
+    <value>Вимкнути короткі імена 8.3 на NTFS</value>
+  </data>
+  <data name="Pe.Disable8Dot3.Description">
+    <value>Пришвидшує метадані файлової системи ціною сумісності з 16-бітними / дуже старими
+      програмами.</value>
+  </data>
+  <data name="Pe.PauseBeforePartition.Label">
+    <value>Пауза перед розбиттям</value>
+  </data>
+  <data name="Pe.PauseBeforePartition.Description">
+    <value>Зупинитись на cmd-підказці перед тим, як Setup торкнеться диска - зручно для налагодження
+      образів.</value>
+  </data>
+  <data name="Pe.PauseBeforeReboot.Label">
+    <value>Пауза перед виходом з PE</value>
+  </data>
+  <data name="Pe.PauseBeforeReboot.Description">
+    <value>Зупинитись на cmd-підказці після завершення PE-паса перед першим перезавантаженням.</value>
+  </data>
+  <data name="Pe.CustomCmd.Label">
+    <value>Власний скрипт PE</value>
+  </data>
+  <data name="Pe.CustomCmd.Description">
+    <value>Використовується лише коли PE-режим - &quot;Власний cmd-скрипт&quot;. Має закінчуватись
+      exit-кодом, зрозумілим для Setup.</value>
+  </data>
+  <data name="Pe.CustomCmd.Placeholder">
+    <value>@echo off
+      rem Виконується у Windows PE перед встановленням...
+      exit 0</value>
+  </data>
 
 </root>

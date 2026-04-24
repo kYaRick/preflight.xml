@@ -5,7 +5,7 @@ namespace Preflight.App.Services;
 
 /// <summary>
 /// Thin read-only view over <see cref="UnattendGenerator.Bloatwares"/>. Centralising the
-/// iteration here means the Bloatware section (and anything else that wants the list —
+/// iteration here means the Bloatware section (and anything else that wants the list -
 /// Docs, future preset builders) doesn't need to take a dependency on the whole generator.
 ///
 /// Registered as a singleton; the generator behind <see cref="UnattendXmlBuilder"/> is the
@@ -28,6 +28,6 @@ public sealed class BloatwareCatalog
             .ToList();
     }
 
-    /// <summary>Full catalog — each entry's <c>Value</c> is the bloatware <c>Id</c> (e.g. <c>RemoveCopilot</c>) and <c>DisplayKey</c> is the literal display name (not a resource key).</summary>
+    /// <summary>Full catalog - each entry's <c>Value</c> is the bloatware <c>Id</c> (e.g. <c>RemoveCopilot</c>) and <c>DisplayKey</c> is the literal display name (not a resource key).</summary>
     public IReadOnlyList<OptionValue> Items => _items;
 }
