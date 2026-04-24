@@ -1,5 +1,9 @@
 @page "/docs/{Slug}"
+@using Preflight.App.Content
+@using System.Globalization
+@using Markdig
 @inject IStringLocalizer<SharedResources> L
+@inject HttpClient Http
 
 <PageTitle>@_name · @L["Docs.Title"]</PageTitle>
 
@@ -9,12 +13,22 @@
         <FluentSpacer />
     </FluentStack>
 
-    <FluentLabel Typo="Typography.PageTitle" Style="margin-top: 16px;">@_icon @_name</FluentLabel>
+    <FluentLabel Typo="Typography.PageTitle" Style="margin-top: 16px;">@_name</FluentLabel>
     <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 24px 0;">@_description</FluentLabel>
+
+    <FluentMessageBar Intent="MessageIntent.Warning" AllowDismiss="false" Style="margin-bottom: 16px;">
+        @L["Docs.ExternalLinks.Warning"]
+    </FluentMessageBar>
 
     @if (_section is not null)
     {
         <SectionView Section="@_section" ViewMode="SectionView.SectionMode.Docs" ShowHeader="false" />
+    }
+    else if (_articleHtml is not null)
+    {
+        <section class="pf-section__intro">
+            @((MarkupString)_articleHtml)
+        </section>
     }
     else
     {
@@ -27,33 +41,57 @@
 @code {
     [Parameter] public string Slug { get; set; } = "";
 
-    private string _icon = "📖";
     private string _name = "";
     private string _description = "";
     private SectionDefinition? _section;
+    private string? _articleHtml;
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        _section = Slug switch
-        {
-            "region" => RegionSection.Definition,
-            _ => null,
-        };
+        var isKnown = SectionRegistry.AllSectionIds.Contains(Slug, StringComparer.Ordinal);
+        _section = SectionRegistry.TryGet(Slug);
+        _articleHtml = isKnown ? await TryRenderMarkdownAsync($"content/sections/{Slug}.{{locale}}.md") : null;
 
-        (_icon, var nameKey, var descKey) = Slug switch
+        if (!isKnown)
         {
-            "region"    => ("🌍", "Docs.Topic.Region.Name",    "Docs.Topic.Region.Description"),
-            "disk"      => ("💽", "Docs.Topic.Disk.Name",      "Docs.Topic.Disk.Description"),
-            "users"     => ("👤", "Docs.Topic.Users.Name",     "Docs.Topic.Users.Description"),
-            "edition"   => ("🪟", "Docs.Topic.Edition.Name",   "Docs.Topic.Edition.Description"),
-            "privacy"   => ("🔒", "Docs.Topic.Privacy.Name",   "Docs.Topic.Privacy.Description"),
-            "security"  => ("🛡️", "Docs.Topic.Security.Name",  "Docs.Topic.Security.Description"),
-            "bloatware" => ("🧼", "Docs.Topic.Bloatware.Name", "Docs.Topic.Bloatware.Description"),
-            "tweaks"    => ("🔧", "Docs.Topic.Tweaks.Name",    "Docs.Topic.Tweaks.Description"),
-            "vm"        => ("🖥️", "Docs.Topic.Vm.Name",        "Docs.Topic.Vm.Description"),
-            _           => ("📄", "Docs.Entry.Unknown",        "Docs.Entry.UnknownDescription"),
-        };
-        _name = L[nameKey];
-        _description = L[descKey];
+            _name = L["Docs.Entry.Unknown"];
+            _description = L["Docs.Entry.UnknownDescription"];
+            return;
+        }
+
+        _name = L[$"Advanced.Section.{Slug}"];
+        var subtitle = L[$"Section.{Slug}.Subtitle"];
+        _description = subtitle.ResourceNotFound
+            ? L["Docs.Entry.ComingSoon"]
+            : subtitle.Value;
+    }
+
+    private async Task<string?> TryRenderMarkdownAsync(string pathTemplate)
+    {
+        var locale = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        var path = pathTemplate.Replace("{locale}", locale, StringComparison.Ordinal);
+
+        try
+        {
+            var md = await Http.GetStringAsync(path);
+            return Markdown.ToHtml(md);
+        }
+        catch (HttpRequestException)
+        {
+            if (locale != "en")
+            {
+                try
+                {
+                    var fallback = await Http.GetStringAsync(pathTemplate.Replace("{locale}", "en", StringComparison.Ordinal));
+                    return Markdown.ToHtml(fallback);
+                }
+                catch (HttpRequestException)
+                {
+                    return null;
+                }
+            }
+
+            return null;
+        }
     }
 }

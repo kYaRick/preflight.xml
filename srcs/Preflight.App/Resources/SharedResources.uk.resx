@@ -428,6 +428,45 @@
   <data name="Advanced.Section.components">
     <value>🧩 XML-компоненти</value>
   </data>
+  <data name="Advanced.Section.time-zone">
+    <value>🕒 Часовий пояс</value>
+  </data>
+  <data name="Advanced.Section.computer-name">
+    <value>💻 Імʼя компʼютера</value>
+  </data>
+  <data name="Advanced.Section.setup-settings">
+    <value>⚙️ Параметри встановлення</value>
+  </data>
+  <data name="Advanced.Section.source-image">
+    <value>🧱 Джерельний образ</value>
+  </data>
+  <data name="Advanced.Section.windows-pe">
+    <value>🪄 Windows PE</value>
+  </data>
+  <data name="Advanced.Section.processor-archs">
+    <value>🧬 Архітектури процесора</value>
+  </data>
+  <data name="Advanced.Section.compact-os">
+    <value>🗜️ Compact OS</value>
+  </data>
+  <data name="Advanced.Section.explorer">
+    <value>📁 Провідник</value>
+  </data>
+  <data name="Advanced.Section.visual-effects">
+    <value>✨ Візуальні ефекти</value>
+  </data>
+  <data name="Advanced.Section.desktop-icons">
+    <value>🖼️ Значки робочого стола</value>
+  </data>
+  <data name="Advanced.Section.start-menu">
+    <value>🧭 Меню Пуск і панель завдань</value>
+  </data>
+  <data name="Advanced.Section.start-folders">
+    <value>📂 Папки меню Пуск</value>
+  </data>
+  <data name="Advanced.Section.personalization">
+    <value>🎨 Персоналізація</value>
+  </data>
 
   <!-- ═══ Scripts section ═════════════════════════════════════ -->
   <data name="Section.scripts.Subtitle">
@@ -831,6 +870,9 @@ WScript.Echo "Hello"</value>
   </data>
   <data name="Docs.BackToIndex">
     <value>Всі теми</value>
+  </data>
+  <data name="Docs.ExternalLinks.Warning">
+    <value>Зовнішні посилання наведені як довідкові й відкриваються поза preflight.xml.</value>
   </data>
   <data name="Docs.Entry.ComingSoon">
     <value>Детальна документація по цій темі зʼявиться у наступних фазах.</value>

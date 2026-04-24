@@ -50,12 +50,31 @@
                 }
             }
 
-            <div id="@option.Id" class="pf-option">
+            var renderInlineToggle = ViewMode == SectionMode.Advanced && option.Kind == OptionKind.Checkbox;
+
+            <div id="@option.Id" class="@(renderInlineToggle ? "pf-option pf-option--toggle" : "pf-option")">
                 <div class="pf-option__head">
-                    <label class="pf-option__label" for="@($"opt-{option.Id}")">@L[option.LabelKey]</label>
+                    @if (renderInlineToggle)
+                    {
+                        <div class="pf-option__toggle-head">
+                            @RenderControl(option)
+                            <label class="pf-option__label">@L[option.LabelKey]</label>
+                        </div>
+                    }
+                    else
+                    {
+                        <label class="pf-option__label" for="@($"opt-{option.Id}")">@L[option.LabelKey]</label>
+                    }
                     @if (!string.IsNullOrEmpty(option.LearnMoreUrl))
                     {
-                        <a class="pf-option__learn-more" href="@option.LearnMoreUrl" target="_blank" rel="noopener">@L["Section.LearnMore"]</a>
+                        @if (IsExternalUrl(option.LearnMoreUrl))
+                        {
+                            <a class="pf-option__learn-more" href="@option.LearnMoreUrl" target="_blank" rel="noopener">@L["Section.LearnMore"]</a>
+                        }
+                        else
+                        {
+                            <a class="pf-option__learn-more" href="@option.LearnMoreUrl">@L["Section.LearnMore"]</a>
+                        }
                     }
                 </div>
 
@@ -65,7 +84,7 @@
                     <p class="pf-option__description">@L[option.DescriptionKey]</p>
                 }
 
-                @if (ViewMode == SectionMode.Advanced)
+                @if (ViewMode == SectionMode.Advanced && !renderInlineToggle)
                 {
                     @RenderControl(option)
                 }
@@ -163,6 +182,10 @@
     }
 
     private void OnConfigChanged() => InvokeAsync(StateHasChanged);
+
+    private static bool IsExternalUrl(string url) =>
+        url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+        || url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
 
     public void Dispose()
     {

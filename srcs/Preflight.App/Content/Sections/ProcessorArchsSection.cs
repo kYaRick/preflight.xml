@@ -22,7 +22,7 @@ public static class ProcessorArchsSection
                 LabelKey = "ProcessorArchs.Architectures.Label",
                 DescriptionKey = "ProcessorArchs.Architectures.Description",
                 ShowDescriptionInAdvanced = true,
-                LearnMoreUrl = "https://learn.microsoft.com/windows-hardware/customize/desktop/unattend/microsoft-windows-international-core",
+                LearnMoreUrl = "/docs/processor-archs",
                 Kind = OptionKind.CheckboxGroup,
                 CheckboxItems =
                 [

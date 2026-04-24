@@ -26,7 +26,7 @@ public static class WdacSection
                 LabelKey = "Wdac.Mode.Label",
                 DescriptionKey = "Wdac.Mode.Description",
                 ShowDescriptionInAdvanced = true,
-                LearnMoreUrl = "https://learn.microsoft.com/windows/security/threat-protection/windows-defender-application-control/windows-defender-application-control",
+                LearnMoreUrl = "/docs/wdac",
                 Kind = OptionKind.Radio,
                 InlineValues =
                 [

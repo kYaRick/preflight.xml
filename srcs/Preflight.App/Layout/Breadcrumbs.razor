@@ -86,8 +86,7 @@
                 if (segments.Length >= 2)
                 {
                     var topic = segments[1].ToLowerInvariant();
-                    var key = "Docs.Topic." + char.ToUpperInvariant(topic[0]) + topic[1..] + ".Name";
-                    _crumbs.Add(new Crumb(L[key], null));
+                    _crumbs.Add(new Crumb(L[$"Advanced.Section.{topic}"], null));
                 }
                 break;
         }

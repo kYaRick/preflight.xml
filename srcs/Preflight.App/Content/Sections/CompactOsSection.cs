@@ -23,7 +23,7 @@ public static class CompactOsSection
                 LabelKey = "CompactOs.Mode.Label",
                 DescriptionKey = "CompactOs.Mode.Description",
                 ShowDescriptionInAdvanced = true,
-                LearnMoreUrl = "https://learn.microsoft.com/windows-hardware/manufacture/desktop/compact-os",
+                LearnMoreUrl = "/docs/compact-os",
                 Kind = OptionKind.Radio,
                 InlineValues =
                 [

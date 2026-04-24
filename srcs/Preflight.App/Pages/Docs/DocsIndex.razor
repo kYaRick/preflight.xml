@@ -1,4 +1,5 @@
 @page "/docs"
+@using Preflight.App.Content
 @inject IStringLocalizer<SharedResources> L
 
 <PageTitle>@L["Docs.Title"] · preflight.xml</PageTitle>
@@ -21,7 +22,7 @@
                     @foreach (var topic in _topics)
                     {
                         <FluentNavLink Href="@($"/docs/{topic.Slug}")" Match="NavLinkMatch.All">
-                            @topic.Icon @L[topic.NameKey]
+                            @L[$"Advanced.Section.{topic.Slug}"]
                         </FluentNavLink>
                     }
                 </FluentNavMenu>
@@ -37,12 +38,11 @@
                         <FluentCard Class="pf-card--interactive" Style="padding: 20px; height: 100%;"
                                     @onclick="() => GoToTopic(topic.Slug)">
                             <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
-                                <div style="font-size: 32px;">@topic.Icon</div>
                                 <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
-                                    @L[topic.NameKey]
+                                    @L[$"Advanced.Section.{topic.Slug}"]
                                 </FluentLabel>
                                 <FluentLabel Typo="Typography.Body">
-                                    @L[topic.DescriptionKey]
+                                    @GetSectionSubtitle(topic.Slug)
                                 </FluentLabel>
                             </FluentStack>
                         </FluentCard>
@@ -59,18 +59,14 @@
 
     private void GoToTopic(string slug) => Nav.NavigateTo($"/docs/{slug}");
 
-    private sealed record DocTopic(string Slug, string Icon, string NameKey, string DescriptionKey);
+    private sealed record DocTopic(string Slug);
 
-    private static readonly DocTopic[] _topics =
-    [
-        new("region",    "🌍", "Docs.Topic.Region.Name",    "Docs.Topic.Region.Description"),
-        new("disk",      "💽", "Docs.Topic.Disk.Name",      "Docs.Topic.Disk.Description"),
-        new("users",     "👤", "Docs.Topic.Users.Name",     "Docs.Topic.Users.Description"),
-        new("edition",   "🪟", "Docs.Topic.Edition.Name",   "Docs.Topic.Edition.Description"),
-        new("privacy",   "🔒", "Docs.Topic.Privacy.Name",   "Docs.Topic.Privacy.Description"),
-        new("security",  "🛡️", "Docs.Topic.Security.Name",  "Docs.Topic.Security.Description"),
-        new("bloatware", "🧼", "Docs.Topic.Bloatware.Name", "Docs.Topic.Bloatware.Description"),
-        new("tweaks",    "🔧", "Docs.Topic.Tweaks.Name",    "Docs.Topic.Tweaks.Description"),
-        new("vm",        "🖥️", "Docs.Topic.Vm.Name",        "Docs.Topic.Vm.Description"),
-    ];
+    private static readonly IReadOnlyList<DocTopic> _topics =
+        SectionRegistry.AllSectionIds.Select(static id => new DocTopic(id)).ToArray();
+
+    private string GetSectionSubtitle(string slug)
+    {
+        var subtitle = L[$"Section.{slug}.Subtitle"];
+        return subtitle.ResourceNotFound ? L["Docs.Entry.ComingSoon"] : subtitle.Value;
+    }
 }

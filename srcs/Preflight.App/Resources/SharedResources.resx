@@ -426,6 +426,45 @@
   <data name="Advanced.Section.components">
     <value>🧩 XML components</value>
   </data>
+  <data name="Advanced.Section.time-zone">
+    <value>🕒 Time zone</value>
+  </data>
+  <data name="Advanced.Section.computer-name">
+    <value>💻 Computer name</value>
+  </data>
+  <data name="Advanced.Section.setup-settings">
+    <value>⚙️ Setup settings</value>
+  </data>
+  <data name="Advanced.Section.source-image">
+    <value>🧱 Source image</value>
+  </data>
+  <data name="Advanced.Section.windows-pe">
+    <value>🪄 Windows PE</value>
+  </data>
+  <data name="Advanced.Section.processor-archs">
+    <value>🧬 Processor architectures</value>
+  </data>
+  <data name="Advanced.Section.compact-os">
+    <value>🗜️ Compact OS</value>
+  </data>
+  <data name="Advanced.Section.explorer">
+    <value>📁 File Explorer</value>
+  </data>
+  <data name="Advanced.Section.visual-effects">
+    <value>✨ Visual effects</value>
+  </data>
+  <data name="Advanced.Section.desktop-icons">
+    <value>🖼️ Desktop icons</value>
+  </data>
+  <data name="Advanced.Section.start-menu">
+    <value>🧭 Start menu &amp; taskbar</value>
+  </data>
+  <data name="Advanced.Section.start-folders">
+    <value>📂 Start menu folders</value>
+  </data>
+  <data name="Advanced.Section.personalization">
+    <value>🎨 Personalization</value>
+  </data>
 
   <!-- ═══ Scripts section ═════════════════════════════════════ -->
   <data name="Section.scripts.Subtitle">
@@ -829,6 +868,9 @@ WScript.Echo "Hello"</value>
   </data>
   <data name="Docs.BackToIndex">
     <value>All topics</value>
+  </data>
+  <data name="Docs.ExternalLinks.Warning">
+    <value>External links are listed as references and open outside preflight.xml.</value>
   </data>
   <data name="Docs.Entry.ComingSoon">
     <value>Detailed documentation for this topic is coming in a later phase.</value>

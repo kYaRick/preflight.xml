@@ -26,7 +26,7 @@ public static class AppLockerSection
                 LabelKey = "AppLocker.Mode.Label",
                 DescriptionKey = "AppLocker.Mode.Description",
                 ShowDescriptionInAdvanced = true,
-                LearnMoreUrl = "https://learn.microsoft.com/windows/security/application-security/application-control/windows-defender-application-control/applocker/applocker-overview",
+                LearnMoreUrl = "/docs/applocker",
                 Kind = OptionKind.Radio,
                 InlineValues =
                 [
