@@ -7,35 +7,52 @@
 
 <PageTitle>@_name · @L["Docs.Title"]</PageTitle>
 
-<div class="pf-docs-entry" style="padding: 24px 16px; max-width: 960px; margin: 0 auto;">
+<div class="pf-docs-entry" style="padding: 16px; max-width: 1400px; margin: 0 auto;">
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
         <FluentAnchor Href="/docs" Appearance="Appearance.Outline">← @L["Docs.BackToIndex"]</FluentAnchor>
         <FluentSpacer />
+        <FluentAnchor Href="/" Appearance="Appearance.Lightweight">@L["Common.BackToHome"]</FluentAnchor>
     </FluentStack>
 
-    <FluentLabel Typo="Typography.PageTitle" Style="margin-top: 16px;">@_name</FluentLabel>
-    <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 24px 0;">@_description</FluentLabel>
+    <FluentGrid Spacing="3" Style="margin-top: 12px; align-items: flex-start;">
 
-    <FluentMessageBar Intent="MessageIntent.Warning" AllowDismiss="false" Style="margin-bottom: 16px;">
-        @L["Docs.ExternalLinks.Warning"]
-    </FluentMessageBar>
+        <!-- Sidebar: section list so users always know where they are. -->
+        <FluentGridItem xs="12" md="3">
+            <FluentCard Style="padding: 8px; position: sticky; top: 16px;">
+                <FluentNavMenu>
+                    @foreach (var id in SectionRegistry.AllSectionIds)
+                    {
+                        <FluentNavLink Href="@($"/docs/{id}")" Match="NavLinkMatch.All">
+                            @L[$"Advanced.Section.{id}"]
+                        </FluentNavLink>
+                    }
+                </FluentNavMenu>
+            </FluentCard>
+        </FluentGridItem>
 
-    @if (_section is not null)
-    {
-        <SectionView Section="@_section" ViewMode="SectionView.SectionMode.Docs" ShowHeader="false" />
-    }
-    else if (_articleHtml is not null)
-    {
-        <section class="pf-section__intro">
-            @((MarkupString)_articleHtml)
-        </section>
-    }
-    else
-    {
-        <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
-            @L["Docs.Entry.ComingSoon"]
-        </FluentMessageBar>
-    }
+        <!-- Main content -->
+        <FluentGridItem xs="12" md="9">
+            <FluentLabel Typo="Typography.PageTitle">@_name</FluentLabel>
+            <FluentLabel Typo="Typography.Body" Style="margin: 4px 0 16px 0; opacity: 0.8;">@_description</FluentLabel>
+
+            @if (_section is not null)
+            {
+                <SectionView Section="@_section" ViewMode="SectionView.SectionMode.Docs" ShowHeader="false" />
+            }
+            else if (_articleHtml is not null)
+            {
+                <section class="pf-section__intro">
+                    @((MarkupString)_articleHtml)
+                </section>
+            }
+            else
+            {
+                <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
+                    @L["Docs.Entry.ComingSoon"]
+                </FluentMessageBar>
+            }
+        </FluentGridItem>
+    </FluentGrid>
 </div>
 
 @code {

@@ -12,10 +12,10 @@ public static class StartFoldersSection
 {
     public static readonly SectionDefinition Definition = new()
     {
-        Id = "folders-start",
-        TitleKey = "Advanced.Section.folders-start",
-        SubtitleKey = "Section.folders-start.Subtitle",
-        IntroMarkdownPath = "content/sections/folders-start.{locale}.md",
+        Id = "start-folders",
+        TitleKey = "Advanced.Section.start-folders",
+        SubtitleKey = "Section.start-folders.Subtitle",
+        IntroMarkdownPath = "content/sections/start-folders.{locale}.md",
         Options =
         [
             new OptionDefinition
