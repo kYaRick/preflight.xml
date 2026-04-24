@@ -288,39 +288,28 @@
         var entries = option.InlineValues ?? [];
 
         var i = 0;
-        builder.OpenElement(i++, "div");
-        builder.AddAttribute(i++, "class", "pf-radio-group");
-        builder.AddAttribute(i++, "role", "radiogroup");
-
-        foreach (var entry in entries)
+        builder.OpenComponent<FluentRadioGroup<string>>(i++);
+        builder.AddAttribute(i++, "Name", $"opt-{option.Id}");
+        builder.AddAttribute(i++, "Value", currentValue);
+        builder.AddAttribute(i++, "Orientation", Orientation.Vertical);
+        builder.AddAttribute(i++, "Class", "pf-radio-group");
+        builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<string>(this, v =>
         {
-            var entryValue = entry.Value;
-            var isChecked = string.Equals(currentValue, entryValue, StringComparison.Ordinal);
-
-            builder.OpenElement(i++, "label");
-            builder.AddAttribute(i++, "class", "pf-radio");
-
-            builder.OpenElement(i++, "input");
-            builder.AddAttribute(i++, "type", "radio");
-            builder.AddAttribute(i++, "name", $"opt-{option.Id}");
-            builder.AddAttribute(i++, "value", entryValue);
-            builder.AddAttribute(i++, "checked", isChecked);
-            builder.AddAttribute(i++, "onchange", EventCallback.Factory.Create<ChangeEventArgs>(this, _ =>
+            option.SetString?.Invoke(ModeSvc.Config, v);
+            ModeSvc.NotifyConfigChanged();
+        }));
+        builder.AddAttribute(i++, "ChildContent", (RenderFragment)(child =>
+        {
+            var k = 0;
+            foreach (var entry in entries)
             {
-                option.SetString?.Invoke(ModeSvc.Config, entryValue);
-                ModeSvc.NotifyConfigChanged();
-            }));
-            builder.CloseElement();
-
-            builder.OpenElement(i++, "span");
-            builder.AddAttribute(i++, "class", "pf-radio__label");
-            builder.AddContent(i++, L[entry.DisplayKey]);
-            builder.CloseElement();
-
-            builder.CloseElement();
-        }
-
-        builder.CloseElement();
+                child.OpenComponent<FluentRadio<string>>(k++);
+                child.AddAttribute(k++, "Value", entry.Value);
+                child.AddAttribute(k++, "ChildContent", (RenderFragment)(c => c.AddContent(0, L[entry.DisplayKey])));
+                child.CloseComponent();
+            }
+        }));
+        builder.CloseComponent();
     }
 
     private void RenderCheckboxGroup(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
@@ -439,18 +428,40 @@
 
     private void RenderTextarea(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
     {
-        var i = 0;
-        builder.OpenComponent<FluentTextArea>(i++);
-        builder.AddAttribute(i++, "Value", option.GetString?.Invoke(ModeSvc.Config) ?? "");
-        // Rows: explicit `Rows` override wins; otherwise fall back to `TextareaRows` (default 6).
-        builder.AddAttribute(i++, "Rows", option.Rows ?? option.TextareaRows);
-        builder.AddAttribute(i++, "Class", "pf-textarea");
         var placeholder = option.PlaceholderKey is not null ? (string)L[option.PlaceholderKey] : option.Placeholder;
+        var rows = option.Rows ?? option.TextareaRows;
+
+        // Code-editor path: option.Language is set (e.g. "xml", "json"). Swap the
+        // plain FluentTextArea for the Prism-overlay CodeEditor so authoring XML
+        // visually matches the read-only preview modal.
+        if (!string.IsNullOrEmpty(option.Language))
+        {
+            var i = 0;
+            builder.OpenComponent<CodeEditor>(i++);
+            builder.AddAttribute(i++, "Language", option.Language);
+            builder.AddAttribute(i++, "Value", option.GetString?.Invoke(ModeSvc.Config));
+            builder.AddAttribute(i++, "Rows", rows);
+            if (!string.IsNullOrEmpty(placeholder))
+                builder.AddAttribute(i++, "Placeholder", placeholder);
+            builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<string?>(this, v =>
+            {
+                option.SetString?.Invoke(ModeSvc.Config, v);
+                ModeSvc.NotifyConfigChanged();
+            }));
+            builder.CloseComponent();
+            return;
+        }
+
+        var j = 0;
+        builder.OpenComponent<FluentTextArea>(j++);
+        builder.AddAttribute(j++, "Value", option.GetString?.Invoke(ModeSvc.Config) ?? "");
+        builder.AddAttribute(j++, "Rows", rows);
+        builder.AddAttribute(j++, "Class", "pf-textarea");
         if (!string.IsNullOrEmpty(placeholder))
-            builder.AddAttribute(i++, "Placeholder", placeholder);
+            builder.AddAttribute(j++, "Placeholder", placeholder);
         if (option.Monospace)
-            builder.AddAttribute(i++, "Style", "width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;");
-        builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<string>(this, v =>
+            builder.AddAttribute(j++, "Style", "width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;");
+        builder.AddAttribute(j++, "ValueChanged", EventCallback.Factory.Create<string>(this, v =>
         {
             option.SetString?.Invoke(ModeSvc.Config, v);
             ModeSvc.NotifyConfigChanged();

@@ -46,11 +46,11 @@
                             </FluentButton>
                         }
                     </div>
-                    <FluentTextArea Value="@content"
-                                    ValueChanged="@(v => OnContentChanged(phase, slotIndex, type, v))"
-                                    Rows="6"
-                                    Style="width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;"
-                                    Placeholder="@L[$"Scripts.Type.{type}.Placeholder"]" />
+                    <CodeEditor Language="@PrismLanguageFor(type)"
+                                Rows="6"
+                                Value="@content"
+                                ValueChanged="@(v => OnContentChanged(phase, slotIndex, type, v))"
+                                Placeholder="@L[$"Scripts.Type.{type}.Placeholder"]" />
                 </div>
             }
         </section>
@@ -75,6 +75,18 @@
         new("FirstLogon",  s => s.FirstLogon),
         new("UserOnce",    s => s.UserOnce),
     ];
+
+    // Map each script type onto a Prism language hint so the CodeEditor picks the
+    // right token grammar. Registry files are close enough to INI, VBScript has no
+    // matching Prism component so we fall back to plain batch.
+    private static string PrismLanguageFor(CustomScriptType type) => type switch
+    {
+        CustomScriptType.PowerShell => "powershell",
+        CustomScriptType.Registry   => "ini",
+        CustomScriptType.Cmd        => "batch",
+        CustomScriptType.VbScript   => "vbnet",
+        _                           => "batch",
+    };
 
     // DefaultUser phase is restricted to Reg / Cmd / Ps1 by Schneegans' ScriptExtensions.GetAllowedTypes -
     // mirror that constraint so the dropdown can't produce an invalid combination.

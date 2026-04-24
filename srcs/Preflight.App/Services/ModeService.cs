@@ -39,6 +39,15 @@ public sealed class ModeService
         StateChanged?.Invoke();
     }
 
+    /// <summary>Replace the current config (used by Import XML). Fires <see cref="StateChanged"/>.</summary>
+    public void ReplaceConfig(UnattendConfig next)
+    {
+        ArgumentNullException.ThrowIfNull(next);
+        Config = next;
+        ActivePresetId = null;
+        StateChanged?.Invoke();
+    }
+
     /// <summary>Notify subscribers after mutating <see cref="Config"/> in place.</summary>
     public void NotifyConfigChanged() => StateChanged?.Invoke();
 }

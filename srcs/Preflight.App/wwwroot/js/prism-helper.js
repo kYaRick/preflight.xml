@@ -20,6 +20,32 @@ window.preflightPrism = {
   },
 };
 
+// Code-editor bridge: keeps the Prism-highlighted <pre> scrolled to the same
+// position as the textarea sitting on top of it. Without this, long XML pastes
+// drift out of sync the moment the user scrolls inside the input. The wire()
+// attaches a scroll listener; unwire() tears it down so Blazor doesn't leak
+// handlers when the component is disposed.
+window.preflightCodeEditor = {
+  wire(rootEl, textareaEl) {
+    if (!rootEl || !textareaEl) return;
+    const view = rootEl.querySelector('.pf-code-editor__view');
+    if (!view) return;
+    const onScroll = () => {
+      view.scrollTop = textareaEl.scrollTop;
+      view.scrollLeft = textareaEl.scrollLeft;
+    };
+    textareaEl.addEventListener('scroll', onScroll, { passive: true });
+    rootEl.__pfScrollHandler = { textareaEl, onScroll };
+  },
+  unwire(rootEl) {
+    if (!rootEl) return;
+    const info = rootEl.__pfScrollHandler;
+    if (!info) return;
+    info.textareaEl.removeEventListener('scroll', info.onScroll);
+    delete rootEl.__pfScrollHandler;
+  },
+};
+
 // DOM portal for escaping a trapped stacking context - needed because the
 // Advanced page is rendered inside `.pf-page-enter`, whose will-change +
 // transform create a new stacking context that traps position:fixed overlays

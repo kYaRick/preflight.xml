@@ -30,11 +30,18 @@
 
     <script type="importmap"></script>
 
-    <!-- Syntax highlighter for the Advanced XML preview. Core + markup (XML/HTML)
-         is bundled in the default build; no extra language scripts needed. The
-         token colours themselves are overridden in css/app.css to match the
-         pf-* palette, so no prism theme CSS is pulled from the CDN. -->
+    <!-- Syntax highlighter for the Advanced XML preview AND the in-page CodeEditor
+         (Policy XML / start pins JSON / diskpart / custom scripts). Core + markup
+         ships in prism.min.js; the extras below cover the script/config surfaces.
+         `defer` on all of them so they execute in order after the DOM is parsed.
+         Token colours are overridden by css/app.css against the pf-* palette. -->
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-batch.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-powershell.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-ini.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-basic.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-vbnet.min.js" defer></script>
 
     <!-- Theme + culture + keyboard helpers (must load before first paint). -->
     <script src="js/theme.js"></script>

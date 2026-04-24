@@ -64,6 +64,7 @@ public static class WindowsPeSectionDefinition
                 LabelKey = "Pe.CustomCmd.Label",
                 DescriptionKey = "Pe.CustomCmd.Description",
                 Kind = OptionKind.Textarea,
+                Language = "batch",
                 Rows = 12,
                 PlaceholderKey = "Pe.CustomCmd.Placeholder",
                 GetString = c => c.Pe.CustomCmd,

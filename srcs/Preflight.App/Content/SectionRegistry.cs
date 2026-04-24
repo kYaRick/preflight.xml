@@ -71,6 +71,8 @@ public static class SectionRegistry
             "computer-name",
             "time-zone",
             "users",
+            "visual-effects",
+            "desktop-icons",
         };
 
     /// <summary>Public dictionary exposed for pages that want to enumerate data-driven defs (e.g. Docs).</summary>

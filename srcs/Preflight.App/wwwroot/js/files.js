@@ -40,5 +40,50 @@ window.preflightFiles = (() => {
     return ok;
   }
 
-  return { download, copyText };
+  // pickText: open a hidden <input type="file"> and resolve with the selected file's
+  // text contents. Accept-mask defaults to *.xml; pass a custom value (e.g. ".json")
+  // to narrow or widen the picker. Returns null when the user cancels.
+  function pickText(accept) {
+    return new Promise((resolve) => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = accept || ".xml";
+      input.style.display = "none";
+      let settled = false;
+
+      const cleanup = () => {
+        window.removeEventListener("focus", onFocus);
+        if (input.parentNode) input.parentNode.removeChild(input);
+      };
+
+      const onChange = async () => {
+        settled = true;
+        const file = input.files && input.files[0];
+        if (!file) { cleanup(); resolve(null); return; }
+        try {
+          const text = await file.text();
+          cleanup();
+          resolve({ name: file.name, text });
+        } catch {
+          cleanup();
+          resolve(null);
+        }
+      };
+
+      // The cancel button on native pickers doesn't fire `change`; we rely on the
+      // window focus event to detect the dialog closing without a selection.
+      const onFocus = () => {
+        setTimeout(() => {
+          if (!settled) { cleanup(); resolve(null); }
+        }, 250);
+      };
+
+      input.addEventListener("change", onChange);
+      window.addEventListener("focus", onFocus, { once: true });
+      document.body.appendChild(input);
+      input.click();
+    });
+  }
+
+  return { download, copyText, pickText };
 })();

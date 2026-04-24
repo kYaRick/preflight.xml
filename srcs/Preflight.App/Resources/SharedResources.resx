@@ -1209,6 +1209,112 @@ convert gpt
   <data name="VisualEffects.Preset.BestPerformance"><value>Best performance</value></data>
   <data name="VisualEffects.Preset.Custom"><value>Custom (select below)</value></data>
 
+  <!-- ═══ Users ══════════════════════════════════════════════ -->
+  <data name="Users.Accounts.Title"><value>Local accounts</value></data>
+  <data name="Users.Accounts.Description"><value>One row per account Setup creates. At least one account should be an administrator.</value></data>
+  <data name="Users.Accounts.Empty"><value>No accounts yet. Add one below or pick a preset.</value></data>
+  <data name="Users.Accounts.Add"><value>Add account</value></data>
+  <data name="Users.Accounts.Remove"><value>Remove</value></data>
+  <data name="Users.Account.Username"><value>Username</value></data>
+  <data name="Users.Account.DisplayName"><value>Display name</value></data>
+  <data name="Users.Account.Password"><value>Password</value></data>
+  <data name="Users.Account.ShowPassword"><value>Show password</value></data>
+  <data name="Users.Account.HidePassword"><value>Hide password</value></data>
+  <data name="Users.Account.Group"><value>Group</value></data>
+  <data name="Users.Account.Group.Admin"><value>Administrators</value></data>
+  <data name="Users.Account.Group.User"><value>Users</value></data>
+  <data name="Users.FirstLogon.Title"><value>First-logon behaviour</value></data>
+  <data name="Users.FirstLogon.Description"><value>Which account (if any) logs in automatically the first time Windows boots.</value></data>
+  <data name="Users.FirstLogon.FirstAdmin"><value>First administrator above</value></data>
+  <data name="Users.FirstLogon.BuiltIn"><value>Built-in Administrator</value></data>
+  <data name="Users.FirstLogon.DoNotLogon"><value>Do not log anyone in</value></data>
+  <data name="Users.FirstLogon.BuiltInPassword"><value>Built-in Administrator password</value></data>
+  <data name="Users.FirstLogon.Obscure"><value>Obscure the password in autounattend.xml</value></data>
+  <data name="Users.FirstLogon.Obscure.Description"><value>Base64-encode so casual readers don't see it. Still trivially recoverable - do not treat as security.</value></data>
+  <data name="Users.FirstLogon.PromptMsa"><value>Show the Microsoft account sign-in prompt in OOBE</value></data>
+  <data name="Users.FirstLogon.PromptLocal"><value>Show the local-account creation prompt in OOBE</value></data>
+  <data name="Users.FirstLogon.PromptHint"><value>Both prompts apply only when first logon is set to "Do not log anyone in".</value></data>
+  <data name="Users.Expiration.Title"><value>Password expiration</value></data>
+  <data name="Users.Expiration.Description"><value>How long local account passwords stay valid.</value></data>
+  <data name="Users.Expiration.Default"><value>Windows default</value></data>
+  <data name="Users.Expiration.Never"><value>Never expire</value></data>
+  <data name="Users.Expiration.Custom"><value>Custom (days)</value></data>
+  <data name="Users.Expiration.Days"><value>Days until expiration</value></data>
+  <data name="Users.Lockout.Title"><value>Account lockout policy</value></data>
+  <data name="Users.Lockout.Description"><value>How Windows responds to a run of failed sign-ins.</value></data>
+  <data name="Users.Lockout.Default"><value>Windows default</value></data>
+  <data name="Users.Lockout.Disabled"><value>Disabled (no lockout)</value></data>
+  <data name="Users.Lockout.Custom"><value>Custom thresholds</value></data>
+  <data name="Users.Lockout.Disabled.Warning"><value>With lockout disabled, brute-force attempts against a local account are effectively unlimited.</value></data>
+  <data name="Users.Lockout.Attempts"><value>Bad attempts before lockout</value></data>
+  <data name="Users.Lockout.Window"><value>Observation window (minutes)</value></data>
+  <data name="Users.Lockout.Unlock"><value>Lockout duration (minutes)</value></data>
+  <data name="Users.Lockout.WindowHint"><value>The window is the time over which bad attempts are counted; the duration is how long the account stays locked.</value></data>
+
+  <!-- ═══ Computer name ══════════════════════════════════════ -->
+  <data name="ComputerName.Mode.Label"><value>Computer name source</value></data>
+  <data name="ComputerName.Mode.Description"><value>Random picks a fresh hostname each boot, Manual uses the exact value below, Script runs your generator.</value></data>
+  <data name="ComputerName.Mode.Random"><value>Random</value></data>
+  <data name="ComputerName.Mode.Manual"><value>Manual</value></data>
+  <data name="ComputerName.Mode.Script"><value>Script-generated</value></data>
+  <data name="ComputerName.Custom.Label"><value>Computer name</value></data>
+  <data name="ComputerName.Custom.Description"><value>Exact NetBIOS-compatible hostname. 1-15 characters.</value></data>
+  <data name="ComputerName.Script.Label"><value>Computer-name script</value></data>
+  <data name="ComputerName.Script.Description"><value>Cmd / PowerShell that writes the chosen hostname to the expected registry value.</value></data>
+
+  <!-- ═══ Time zone ══════════════════════════════════════════ -->
+  <data name="TimeZone.Mode.Label"><value>Time zone source</value></data>
+  <data name="TimeZone.Mode.Description"><value>Implicit uses the region's default time zone. Explicit pins the specific zone below.</value></data>
+  <data name="TimeZone.Mode.Implicit"><value>Implicit (from region)</value></data>
+  <data name="TimeZone.Mode.Explicit"><value>Explicit</value></data>
+  <data name="TimeZone.Zone.Label"><value>Time zone</value></data>
+  <data name="TimeZone.Zone.Description"><value>Windows tzid (e.g. &quot;Pacific Standard Time&quot;).</value></data>
+
+  <!-- ═══ Desktop icons (Specific grid) ══════════════════════ -->
+  <data name="DesktopIcons.VisibleIcons.Label"><value>Visible desktop icons</value></data>
+  <data name="DesktopIcons.VisibleIcons.Description"><value>Tick the icons Windows should show on the desktop. Unticked entries are hidden.</value></data>
+
+  <!-- ═══ Start menu folders (Specific grid) ═════════════════ -->
+  <data name="StartFolders.VisibleFolders.Label"><value>Folder shortcuts</value></data>
+  <data name="StartFolders.VisibleFolders.Description"><value>Tick which folder shortcuts appear next to the power button.</value></data>
+
+  <!-- ═══ Bloatware (list UI chrome) ═════════════════════════ -->
+  <data name="Bloatware.SelectAll"><value>Select all</value></data>
+  <data name="Bloatware.ClearAll"><value>Clear all</value></data>
+  <data name="Bloatware.Selected"><value>Selected</value></data>
+
+  <!-- ═══ Visual effects (per-effect checkboxes) ═════════════ -->
+  <data name="Section.personalization.Subtitle"><value>Theme, wallpaper and lock-screen overrides applied at first boot.</value></data>
+  <data name="VisualEffects.CustomEffects.Label"><value>Individual effects</value></data>
+  <data name="VisualEffects.CustomEffects.Description"><value>Tick each effect you want enabled. Unticked effects are explicitly disabled.</value></data>
+  <data name="VisualEffects.Effect.ControlAnimations"><value>Animate controls and elements inside windows</value></data>
+  <data name="VisualEffects.Effect.AnimateMinMax"><value>Animate windows when minimizing and maximizing</value></data>
+  <data name="VisualEffects.Effect.TaskbarAnimations"><value>Taskbar animations</value></data>
+  <data name="VisualEffects.Effect.DWMAeroPeekEnabled"><value>Aero Peek (preview desktop on hover)</value></data>
+  <data name="VisualEffects.Effect.MenuAnimation"><value>Fade or slide menus into view</value></data>
+  <data name="VisualEffects.Effect.TooltipAnimation"><value>Fade or slide tooltips into view</value></data>
+  <data name="VisualEffects.Effect.SelectionFade"><value>Fade out menu items after clicking</value></data>
+  <data name="VisualEffects.Effect.DWMSaveThumbnailEnabled"><value>Save taskbar thumbnail previews</value></data>
+  <data name="VisualEffects.Effect.CursorShadow"><value>Show shadows under mouse pointer</value></data>
+  <data name="VisualEffects.Effect.ListviewShadow"><value>Show shadows under window</value></data>
+  <data name="VisualEffects.Effect.ThumbnailsOrIcon"><value>Show thumbnails instead of icons</value></data>
+  <data name="VisualEffects.Effect.ListviewAlphaSelect"><value>Show translucent selection rectangle</value></data>
+  <data name="VisualEffects.Effect.DragFullWindows"><value>Show window contents while dragging</value></data>
+  <data name="VisualEffects.Effect.ComboBoxAnimation"><value>Slide open combo boxes</value></data>
+  <data name="VisualEffects.Effect.FontSmoothing"><value>Smooth edges of screen fonts</value></data>
+  <data name="VisualEffects.Effect.ListBoxSmoothScrolling"><value>Smooth-scroll list boxes</value></data>
+  <data name="VisualEffects.Effect.DropShadow"><value>Drop shadow on desktop icon labels</value></data>
+
+  <!-- ═══ Wizard review additions ════════════════════════════ -->
+  <data name="Wizard.Review.Preparing"><value>Preparing…</value></data>
+  <data name="Wizard.Review.Tweak"><value>Tweak in Advanced</value></data>
+
+  <!-- ═══ Import XML ═════════════════════════════════════════ -->
+  <data name="Landing.Import.Reading"><value>Reading file…</value></data>
+  <data name="Landing.Import.Success"><value>Imported {0}. Opening Advanced editor.</value></data>
+  <data name="Landing.Import.Partial"><value>Partial import from {0} — some sections defaulted.</value></data>
+  <data name="Landing.Import.Failed"><value>Import failed: {0}</value></data>
+
   <!-- ═══ Windows PE ═════════════════════════════════════════ -->
   <data name="Pe.Mode.Label"><value>PE behaviour</value></data>
   <data name="Pe.Mode.Description"><value>Default uses the built-in PE pass. Generated writes diskpart + partitioning for you. Custom runs the cmd script you supply.</value></data>

@@ -90,6 +90,8 @@ public static class NetworkSection
                 DescriptionKey = "Network.ProfileXml.Description",
                 ShowDescriptionInAdvanced = true,
                 Kind = OptionKind.Textarea,
+                Language = "xml",
+                TextareaRows = 10,
                 VisibleWhen = c => c.Network.WifiMode == WifiMode.ProfileXml,
                 GetString = c => c.Network.ProfileXml,
                 SetString = (c, v) => c.Network.ProfileXml = v,

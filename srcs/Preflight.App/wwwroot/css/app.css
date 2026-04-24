@@ -1197,6 +1197,28 @@ fluent-anchor[appearance="hypertext"]:hover {
     border: 1px solid var(--pf-border);
 }
 
+/* Docs/intro images: constrain size, add card treatment, and let the following
+   `<em>` line act as a caption so scraped reference screenshots don't blow up
+   the page width. Images are rendered as block so the caption sits below. */
+.pf-section__intro img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 0.75rem 0 0.25rem;
+    padding: 6px;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+}
+
+.pf-section__intro p > img + em,
+.pf-section__intro p > img:first-child + em {
+    display: block;
+    color: var(--pf-text-muted);
+    font-size: 0.86rem;
+    margin-bottom: 0.75rem;
+}
+
 .pf-section__options {
     display: flex;
     flex-direction: column;
@@ -1843,6 +1865,80 @@ fluent-select.pf-select::part(positioning-region) {
     background: var(--pf-accent);
 }
 
+/* ─── Advanced code editor (textarea + Prism overlay) ────
+   A <pre class="pf-xml-code pf-code-editor__view"> sits absolutely behind a
+   transparent textarea. Both share font metrics, padding, line-height and
+   `white-space: pre` so a character at row R column C lines up across layers.
+   JS keeps the <pre>'s scrollTop/scrollLeft mirrored to the textarea's. */
+.pf-code-editor {
+    position: relative;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-left: 3px solid var(--pf-accent);
+    border-radius: var(--pf-radius-md);
+    overflow: hidden;
+    transition: border-color 0.15s var(--pf-ease);
+}
+
+.pf-code-editor:focus-within {
+    border-color: var(--pf-accent-strong);
+    box-shadow: 0 0 0 2px var(--pf-accent-ring);
+}
+
+/* Highlighted mirror. Reuses .pf-xml-code's palette (tokens are coloured by
+   the shared .pf-xml-code .token.* rules below) but disables its own border,
+   max-height and radius since the wrapper owns those. */
+.pf-code-editor__view {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    max-height: none;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.pf-code-editor__view code {
+    display: block;
+    min-height: 100%;
+}
+
+/* Transparent textarea on top. Caret/selection remain visible because the
+   text itself (rendered transparent) lines up 1:1 with the Prism-painted
+   characters behind it. */
+.pf-code-editor__input {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    margin: 0;
+    font-family: var(--pf-font-mono);
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: transparent;
+    caret-color: var(--pf-text);
+    background: transparent;
+    border: none;
+    outline: none;
+    resize: vertical;
+    white-space: pre;
+    overflow: auto;
+    tab-size: 2;
+    min-height: 240px;
+}
+
+.pf-code-editor__input::selection {
+    color: transparent;
+    background: rgba(139, 92, 246, 0.35);
+}
+
+.pf-code-editor__input::placeholder {
+    color: var(--pf-text-muted);
+    opacity: 0.6;
+}
+
 /* ─── Prism token theme (scoped to .pf-xml-code) ──────────
    We don't pull Prism's default CSS - it targets token classes with
    generic greens/blues that fight the indigo/violet palette. Instead
@@ -1928,6 +2024,75 @@ html.theme-dark .pf-xml-code .token.entity,
 html.theme-dark .pf-xml-code .token.namespace {
     color: #f472b6;
     /* pink-400 */
+}
+
+/* ─── Additional token types for non-XML languages (JSON / batch /
+   powershell / ini / vbnet). Reuse the XML palette so the CodeEditor
+   looks consistent regardless of which Prism grammar produced it. */
+.pf-xml-code .token.keyword,
+.pf-xml-code .token.selector,
+.pf-xml-code .token.important,
+.pf-xml-code .token.atrule,
+.pf-xml-code .token.class-name {
+    color: var(--pf-accent-strong);
+    font-weight: 500;
+}
+
+html.theme-dark .pf-xml-code .token.keyword,
+html.theme-dark .pf-xml-code .token.selector,
+html.theme-dark .pf-xml-code .token.important,
+html.theme-dark .pf-xml-code .token.atrule,
+html.theme-dark .pf-xml-code .token.class-name {
+    color: #c4b5fd;
+    /* violet-300 */
+}
+
+.pf-xml-code .token.property,
+.pf-xml-code .token.variable,
+.pf-xml-code .token.constant,
+.pf-xml-code .token.symbol {
+    color: #c026d3;
+}
+
+html.theme-dark .pf-xml-code .token.property,
+html.theme-dark .pf-xml-code .token.variable,
+html.theme-dark .pf-xml-code .token.constant,
+html.theme-dark .pf-xml-code .token.symbol {
+    color: #fbbf24;
+    /* amber-400 */
+}
+
+.pf-xml-code .token.function,
+.pf-xml-code .token.builtin {
+    color: var(--pf-accent);
+    font-weight: 500;
+}
+
+html.theme-dark .pf-xml-code .token.function,
+html.theme-dark .pf-xml-code .token.builtin {
+    color: #67e8f9;
+    /* cyan-300 */
+}
+
+.pf-xml-code .token.number,
+.pf-xml-code .token.boolean,
+.pf-xml-code .token.null,
+.pf-xml-code .token.regex {
+    color: #c2410c;
+}
+
+html.theme-dark .pf-xml-code .token.number,
+html.theme-dark .pf-xml-code .token.boolean,
+html.theme-dark .pf-xml-code .token.null,
+html.theme-dark .pf-xml-code .token.regex {
+    color: #f0abfc;
+    /* fuchsia-300 */
+}
+
+.pf-xml-code .token.operator,
+.pf-xml-code .token.url {
+    color: var(--pf-text);
+    opacity: 0.8;
 }
 
 /* ─── XML expand modal ────────────────────────────────────
@@ -2262,5 +2427,177 @@ html.theme-dark .pf-xml-code .token.namespace {
    within the option card. */
 .pf-textarea {
     width: 100%;
+}
+
+/* ─── Users section ────────────────────────────────────────
+   Four self-contained blocks (accounts / first-logon / expiration /
+   lockout). Each `.pf-users__block` already has `.pf-option` framing
+   from the shared Advanced palette; we override the default compact
+   padding + add breathing room between blocks so the long form
+   doesn't feel crammed. */
+.pf-users {
+    gap: 1.25rem;
+}
+
+.pf-section--advanced .pf-users__block {
+    padding: 1.125rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.pf-section--advanced .pf-users__block + .pf-users__block {
+    margin-top: 0.25rem;
+}
+
+.pf-users__block .pf-option__description {
+    margin: 0;
+}
+
+/* Accounts table: wraps so narrow viewports scroll rather than squish
+   the cells. Header row uses the muted palette so it reads as chrome. */
+.pf-users__table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+    background: rgba(var(--pf-bg-rgb), 0.4);
+}
+
+.pf-users__table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.92rem;
+}
+
+.pf-users__table th,
+.pf-users__table td {
+    padding: 0.55rem 0.7rem;
+    text-align: left;
+    vertical-align: middle;
+}
+
+.pf-users__table th {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--pf-text-muted);
+    background: var(--pf-surface-2);
+    border-bottom: 1px solid var(--pf-border);
+}
+
+.pf-users__table tbody tr + tr td {
+    border-top: 1px solid var(--pf-border);
+}
+
+.pf-users__table-actions {
+    width: 44px;
+    text-align: center !important;
+}
+
+.pf-users__password {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    width: 100%;
+}
+
+.pf-users__icon-btn {
+    flex: 0 0 auto;
+    width: 30px;
+    height: 30px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: transparent;
+    color: var(--pf-text-muted);
+    border: 1px solid transparent;
+    border-radius: var(--pf-radius-sm);
+    cursor: pointer;
+    transition: color 0.15s var(--pf-ease), background 0.15s var(--pf-ease), border-color 0.15s var(--pf-ease);
+}
+
+.pf-users__icon-btn:hover {
+    color: var(--pf-text);
+    background: var(--pf-surface-2);
+    border-color: var(--pf-border);
+}
+
+.pf-users__icon-btn:focus-visible {
+    outline: 2px solid var(--pf-accent-ring);
+    outline-offset: 2px;
+}
+
+.pf-users__icon-btn--danger:hover {
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+.pf-users__icon-btn svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+.pf-users__empty {
+    padding: 0.875rem 1rem;
+    color: var(--pf-text-muted);
+    background: rgba(var(--pf-bg-rgb), 0.4);
+    border: 1px dashed var(--pf-border);
+    border-radius: var(--pf-radius-md);
+    font-size: 0.92rem;
+}
+
+.pf-users__add-btn {
+    align-self: flex-start;
+}
+
+.pf-users__sub-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding-left: 1.25rem;
+    border-left: 2px solid var(--pf-border);
+    max-width: 420px;
+}
+
+.pf-users__sub-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--pf-text);
+}
+
+.pf-users__checkbox-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    margin-top: 0.25rem;
+}
+
+.pf-users__hint {
+    display: block;
+    color: var(--pf-text-muted);
+    font-size: 0.8rem;
+    line-height: 1.4;
+    padding-left: 1.75rem;
+}
+
+/* Give the shared option-card grid a touch more breathing room so that
+   radio groups, number fields and checkbox clusters don't visually run
+   into each other. 0.75 was noticeably tight; 1rem reads as a clear
+   divider without wasting vertical space. */
+.pf-section--advanced .pf-section__options {
+    gap: 1rem;
+}
+
+/* Consistent pad+gap on the RadioGroup rendered by SectionView so the
+   FluentRadio rows aren't wedged against the description line above. */
+.pf-section--advanced fluent-radio-group.pf-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    margin-top: 0.1rem;
 }
 

@@ -34,11 +34,11 @@
             </FluentSelect>
 
             <label class="pf-option__label" style="margin-top: 12px;">@L["Components.Xml.Label"]</label>
-            <FluentTextArea Value="@(entry.Xml ?? string.Empty)"
-                            ValueChanged="@(v => OnXmlChanged(slotIndex, v))"
-                            Rows="8"
-                            Style="width: 100%; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;"
-                            Placeholder="@L["Components.Xml.Placeholder"]" />
+            <CodeEditor Language="xml"
+                        Rows="8"
+                        Value="@(entry.Xml ?? string.Empty)"
+                        ValueChanged="@(v => OnXmlChanged(slotIndex, v))"
+                        Placeholder="@L["Components.Xml.Placeholder"]" />
         </div>
     }
 </div>

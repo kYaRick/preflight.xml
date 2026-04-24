@@ -10,11 +10,10 @@
     conditional sub-forms (first-logon password, custom expiration days, custom
     lockout triplet, disabled-lockout warning).
 
-    Bindings mutate Mode.Config.* in place, then call Mode.NotifyConfigChanged so
-    the XML preview FAB rebuilds. Schneegans-level validation (reserved usernames,
-    window<=duration, etc.) is left to the engine - errors surface via the XML
-    preview's <!-- failed to generate --> comment, which is the same path the rest
-    of the app uses.
+    Controls are FluentUI primitives (TextField / NumberField / RadioGroup / Checkbox /
+    Select / Button) so the Users form matches the rest of the Advanced editor visually.
+    Each sub-section uses `.pf-users__block` (styled with breathing room + a horizontal
+    divider) so the blocks don't crowd each other.
 *@
 
 <div class="pf-section pf-section--advanced pf-users">
@@ -57,28 +56,26 @@
                             var revealed = _revealedPasswords.Contains(idx);
                             <tr>
                                 <td>
-                                    <input class="pf-users__input"
-                                           type="text"
-                                           maxlength="20"
-                                           value="@account.Name"
-                                           aria-label="@L["Users.Account.Username"]"
-                                           @oninput="@(e => SetName(idx, e.Value?.ToString()))" />
+                                    <FluentTextField Value="@account.Name"
+                                                     Maxlength="20"
+                                                     AriaLabel="@L["Users.Account.Username"]"
+                                                     Style="width: 100%;"
+                                                     ValueChanged="@(v => SetName(idx, v))" />
                                 </td>
                                 <td>
-                                    <input class="pf-users__input"
-                                           type="text"
-                                           value="@account.DisplayName"
-                                           aria-label="@L["Users.Account.DisplayName"]"
-                                           @oninput="@(e => SetDisplayName(idx, e.Value?.ToString()))" />
+                                    <FluentTextField Value="@account.DisplayName"
+                                                     AriaLabel="@L["Users.Account.DisplayName"]"
+                                                     Style="width: 100%;"
+                                                     ValueChanged="@(v => SetDisplayName(idx, v))" />
                                 </td>
                                 <td>
                                     <div class="pf-users__password">
-                                        <input class="pf-users__input"
-                                               type="@(revealed ? "text" : "password")"
-                                               value="@account.Password"
-                                               aria-label="@L["Users.Account.Password"]"
-                                               autocomplete="new-password"
-                                               @oninput="@(e => SetPassword(idx, e.Value?.ToString()))" />
+                                        <FluentTextField Value="@account.Password"
+                                                         TextFieldType="@(revealed ? TextFieldType.Text : TextFieldType.Password)"
+                                                         AriaLabel="@L["Users.Account.Password"]"
+                                                         Autocomplete="new-password"
+                                                         Style="width: 100%;"
+                                                         ValueChanged="@(v => SetPassword(idx, v))" />
                                         <button type="button"
                                                 class="pf-users__icon-btn"
                                                 aria-label="@(revealed ? L["Users.Account.HidePassword"] : L["Users.Account.ShowPassword"])"
@@ -89,18 +86,14 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <select class="pf-users__select"
-                                            aria-label="@L["Users.Account.Group"]"
-                                            @onchange="@(e => SetGroup(idx, e.Value?.ToString()))">
-                                        <option value="@AccountGroup.Administrators"
-                                                selected="@(account.Group == AccountGroup.Administrators)">
-                                            @L["Users.Account.Group.Admin"]
-                                        </option>
-                                        <option value="@AccountGroup.Users"
-                                                selected="@(account.Group == AccountGroup.Users)">
-                                            @L["Users.Account.Group.User"]
-                                        </option>
-                                    </select>
+                                    <FluentSelect TOption="string"
+                                                  Value="@account.Group.ToString()"
+                                                  ValueChanged="@(v => SetGroup(idx, v))"
+                                                  AriaLabel="@L["Users.Account.Group"]"
+                                                  Style="width: 100%;">
+                                        <FluentOption TOption="string" Value="@(AccountGroup.Administrators.ToString())">@L["Users.Account.Group.Admin"]</FluentOption>
+                                        <FluentOption TOption="string" Value="@(AccountGroup.Users.ToString())">@L["Users.Account.Group.User"]</FluentOption>
+                                    </FluentSelect>
                                 </td>
                                 <td class="pf-users__table-actions">
                                     <button type="button"
@@ -118,9 +111,9 @@
             </div>
         }
 
-        <button type="button" class="pf-users__add" @onclick="AddAccount">
-            <span aria-hidden="true">+</span> @L["Users.Accounts.Add"]
-        </button>
+        <FluentButton Appearance="Appearance.Outline" OnClick="AddAccount" Class="pf-users__add-btn">
+            <span aria-hidden="true" style="margin-right: 4px;">＋</span> @L["Users.Accounts.Add"]
+        </FluentButton>
     </section>
 
     @* ── First-logon mode ─────────────────────────────────────── *@
@@ -130,59 +123,50 @@
         </div>
         <p class="pf-option__description">@L["Users.FirstLogon.Description"]</p>
 
-        <div class="pf-users__radio-group" role="radiogroup" aria-label="@L["Users.FirstLogon.Title"]">
+        <FluentRadioGroup Name="pf-first-logon"
+                          Orientation="Orientation.Vertical"
+                          Class="pf-radio-group"
+                          Value="@FirstLogon.Mode.ToString()"
+                          TValue="string"
+                          ValueChanged="@(v => SetFirstLogonMode(Enum.Parse<FirstLogonMode>(v)))">
             @foreach (var (mode, labelKey) in _firstLogonOptions)
             {
-                var thisMode = mode;
-                <label class="pf-users__radio">
-                    <input type="radio"
-                           name="pf-first-logon"
-                           value="@thisMode"
-                           checked="@(FirstLogon.Mode == thisMode)"
-                           @onchange="@(() => SetFirstLogonMode(thisMode))" />
-                    <span>@L[labelKey]</span>
-                </label>
+                <FluentRadio Value="@mode.ToString()" TValue="string">@L[labelKey]</FluentRadio>
             }
-        </div>
+        </FluentRadioGroup>
 
         @if (FirstLogon.Mode == FirstLogonMode.BuiltInAdministrator)
         {
             <div class="pf-users__sub-field">
                 <label class="pf-users__sub-label" for="pf-builtin-pw">@L["Users.FirstLogon.BuiltInPassword"]</label>
-                <input id="pf-builtin-pw"
-                       class="pf-users__input"
-                       type="password"
-                       autocomplete="new-password"
-                       value="@FirstLogon.BuiltInAdminPassword"
-                       @oninput="@(e => SetBuiltInPassword(e.Value?.ToString()))" />
+                <FluentTextField Id="pf-builtin-pw"
+                                 TextFieldType="TextFieldType.Password"
+                                 Autocomplete="new-password"
+                                 Value="@FirstLogon.BuiltInAdminPassword"
+                                 Style="width: 100%; max-width: 420px;"
+                                 ValueChanged="@SetBuiltInPassword" />
             </div>
         }
 
-        <label class="pf-users__checkbox">
-            <input type="checkbox"
-                   checked="@FirstLogon.ObscurePasswordsWithBase64"
-                   @onchange="@(e => SetObscure((bool)(e.Value ?? false)))" />
-            <span>
+        <div class="pf-users__checkbox-stack">
+            <FluentCheckbox Value="@FirstLogon.ObscurePasswordsWithBase64"
+                            ValueChanged="@SetObscure">
                 <strong>@L["Users.FirstLogon.Obscure"]</strong>
-                <small class="pf-users__hint">@L["Users.FirstLogon.Obscure.Description"]</small>
-            </span>
-        </label>
+            </FluentCheckbox>
+            <small class="pf-users__hint">@L["Users.FirstLogon.Obscure.Description"]</small>
 
-        <label class="pf-users__checkbox">
-            <input type="checkbox"
-                   checked="@FirstLogon.PromptForMicrosoftAccount"
-                   @onchange="@(e => SetPromptMsa((bool)(e.Value ?? false)))" />
-            <span>@L["Users.FirstLogon.PromptMsa"]</span>
-        </label>
+            <FluentCheckbox Value="@FirstLogon.PromptForMicrosoftAccount"
+                            ValueChanged="@SetPromptMsa">
+                @L["Users.FirstLogon.PromptMsa"]
+            </FluentCheckbox>
 
-        <label class="pf-users__checkbox">
-            <input type="checkbox"
-                   checked="@FirstLogon.PromptForLocalAccount"
-                   @onchange="@(e => SetPromptLocal((bool)(e.Value ?? false)))" />
-            <span>@L["Users.FirstLogon.PromptLocal"]</span>
-        </label>
+            <FluentCheckbox Value="@FirstLogon.PromptForLocalAccount"
+                            ValueChanged="@SetPromptLocal">
+                @L["Users.FirstLogon.PromptLocal"]
+            </FluentCheckbox>
 
-        <small class="pf-users__hint">@L["Users.FirstLogon.PromptHint"]</small>
+            <small class="pf-users__hint">@L["Users.FirstLogon.PromptHint"]</small>
+        </div>
     </section>
 
     @* ── Password expiration ──────────────────────────────────── *@
@@ -192,32 +176,28 @@
         </div>
         <p class="pf-option__description">@L["Users.Expiration.Description"]</p>
 
-        <div class="pf-users__radio-group" role="radiogroup" aria-label="@L["Users.Expiration.Title"]">
+        <FluentRadioGroup Name="pf-expiration"
+                          Orientation="Orientation.Vertical"
+                          Class="pf-radio-group"
+                          Value="@Security.PasswordExpiration.ToString()"
+                          TValue="string"
+                          ValueChanged="@(v => SetExpirationMode(Enum.Parse<PasswordExpirationMode>(v)))">
             @foreach (var (mode, labelKey) in _expirationOptions)
             {
-                var thisMode = mode;
-                <label class="pf-users__radio">
-                    <input type="radio"
-                           name="pf-expiration"
-                           value="@thisMode"
-                           checked="@(Security.PasswordExpiration == thisMode)"
-                           @onchange="@(() => SetExpirationMode(thisMode))" />
-                    <span>@L[labelKey]</span>
-                </label>
+                <FluentRadio Value="@mode.ToString()" TValue="string">@L[labelKey]</FluentRadio>
             }
-        </div>
+        </FluentRadioGroup>
 
         @if (Security.PasswordExpiration == PasswordExpirationMode.Custom)
         {
             <div class="pf-users__sub-field">
                 <label class="pf-users__sub-label" for="pf-exp-days">@L["Users.Expiration.Days"]</label>
-                <input id="pf-exp-days"
-                       class="pf-users__input pf-users__input--number"
-                       type="number"
-                       min="1"
-                       max="999"
-                       value="@Security.PasswordExpirationDays"
-                       @oninput="@(e => SetExpirationDays(e.Value?.ToString()))" />
+                <FluentNumberField TValue="int"
+                                   Id="pf-exp-days"
+                                   Min="1"
+                                   Max="999"
+                                   Value="@Security.PasswordExpirationDays"
+                                   ValueChanged="@(v => { Security.PasswordExpirationDays = v; Mode.NotifyConfigChanged(); })" />
             </div>
         }
     </section>
@@ -229,59 +209,53 @@
         </div>
         <p class="pf-option__description">@L["Users.Lockout.Description"]</p>
 
-        <div class="pf-users__radio-group" role="radiogroup" aria-label="@L["Users.Lockout.Title"]">
+        <FluentRadioGroup Name="pf-lockout"
+                          Orientation="Orientation.Vertical"
+                          Class="pf-radio-group"
+                          Value="@Security.Lockout.ToString()"
+                          TValue="string"
+                          ValueChanged="@(v => SetLockoutMode(Enum.Parse<LockoutMode>(v)))">
             @foreach (var (mode, labelKey) in _lockoutOptions)
             {
-                var thisMode = mode;
-                <label class="pf-users__radio">
-                    <input type="radio"
-                           name="pf-lockout"
-                           value="@thisMode"
-                           checked="@(Security.Lockout == thisMode)"
-                           @onchange="@(() => SetLockoutMode(thisMode))" />
-                    <span>@L[labelKey]</span>
-                </label>
+                <FluentRadio Value="@mode.ToString()" TValue="string">@L[labelKey]</FluentRadio>
             }
-        </div>
+        </FluentRadioGroup>
 
         @if (Security.Lockout == LockoutMode.Disabled)
         {
-            <div class="pf-users__warning" role="alert">
+            <FluentMessageBar Intent="MessageIntent.Warning" AllowDismiss="false" Style="margin-top: 8px;">
                 @L["Users.Lockout.Disabled.Warning"]
-            </div>
+            </FluentMessageBar>
         }
 
         @if (Security.Lockout == LockoutMode.Custom)
         {
             <div class="pf-users__sub-field">
                 <label class="pf-users__sub-label" for="pf-lo-attempts">@L["Users.Lockout.Attempts"]</label>
-                <input id="pf-lo-attempts"
-                       class="pf-users__input pf-users__input--number"
-                       type="number"
-                       min="0"
-                       max="999"
-                       value="@Security.LockoutAttempts"
-                       @oninput="@(e => SetLockoutAttempts(e.Value?.ToString()))" />
+                <FluentNumberField TValue="int"
+                                   Id="pf-lo-attempts"
+                                   Min="0"
+                                   Max="999"
+                                   Value="@Security.LockoutAttempts"
+                                   ValueChanged="@(v => { Security.LockoutAttempts = v; Mode.NotifyConfigChanged(); })" />
             </div>
             <div class="pf-users__sub-field">
                 <label class="pf-users__sub-label" for="pf-lo-window">@L["Users.Lockout.Window"]</label>
-                <input id="pf-lo-window"
-                       class="pf-users__input pf-users__input--number"
-                       type="number"
-                       min="1"
-                       max="99999"
-                       value="@Security.LockoutWindowMinutes"
-                       @oninput="@(e => SetLockoutWindow(e.Value?.ToString()))" />
+                <FluentNumberField TValue="int"
+                                   Id="pf-lo-window"
+                                   Min="1"
+                                   Max="99999"
+                                   Value="@Security.LockoutWindowMinutes"
+                                   ValueChanged="@(v => { Security.LockoutWindowMinutes = v; Mode.NotifyConfigChanged(); })" />
             </div>
             <div class="pf-users__sub-field">
                 <label class="pf-users__sub-label" for="pf-lo-unlock">@L["Users.Lockout.Unlock"]</label>
-                <input id="pf-lo-unlock"
-                       class="pf-users__input pf-users__input--number"
-                       type="number"
-                       min="1"
-                       max="99999"
-                       value="@Security.LockoutUnlockMinutes"
-                       @oninput="@(e => SetLockoutUnlock(e.Value?.ToString()))" />
+                <FluentNumberField TValue="int"
+                                   Id="pf-lo-unlock"
+                                   Min="1"
+                                   Max="99999"
+                                   Value="@Security.LockoutUnlockMinutes"
+                                   ValueChanged="@(v => { Security.LockoutUnlockMinutes = v; Mode.NotifyConfigChanged(); })" />
             </div>
             <small class="pf-users__hint">@L["Users.Lockout.WindowHint"]</small>
         }
@@ -440,35 +414,11 @@
         Mode.NotifyConfigChanged();
     }
 
-    private void SetExpirationDays(string? raw)
-    {
-        if (int.TryParse(raw, out var days)) Security.PasswordExpirationDays = days;
-        Mode.NotifyConfigChanged();
-    }
-
     // ─── lockout mutations ─────────────────────────────────────────
 
     private void SetLockoutMode(LockoutMode m)
     {
         Security.Lockout = m;
-        Mode.NotifyConfigChanged();
-    }
-
-    private void SetLockoutAttempts(string? raw)
-    {
-        if (int.TryParse(raw, out var v)) Security.LockoutAttempts = v;
-        Mode.NotifyConfigChanged();
-    }
-
-    private void SetLockoutWindow(string? raw)
-    {
-        if (int.TryParse(raw, out var v)) Security.LockoutWindowMinutes = v;
-        Mode.NotifyConfigChanged();
-    }
-
-    private void SetLockoutUnlock(string? raw)
-    {
-        if (int.TryParse(raw, out var v)) Security.LockoutUnlockMinutes = v;
         Mode.NotifyConfigChanged();
     }
 

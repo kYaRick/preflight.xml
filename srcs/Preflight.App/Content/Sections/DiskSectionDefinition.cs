@@ -90,6 +90,7 @@ public static class DiskSectionDefinition
                 LabelKey = "Disk.CustomScript.Label",
                 DescriptionKey = "Disk.CustomScript.Description",
                 Kind = OptionKind.Textarea,
+                Language = "batch",
                 Rows = 12,
                 PlaceholderKey = "Disk.CustomScript.Placeholder",
                 GetString = c => c.Disk.CustomScript,

@@ -164,6 +164,14 @@
                     builder.OpenComponent<ComponentsSection>(0);
                     builder.CloseComponent();
                     return;
+                case "visual-effects":
+                    builder.OpenComponent<VisualEffectsAdvanced>(0);
+                    builder.CloseComponent();
+                    return;
+                case "desktop-icons":
+                    builder.OpenComponent<DesktopIconsAdvanced>(0);
+                    builder.CloseComponent();
+                    return;
             }
         }
 

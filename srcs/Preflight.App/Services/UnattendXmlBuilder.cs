@@ -42,12 +42,38 @@ public sealed class UnattendXmlBuilder
             var bytes = UnattendGenerator.Serialize(doc);
             // Serialize emits ASCII-encoded bytes with a utf-8 declaration - decoding as
             // UTF-8 is correct (ASCII is a strict UTF-8 subset).
-            return Encoding.UTF8.GetString(bytes);
+            var xml = Encoding.UTF8.GetString(bytes);
+
+            // Embed a round-trip marker: a single XML comment holding the base64-encoded
+            // config JSON. The importer reads this back on upload so a downloaded
+            // preflight.xml can be re-opened and edited without losing any state.
+            // Placed right after the <?xml ?> declaration so it stays at the top even if
+            // Schneegans' output inserts its own leading comments later.
+            return InsertMetadataComment(xml, config);
         }
         catch (Exception ex)
         {
             return $"<!-- preflight.xml: failed to generate XML - {ex.GetType().Name}: {ex.Message} -->";
         }
+    }
+
+    /// <summary>Marker line Import uses to find and strip the config blob before parsing.</summary>
+    public const string MetadataCommentPrefix = "<!-- preflight.config:";
+    private const string MetadataCommentSuffix = " -->";
+
+    private static string InsertMetadataComment(string xml, UnattendConfig config)
+    {
+        var json = UnattendConfigSerializer.Serialize(config);
+        var base64 = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
+        var marker = $"{MetadataCommentPrefix} {base64}{MetadataCommentSuffix}";
+
+        // Splice after the <?xml ... ?> declaration if present; otherwise prepend.
+        var xmlDeclEnd = xml.IndexOf("?>", StringComparison.Ordinal);
+        if (xmlDeclEnd < 0)
+            return marker + "\n" + xml;
+
+        var insertAt = xmlDeclEnd + 2;
+        return xml[..insertAt] + "\n" + marker + xml[insertAt..];
     }
 
     // ─── Mapping ────────────────────────────────────────────────────

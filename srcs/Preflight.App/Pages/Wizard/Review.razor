@@ -1,7 +1,10 @@
 @page "/wizard/review"
+@using Preflight.App.Services
 @inject IStringLocalizer<SharedResources> L
 @inject ModeService Mode
 @inject NavigationManager Nav
+@inject UnattendXmlBuilder XmlBuilder
+@inject IJSRuntime JS
 
 <PageTitle>@L["Wizard.Review.Title"] · preflight.xml</PageTitle>
 
@@ -23,16 +26,56 @@
         </FluentStack>
     </FluentCard>
 
-    <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
-        @L["Wizard.Review.DownloadStub"]
-    </FluentMessageBar>
+    @if (_lastError is not null)
+    {
+        <FluentMessageBar Intent="MessageIntent.Error" AllowDismiss="true">
+            @_lastError
+        </FluentMessageBar>
+    }
 
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8">
         <FluentAnchor Href="/wizard" Appearance="Appearance.Outline">← @L["Common.Back"]</FluentAnchor>
+        <FluentAnchor Href="/advanced" Appearance="Appearance.Outline">⚙️ @L["Wizard.Review.Tweak"]</FluentAnchor>
         <FluentSpacer />
-        <FluentButton Appearance="Appearance.Accent" Disabled="true">
-            ⬇️ @L["Wizard.Review.Download"]
+        <FluentButton Appearance="Appearance.Accent" OnClick="DownloadXml" Disabled="@_downloading">
+            @if (_downloading)
+            {
+                <text>⏳ @L["Wizard.Review.Preparing"]</text>
+            }
+            else
+            {
+                <text>⬇️ @L["Wizard.Review.Download"]</text>
+            }
         </FluentButton>
     </FluentStack>
 
 </FluentStack>
+
+@code {
+    private bool _downloading;
+    private string? _lastError;
+
+    private async Task DownloadXml()
+    {
+        _downloading = true;
+        _lastError = null;
+        StateHasChanged();
+        try
+        {
+            // Build autounattend.xml from the currently-applied preset/config and hand
+            // it to the browser as a download. Any generator exception surfaces in-line
+            // so the user knows what to go fix in /advanced.
+            var xml = XmlBuilder.Build(Mode.Config);
+            await JS.InvokeVoidAsync("preflightFiles.download", "autounattend.xml", xml, "application/xml");
+        }
+        catch (Exception ex)
+        {
+            _lastError = ex.Message;
+        }
+        finally
+        {
+            _downloading = false;
+            StateHasChanged();
+        }
+    }
+}

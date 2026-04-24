@@ -79,6 +79,13 @@ public sealed record OptionDefinition
     /// <summary>Monospace rendering hint.</summary>
     public bool Monospace { get; init; }
 
+    /// <summary>
+    /// Code-editor language hint (e.g. <c>"xml"</c>, <c>"json"</c>). When set, the Advanced
+    /// textarea renders as a Prism-highlighted editor instead of a plain FluentTextArea.
+    /// Null keeps the default behaviour.
+    /// </summary>
+    public string? Language { get; init; }
+
     /// <summary>Placeholder text for text-like inputs (raw string).</summary>
     public string? Placeholder { get; init; }
 

@@ -48,6 +48,7 @@ public static class AppLockerSection
                 Kind = OptionKind.Textarea,
                 TextareaRows = 12,
                 Monospace = true,
+                Language = "xml",
                 Placeholder = "<AppLockerPolicy Version=\"1\"> ... </AppLockerPolicy>",
                 GetString = c => c.AppLocker.PolicyXml,
                 SetString = (c, v) => c.AppLocker.PolicyXml = v,
