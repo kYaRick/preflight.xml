@@ -7,12 +7,39 @@
 
 <FluentStack Orientation="Orientation.Vertical" HorizontalGap="24" Style="padding: 48px 16px; max-width: 1080px; margin: 0 auto;">
 
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" VerticalAlignment="VerticalAlignment.Center">
+    @*
+        Step indicator - "Step N of M" label on the left, a plane-on-runway
+        progress strip on the right. The strip reuses the same visual motif as
+        the loading screen: wavy track, progressive accent-gradient trail that
+        fades toward its tail, and the plane glyph planted at the current
+        progress percentage (offset-path along the same S-curve).
+    *@
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="12" VerticalAlignment="VerticalAlignment.Center">
         <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
             @(string.Format(L["Wizard.Guided.StepOf"].Value, Step, TotalSteps))
         </FluentLabel>
         <FluentSpacer />
-        <FluentProgress Value="@(Step * 100 / TotalSteps)" Width="200px" />
+        <div class="pf-step-runway" style="--pf-step-progress: @(Step * 100 / TotalSteps)%;"
+             role="progressbar"
+             aria-valuenow="@Step"
+             aria-valuemin="1"
+             aria-valuemax="@TotalSteps"
+             aria-label="@(string.Format(L["Wizard.Guided.StepOf"].Value, Step, TotalSteps))">
+            <svg class="pf-step-runway__wave" width="240" height="36" viewBox="0 0 240 36" aria-hidden="true" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="pfStepTrailGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="var(--pf-accent)" />
+                        <stop offset="100%" stop-color="var(--pf-accent-strong, var(--pf-accent))" />
+                    </linearGradient>
+                </defs>
+                <path class="pf-step-runway__track" d="M 2 18 Q 32 4, 62 18 T 122 18 T 182 18 T 238 18" />
+                <path class="pf-step-runway__trail" d="M 2 18 Q 32 4, 62 18 T 122 18 T 182 18 T 238 18" />
+            </svg>
+            <svg class="pf-step-runway__plane" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="currentColor"
+                      d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1l3.5 1v-1.5L13 19v-5.5z" />
+            </svg>
+        </div>
     </FluentStack>
 
     @switch (Step)

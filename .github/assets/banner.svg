@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" role="img"
+  aria-labelledby="banner-title banner-desc" preserveAspectRatio="xMidYMid meet">
+  <title id="banner-title">preflight.xml</title>
+  <desc id="banner-desc">Visual builder for Windows autounattend.xml - in your browser, offline,
+    instantly.</desc>
+
+  <defs>
+    <!-- banner background -->
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e1b4b" />
+      <stop offset="55%" stop-color="#4c1d95" />
+      <stop offset="100%" stop-color="#6d28d9" />
+    </linearGradient>
+    <radialGradient id="bgGlow" cx="0.82" cy="0.5" r="0.55">
+      <stop offset="0%" stop-color="#a855f7" stop-opacity="0.45" />
+      <stop offset="60%" stop-color="#a855f7" stop-opacity="0.1" />
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- app icon gradient (identical to icon.svg / icon-*.png) -->
+    <linearGradient id="iconBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6d28d9" />
+      <stop offset="60%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </linearGradient>
+    <linearGradient id="iconShine" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22" />
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+
+    <linearGradient id="xmlAccent" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fde68a" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+
+    <filter id="iconShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="14" in="SourceAlpha" />
+      <feOffset dx="0" dy="10" result="off" />
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.55" />
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- base -->
+  <rect width="1280" height="320" rx="16" fill="url(#bgGrad)" />
+  <rect width="1280" height="320" rx="16" fill="url(#bgGlow)" />
+
+  <!-- XML code watermark -->
+  <g opacity="0.08" font-family="'JetBrains Mono', 'SFMono-Regular', Consolas, monospace"
+    font-size="12" fill="#e9d5ff">
+    <text x="32" y="32">&lt;?xml version="1.0" encoding="utf-8"?&gt;</text>
+    <text x="32" y="50">&lt;unattend xmlns="urn:schemas-microsoft-com:unattend"&gt;</text>
+    <text x="32" y="68"> &lt;settings pass="windowsPE"&gt;</text>
+    <text x="32" y="86"> &lt;component name="Microsoft-Windows-Setup"&gt;</text>
+    <text x="32" y="104"> &lt;DiskConfiguration&gt;</text>
+    <text x="780" y="252"> &lt;/DiskConfiguration&gt;</text>
+    <text x="780" y="270"> &lt;/component&gt;</text>
+    <text x="780" y="288"> &lt;/settings&gt;</text>
+    <text x="780" y="306">&lt;/unattend&gt;</text>
+  </g>
+
+  <!-- wordmark + tagline (left column) -->
+  <g font-family="system-ui, -apple-system, 'Segoe UI', 'DM Sans', sans-serif">
+    <text x="60" y="158" font-size="76" font-weight="800" fill="#ffffff" letter-spacing="-2">
+      preflight<tspan fill="url(#xmlAccent)">.xml</tspan></text>
+    <text x="62" y="198" font-size="21" font-weight="500" fill="#e9d5ff">Visual builder for Windows <tspan
+        font-family="'JetBrains Mono', Consolas, monospace" fill="#f0abfc">autounattend.xml</tspan></text>
+    <text x="62" y="224" font-size="15" font-weight="400" fill="#c4b5fd" opacity="0.9">In your
+      browser · offline · instantly.</text>
+  </g>
+
+  <!-- tech pills -->
+  <g transform="translate(60, 250)" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif"
+    font-size="12" font-weight="600" fill="#ffffff">
+    <g>
+      <rect width="84" height="30" rx="15" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff"
+        stroke-opacity="0.22" />
+      <text x="42" y="19" text-anchor="middle">.NET 10</text>
+    </g>
+    <g transform="translate(92, 0)">
+      <rect width="118" height="30" rx="15" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff"
+        stroke-opacity="0.22" />
+      <text x="59" y="19" text-anchor="middle">Blazor WASM</text>
+    </g>
+    <g transform="translate(218, 0)">
+      <rect width="76" height="30" rx="15" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff"
+        stroke-opacity="0.22" />
+      <text x="38" y="19" text-anchor="middle">PWA</text>
+    </g>
+    <g transform="translate(302, 0)">
+      <rect width="80" height="30" rx="15" fill="#ffffff" fill-opacity="0.12" stroke="#ffffff"
+        stroke-opacity="0.22" />
+      <text x="40" y="19" text-anchor="middle">Fluent UI</text>
+    </g>
+    <g transform="translate(390, 0)">
+      <rect width="62" height="30" rx="15" fill="#fde68a" fill-opacity="0.18" stroke="#fde68a"
+        stroke-opacity="0.5" />
+      <text x="31" y="19" text-anchor="middle" fill="#fde68a">MIT</text>
+    </g>
+  </g>
+
+  <!-- the app icon as hero (right column) - same design as icon.svg -->
+  <g transform="translate(972, 44)" filter="url(#iconShadow)">
+    <!-- rounded-square background 232x232 -->
+    <rect x="0" y="0" width="232" height="232" rx="52" fill="url(#iconBg)" />
+    <rect x="0" y="0" width="232" height="232" rx="52" fill="url(#iconShine)" />
+
+    <!-- white airplane centered (same path as icon.svg) -->
+    <g transform="translate(53.5, 50.7) scale(5.44)">
+      <path
+        d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1l3.5 1v-1.5L13 19v-5.5z"
+        fill="#ffffff" />
+    </g>
+  </g>
+
+  <!-- bottom accent bar -->
+  <rect x="0" y="316" width="1280" height="4" fill="url(#xmlAccent)" opacity="0.35" />
+</svg>

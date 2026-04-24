@@ -1,0 +1,78 @@
+name: 🌐 Deploy to GitHub Pages
+
+# Auto-publishes the Blazor WebAssembly PWA to GitHub Pages on every push
+# to `main`. The built site is deployed to the `github-pages` environment.
+#
+# One-time setup: Repo → Settings → Pages → Source = "GitHub Actions".
+# After that, the URL lives at https://<owner>.github.io/preflight.xml/
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'LICENSE*'
+      - 'NOTICE'
+      - '.gitmessage'
+      - '.editorconfig'
+      - '.github/ISSUE_TEMPLATE/**'
+      - '.github/pull_request_template.md'
+      - 'tests/**'
+  workflow_dispatch:
+
+# Only one deploy in flight at a time; cancel older runs if a newer push
+# arrives, but don't kill a deploy that's already talking to Pages.
+concurrency:
+  group: pages-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: 🛠️  Build WASM
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+
+      - name: ⚙️  Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: 🏁 Install just
+        uses: extractions/setup-just@v2
+
+      - name: 💾 Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props', 'global.json') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: 📦 Restore
+        run: just restore
+
+      - name: 🚀 Publish (base /preflight.xml/)
+        run: just publish
+
+      - name: 📤 Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: artifacts/app/Preflight.App/publish/wwwroot
+
+  deploy:
+    name: 🌍 Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

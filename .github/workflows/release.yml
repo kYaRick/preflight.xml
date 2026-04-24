@@ -1,0 +1,142 @@
+name: 🎁 Release
+
+# Packages the PWA as a self-hostable zip and publishes a GitHub Release.
+# Triggered by pushing a `v*` tag (e.g. v0.1.0) or manually from the Actions tab.
+#
+# The released zip is a portable static site: extract and serve `wwwroot/` with
+# any static file server (python http.server, nginx, caddy, IIS, ...). It's
+# also directly installable as a PWA on Windows / macOS / Linux / Android / iOS.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (e.g. v0.1.0)"
+        required: true
+        type: string
+      base:
+        description: "Base path for the release build (trailing slash required)"
+        required: false
+        default: "/"
+        type: string
+
+concurrency:
+  group: release-${{ github.event.inputs.tag || github.ref_name }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    name: 📦 Package PWA
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: ⚙️  Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: 🏁 Install just
+        uses: extractions/setup-just@v2
+
+      - name: 💾 Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props', 'global.json') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: 🏷️  Resolve version
+        id: ver
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          VERSION="${TAG#v}"
+          echo "tag=$TAG"         >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "::notice title=Release::Packaging $TAG (version $VERSION)"
+
+      - name: 📦 Restore
+        run: just restore
+
+      - name: 🚀 Publish (portable, base ${{ github.event.inputs.base || '/' }})
+        run: just publish "${{ github.event.inputs.base || '/' }}"
+
+      # Ship a tiny rebase helper alongside the site so self-hosters who deploy
+      # behind a subpath can re-point <base href> without rebuilding.
+      - name: 🛠️  Add rebase helper
+        run: |
+          cat > artifacts/app/Preflight.App/publish/wwwroot/rebase.sh <<'EOF'
+          #!/usr/bin/env bash
+          # Re-point the PWA base path (e.g. when serving behind a subpath).
+          #   ./rebase.sh /myapps/preflight/
+          set -euo pipefail
+          BASE="${1:?usage: ./rebase.sh /your/base/path/}"
+          [[ "$BASE" == /*/ ]] || { echo "base must start and end with /"; exit 1; }
+          cd "$(dirname "$0")"
+          perl -pi -e "s|<base href=\"[^\"]*\" />|<base href=\"$BASE\" />|" index.html 404.html
+          perl -pi -e "s|const base = \"[^\"]*\";|const base = \"$BASE\";|" service-worker.js
+          echo "rebased → $BASE"
+          EOF
+          chmod +x artifacts/app/Preflight.App/publish/wwwroot/rebase.sh
+
+      - name: 🗜️  Archive release
+        id: archive
+        run: |
+          VERSION="${{ steps.ver.outputs.version }}"
+          ZIP="preflight.xml-pwa-$VERSION.zip"
+          TARBALL="preflight.xml-pwa-$VERSION.tar.gz"
+          ( cd artifacts/app/Preflight.App/publish && zip -r -q "$GITHUB_WORKSPACE/$ZIP" wwwroot )
+          ( cd artifacts/app/Preflight.App/publish && tar -czf "$GITHUB_WORKSPACE/$TARBALL" wwwroot )
+          sha256sum "$ZIP" "$TARBALL" > SHA256SUMS.txt
+          echo "zip=$ZIP"         >> "$GITHUB_OUTPUT"
+          echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
+
+      - name: 🎁 Create / update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.ver.outputs.tag }}
+          name: preflight.xml ${{ steps.ver.outputs.tag }}
+          draft: true
+          generate_release_notes: true
+          files: |
+            ${{ steps.archive.outputs.zip }}
+            ${{ steps.archive.outputs.tarball }}
+            SHA256SUMS.txt
+          body: |
+            ## 🌐 Live app
+            <https://kyarick.github.io/preflight.xml/>
+
+            ## 📱 Install as an app (all platforms)
+            Visit the live app in **Chrome / Edge / Brave / Safari / Firefox** and
+            click the install icon in the address bar. Works on Windows, macOS,
+            Linux, Android and iOS - no download required, no admin rights, no
+            Play Store. Uninstall via your browser's app menu.
+
+            ## 📥 Self-host / offline archive
+            Download the zip below and serve `wwwroot/` with any static server:
+
+            ```bash
+            # any platform (requires Python 3)
+            python3 -m http.server 8080 --directory wwwroot
+
+            # Node
+            npx serve wwwroot
+
+            # .NET (uses built-in dev server)
+            dotnet serve -d wwwroot
+            ```
+
+            The archive ships with `<base href="${{ github.event.inputs.base || '/' }}">`.
+            Need to deploy behind a subpath? Run `./wwwroot/rebase.sh /your/base/path/`
+            before serving. No rebuild required.
+
+            ## ✅ Integrity
+            Verify downloads against `SHA256SUMS.txt`.

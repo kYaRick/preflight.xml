@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+if ! command -v just >/dev/null 2>&1; then
+  echo "just is not installed; skipping version badge sync."
+  exit 0
+fi
+
+just sync-version-badges
+
+# Re-stage README if sync changed it.
+git add README.md

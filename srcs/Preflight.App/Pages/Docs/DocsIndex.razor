@@ -14,28 +14,22 @@
     <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 16px 0;">@L["Docs.Subtitle"]</FluentLabel>
 
     @*
-        Search filters the cards grid by title + subtitle match (case insensitive).
-        Sidebar was removed earlier because it duplicated the cards; this brings
-        back the useful half of that sidebar (filter) without the wall-of-links.
-        Filter lives inline with the grid so it stays visible while scrolling.
+        Inline search that filters the cards grid by title + subtitle (case
+        insensitive). A plain input, no wrapping card, no counter - just enough
+        surface for a user to narrow the list without adding visual weight.
     *@
-    <div class="pf-docs-toolbar">
-        <div class="pf-nav-search">
-            <span class="pf-nav-search__icon" aria-hidden="true">🔎</span>
-            <input type="search"
-                   class="pf-nav-search__input"
-                   placeholder="@L[@"Docs.SidebarSearch"]"
-                   value="@_filter"
-                   @oninput="OnFilterChanged"
-                   aria-label="@L[@"Docs.SidebarSearch"]" />
-            @if (!string.IsNullOrEmpty(_filter))
-            {
-                <button type="button" class="pf-nav-search__clear" aria-label="Clear" @onclick="ClearFilter">✕</button>
-            }
-        </div>
-        <span class="pf-docs-toolbar__count">
-            @(string.Format(L[@"Docs.ResultsCount"].Value, _filteredTopics.Count, _topics.Count))
-        </span>
+    <div class="pf-nav-search pf-docs-search">
+        <span class="pf-nav-search__icon" aria-hidden="true">🔎</span>
+        <input type="search"
+               class="pf-nav-search__input"
+               placeholder="@L[@"Docs.SidebarSearch"]"
+               value="@_filter"
+               @oninput="OnFilterChanged"
+               aria-label="@L[@"Docs.SidebarSearch"]" />
+        @if (!string.IsNullOrEmpty(_filter))
+        {
+            <button type="button" class="pf-nav-search__clear" aria-label="Clear" @onclick="ClearFilter">✕</button>
+        }
     </div>
 
     <FluentGrid Spacing="2">

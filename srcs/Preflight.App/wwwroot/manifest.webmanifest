@@ -6,10 +6,12 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "any",
   "lang": "en",
+  "dir": "ltr",
   "background_color": "#ffffff",
-  "theme_color": "#0078d4",
+  "theme_color": "#6d28d9",
   "categories": ["productivity", "developer", "utilities"],
   "prefer_related_applications": false,
   "icons": [
@@ -24,6 +26,21 @@
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
     }
-  ]
+  ],
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  }
 }

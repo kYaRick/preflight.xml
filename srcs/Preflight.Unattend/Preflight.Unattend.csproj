@@ -34,7 +34,6 @@
        visible to anyone browsing the source. -->
   <ItemGroup>
     <Compile Remove="Example.cs" />
-    <None Include="Example.cs" />
   </ItemGroup>
 
   <!-- All files under resource\ are embedded. Util.StringFromResource() looks

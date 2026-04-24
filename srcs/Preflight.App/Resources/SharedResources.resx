@@ -29,6 +29,9 @@
   <data name="Common.Step">
     <value>Step</value>
   </data>
+  <data name="Common.ScrollToTop">
+    <value>Scroll to top</value>
+  </data>
   <data name="Nav">
     <value>Go</value>
   </data>

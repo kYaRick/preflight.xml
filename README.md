@@ -1,114 +1,201 @@
 <div align="center">
 
-# ✈️ preflight.xml
+<a href="https://kyarick.github.io/preflight.xml/">
+  <img src=".github/assets/banner.svg" alt="preflight.xml - Visual builder for Windows autounattend.xml" width="100%">
+</a>
 
-**Visual builder for Windows `autounattend.xml` - in your browser, offline, instantly.**
+<p>
+  <a href="https://kyarick.github.io/preflight.xml/"><img alt="Live app" src="https://img.shields.io/badge/Live%20app-GitHub%20Pages-0969da?logo=github&logoColor=white"></a>
+</p>
 
-[![.NET](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
-[![Blazor WASM](https://img.shields.io/badge/Blazor-WebAssembly-512BD4?logo=blazor&logoColor=white)](https://learn.microsoft.com/aspnet/core/blazor/)
-[![Fluent UI](https://img.shields.io/badge/Fluent%20UI-Blazor-0078D4?logo=microsoft&logoColor=white)](https://www.fluentui-blazor.net/)
-[![PWA](https://img.shields.io/badge/PWA-offline--ready-5A0FC8?logo=pwa&logoColor=white)](https://web.dev/progressive-web-apps/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/status-pre--alpha-orange)]()
+<p>
+  <a href="https://github.com/kYaRick/preflight.xml/releases"><img alt="Version" src="https://img.shields.io/static/v1?label=version&message=v0.1.0-alpha&color=0ea5e9"></a>
+  <a href="https://dotnet.microsoft.com/"><img alt=".NET 10" src="https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white"></a>
+  <a href="https://learn.microsoft.com/aspnet/core/blazor/"><img alt="Blazor WASM" src="https://img.shields.io/badge/Blazor-WebAssembly-512BD4?logo=blazor&logoColor=white"></a>
+  <a href="https://www.fluentui-blazor.net/"><img alt="Fluent UI" src="https://img.shields.io/badge/Fluent%20UI-Blazor-0078D4?logo=microsoft&logoColor=white"></a>
+  <a href="https://web.dev/progressive-web-apps/"><img alt="PWA" src="https://img.shields.io/badge/PWA-offline--ready-5A0FC8?logo=pwa&logoColor=white"></a>
+  <a href="LICENSE"><img alt="MIT" src="https://img.shields.io/badge/License-MIT-22c55e.svg"></a>
+  <a href=".github/workflows/ci.yml"><img alt="CI" src="https://github.com/kYaRick/preflight.xml/actions/workflows/ci.yml/badge.svg"></a>
+  <a href=".github/workflows/pages.yml"><img alt="Pages" src="https://github.com/kYaRick/preflight.xml/actions/workflows/pages.yml/badge.svg"></a>
+  <img alt="Status: pre-alpha" src="https://img.shields.io/badge/status-pre--alpha-f97316">
+</p>
+
+<sub><strong>Zero install · zero backend · zero XML edits by hand.</strong></sub>
 
 </div>
 
+> [!WARNING]
+> **Pre-alpha.** The Blazor app is being scaffolded - APIs, UI and file
+> layout can change without notice until `v0.1.0`. Pin to a specific tag
+> if you depend on it.
 
-## 🧭 What is this?
+---
 
-`preflight.xml` is a **zero-install, browser-based** editor that helps IT admins, sysadmins, and homelabbers craft `autounattend.xml` answer files for unattended Windows 10 / 11 installations - **without touching raw XML**.
+## 🧭 What it is
 
-> 📖 About the file format - see the [Unattended Windows Setup Reference](https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/) from Microsoft.
+`preflight.xml` helps IT admins, sysadmins and homelabbers craft
+`autounattend.xml` answer files for unattended Windows 10 / 11 installs
+- **without touching raw XML**. Everything runs in the browser; your
+config never leaves your machine.
 
+> [!NOTE]
+> New to the `autounattend.xml` format? Microsoft's
+> [Unattended Windows Setup Reference](https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/)
+> is the canonical source.
 
 ## 🎯 Planned features
 
-- 🖼️  Visual editor for every major `autounattend.xml` pass & component
+<table>
+<tr>
+<td valign="top" width="50%">
+
+- 🖼️ Visual editor for every major pass & component
 - 👀 Live XML preview with syntax highlighting
 - 💽 Disk layout configurator (GPT / MBR, EFI, Recovery)
 - 👤 User accounts & credential management
 - 🔒 Privacy, telemetry & security toggles
+
+</td>
+<td valign="top" width="50%">
+
 - 🧼 Bloatware removal & app provisioning
 - 📜 Custom PowerShell / CMD script injection
 - 📥 Import / export of saved configurations
 - 📴 Full offline support via PWA
 - 🌍 i18n-ready UI
 
+</td>
+</tr>
+</table>
+
 ## 🧱 Tech stack
 
-| Layer        | Choice                                    |
-| ------------ | ----------------------------------------- |
-| Runtime      | .NET 10 · Blazor WebAssembly              |
-| UI           | Microsoft Fluent UI Blazor                |
-| Hosting      | GitHub Pages (static, no backend)         |
-| Distribution | Installable PWA, fully offline-capable    |
+|         Layer | Choice                                        |
+| ------------: | :-------------------------------------------- |
+|       Runtime | **.NET 10** · **Blazor WebAssembly**          |
+|            UI | **Microsoft Fluent UI** for Blazor            |
+|       Hosting | **GitHub Pages** (static, no backend)         |
+|  Distribution | Installable **PWA**, fully offline-capable    |
+|      Upstream | Vendors [`cschneegans/unattend-generator`][1] |
 
+[1]: https://github.com/cschneegans/unattend-generator
+
+---
 
 ## 🚀 Getting started
-
-> ⚠️ The project is in the **pre-alpha bootstrap phase** - the Blazor application has not yet been scaffolded.
 
 ### Prerequisites
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [`just`](https://github.com/casey/just) - the command runner (one-time install)
-  ```bash
-  winget install Casey.Just     # Windows
-  brew install just             # macOS
-  cargo install just            # any platform
-  ```
+- [`just`](https://github.com/casey/just) - the command runner
+
+<details>
+<summary>Install <code>just</code></summary>
+
+```bash
+winget install Casey.Just     # Windows
+brew install just             # macOS
+cargo install just            # any platform (Rust)
+scoop install just            # Windows (Scoop)
+```
+
+</details>
 
 ### Clone & bootstrap
 
 ```bash
 git clone https://github.com/kYaRick/preflight.xml.git
 cd preflight.xml
-just init        # 🧩 configures git hooks and restores packages
+just init        # configures git hooks, restores NuGet packages
 ```
 
 ### Everyday commands
 
-Run `just` with no arguments to see the full list. Most common ones:
+Run `just` with no args to list every recipe.
 
 | Command         | What it does                                  |
-| --------------- | --------------------------------------------- |
-| `just init`     | 🧩 one-time onboarding setup                  |
-| `just run`      | 🚀 start the app with hot-reload              |
-| `just build`    | 🏗️ build all projects                         |
-| `just test`     | 🧪 run the test suite                         |
-| `just format`   | 🎨 auto-format code                           |
-| `just lint`     | ✅ verify formatting (CI-friendly)            |
-| `just publish`  | 📦 produce a release build for GitHub Pages   |
-| `just clean`    | 🧹 remove all build artifacts                 |
+| :-------------- | :-------------------------------------------- |
+| `just init`     | One-time onboarding setup                     |
+| `just run`      | Start the app with hot-reload                 |
+| `just build`    | Build all projects (Debug)                    |
+| `just test`     | Run the test suite                            |
+| `just format`   | Auto-format source                            |
+| `just lint`     | Verify formatting (CI-friendly)               |
+| `just publish`  | Produce a release build for GitHub Pages      |
+| `just serve`    | Serve the published site at `:8080`           |
+| `just clean`    | Remove all build artifacts                    |
 
-> 💡 Prefer raw `dotnet` commands? The `justfile` is short and readable - every recipe is just a thin wrapper.
+> [!TIP]
+> `just publish` accepts an optional base path:
+> ```bash
+> just publish                     # /preflight.xml/  (GitHub Pages)
+> just publish /                   # /                (custom domain / localhost)
+> just publish /apps/preflight/    # /apps/preflight/ (reverse proxy)
+> ```
+
+> [!NOTE]
+> Prefer raw `dotnet`? The `justfile` is short and readable - every
+> recipe is a thin wrapper.
+
+---
+
+## 📦 Distribution
+
+| Channel                  | How it works                                                                                                  |
+| :----------------------- | :------------------------------------------------------------------------------------------------------------ |
+| 🌐 **Live web app**      | Push to `main` → deployed to GitHub Pages by [`pages.yml`](.github/workflows/pages.yml)                       |
+| 📱 **Installable PWA**   | Visit the live app, tap the install icon - works on Windows, macOS, Linux, Android, iOS                       |
+| 📥 **Offline archive**   | Push tag `vX.Y.Z` → zip + tar.gz attached to the Release by [`release.yml`](.github/workflows/release.yml)     |
+| 🧰 **Self-host**         | Extract the archive, serve `wwwroot/` with any static server (see [releasing.md](docs/releasing.md))           |
+
+> [!IMPORTANT]
+> First-time Pages deploy needs a one-time repo setting:
+> **Settings → Pages → Source = GitHub Actions**. See
+> [docs/ci-cd.md](docs/ci-cd.md#one-time-repo-setup) for the full checklist.
+
+---
+
+## 📚 Documentation
+
+| Topic                 | Read                                           |
+| :-------------------- | :--------------------------------------------- |
+| Architecture overview | [docs/architecture.md](docs/architecture.md)   |
+| CI / CD pipelines     | [docs/ci-cd.md](docs/ci-cd.md)                 |
+| Publishing & PWA      | [docs/publishing.md](docs/publishing.md)       |
+| Cutting a release     | [docs/releasing.md](docs/releasing.md)         |
+| Upstream vendor sync  | [docs/upstream-sync.md](docs/upstream-sync.md) |
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome once the app scaffold lands.
+
+1. Open an issue first to discuss the change.
+2. Follow [Conventional Commits](https://www.conventionalcommits.org/) - see [`.gitmessage`](.gitmessage).
+3. Keep diffs focused and small; read [CONTRIBUTING.md](CONTRIBUTING.md).
+
+Security issues → [SECURITY.md](SECURITY.md) (do **not** file a public issue).
+
+## 📜 License
+
+Released under the [MIT License](LICENSE) © [kYaRick](https://github.com/kYaRick).
+Vendored portions of `Preflight.Unattend` remain under their upstream
+MIT license - see [`NOTICE`](NOTICE) and [`LICENSES/`](LICENSES/).
 
 ---
 
 ## 🇺🇦 Stand with Ukraine
 
-This project is built by a Ukrainian developer during an ongoing war. If you use `preflight.xml` and want to give back, please consider supporting the people actually defending Europe's eastern border:
+Built by a Ukrainian developer during an ongoing war. If `preflight.xml`
+saves you time, please consider supporting the people defending Europe's
+eastern border:
 
-- 🛡️ **[Хартія - Kharchenko Foundation](https://www.khartiiafoundation.com/)** - equipment, medical aid and training for Ukraine's defenders
+- 🛡️ **[Хартія · Kharchenko Foundation](https://www.khartiiafoundation.com/)** - equipment, medical aid and training for Ukraine's defenders
 - 🦅 **[Azov ONE](https://azov.one/fundraisers)** - fundraising hub for Azov brigade units on the front line
 
 Any contribution matters.
 
-## 🤝 Contributing
-
-Contributions are welcome once the app scaffold lands. Before opening a PR:
-
-1. Open an issue to discuss the change
-2. Follow [Conventional Commits](https://www.conventionalcommits.org/) - see [`.gitmessage`](.gitmessage)
-3. Keep diffs focused and small
-
-## 📜 License
-
-Released under the [MIT License](LICENSE) © [kYaRick](https://github.com/kYaRick).
-
----
-
 <div align="center">
-  <sub>✨ Made with love to 💛Ukraine💙</sub>
+<sub>✨ Made with love to 💛 Ukraine 💙</sub>
 </div>
-

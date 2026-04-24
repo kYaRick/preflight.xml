@@ -22,11 +22,34 @@
     <link href="Preflight.App.styles.css" rel="stylesheet" />
 
     <!-- PWA -->
+    <meta name="description" content="Visual builder for Windows autounattend.xml - offline, in your browser." />
+    <meta name="theme-color" content="#6d28d9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#2a1854" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="application-name" content="preflight.xml" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="preflight" />
     <link rel="icon" href="favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" href="favicon.png" sizes="32x32" />
     <link href="manifest.webmanifest" rel="manifest" />
     <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="icon-192.png" />
+
+    <!-- Open Graph / social previews -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="preflight.xml" />
+    <meta property="og:description" content="Visual builder for Windows autounattend.xml - in your browser, offline, instantly." />
+    <meta property="og:url" content="https://kyarick.github.io/preflight.xml/" />
+    <meta property="og:image" content="https://raw.githubusercontent.com/kYaRick/preflight.xml/main/.github/assets/social-card.svg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="preflight.xml" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="preflight.xml" />
+    <meta name="twitter:description" content="Visual builder for Windows autounattend.xml - in your browser, offline, instantly." />
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/kYaRick/preflight.xml/main/.github/assets/social-card.svg" />
 
     <script type="importmap"></script>
 
@@ -48,6 +71,7 @@
     <script src="js/culture.js"></script>
     <script src="js/keyboard.js"></script>
     <script src="js/files.js"></script>
+    <script src="js/scroll.js"></script>
     <script src="js/prism-helper.js"></script>
 
     <!-- Apply persisted theme to <html> BEFORE CSS paints, so the loading

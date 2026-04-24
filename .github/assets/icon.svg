@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="preflight.xml app icon">
+  <defs>
+    <linearGradient id="icon-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6d28d9"/>
+      <stop offset="60%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#a855f7"/>
+    </linearGradient>
+    <linearGradient id="icon-shine" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
+      <stop offset="45%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="icon-glow" cx="0.72" cy="0.28" r="0.65">
+      <stop offset="0%" stop-color="#f0abfc" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#f0abfc" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="icon-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="6" in="SourceAlpha"/>
+      <feOffset dx="0" dy="4" result="off"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.35"/></feComponentTransfer>
+      <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- rounded-square background (iOS-style corners) -->
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#icon-bg)"/>
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#icon-glow)"/>
+  <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#icon-shine)"/>
+
+  <!-- airplane, centered, pure white, fits in maskable safe zone -->
+  <g transform="translate(118, 112) scale(12)" filter="url(#icon-shadow)">
+    <path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1l3.5 1v-1.5L13 19v-5.5z"
+          fill="#ffffff"/>
+  </g>
+</svg>
