@@ -105,6 +105,9 @@
     private string? _introHtml;
     private IReadOnlyList<OptionDefinition> _filteredOptions = [];
     private readonly Dictionary<string, IReadOnlyList<DataEntry>> _jsonCache = new(StringComparer.Ordinal);
+    // Tracks which JSON sources are currently in-flight so Dropdowns can render a
+    // disabled skeleton placeholder instead of an empty FluentSelect that looks broken.
+    private readonly HashSet<string> _loadingSources = new(StringComparer.Ordinal);
 
     private record DataEntry(string Id, string DisplayName);
 
@@ -143,6 +146,14 @@
     {
         _introHtml = await TryRenderMarkdownAsync(Section.IntroMarkdownPath);
 
+        // Mark every not-yet-cached JSON source as loading *before* we start fetching so
+        // the first render of RenderDropdown gets a skeleton instead of an empty list.
+        foreach (var option in _filteredOptions.Where(o => o.JsonSource is not null))
+        {
+            if (!_jsonCache.ContainsKey(option.JsonSource!)) _loadingSources.Add(option.JsonSource!);
+        }
+        StateHasChanged();
+
         foreach (var option in _filteredOptions.Where(o => o.JsonSource is not null))
         {
             if (_jsonCache.ContainsKey(option.JsonSource!)) continue;
@@ -152,9 +163,11 @@
                 if (entries is not null) _jsonCache[option.JsonSource!] = entries;
             }
             catch (Exception) { _jsonCache[option.JsonSource!] = []; }
+            finally { _loadingSources.Remove(option.JsonSource!); }
+            // Re-render after each file so large JSON lists don't block the whole section
+            // behind the slowest one - the ones that finished earlier paint immediately.
+            StateHasChanged();
         }
-
-        StateHasChanged();
     }
 
     private async Task<string?> TryRenderMarkdownAsync(string pathTemplate)
@@ -226,6 +239,22 @@
     private void RenderDropdown(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder, OptionDefinition option)
     {
         var currentValue = option.GetString?.Invoke(ModeSvc.Config) ?? "";
+
+        // Skeleton while the backing JSON is still in flight - an empty FluentSelect
+        // would otherwise render as "nothing selected" which reads as broken. The
+        // skeleton is a plain div with a shimmer class; the real FluentSelect replaces
+        // it on the next render after the cache is populated.
+        if (option.JsonSource is not null && _loadingSources.Contains(option.JsonSource))
+        {
+            var si = 0;
+            builder.OpenElement(si++, "div");
+            builder.AddAttribute(si++, "class", "pf-skeleton pf-skeleton--select");
+            builder.AddAttribute(si++, "aria-busy", "true");
+            builder.AddAttribute(si++, "aria-label", "Loading options");
+            builder.CloseElement();
+            return;
+        }
+
         var entries = option.JsonSource is not null && _jsonCache.TryGetValue(option.JsonSource, out var cached)
             ? cached
             : option.InlineValues?.Select(v => new DataEntry(v.Value, L[v.DisplayKey])).ToList() as IReadOnlyList<DataEntry>
@@ -286,13 +315,14 @@
     {
         var currentValue = option.GetString?.Invoke(ModeSvc.Config) ?? "";
         var entries = option.InlineValues ?? [];
+        var hasImages = entries.Any(e => !string.IsNullOrEmpty(e.ImagePath));
 
         var i = 0;
         builder.OpenComponent<FluentRadioGroup<string>>(i++);
         builder.AddAttribute(i++, "Name", $"opt-{option.Id}");
         builder.AddAttribute(i++, "Value", currentValue);
         builder.AddAttribute(i++, "Orientation", Orientation.Vertical);
-        builder.AddAttribute(i++, "Class", "pf-radio-group");
+        builder.AddAttribute(i++, "Class", hasImages ? "pf-radio-group pf-radio-group--images" : "pf-radio-group");
         builder.AddAttribute(i++, "ValueChanged", EventCallback.Factory.Create<string>(this, v =>
         {
             option.SetString?.Invoke(ModeSvc.Config, v);
@@ -305,7 +335,27 @@
             {
                 child.OpenComponent<FluentRadio<string>>(k++);
                 child.AddAttribute(k++, "Value", entry.Value);
-                child.AddAttribute(k++, "ChildContent", (RenderFragment)(c => c.AddContent(0, L[entry.DisplayKey])));
+                child.AddAttribute(k++, "ChildContent", (RenderFragment)(c =>
+                {
+                    var ci = 0;
+                    if (!string.IsNullOrEmpty(entry.ImagePath))
+                    {
+                        c.OpenElement(ci++, "span");
+                        c.AddAttribute(ci++, "class", "pf-radio__with-image");
+                        c.OpenElement(ci++, "img");
+                        c.AddAttribute(ci++, "src", entry.ImagePath);
+                        c.AddAttribute(ci++, "alt", "");
+                        c.AddAttribute(ci++, "class", "pf-radio__image");
+                        c.AddAttribute(ci++, "loading", "lazy");
+                        c.CloseElement();
+                        c.AddContent(ci++, (string)L[entry.DisplayKey]);
+                        c.CloseElement();
+                    }
+                    else
+                    {
+                        c.AddContent(ci++, (string)L[entry.DisplayKey]);
+                    }
+                }));
                 child.CloseComponent();
             }
         }));

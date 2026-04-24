@@ -1345,12 +1345,25 @@ fluent-anchor[appearance="hypertext"]:hover {
 }
 
 /* Advanced page layout: allow all content to flow naturally.
-   `align-items: start` on the top-level grid stops the content column
-   from being vertically stretched to match the tall left navigation. */
+   FluentGrid is a flex row; default align-items (stretch) makes the main
+   content column grow to match the tall left navigation. Pin items to the
+   top explicitly so the content card hugs its own height. */
 fluent-grid,
 fluent-grid-item,
 fluent-card {
     overflow: visible !important;
+}
+
+.pf-advanced-shell .fluent-grid {
+    align-items: flex-start !important;
+}
+
+.pf-advanced-shell fluent-grid-item > div {
+    align-self: flex-start;
+}
+
+.pf-advanced-shell fluent-card {
+    height: auto;
 }
 
 /* ─── FluentSelect dropdown sizing ───────────────────────────
@@ -1616,15 +1629,22 @@ fluent-select.pf-select::part(positioning-region) {
 
 /* Progressive fill trail (0 → 100% one-shot). It's a status bar - once
    it reaches the end, stays there. `forwards` fill-mode pins the end state
-   even after the animation completes, through the overlay fade-out. */
+   even after the animation completes, through the overlay fade-out.
+
+   A horizontal mask gradient fades the trail's tail so the oldest part of
+   the flight path dissolves behind the plane - visually separates the
+   glowing plane from the line, which were blending into one violet smear. */
 .runway-trail {
     stroke: url(#runwayGradient);
-    stroke-width: 3;
+    stroke-width: 2;
     stroke-dasharray: 100;
     stroke-dashoffset: 100;
     /* initial: nothing drawn */
     stroke-linecap: round;
-    filter: drop-shadow(0 0 8px var(--pf-accent));
+    filter: drop-shadow(0 0 4px var(--pf-accent));
+    opacity: 0.85;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 18%, black 48%);
+    mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 18%, black 48%);
     animation: trailFly 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
@@ -1656,7 +1676,13 @@ fluent-select.pf-select::part(positioning-region) {
     offset-anchor: center;
 
     /* One-shot forward flight in sync with `trailFly`. `forwards` fill-mode
-       pins the plane at 100% when done, matching the full status bar. */
+       pins the plane at 100% when done, matching the full status bar.
+
+       Two-layer drop-shadow (small white highlight + larger accent halo)
+       lifts the plane off the violet trail underneath so the nose always
+       reads clearly. */
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95))
+            drop-shadow(0 0 14px var(--pf-accent));
     animation:
         planeFly 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards,
         planePulse 1.8s ease-in-out infinite;
@@ -1676,11 +1702,13 @@ fluent-select.pf-select::part(positioning-region) {
 
     0%,
     100% {
-        filter: drop-shadow(0 0 8px var(--pf-accent));
+        filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95))
+                drop-shadow(0 0 12px var(--pf-accent));
     }
 
     50% {
-        filter: drop-shadow(0 0 16px var(--pf-accent));
+        filter: drop-shadow(0 0 4px rgba(255, 255, 255, 1))
+                drop-shadow(0 0 22px var(--pf-accent-strong, var(--pf-accent)));
     }
 }
 
@@ -2429,6 +2457,236 @@ html.theme-dark .pf-xml-code .token.regex {
     width: 100%;
 }
 
+/* ─── Advanced sidebar (grouped nav) ──────────────────────
+   The 28 sections live under ~6 collapsible groups so the list reads
+   as chapters, not a wall of links. Native <details> handles open/close;
+   the group owning the active section opens automatically (razor-side). */
+.pf-nav-card {
+    padding: 6px !important;
+}
+
+.pf-nav-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pf-nav-group {
+    border-radius: var(--pf-radius-sm);
+    background: transparent;
+}
+
+.pf-nav-group[open] {
+    background: rgba(var(--pf-accent-rgb, 139, 92, 246), 0.06);
+}
+
+.pf-nav-group__summary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    list-style: none;
+    cursor: pointer;
+    color: var(--pf-text-muted);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    border-radius: var(--pf-radius-sm);
+    user-select: none;
+    transition: color 0.15s var(--pf-ease), background 0.15s var(--pf-ease);
+}
+
+.pf-nav-group__summary::-webkit-details-marker { display: none; }
+.pf-nav-group__summary::marker { content: ''; }
+
+.pf-nav-group__summary::after {
+    content: '▾';
+    margin-left: auto;
+    font-size: 0.75rem;
+    color: var(--pf-text-subtle);
+    transform: rotate(-90deg);
+    transition: transform 0.2s var(--pf-ease);
+}
+
+.pf-nav-group[open] > .pf-nav-group__summary::after {
+    transform: rotate(0deg);
+}
+
+.pf-nav-group__summary:hover {
+    color: var(--pf-text);
+    background: rgba(var(--pf-accent-rgb, 139, 92, 246), 0.1);
+}
+
+.pf-nav-group__icon {
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+.pf-nav-group__title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pf-nav-group__count {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--pf-text-subtle);
+    padding: 1px 6px;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+}
+
+.pf-nav-group__list {
+    list-style: none;
+    margin: 0;
+    padding: 2px 4px 6px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+}
+
+.pf-nav-group__link {
+    display: block;
+    padding: 6px 10px;
+    border-radius: var(--pf-radius-sm);
+    color: var(--pf-text-muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    transition: color 0.15s var(--pf-ease), background 0.15s var(--pf-ease);
+}
+
+.pf-nav-group__link:hover {
+    color: var(--pf-text);
+    background: rgba(var(--pf-accent-rgb, 139, 92, 246), 0.08);
+}
+
+.pf-nav-group__link.active {
+    color: var(--pf-accent-strong);
+    background: rgba(var(--pf-accent-rgb, 139, 92, 246), 0.18);
+    font-weight: 600;
+}
+
+/* ─── Loading skeleton placeholders ───────────────────────
+   Shown in place of a real control while its data source is still
+   fetching (e.g. FluentSelect populated from a 130-entry JSON). The
+   shimmer is a shifting linear-gradient overlay; `prefers-reduced-motion`
+   replaces it with a static tint so the animation doesn't trigger users
+   who've opted out of motion. */
+.pf-skeleton {
+    display: block;
+    border-radius: var(--pf-radius-md);
+    background: linear-gradient(90deg,
+        var(--pf-surface-2) 0%,
+        rgba(var(--pf-accent-rgb, 139, 92, 246), 0.08) 50%,
+        var(--pf-surface-2) 100%);
+    background-size: 200% 100%;
+    animation: pfSkeletonShimmer 1.4s ease-in-out infinite;
+    border: 1px solid var(--pf-border);
+}
+
+.pf-skeleton--select {
+    height: 40px;
+    width: 100%;
+}
+
+@keyframes pfSkeletonShimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pf-skeleton { animation: none; background: var(--pf-surface-2); }
+}
+
+/* ─── Custom scripts section ──────────────────────────────
+   Each phase is a card: title + description on the left, "Add script"
+   on the right. Slots grow below as the user adds them; empty phases
+   show a dashed placeholder so the section's shape reads immediately. */
+.pf-scripts-phase {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1rem 1.125rem;
+    background: rgba(var(--pf-bg-rgb), 0.55);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-lg);
+}
+
+.pf-scripts-phase__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.pf-scripts-phase__title {
+    margin: 0 0 0.2rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--pf-text);
+}
+
+.pf-scripts-phase__desc {
+    margin: 0;
+    max-width: 68ch;
+    color: var(--pf-text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.pf-scripts-phase__empty {
+    padding: 0.75rem 1rem;
+    color: var(--pf-text-muted);
+    background: transparent;
+    border: 1px dashed var(--pf-border);
+    border-radius: var(--pf-radius-md);
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.pf-script-slot {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    padding: 0.85rem 0.95rem;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+}
+
+.pf-script-slot__head {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.pf-script-slot__num {
+    font-family: var(--pf-font-mono);
+    font-size: 0.85rem;
+    color: var(--pf-text-muted);
+    min-width: 26px;
+}
+
+.pf-scripts-global {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 1rem 1.125rem;
+    margin-top: 0.5rem;
+    background: rgba(var(--pf-bg-rgb), 0.55);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+}
+
 /* ─── Users section ────────────────────────────────────────
    Four self-contained blocks (accounts / first-logon / expiration /
    lockout). Each `.pf-users__block` already has `.pf-option` framing
@@ -2599,5 +2857,29 @@ html.theme-dark .pf-xml-code .token.regex {
     flex-direction: column;
     gap: 0.4rem;
     margin-top: 0.1rem;
+}
+
+/* When a radio group carries illustrative images (taskbar-search etc), give each
+   row more breathing room so the image doesn't crowd the next option. */
+.pf-section--advanced fluent-radio-group.pf-radio-group--images {
+    gap: 0.75rem;
+}
+
+.pf-radio__with-image {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pf-radio__image {
+    width: 140px;
+    height: auto;
+    max-height: 36px;
+    display: block;
+    border-radius: 4px;
+    border: 1px solid var(--pf-border);
+    background: var(--pf-surface-2);
+    padding: 2px;
+    object-fit: contain;
 }
 

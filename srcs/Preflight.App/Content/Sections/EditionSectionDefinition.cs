@@ -42,6 +42,10 @@ public static class EditionSectionDefinition
                 // Schneegans' validator pattern, mirrored client-side for an early signal.
                 Pattern = "[A-Za-z0-9]{5}-[A-Za-z0-9]{5}-[A-Za-z0-9]{5}-[A-Za-z0-9]{5}-[A-Za-z0-9]{5}",
                 PlaceholderKey = "Edition.ProductKey.Placeholder",
+                // Only surface the product-key field when the user actually needs to type one.
+                // Generic uses Microsoft's GVLK keys, Interactive defers to Setup, FromBios reads
+                // the UEFI/MSDM slot - showing an empty key field in any of those modes is just noise.
+                VisibleWhen = c => c.Edition.KeyMode == ProductKeyMode.Custom,
                 GetString = c => c.Edition.ProductKey,
                 SetString = (c, v) => c.Edition.ProductKey = string.IsNullOrWhiteSpace(v) ? null : v!.Trim().ToUpperInvariant(),
             },
@@ -52,6 +56,9 @@ public static class EditionSectionDefinition
                 DescriptionKey = "Edition.Edition.Description",
                 Kind = OptionKind.Dropdown,
                 JsonSource = "data/editions.json",
+                // Edition picker is irrelevant in Interactive / FromBios paths - Setup / the firmware
+                // picks the edition. Hide to keep the form honest about what actually ends up in XML.
+                VisibleWhen = c => c.Edition.KeyMode is ProductKeyMode.Generic or ProductKeyMode.Custom,
                 GetString = c => MapEditionOut(c.Edition.Edition),
                 SetString = (c, v) => c.Edition.Edition = MapEditionIn(v),
             },

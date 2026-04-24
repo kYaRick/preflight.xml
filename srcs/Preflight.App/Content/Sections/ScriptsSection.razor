@@ -3,6 +3,15 @@
 @inject ModeService Mode
 @implements IDisposable
 
+@*
+    Custom scripts. Four script phases (System / DefaultUser / FirstLogon / UserOnce);
+    each holds a growing list of entries the user creates via "Add script". No pre-
+    allocated empty slots - the form stays short until the user explicitly adds a
+    row, which keeps the section digestible for the common case (zero or one script
+    per phase). A script whose content is blank on serialization gets dropped by the
+    adapter, so there's no harm in deleting vs just clearing.
+*@
+
 <div class="pf-section pf-section--advanced">
     <header class="pf-section__head">
         <h2 class="pf-section__title">@L["Advanced.Section.scripts"]</h2>
@@ -11,23 +20,35 @@
 
     @foreach (var phase in _phases)
     {
+        var list = phase.Getter(Mode.Config.Scripts);
+        var canAdd = list.Count < CustomScriptsSettings.MaxSlotsPerPhase;
         <section class="pf-scripts-phase">
-            <h3 class="pf-scripts-phase__title">@L[$"Scripts.Phase.{phase.Key}.Label"]</h3>
-            <p class="pf-scripts-phase__desc">@L[$"Scripts.Phase.{phase.Key}.Description"]</p>
+            <div class="pf-scripts-phase__head">
+                <div>
+                    <h3 class="pf-scripts-phase__title">@L[$"Scripts.Phase.{phase.Key}.Label"]</h3>
+                    <p class="pf-scripts-phase__desc">@L[$"Scripts.Phase.{phase.Key}.Description"]</p>
+                </div>
+                <FluentButton Appearance="Appearance.Outline"
+                              OnClick="@(() => AddScript(phase))"
+                              Disabled="@(!canAdd)"
+                              Title="@(canAdd ? null : $"Max {CustomScriptsSettings.MaxSlotsPerPhase} per phase")">
+                    <span aria-hidden="true" style="margin-right: 4px;">＋</span> @L["Scripts.AddScript"]
+                </FluentButton>
+            </div>
 
-            @for (var i = 0; i < CustomScriptsSettings.MaxSlotsPerPhase; i++)
+            @if (list.Count == 0)
+            {
+                <div class="pf-scripts-phase__empty">@L["Scripts.Phase.Empty"]</div>
+            }
+
+            @for (var i = 0; i < list.Count; i++)
             {
                 var slotIndex = i;
-                var list = phase.Getter(Mode.Config.Scripts);
-                var entry = slotIndex < list.Count ? list[slotIndex] : null;
-                var hasContent = entry is not null && !string.IsNullOrWhiteSpace(entry.Content);
-                // Render an explicit "empty" slot with a default Cmd type, only promote it
-                // into the list when the user types content. This keeps the serialized config
-                // tidy and the Schneegans adapter simple.
-                var type = entry?.Type ?? CustomScriptType.Cmd;
-                var content = entry?.Content ?? "";
+                var entry = list[slotIndex];
+                var type = entry.Type;
+                var content = entry.Content ?? "";
 
-                <div class="pf-script-slot @(hasContent ? "is-filled" : null)">
+                <div class="pf-script-slot is-filled">
                     <div class="pf-script-slot__head">
                         <span class="pf-script-slot__num">#@(slotIndex + 1)</span>
                         <FluentSelect TOption="string"
@@ -39,12 +60,13 @@
                                 <FluentOption TOption="string" Value="@t.ToString()" Selected="@(t == type)">@L[$"Scripts.Type.{t}"]</FluentOption>
                             }
                         </FluentSelect>
-                        @if (hasContent)
-                        {
-                            <FluentButton Appearance="Appearance.Stealth" OnClick="@(() => ClearSlot(phase, slotIndex))">
-                                @L["Scripts.Slot.Clear"]
-                            </FluentButton>
-                        }
+                        <FluentSpacer />
+                        <FluentButton Appearance="Appearance.Stealth"
+                                      OnClick="@(() => RemoveScript(phase, slotIndex))"
+                                      Title="@L["Scripts.Remove"]"
+                                      aria-label="@L["Scripts.Remove"]">
+                            ✕
+                        </FluentButton>
                     </div>
                     <CodeEditor Language="@PrismLanguageFor(type)"
                                 Rows="6"
@@ -107,12 +129,32 @@
         Mode.StateChanged -= OnStateChanged;
     }
 
+    private void AddScript(PhaseDef phase)
+    {
+        var list = phase.Getter(Mode.Config.Scripts);
+        if (list.Count >= CustomScriptsSettings.MaxSlotsPerPhase) return;
+        // DefaultUser rejects VBScript; seed the new slot with a phase-valid default
+        // so the dropdown doesn't flash an invalid combination on first render.
+        var defaultType = phase.Key == "DefaultUser"
+            ? CustomScriptType.Cmd
+            : CustomScriptType.Cmd;
+        list.Add(new CustomScript { Type = defaultType, Content = "" });
+        Mode.NotifyConfigChanged();
+    }
+
+    private void RemoveScript(PhaseDef phase, int slotIndex)
+    {
+        var list = phase.Getter(Mode.Config.Scripts);
+        if (slotIndex < 0 || slotIndex >= list.Count) return;
+        list.RemoveAt(slotIndex);
+        Mode.NotifyConfigChanged();
+    }
+
     private void OnTypeChanged(PhaseDef phase, int slotIndex, string? typeStr)
     {
         if (!Enum.TryParse<CustomScriptType>(typeStr, out var type)) return;
-
         var list = phase.Getter(Mode.Config.Scripts);
-        EnsureSlot(list, slotIndex);
+        if (slotIndex < 0 || slotIndex >= list.Count) return;
         list[slotIndex].Type = type;
         Mode.NotifyConfigChanged();
     }
@@ -120,31 +162,8 @@
     private void OnContentChanged(PhaseDef phase, int slotIndex, CustomScriptType fallbackType, string? content)
     {
         var list = phase.Getter(Mode.Config.Scripts);
-
-        if (string.IsNullOrEmpty(content))
-        {
-            // Empty content - if the slot exists, keep it (user may be mid-paste), but don't
-            // promote a non-existent slot. Trimming dead slots happens on save/adapter mapping.
-            if (slotIndex < list.Count) list[slotIndex].Content = content ?? "";
-        }
-        else
-        {
-            EnsureSlot(list, slotIndex, fallbackType);
-            list[slotIndex].Content = content;
-        }
-
+        if (slotIndex < 0 || slotIndex >= list.Count) return;
+        list[slotIndex].Content = content ?? "";
         Mode.NotifyConfigChanged();
-    }
-
-    private void ClearSlot(PhaseDef phase, int slotIndex)
-    {
-        var list = phase.Getter(Mode.Config.Scripts);
-        if (slotIndex < list.Count) list[slotIndex].Content = "";
-        Mode.NotifyConfigChanged();
-    }
-
-    private static void EnsureSlot(List<CustomScript> list, int slotIndex, CustomScriptType type = CustomScriptType.Cmd)
-    {
-        while (list.Count <= slotIndex) list.Add(new CustomScript { Type = type });
     }
 }

@@ -124,7 +124,16 @@ public sealed record OptionDefinition
 }
 
 /// <summary>A single entry in an inline dropdown / radio / checkbox-group option list.</summary>
-public sealed record OptionValue(string Value, string DisplayKey);
+public sealed record OptionValue(string Value, string DisplayKey)
+{
+    /// <summary>
+    /// Optional illustrative image shown next to the radio label (relative path from
+    /// wwwroot, e.g. <c>content/images/taskbar-search-box.png</c>). Rendered only in
+    /// the Radio kind; ignored elsewhere. Keeps the UI educational for options where
+    /// the right choice is visual (taskbar search layouts, wallpaper, desktop icons).
+    /// </summary>
+    public string? ImagePath { get; init; }
+}
 
 /// <summary>
 /// One boolean toggle inside a <see cref="OptionKind.CheckboxGroup"/>.

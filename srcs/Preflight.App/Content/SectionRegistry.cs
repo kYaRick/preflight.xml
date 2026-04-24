@@ -11,49 +11,26 @@ namespace Preflight.App.Content;
 /// </summary>
 public static class SectionRegistry
 {
+    /// <summary>Top-level groupings shown as collapsible headers in the Advanced / Docs nav.</summary>
+    public static readonly IReadOnlyList<SectionGroup> Groups =
+    [
+        new SectionGroup("setup-id", "Advanced.Group.SetupId", "🧭",
+            ["region", "time-zone", "computer-name", "setup-settings"]),
+        new SectionGroup("install", "Advanced.Group.Install", "💽",
+            ["source-image", "edition", "windows-pe", "disk"]),
+        new SectionGroup("system", "Advanced.Group.System", "🔧",
+            ["tweaks", "vm-support", "express-settings", "wdac", "applocker", "processor-archs", "compact-os"]),
+        new SectionGroup("desktop", "Advanced.Group.Desktop", "🎨",
+            ["explorer", "visual-effects", "desktop-icons", "start-menu", "start-folders", "personalization", "network"]),
+        new SectionGroup("advanced-features", "Advanced.Group.Advanced", "⚡",
+            ["lock-keys", "sticky-keys", "scripts", "components", "bloatware"]),
+        new SectionGroup("users", "Advanced.Group.Users", "👤",
+            ["users"]),
+    ];
+
     /// <summary>All registered section ids in display order (used by nav menus and enumeration).</summary>
     public static readonly IReadOnlyList<string> AllSectionIds =
-    [
-        // Setup & Identification Phase
-        "region",
-        "time-zone",
-        "computer-name",
-        "setup-settings",
-        
-        // Installation & System Image Phase
-        "source-image",
-        "edition",
-        "windows-pe",
-        "disk",
-        
-        // System Configuration Phase
-        "tweaks",
-        "vm-support",
-        "express-settings",
-        "wdac",
-        "applocker",
-        "processor-archs",
-        "compact-os",
-        
-        // Desktop & Personalization Phase
-        "explorer",
-        "visual-effects",
-        "desktop-icons",
-        "start-menu",
-        "start-folders",
-        "personalization",
-        "network",
-        
-        // Advanced Features Phase
-        "lock-keys",
-        "sticky-keys",
-        "scripts",
-        "components",
-        "bloatware",
-        
-        // User Management Phase
-        "users",
-    ];
+        Groups.SelectMany(g => g.SectionIds).ToArray();
 
     /// <summary>Section ids that render via a bespoke <c>.razor</c> component instead of the generic <see cref="Layout.SectionView"/>.</summary>
     public static readonly IReadOnlySet<string> CustomSectionIds =
@@ -128,3 +105,10 @@ public static class SectionRegistry
     public static bool IsCustom(string? id) =>
         id is not null && CustomSectionIds.Contains(id);
 }
+
+/// <summary>One collapsible group in the Advanced / Docs side navigation.</summary>
+public sealed record SectionGroup(
+    string Id,
+    string TitleKey,
+    string Emoji,
+    IReadOnlyList<string> SectionIds);

@@ -27,10 +27,14 @@ public static class StartMenuSection
                 Kind = OptionKind.Radio,
                 InlineValues =
                 [
-                    new OptionValue(nameof(TaskbarSearchMode.Hide),  "StartMenu.TaskbarSearch.Hide"),
-                    new OptionValue(nameof(TaskbarSearchMode.Icon),  "StartMenu.TaskbarSearch.Icon"),
-                    new OptionValue(nameof(TaskbarSearchMode.Box),   "StartMenu.TaskbarSearch.Box"),
-                    new OptionValue(nameof(TaskbarSearchMode.Label), "StartMenu.TaskbarSearch.Label_"),
+                    new OptionValue(nameof(TaskbarSearchMode.Hide),  "StartMenu.TaskbarSearch.Hide")
+                        { ImagePath = "content/images/taskbar-search-hide.png" },
+                    new OptionValue(nameof(TaskbarSearchMode.Icon),  "StartMenu.TaskbarSearch.Icon")
+                        { ImagePath = "content/images/taskbar-search-icon.png" },
+                    new OptionValue(nameof(TaskbarSearchMode.Box),   "StartMenu.TaskbarSearch.Box")
+                        { ImagePath = "content/images/taskbar-search-box.png" },
+                    new OptionValue(nameof(TaskbarSearchMode.Label), "StartMenu.TaskbarSearch.Label_")
+                        { ImagePath = "content/images/taskbar-search-label.png" },
                 ],
                 GetString = c => c.StartMenu.TaskbarSearch.ToString(),
                 SetString = (c, v) =>

@@ -529,6 +529,15 @@ WScript.Echo "Hello"</value>
   <data name="Scripts.Slot.Clear">
     <value>Очистити</value>
   </data>
+  <data name="Scripts.AddScript">
+    <value>Додати скрипт</value>
+  </data>
+  <data name="Scripts.Remove">
+    <value>Видалити скрипт</value>
+  </data>
+  <data name="Scripts.Phase.Empty">
+    <value>У цій фазі ще немає скриптів. Натисніть "Додати скрипт" щоб створити.</value>
+  </data>
   <data name="Scripts.RestartExplorer.Label">
     <value>Перезапустити Explorer після скриптів</value>
   </data>
@@ -1310,6 +1319,14 @@ convert gpt
   <!-- ═══ Wizard review additions ════════════════════════════ -->
   <data name="Wizard.Review.Preparing"><value>Підготовка…</value></data>
   <data name="Wizard.Review.Tweak"><value>Підкрутити в Advanced</value></data>
+
+  <!-- ═══ Advanced side-nav groups ═══════════════════════════ -->
+  <data name="Advanced.Group.SetupId"><value>Налаштування і ідентифікація</value></data>
+  <data name="Advanced.Group.Install"><value>Встановлення і образ</value></data>
+  <data name="Advanced.Group.System"><value>Система і безпека</value></data>
+  <data name="Advanced.Group.Desktop"><value>Робочий стіл і персоналізація</value></data>
+  <data name="Advanced.Group.Advanced"><value>Розширені функції</value></data>
+  <data name="Advanced.Group.Users"><value>Користувачі</value></data>
 
   <!-- ═══ Import XML ═════════════════════════════════════════ -->
   <data name="Landing.Import.Reading"><value>Читання файлу…</value></data>

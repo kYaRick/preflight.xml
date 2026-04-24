@@ -11,7 +11,7 @@
 
 <PageTitle>@L["Advanced.Title"] · preflight.xml</PageTitle>
 
-<div style="padding: 24px 16px; max-width: 1600px; margin: 0 auto;">
+<div class="pf-advanced-shell" style="padding: 24px 16px; max-width: 1600px; margin: 0 auto;">
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
         <FluentLabel Typo="Typography.PageTitle">⚙️ @L["Advanced.Title"]</FluentLabel>
         <FluentSpacer />
@@ -22,17 +22,34 @@
 
     <FluentGrid Spacing="3" Style="align-items: flex-start;">
 
-        <!-- Left column: sections navigation -->
+        <!-- Left column: sections navigation, grouped by install phase so the
+             28-item list reads as ~6 collapsible chapters instead of a wall. -->
         <FluentGridItem xs="12" md="3">
-            <FluentCard Style="padding: 8px; position: sticky; top: 16px;">
-                <FluentNavMenu>
-                    @foreach (var id in _sections)
+            <FluentCard Class="pf-nav-card" Style="padding: 6px; position: sticky; top: 16px;">
+                <nav class="pf-nav-groups" aria-label="@L[@"Advanced.Title"]">
+                    @foreach (var group in SectionRegistry.Groups)
                     {
-                        <FluentNavLink Href="@($"/advanced/{id}")" Match="NavLinkMatch.All">
-                            @L[$"Advanced.Section.{id}"]
-                        </FluentNavLink>
+                        var isOpen = group.SectionIds.Contains(_activeSection, StringComparer.Ordinal)
+                                     || _openGroupIds.Contains(group.Id);
+                        <details class="pf-nav-group" open="@isOpen">
+                            <summary class="pf-nav-group__summary">
+                                <span class="pf-nav-group__icon" aria-hidden="true">@group.Emoji</span>
+                                <span class="pf-nav-group__title">@L[group.TitleKey]</span>
+                                <span class="pf-nav-group__count">@group.SectionIds.Count</span>
+                            </summary>
+                            <ul class="pf-nav-group__list">
+                                @foreach (var id in group.SectionIds)
+                                {
+                                    <li>
+                                        <NavLink class="pf-nav-group__link" href="@($"/advanced/{id}")" Match="NavLinkMatch.All">
+                                            @L[$"Advanced.Section.{id}"]
+                                        </NavLink>
+                                    </li>
+                                }
+                            </ul>
+                        </details>
                     }
-                </FluentNavMenu>
+                </nav>
             </FluentCard>
         </FluentGridItem>
 
@@ -102,6 +119,10 @@
     // Kept in sync with SectionRegistry so new sections register once and both the
     // nav menu and the route-dispatch switch pick them up automatically.
     private static readonly IReadOnlyList<string> _sections = SectionRegistry.AllSectionIds;
+
+    // Groups the user has explicitly expanded in addition to the one that owns the
+    // active section (that one is always open).
+    private readonly HashSet<string> _openGroupIds = new(StringComparer.Ordinal);
 
     private string _activeSection = "region";
 

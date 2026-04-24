@@ -16,17 +16,32 @@
 
     <FluentGrid Spacing="3" Style="margin-top: 12px; align-items: flex-start;">
 
-        <!-- Sidebar: section list so users always know where they are. -->
+        <!-- Sidebar: sections grouped by install phase, matching /advanced. -->
         <FluentGridItem xs="12" md="3">
-            <FluentCard Style="padding: 8px; position: sticky; top: 16px;">
-                <FluentNavMenu>
-                    @foreach (var id in SectionRegistry.AllSectionIds)
+            <FluentCard Class="pf-nav-card" Style="padding: 6px; position: sticky; top: 16px;">
+                <nav class="pf-nav-groups" aria-label="@L[@"Docs.Title"]">
+                    @foreach (var group in SectionRegistry.Groups)
                     {
-                        <FluentNavLink Href="@($"/docs/{id}")" Match="NavLinkMatch.All">
-                            @L[$"Advanced.Section.{id}"]
-                        </FluentNavLink>
+                        var isOpen = group.SectionIds.Contains(Slug, StringComparer.Ordinal);
+                        <details class="pf-nav-group" open="@isOpen">
+                            <summary class="pf-nav-group__summary">
+                                <span class="pf-nav-group__icon" aria-hidden="true">@group.Emoji</span>
+                                <span class="pf-nav-group__title">@L[group.TitleKey]</span>
+                                <span class="pf-nav-group__count">@group.SectionIds.Count</span>
+                            </summary>
+                            <ul class="pf-nav-group__list">
+                                @foreach (var id in group.SectionIds)
+                                {
+                                    <li>
+                                        <NavLink class="pf-nav-group__link" href="@($"/docs/{id}")" Match="NavLinkMatch.All">
+                                            @L[$"Advanced.Section.{id}"]
+                                        </NavLink>
+                                    </li>
+                                }
+                            </ul>
+                        </details>
                     }
-                </FluentNavMenu>
+                </nav>
             </FluentCard>
         </FluentGridItem>
 

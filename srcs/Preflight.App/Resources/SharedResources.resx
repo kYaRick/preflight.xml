@@ -527,6 +527,15 @@ WScript.Echo "Hello"</value>
   <data name="Scripts.Slot.Clear">
     <value>Clear</value>
   </data>
+  <data name="Scripts.AddScript">
+    <value>Add script</value>
+  </data>
+  <data name="Scripts.Remove">
+    <value>Remove script</value>
+  </data>
+  <data name="Scripts.Phase.Empty">
+    <value>No scripts in this phase yet. Click "Add script" to create one.</value>
+  </data>
   <data name="Scripts.RestartExplorer.Label">
     <value>Restart Explorer after scripts finish</value>
   </data>
@@ -1308,6 +1317,14 @@ convert gpt
   <!-- ═══ Wizard review additions ════════════════════════════ -->
   <data name="Wizard.Review.Preparing"><value>Preparing…</value></data>
   <data name="Wizard.Review.Tweak"><value>Tweak in Advanced</value></data>
+
+  <!-- ═══ Advanced side-nav groups ═══════════════════════════ -->
+  <data name="Advanced.Group.SetupId"><value>Setup &amp; identity</value></data>
+  <data name="Advanced.Group.Install"><value>Install &amp; image</value></data>
+  <data name="Advanced.Group.System"><value>System &amp; security</value></data>
+  <data name="Advanced.Group.Desktop"><value>Desktop &amp; personalization</value></data>
+  <data name="Advanced.Group.Advanced"><value>Advanced features</value></data>
+  <data name="Advanced.Group.Users"><value>Users</value></data>
 
   <!-- ═══ Import XML ═════════════════════════════════════════ -->
   <data name="Landing.Import.Reading"><value>Reading file…</value></data>
