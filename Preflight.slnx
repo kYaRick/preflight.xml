@@ -6,4 +6,61 @@
   <Folder Name="/tests/">
     <Project Path="tests/Preflight.Tests/Preflight.Tests.csproj" />
   </Folder>
+
+  <!-- Root config & tooling -->
+  <Folder Name="/config/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path=".gitmessage" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="global.json" />
+    <File Path="NuGet.config" />
+    <File Path="justfile" />
+  </Folder>
+
+  <!-- Project docs -->
+  <Folder Name="/docs/">
+    <File Path="README.md" />
+    <File Path="AGENTS.md" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="SECURITY.md" />
+    <File Path="NOTICE" />
+    <File Path="docs/README.md" />
+    <File Path="docs/architecture.md" />
+    <File Path="docs/ci-cd.md" />
+    <File Path="docs/publishing.md" />
+    <File Path="docs/releasing.md" />
+    <File Path="docs/upstream-sync.md" />
+  </Folder>
+
+  <!-- GitHub Actions & repo meta -->
+  <Folder Name="/.github/">
+    <File Path=".github/workflows/ci.yml" />
+    <File Path=".github/workflows/pages.yml" />
+    <File Path=".github/workflows/release.yml" />
+    <File Path=".github/workflows/release-drafter.yml" />
+    <File Path=".github/ISSUE_TEMPLATE/bug_report.yml" />
+    <File Path=".github/ISSUE_TEMPLATE/feature_request.yml" />
+    <File Path=".github/ISSUE_TEMPLATE/option_missing.yml" />
+    <File Path=".github/ISSUE_TEMPLATE/config.yml" />
+    <File Path=".github/CODEOWNERS" />
+    <File Path=".github/dependabot.yml" />
+    <File Path=".github/FUNDING.yml" />
+    <File Path=".github/labels.yml" />
+    <File Path=".github/pull_request_template.md" />
+    <File Path=".github/release-drafter.yml" />
+  </Folder>
+
+  <!-- Git hooks -->
+  <Folder Name="/.githooks/">
+    <File Path=".githooks/pre-commit" />
+  </Folder>
+
+  <!-- Brand assets -->
+  <Folder Name="/assets/">
+    <File Path=".github/assets/banner.svg" />
+    <File Path=".github/assets/icon.svg" />
+    <File Path=".github/assets/social-card.svg" />
+  </Folder>
 </Solution>
