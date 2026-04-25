@@ -91,15 +91,20 @@
     {
         _allCommands =
         [
-            new("🏠", L["Palette.Cmd.Home"], "/", L["Nav"], Hint: "/"),
-            new("✈️", L["Palette.Cmd.Wizard"], "/wizard", L["Nav"], Hint: "/wizard"),
-            new("⚙️", L["Palette.Cmd.Advanced"], "/advanced", L["Nav"], Hint: "/advanced"),
-            new("📖", L["Palette.Cmd.Docs"], "/docs", L["Nav"], Hint: "/docs"),
-            new("🎛️", L["Palette.Cmd.Presets"], "/wizard/presets", L["Nav"], Hint: "/wizard/presets"),
-            new("📋", L["Palette.Cmd.Review"], "/wizard/review", L["Nav"], Hint: "/wizard/review"),
+            // Href values are passed to Nav.NavigateTo, which resolves them
+            // against <base href>. They MUST be base-relative (no leading slash)
+            // - otherwise on a subpath deploy (/preflight.xml/) the browser
+            // jumps to the host root. The Hint text is purely cosmetic and keeps
+            // a leading slash so users see a familiar URL-shaped tooltip.
+            new("🏠", L["Palette.Cmd.Home"], "", L["Nav"], Hint: "/"),
+            new("✈️", L["Palette.Cmd.Wizard"], "wizard", L["Nav"], Hint: "/wizard"),
+            new("⚙️", L["Palette.Cmd.Advanced"], "advanced", L["Nav"], Hint: "/advanced"),
+            new("📖", L["Palette.Cmd.Docs"], "docs", L["Nav"], Hint: "/docs"),
+            new("🎛️", L["Palette.Cmd.Presets"], "wizard/presets", L["Nav"], Hint: "/wizard/presets"),
+            new("📋", L["Palette.Cmd.Review"], "wizard/review", L["Nav"], Hint: "/wizard/review"),
 
             .. Presets.All.Select(p => new Command(p.Icon, L[p.NameKey], null, L["Palette.Group.Preset"],
-                Hint: L[p.DescriptionKey], Action: () => { Mode.ApplyPreset(p); Nav.NavigateTo("/wizard/review"); return Task.CompletedTask; })),
+                Hint: L[p.DescriptionKey], Action: () => { Mode.ApplyPreset(p); Nav.NavigateTo("wizard/review"); return Task.CompletedTask; })),
 
             new("🌞", L["Palette.Cmd.ThemeLight"], null, L["Palette.Group.Theme"],
                 Action: () => ApplyThemeAsync("light")),

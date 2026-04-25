@@ -1,0 +1,41 @@
+@* Brand mark - purple gradient square with the white plane silhouette.
+   Same artwork as .github/assets/icon.svg, wwwroot/icon-512.png and the
+   inline mark used between the 4s on the 404 page. Each instance gets
+   unique <defs> ids so multiple icons can share a page (header + hero)
+   without gradient collisions. Sizing is parent-driven via CSS - see
+   .pf-brand .pf-brand-icon, .pf-hero-icon and .pf-404__icon in app.css. *@
+
+<svg viewBox="0 0 512 512"
+     role="img"
+     aria-label="@AriaLabel"
+     class="@_class">
+    <defs>
+        <linearGradient id="@_bgId" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#6d28d9" />
+            <stop offset="60%" stop-color="#8b5cf6" />
+            <stop offset="100%" stop-color="#a855f7" />
+        </linearGradient>
+        <linearGradient id="@_shineId" x1="0.5" y1="0" x2="0.5" y2="1">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22" />
+            <stop offset="45%" stop-color="#ffffff" stop-opacity="0" />
+        </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#@_bgId)" />
+    <rect x="0" y="0" width="512" height="512" rx="112" fill="url(#@_shineId)" />
+    <g transform="translate(118, 112) scale(12)">
+        <path d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1l3.5 1v-1.5L13 19v-5.5z"
+              fill="#ffffff" />
+    </g>
+</svg>
+
+@code {
+    [Parameter] public string AriaLabel { get; set; } = "preflight.xml";
+    [Parameter] public string? CssClass { get; set; }
+
+    private readonly string _bgId = $"pf-bi-bg-{Guid.NewGuid():N}";
+    private readonly string _shineId = $"pf-bi-shine-{Guid.NewGuid():N}";
+
+    private string _class => string.IsNullOrWhiteSpace(CssClass)
+        ? "pf-brand-icon"
+        : $"pf-brand-icon {CssClass}";
+}

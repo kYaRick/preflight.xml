@@ -30,7 +30,7 @@
     </FluentGrid>
 
     <div>
-        <FluentAnchor Href="/wizard" Appearance="Appearance.Outline">← @L["Common.Back"]</FluentAnchor>
+        <FluentAnchor Href="wizard" Appearance="Appearance.Outline">← @L["Common.Back"]</FluentAnchor>
     </div>
 
 </FluentStack>
@@ -39,6 +39,6 @@
     private void OnSelect(Preset preset)
     {
         Mode.ApplyPreset(preset);
-        Nav.NavigateTo("/wizard/review");
+        Nav.NavigateTo("wizard/review");
     }
 }

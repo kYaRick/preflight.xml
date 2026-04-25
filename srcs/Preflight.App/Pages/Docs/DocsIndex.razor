@@ -8,7 +8,7 @@
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
         <FluentLabel Typo="Typography.PageTitle">📖 @L["Docs.Title"]</FluentLabel>
         <FluentSpacer />
-        <FluentAnchor Href="/" Appearance="Appearance.Outline">← @L["Common.BackToHome"]</FluentAnchor>
+        <FluentAnchor Href="" Appearance="Appearance.Outline">← @L["Common.BackToHome"]</FluentAnchor>
     </FluentStack>
 
     <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 16px 0;">@L["Docs.Subtitle"]</FluentLabel>
@@ -62,7 +62,7 @@
 @code {
     [Inject] private NavigationManager Nav { get; set; } = default!;
 
-    private void GoToTopic(string slug) => Nav.NavigateTo($"/docs/{slug}");
+    private void GoToTopic(string slug) => Nav.NavigateTo($"docs/{slug}");
 
     private sealed record DocTopic(string Slug);
 

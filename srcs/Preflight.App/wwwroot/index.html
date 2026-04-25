@@ -126,8 +126,14 @@
     <script>
         navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });
 
-        // Guarantee the loader stays visible long enough for one full flight
-        // cycle (~2.4s), then fade it out once Blazor has actually mounted.
+        // Loader-dismiss policy:
+        //   • Normal first visit: keep the loader for at least MIN_DISPLAY_MS
+        //     so the runway shimmer reads as a deliberate beat, not a flicker.
+        //   • Deep-link 404: GH Pages serves 404.html (= index.html), Blazor
+        //     boots, the router resolves NoMatch and renders <NotFound>.
+        //     Holding the loader 2.4s on top of a destination the user can't
+        //     reach is hostile - fade as soon as Blazor has mounted.
+        //
         // Uses setInterval (not rAF) so the check fires even if the tab is
         // temporarily hidden - otherwise the overlay could stay up forever.
         (() => {
@@ -138,8 +144,9 @@
 
             const handle = setInterval(() => {
                 const blazorReady = !!document.querySelector('.layout');
+                const isNotFound = !!document.querySelector('.pf-404');
                 const minElapsed = Date.now() - started >= MIN_DISPLAY_MS;
-                if (blazorReady && minElapsed) {
+                if (blazorReady && (minElapsed || isNotFound)) {
                     clearInterval(handle);
                     overlay.classList.add('is-done');
                     // Trigger the first page-enter animation AFTER the loader

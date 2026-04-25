@@ -621,29 +621,40 @@ fluent-button[appearance="accent"]:active::part(control) {
     border-radius: var(--pf-radius-md);
 }
 
-/* Same gradient-clip-text trick as .pf-hero-title - the ✈️ emoji is
-   rendered by the browser as a clipped shape filled with our gradient. */
-.pf-brand-glyph {
-    background: linear-gradient(135deg,
-            var(--pf-text) 0%,
-            var(--pf-accent) 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    filter: drop-shadow(0 2px 10px var(--pf-accent-ring));
-    line-height: 1;
-}
-
-/* Monochrome SVG inside the brand pill - inherits the white color from .pf-brand. */
-.pf-brand svg {
+/* Brand mark SVG - shared by header (.pf-brand), hero (.pf-hero-icon)
+   and 404 (.pf-404__icon). Sizing/glow is parent-driven so each context
+   can pick what fits; base is just a smooth-rendering block. */
+.pf-brand-icon {
     display: block;
-    color: currentColor;
     transition: transform 0.25s var(--pf-ease);
 }
 
-.pf-brand:hover svg {
+/* Header pill: fixed compact size that fits the 2.75rem header chip. */
+.pf-brand .pf-brand-icon {
+    width: 2rem;
+    height: 2rem;
+    filter: drop-shadow(0 2px 10px var(--pf-accent-ring));
+}
+
+.pf-brand:hover .pf-brand-icon {
     transform: translateX(2px) translateY(-1px);
+}
+
+/* Hero (.pf-hero-title--with-icon) - icon scales with the surrounding
+   text, sits to the left of "preflight.xml". The h1 itself becomes
+   inline-flex so it can be centered inside the (text-align:center)
+   wrapper without breaking onto two lines. */
+.pf-hero-title--with-icon {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+}
+
+.pf-hero-title .pf-hero-icon {
+    width: 1em;
+    height: 1em;
+    flex: 0 0 auto;
+    filter: drop-shadow(0 6px 18px rgba(var(--pf-accent-rgb), 0.32));
 }
 
 /* ─── Footer - quiet inline text, not a chip ────────────── */
@@ -1726,26 +1737,31 @@ fluent-select {
    A horizontal mask gradient fades the trail's tail so the oldest part of
    the flight path dissolves behind the plane - visually separates the
    glowing plane from the line, which were blending into one violet smear. */
+/* Honest deterministic fill: the runway draws itself in lockstep with
+   ACTUAL Blazor boot progress, not a hardcoded 2.4s timeline.
+
+   Blazor WebAssembly auto-publishes its load progress to two CSS custom
+   properties on <html>:
+     --blazor-load-percentage       - e.g.  "47%"   (length-percentage)
+     --blazor-load-percentage-text  - e.g.  "47%"   (string for content:)
+   The status text below already consumes the second one. Here we wire
+   the trail fill (and the plane's offset-distance) to the first so the
+   visual matches reality.
+
+   Math: pathLength="100" means dash values are interpreted as percent
+   of declared path length. A single dash of 100% covers the whole path;
+   stroke-dashoffset 100% pushes it fully off, 0% draws it fully. As
+   Blazor reports progress 0 → 100%, dashoffset moves 100% → 0%. The
+   transition smooths Blazor's chunky discrete bumps into a fluid bar. */
 .runway-trail {
     stroke: url(#runwayGradient);
     stroke-width: 2;
-    stroke-dasharray: 100;
-    stroke-dashoffset: 100;
-    /* initial: nothing drawn */
+    stroke-dasharray: 100%;
+    stroke-dashoffset: calc(100% - var(--blazor-load-percentage, 0%));
     stroke-linecap: round;
     filter: drop-shadow(0 0 4px var(--pf-accent));
     opacity: 0.85;
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 18%, black 48%);
-    mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.45) 18%, black 48%);
-    animation: trailFly 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}
-
-@keyframes trailFly {
-    to {
-        stroke-dashoffset: 0;
-    }
-
-    /* fully drawn */
+    transition: stroke-dashoffset 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Plane follows the EXACT same path the SVG drew. Both use the 400x60
@@ -1767,27 +1783,24 @@ fluent-select {
     offset-rotate: auto 90deg;
     offset-anchor: center;
 
-    /* One-shot forward flight in sync with `trailFly`. `forwards` fill-mode
-       pins the plane at 100% when done, matching the full status bar.
+    /* The plane's position rides Blazor's actual load percentage - same
+       source of truth as the runway-trail fill above. At 0% it sits at
+       the start of the runway; at 100% it has reached the right-most
+       crest; in between it advances along the cubic curve via
+       `offset-path`. Pulse glow keeps running independently so the
+       brand mark never feels frozen.
 
        Two-layer drop-shadow (small white highlight + larger accent halo)
        lifts the plane off the violet trail underneath so the nose always
        reads clearly. */
     filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.95)) drop-shadow(0 0 14px var(--pf-accent));
-    animation:
-        planeFly 2.4s cubic-bezier(0.4, 0, 0.2, 1) forwards,
-        planePulse 1.8s ease-in-out infinite;
+    offset-distance: var(--blazor-load-percentage, 0%);
+    transition: offset-distance 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: planePulse 1.8s ease-in-out infinite;
 }
 
-@keyframes planeFly {
-    from {
-        offset-distance: 0%;
-    }
-
-    to {
-        offset-distance: 100%;
-    }
-}
+/* (planeFly @keyframes removed - plane's offset-distance is now driven
+   directly by var(--blazor-load-percentage) with a CSS transition.) */
 
 @keyframes planePulse {
 
@@ -3399,4 +3412,108 @@ html.theme-dark .pf-xml-code .token.regex {
     background: var(--pf-surface-2);
     padding: 2px;
     object-fit: contain;
+}
+
+/* ─── 404 page ─────────────────────────────────────────────────
+   Hero composition: "4 [icon] 4" where the centre 0 is the actual
+   app icon. Stays on-brand and gives the user three on-ramps
+   (home / wizard / docs) instead of just a sad "go home". */
+.pf-404 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    padding: clamp(2rem, 6vw, 4.5rem) 1rem 4rem;
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    isolation: isolate;
+}
+
+.pf-404__hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    line-height: 1;
+    user-select: none;
+}
+
+.pf-404__digit {
+    font-family: var(--pf-font-sans);
+    font-weight: 800;
+    font-size: clamp(6rem, 18vw, 11.25rem);
+    letter-spacing: -0.05em;
+    background: var(--pf-accent-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    /* Soft purple glow so the gradient text reads against any theme. */
+    text-shadow: 0 8px 28px rgba(var(--pf-accent-rgb), 0.18);
+}
+
+.pf-404__icon {
+    display: inline-block;
+    width: clamp(5rem, 15vw, 9.5rem);
+    height: clamp(5rem, 15vw, 9.5rem);
+    /* Bob the icon gently to suggest it's hovering, not lost. */
+    animation: pf-404-bob 3.6s var(--pf-ease-out) infinite;
+    filter: drop-shadow(0 14px 28px rgba(var(--pf-accent-rgb), 0.32));
+}
+
+.pf-404__icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+@keyframes pf-404-bob {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50%      { transform: translateY(-10px) rotate(-3deg); }
+}
+
+/* Subtle dashed flight trail behind the hero - visually echoes the
+   one in the loading overlay so the page feels native. */
+.pf-404__trail {
+    position: absolute;
+    top: clamp(1rem, 4vw, 2.5rem);
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 80px;
+    z-index: -1;
+    color: var(--pf-accent);
+    opacity: 0.32;
+    pointer-events: none;
+}
+
+.pf-404__title {
+    margin: 0.5rem 0 0;
+    font-family: var(--pf-font-sans);
+    font-size: clamp(1.5rem, 3.2vw, 2.25rem);
+    font-weight: 700;
+    color: var(--pf-text);
+    letter-spacing: -0.01em;
+}
+
+.pf-404__message {
+    margin: 0;
+    max-width: 32rem;
+    font-size: clamp(0.9375rem, 1.4vw, 1.0625rem);
+    color: var(--pf-text-muted);
+    line-height: 1.55;
+}
+
+.pf-404__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.625rem;
+    margin-top: 0.75rem;
+}
+
+/* Respect users who opted out of motion. */
+@media (prefers-reduced-motion: reduce) {
+    .pf-404__icon { animation: none; }
 }

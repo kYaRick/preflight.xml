@@ -974,13 +974,19 @@
 
   <!-- ═══ NotFound ════════════════════════════════════════════ -->
   <data name="NotFound.Title">
-    <value>Page not found</value>
+    <value>Lost in flight</value>
   </data>
   <data name="NotFound.Message">
-    <value>The page you are looking for does not exist.</value>
+    <value>The page you're looking for took off without us. Pick a runway and we'll get you back on course.</value>
   </data>
   <data name="NotFound.GoHome">
-    <value>Go to home</value>
+    <value>🏠 Back home</value>
+  </data>
+  <data name="NotFound.BrowseDocs">
+    <value>📖 Browse docs</value>
+  </data>
+  <data name="NotFound.OpenWizard">
+    <value>✈️ Open wizard</value>
   </data>
 
   <!-- ═══ Section subtitles ══════════════════════════════════ -->

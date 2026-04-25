@@ -9,13 +9,13 @@
 
 <div class="pf-docs-entry" style="padding: 16px; max-width: 1400px; margin: 0 auto;">
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
-        <FluentAnchor Href="/docs" Appearance="Appearance.Outline">← @L["Docs.BackToIndex"]</FluentAnchor>
+        <FluentAnchor Href="docs" Appearance="Appearance.Outline">← @L["Docs.BackToIndex"]</FluentAnchor>
         @if (IsKnownSection)
         {
             <FluentAnchor Href="@($"/advanced/{Slug}")" Appearance="Appearance.Outline">⚙️ @L[@"Docs.OpenInAdvanced"]</FluentAnchor>
         }
         <FluentSpacer />
-        <FluentAnchor Href="/" Appearance="Appearance.Outline">← @L["Common.BackToHome"]</FluentAnchor>
+        <FluentAnchor Href="" Appearance="Appearance.Outline">← @L["Common.BackToHome"]</FluentAnchor>
     </FluentStack>
 
     <FluentGrid Spacing="3" Style="margin-top: 12px; align-items: flex-start;">
@@ -62,7 +62,7 @@
                                     @foreach (var id in group.SectionIds)
                                     {
                                         <li>
-                                            <NavLink class="pf-nav-group__link" href="@($"/docs/{id}")" Match="NavLinkMatch.All">
+                                            <NavLink class="pf-nav-group__link" href="@($"docs/{id}")" Match="NavLinkMatch.All">
                                                 @L[$"Advanced.Section.{id}"]
                                             </NavLink>
                                         </li>
@@ -77,7 +77,7 @@
                             @foreach (var id in FilteredIds())
                             {
                                 <li>
-                                    <NavLink class="pf-nav-group__link" href="@($"/docs/{id}")" Match="NavLinkMatch.All">
+                                    <NavLink class="pf-nav-group__link" href="@($"docs/{id}")" Match="NavLinkMatch.All">
                                         @L[$"Advanced.Section.{id}"]
                                     </NavLink>
                                 </li>

@@ -139,6 +139,32 @@ Things the workflow **cannot** fix. Documented, not papered over.
 > output. Add `srcs/Preflight.App/wwwroot/CNAME` with a single line
 > containing the hostname, set DNS accordingly, and rerun `pages.yml`.
 
+> [!CAUTION]
+> **IL Trimmer + Newtonsoft `$type` is a load-bearing combo.**
+> Blazor WASM Release publishing trims IL by default. Any type referenced
+> only via reflection - including Newtonsoft's `$type` polymorphism in
+> `Bloatware.json` - is invisible to the trimmer and gets stripped. The
+> first call to `BloatwareCatalog` then crashes with
+> `Could not load type ..., UnattendGenerator`.
+>
+> **Fix in place:** [`Preflight.App.csproj`](../srcs/Preflight.App/Preflight.App.csproj)
+> declares `<TrimmerRootAssembly Include="UnattendGenerator" />`, which
+> preserves every public type in the vendored library. Costs ~150 KB in
+> the WASM bundle. Cheaper than crashing.
+
+> [!WARNING]
+> **Leading slashes in URIs break subpath deploys.**
+> `Nav.NavigateTo("/wizard")` resolves to `https://host/wizard`, **not**
+> `https://host/preflight.xml/wizard` - RFC 3986 says path-absolute URIs
+> replace the base path. Same trap applies to `<a href="/...">`,
+> `<NavLink href="/...">`, `<FluentAnchor Href="/...">` and any string
+> passed through `NavigationManager`.
+>
+> **Rule of thumb:** in code, **never start internal URIs with a slash**.
+> Use `"wizard"`, `$"docs/{slug}"`, `""` for home. The `@page "/wizard"`
+> directive itself is fine - Blazor's router strips the slash before
+> matching against the base-relative path.
+
 ---
 
 ## ↩️ Rolling back a bad deploy

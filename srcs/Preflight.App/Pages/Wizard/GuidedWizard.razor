@@ -76,7 +76,7 @@
         }
         else
         {
-            <FluentButton Appearance="Appearance.Accent" OnClick='@(() => Nav.NavigateTo("/wizard/review"))'>
+            <FluentButton Appearance="Appearance.Accent" OnClick='@(() => Nav.NavigateTo("wizard/review"))'>
                 @L["Wizard.Guided.Finish"] →
             </FluentButton>
         }
@@ -89,6 +89,6 @@
 
     [Parameter] public int Step { get; set; } = 1;
 
-    private void Previous() => Nav.NavigateTo($"/wizard/guided/{Step - 1}");
-    private void Next() => Nav.NavigateTo($"/wizard/guided/{Step + 1}");
+    private void Previous() => Nav.NavigateTo($"wizard/guided/{Step - 1}");
+    private void Next() => Nav.NavigateTo($"wizard/guided/{Step + 1}");
 }

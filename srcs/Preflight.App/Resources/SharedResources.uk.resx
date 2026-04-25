@@ -970,13 +970,19 @@
 
   <!-- ═══ NotFound ════════════════════════════════════════════ -->
   <data name="NotFound.Title">
-    <value>Сторінку не знайдено</value>
+    <value>Збилися з курсу</value>
   </data>
   <data name="NotFound.Message">
-    <value>Сторінка, яку ви шукаєте, не існує.</value>
+    <value>Сторінка, яку ви шукали, злетіла без нас. Оберіть смугу - і ми повернемо вас на маршрут.</value>
   </data>
   <data name="NotFound.GoHome">
-    <value>На головну</value>
+    <value>🏠 На головну</value>
+  </data>
+  <data name="NotFound.BrowseDocs">
+    <value>📖 До документації</value>
+  </data>
+  <data name="NotFound.OpenWizard">
+    <value>✈️ Відкрити майстер</value>
   </data>
 
   <!-- ═══ Section subtitles ══════════════════════════════════ -->

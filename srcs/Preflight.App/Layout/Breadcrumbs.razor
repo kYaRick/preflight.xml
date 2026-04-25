@@ -55,13 +55,13 @@
         switch (root)
         {
             case "wizard":
-                _crumbs.Add(new Crumb(L["Wizard.Title"], "/wizard"));
+                _crumbs.Add(new Crumb(L["Wizard.Title"], "wizard"));
                 if (segments.Length >= 2)
                 {
                     var sub = segments[1].ToLowerInvariant();
                     if (sub == "guided")
                     {
-                        _crumbs.Add(new Crumb(L["Wizard.Guided.Title"], "/wizard/guided/1"));
+                        _crumbs.Add(new Crumb(L["Wizard.Guided.Title"], "wizard/guided/1"));
                         if (segments.Length >= 3 && int.TryParse(segments[2], out var step))
                         {
                             _crumbs.Add(new Crumb($"{L["Common.Step"]} {step}", null));
@@ -73,7 +73,7 @@
                 break;
 
             case "advanced":
-                _crumbs.Add(new Crumb(L["Advanced.Title"], "/advanced"));
+                _crumbs.Add(new Crumb(L["Advanced.Title"], "advanced"));
                 if (segments.Length >= 2)
                 {
                     var section = segments[1].ToLowerInvariant();
@@ -82,7 +82,7 @@
                 break;
 
             case "docs":
-                _crumbs.Add(new Crumb(L["Docs.Title"], "/docs"));
+                _crumbs.Add(new Crumb(L["Docs.Title"], "docs"));
                 if (segments.Length >= 2)
                 {
                     var topic = segments[1].ToLowerInvariant();

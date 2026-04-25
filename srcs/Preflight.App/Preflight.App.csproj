@@ -10,7 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer"
+      PrivateAssets="all" />
     <PackageReference Include="Microsoft.Extensions.Localization" />
     <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" />
     <PackageReference Include="Markdig" />
@@ -26,7 +27,27 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+    <ServiceWorker Include="wwwroot\service-worker.js"
+      PublishedContent="wwwroot\service-worker.published.js" />
+  </ItemGroup>
+
+  <!--
+    🔒 IL Trimmer guard for the vendored UnattendGenerator.
+
+    Blazor WASM Release publishing trims IL aggressively (default for net8+).
+    UnattendGenerator deserializes Bloatware.json via Newtonsoft `$type`
+    polymorphism - concrete types are referenced ONLY by string names inside
+    the JSON catalog, so the trimmer can't see those references and strips
+    them. At runtime Newtonsoft fails with
+        "Could not load type 'Schneegans.Unattend.PackageBloatwareStep, UnattendGenerator'"
+    which surfaces as Blazor's "An unhandled error has occurred" UI.
+
+    Pinning the assembly as a TrimmerRootAssembly preserves every public
+    type inside it. Adds ~150 KB to the published WASM bundle; without this
+    the app crashes on boot the first time anything resolves BloatwareCatalog.
+  -->
+  <ItemGroup>
+    <TrimmerRootAssembly Include="UnattendGenerator" />
   </ItemGroup>
 
 </Project>

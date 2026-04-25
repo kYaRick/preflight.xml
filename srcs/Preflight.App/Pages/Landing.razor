@@ -11,8 +11,9 @@
 <div class="landing">
 
     <div style="padding: 72px 16px 24px; text-align: center; max-width: 960px; margin: 0 auto;">
-        <h1 class="pf-hero-title" style="font-size: clamp(2.25rem, 4.5vw, 3.5rem); font-weight: 700; margin: 0 0 0.75rem; font-family: var(--pf-font-sans);">
-            ✈️ preflight.xml
+        <h1 class="pf-hero-title pf-hero-title--with-icon" style="font-size: clamp(2.25rem, 4.5vw, 3.5rem); font-weight: 700; margin: 0 0 0.75rem; font-family: var(--pf-font-sans);">
+            <BrandIcon CssClass="pf-hero-icon" AriaLabel="preflight.xml" />
+            <span class="pf-hero-title__text">preflight.xml</span>
         </h1>
         <p style="font-size: clamp(1rem, 1.4vw, 1.1875rem); color: var(--pf-text-muted); margin: 0 auto; max-width: 640px; line-height: 1.5;">
             @L["Landing.Tagline"]
@@ -103,7 +104,7 @@
                     Mode.ReplaceConfig(result.Config!);
                     _importIntent = MessageIntent.Success;
                     _importMessage = string.Format(L["Landing.Import.Success"].Value, file.Name);
-                    Nav.NavigateTo("/advanced");
+                    Nav.NavigateTo("advanced");
                     break;
 
                 case ImportStatus.Partial:
@@ -111,7 +112,7 @@
                     _importIntent = MessageIntent.Warning;
                     _importMessage = string.Format(L["Landing.Import.Partial"].Value, file.Name)
                         + " " + string.Join(" ", result.Messages);
-                    Nav.NavigateTo("/advanced");
+                    Nav.NavigateTo("advanced");
                     break;
 
                 case ImportStatus.Failed:

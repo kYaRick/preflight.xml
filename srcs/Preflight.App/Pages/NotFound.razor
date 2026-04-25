@@ -1,12 +1,59 @@
+@* Off-the-runway page. The middle "0" of "404" is the actual app icon -
+   keeps the brand visible and turns a dead-end into an on-theme moment. *@
 @page "/404"
 @inject IStringLocalizer<SharedResources> L
+@inject NavigationManager Nav
 
-<PageTitle>404 - preflight.xml</PageTitle>
+<PageTitle>404 · preflight.xml</PageTitle>
 
-<FluentStack Orientation="Orientation.Vertical" HorizontalGap="16" Style="padding: 48px 16px; max-width: 640px; margin: 0 auto; text-align: center;">
-    <FluentLabel Typo="Typography.PageTitle">🧭 @L["NotFound.Title"]</FluentLabel>
-    <FluentLabel Typo="Typography.Body">@L["NotFound.Message"]</FluentLabel>
-    <div>
-        <FluentAnchor Href="/" Appearance="Appearance.Accent">@L["NotFound.GoHome"]</FluentAnchor>
+<section class="pf-404" aria-labelledby="pf-404-title">
+
+    <div class="pf-404__hero" aria-hidden="true">
+        <span class="pf-404__digit">4</span>
+
+        <span class="pf-404__icon">
+            @* The middle "0" of "404" is the actual app brand mark - keeps
+               the brand visible and turns a dead-end into an on-theme
+               moment. Inlined via component so multiple instances on a
+               page (header + 404 hero) get unique gradient ids. *@
+            <BrandIcon AriaLabel="preflight.xml" />
+        </span>
+
+        <span class="pf-404__digit">4</span>
     </div>
-</FluentStack>
+
+    @* Decorative flight trail - the plane "left" the path going up-right.
+       Pure CSS dashed curve; respects prefers-reduced-motion. *@
+    <svg class="pf-404__trail" viewBox="0 0 800 80" aria-hidden="true" preserveAspectRatio="none">
+        <path d="M 20 60 Q 200 50 400 35 T 780 8"
+              stroke="currentColor" stroke-width="2"
+              fill="none" stroke-linecap="round"
+              stroke-dasharray="1 6" />
+    </svg>
+
+    <h1 id="pf-404-title" class="pf-404__title">@L["NotFound.Title"]</h1>
+    <p class="pf-404__message">@L["NotFound.Message"]</p>
+
+    @* FluentButton with @onclick - matches every other action button in
+       the project (Landing's import, Wizard nav, Bloatware/Components
+       toolbars). FluentAnchor renders a subtly different <a> element
+       and felt off-brand here. *@
+    <div class="pf-404__actions">
+        <FluentButton Appearance="Appearance.Accent" @onclick="GoHome">
+            @L["NotFound.GoHome"]
+        </FluentButton>
+        <FluentButton Appearance="Appearance.Outline" @onclick="GoToWizard">
+            @L["NotFound.OpenWizard"]
+        </FluentButton>
+        <FluentButton Appearance="Appearance.Outline" @onclick="GoToDocs">
+            @L["NotFound.BrowseDocs"]
+        </FluentButton>
+    </div>
+
+</section>
+
+@code {
+    private void GoHome()     => Nav.NavigateTo("");
+    private void GoToWizard() => Nav.NavigateTo("wizard");
+    private void GoToDocs()   => Nav.NavigateTo("docs");
+}
