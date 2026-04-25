@@ -62,16 +62,16 @@ test:
 
 # 🏷️ sync README version badge with Directory.Build.props version
 sync-version-badges:
-    @version_prefix="$$(grep -oPm1 '(?<=<VersionPrefix>)[^<]+' {{BUILD_PROPS}} || true)"; \
-    version_suffix="$$(grep -oPm1 '(?<=<VersionSuffix>)[^<]+' {{BUILD_PROPS}} || true)"; \
-    if [[ -z "$$version_prefix" ]]; then \
+    @version_prefix="$(grep -oPm1 '(?<=<VersionPrefix>)[^<]+' {{BUILD_PROPS}} || true)"; \
+    version_suffix="$(grep -oPm1 '(?<=<VersionSuffix>)[^<]+' {{BUILD_PROPS}} || true)"; \
+    if [[ -z "$version_prefix" ]]; then \
       echo "❌ VersionPrefix not found in {{BUILD_PROPS}}"; \
       exit 1; \
     fi; \
-    version="$$version_prefix"; \
-    if [[ -n "$$version_suffix" ]]; then version="$$version-$$version_suffix"; fi; \
-    perl -pi -e 's|(img\.shields\.io/static/v1\?label=version&message=)[^"&]+|$1v'"$$version"'|g' {{README}}; \
-    echo "🏷️ synced README version badge → v$$version"
+    version="$version_prefix"; \
+    if [[ -n "$version_suffix" ]]; then version="$version-$version_suffix"; fi; \
+    perl -pi -e 's|(img\.shields\.io/static/v1\?label=version&message=)[^"&]+|$1v'"$version"'|g' {{README}}; \
+    echo "🏷️ synced README version badge → v$version"
 
 # 🔒 fail when README version badge is out of sync
 check-version-badges:
