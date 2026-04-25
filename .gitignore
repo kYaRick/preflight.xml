@@ -111,3 +111,9 @@ node_modules/
 .aider*
 .copilot/
 *.ai-cache
+
+# ─────────────────────────────────────────────────────────────
+#  Preflight.Desktop - build-time generated output only
+# ─────────────────────────────────────────────────────────────
+srcs/Preflight.Desktop/blazor-temp/
+srcs/Preflight.Desktop/wwwroot/

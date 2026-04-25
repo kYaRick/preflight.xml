@@ -79,6 +79,19 @@
          screen matches the user's choice even before Blazor boots. -->
     <script>
         window.preflightTheme.apply(window.preflightTheme.get());
+
+        // Normalize "<base>/index.html" → "<base>/" so Blazor's router sees the
+        // canonical landing route. Required for desktop hosts (WebView2)
+        // because SetVirtualHostNameToFolderMapping has no directory-index
+        // behavior — the only way in is to navigate explicitly to the file —
+        // and Blazor would otherwise resolve "/index.html" against base="/"
+        // and fall through to <NotFound>. Harmless on the web (GitHub Pages
+        // already serves index.html as the directory default).
+        if (location.pathname.endsWith('/index.html')) {
+            history.replaceState(null, '',
+                location.pathname.slice(0, -'index.html'.length)
+                + location.search + location.hash);
+        }
     </script>
 </head>
 
@@ -125,7 +138,20 @@
 
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
     <script>
-        navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });
+        // Preflight.Desktop tags its WebView2 user agent so the page can tell
+        // it's running inside the WPF shell. We skip service worker registration
+        // there — the desktop has direct file access and doesn't need offline
+        // caching, and a stale SW from an older build was occasionally serving
+        // a cached index.html that lacked the /index.html → / URL normalizer,
+        // sending Blazor through to <NotFound> on intermittent cold starts.
+        const PF_IS_DESKTOP = navigator.userAgent.includes('Preflight-Desktop');
+        if (PF_IS_DESKTOP && navigator.serviceWorker) {
+            navigator.serviceWorker.getRegistrations().then(regs => {
+                regs.forEach(r => r.unregister());
+            }).catch(() => { /* best-effort cleanup */ });
+        } else if (navigator.serviceWorker) {
+            navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });
+        }
 
         // Loader-dismiss policy:
         //   • Normal first visit: keep the loader for at least MIN_DISPLAY_MS
@@ -134,6 +160,10 @@
         //     boots, the router resolves NoMatch and renders <NotFound>.
         //     Holding the loader 2.4s on top of a destination the user can't
         //     reach is hostile - fade as soon as Blazor has mounted.
+        //   • Desktop host: post `preflight:ready` to the WPF shell as the
+        //     overlay starts fading, so its splash window cross-fades to the
+        //     main window in sync with the in-page overlay (no double-loading
+        //     visual, no flash of empty chrome).
         //
         // Uses setInterval (not rAF) so the check fires even if the tab is
         // temporarily hidden - otherwise the overlay could stay up forever.
@@ -142,6 +172,11 @@
             if (!overlay) return;
             const MIN_DISPLAY_MS = 2400;
             const started = Date.now();
+
+            const notifyHost = () => {
+                try { window.chrome?.webview?.postMessage('preflight:ready'); }
+                catch { /* not in WebView2 — ignore */ }
+            };
 
             const handle = setInterval(() => {
                 const blazorReady = !!document.querySelector('.layout');
@@ -154,6 +189,7 @@
                     // starts fading. Without this, the page-enter would run
                     // silently underneath the loader and be invisible.
                     window.preflightNav?.replayPageAnim?.();
+                    notifyHost();
                     setTimeout(() => overlay.remove(), 500);
                 }
             }, 120);

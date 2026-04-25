@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- OutputType / TargetFramework / UseWPF / AssemblyName / ApplicationIcon
+         are set centrally in Directory.Build.props (Desktop section). -->
+
+    <PropertyGroup>
+        <RootNamespace>Preflight.Desktop</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Web.WebView2" />
+    </ItemGroup>
+
+    <!-- Embed the brand icon as a WPF resource so Window.Icon and any
+         in-XAML <Image Source="favicon.ico"> references resolve via the
+         pack:// URI scheme without copying the file into this folder. -->
+    <ItemGroup>
+        <Resource Include="$(PreflightIconPath)" Link="favicon.ico" />
+    </ItemGroup>
+
+    <!--
+    After every Build: publish the Blazor WASM project and copy its wwwroot
+    output next to this executable so WebView2 can serve the files.
+  -->
+    <Target Name="PublishAndCopyBlazor" AfterTargets="Build">
+        <Message Text="Publishing Preflight.App (Blazor WASM)..." Importance="high" />
+        <Exec
+            Command="dotnet publish ..\Preflight.App\Preflight.App.csproj -c Release -o $(MSBuildProjectDirectory)\blazor-temp --nologo" />
+        <ItemGroup>
+            <BlazorFiles Include="$(MSBuildProjectDirectory)\blazor-temp\wwwroot\**\*" />
+        </ItemGroup>
+        <Copy SourceFiles="@(BlazorFiles)"
+            DestinationFolder="$(OutDir)wwwroot\%(RecursiveDir)"
+            SkipUnchangedFiles="true" />
+        <RemoveDir Directories="$(MSBuildProjectDirectory)\blazor-temp" />
+        <Message Text="Blazor wwwroot copied to $(OutDir)wwwroot" Importance="high" />
+    </Target>
+
+</Project>
