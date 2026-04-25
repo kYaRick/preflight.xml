@@ -5,7 +5,7 @@
 // the fade-in started. View Transitions API solves this at the browser
 // layer: it snapshots the old DOM, runs our DOM-mutation callback,
 // snapshots the new DOM, then crossfades between the two. No flicker
-// possible — the snapshot is the last visible frame of the old page.
+// possible - the snapshot is the last visible frame of the old page.
 //
 // Strategy:
 //   Capture-phase click listener catches internal anchor clicks BEFORE
@@ -18,7 +18,7 @@
 //   the browser's "new state" snapshot at the next animation frame is
 //   correct.
 //
-// Why not patch history.pushState directly: tried that — Blazor's own
+// Why not patch history.pushState directly: tried that - Blazor's own
 // navigateTo uses an ASYNC JS→.NET interop call after pushState to notify
 // the router. With pushState wrapped in startViewTransition, the URL
 // changes inside the callback but Blazor's render fires AFTER the callback
@@ -30,7 +30,7 @@
 //
 // Coverage: anchor clicks only. Programmatic Nav.NavigateTo from C# (e.g.
 // Landing card @onclick handlers, wizard Step+1 buttons) bypasses this
-// interceptor and gets no crossfade — but also has no flicker, just an
+// interceptor and gets no crossfade - but also has no flicker, just an
 // instant nav. To animate those too, the Razor templates would need to
 // use <a href> instead of @onclick, which is a bigger change.
 //
@@ -75,7 +75,7 @@ window.preflightViewTransitions = (() => {
       // Blazor href values are relative to <base href> (e.g. "/" or
       // "/preflight.xml/" on a subpath deploy), NOT to the current URL.
       // Resolving "wizard/guided/3" against location.href on page
-      // /wizard/guided/2 produces /wizard/guided/wizard/guided/3 — wrong.
+      // /wizard/guided/2 produces /wizard/guided/wizard/guided/3 - wrong.
       // document.baseURI honors the <base> element so we get
       // /wizard/guided/3 like Blazor's NavigationManager does.
       const rawHref = link.getAttribute("href");
@@ -87,14 +87,14 @@ window.preflightViewTransitions = (() => {
       }
       if (url.origin !== location.origin) return;
 
-      // Same URL (modulo hash) — let the browser handle the in-page jump.
+      // Same URL (modulo hash) - let the browser handle the in-page jump.
       if (
         url.pathname + url.search === location.pathname + location.search &&
         url.hash !== location.hash
       ) {
         return;
       }
-      // Same URL exactly — nothing to do.
+      // Same URL exactly - nothing to do.
       if (url.href === location.href) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -105,7 +105,7 @@ window.preflightViewTransitions = (() => {
       // handler so we can drive both the URL change AND the render trigger
       // inside a single synchronous View Transition callback.
       //
-      // We deliberately DO NOT call stopImmediatePropagation here — that
+      // We deliberately DO NOT call stopImmediatePropagation here - that
       // would block Blazor's @onclick handlers attached to the same anchor
       // (used for side-effects like ModeService.SwitchMode that should
       // run alongside the navigation). preventDefault alone is enough:

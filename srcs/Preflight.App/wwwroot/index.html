@@ -12,7 +12,9 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
 
     <!-- Fluent UI -->
     <link href="_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css" rel="stylesheet" />
@@ -39,17 +41,21 @@
     <!-- Open Graph / social previews -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="preflight.xml" />
-    <meta property="og:description" content="Visual builder for Windows autounattend.xml - in your browser, offline, instantly." />
+    <meta property="og:description"
+        content="Visual builder for Windows autounattend.xml - in your browser, offline, instantly." />
     <meta property="og:url" content="https://kyarick.github.io/preflight.xml/" />
-    <meta property="og:image" content="https://raw.githubusercontent.com/kYaRick/preflight.xml/main/.github/assets/social-card.svg" />
+    <meta property="og:image"
+        content="https://raw.githubusercontent.com/kYaRick/preflight.xml/main/.github/assets/social-card.svg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="preflight.xml" />
     <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="preflight.xml" />
-    <meta name="twitter:description" content="Visual builder for Windows autounattend.xml - in your browser, offline, instantly." />
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/kYaRick/preflight.xml/main/.github/assets/social-card.svg" />
+    <meta name="twitter:description"
+        content="Visual builder for Windows autounattend.xml - in your browser, offline, instantly." />
+    <meta name="twitter:image"
+        content="https://raw.githubusercontent.com/kYaRick/preflight.xml/main/.github/assets/social-card.svg" />
 
     <script type="importmap"></script>
 
@@ -83,7 +89,7 @@
         // Normalize "<base>/index.html" → "<base>/" so Blazor's router sees the
         // canonical landing route. Required for desktop hosts (WebView2)
         // because SetVirtualHostNameToFolderMapping has no directory-index
-        // behavior — the only way in is to navigate explicitly to the file —
+        // behavior - the only way in is to navigate explicitly to the file -
         // and Blazor would otherwise resolve "/index.html" against base="/"
         // and fall through to <NotFound>. Harmless on the web (GitHub Pages
         // already serves index.html as the directory default).
@@ -122,7 +128,7 @@
                  background-clip:text quirks across browsers/themes. -->
             <svg class="plane" viewBox="0 0 24 24" aria-hidden="true">
                 <path fill="url(#planeGradient)"
-                      d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1l3.5 1v-1.5L13 19v-5.5z" />
+                    d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1l3.5 1v-1.5L13 19v-5.5z" />
             </svg>
             <div class="runway-status"></div>
         </div>
@@ -140,7 +146,7 @@
     <script>
         // Preflight.Desktop tags its WebView2 user agent so the page can tell
         // it's running inside the WPF shell. We skip service worker registration
-        // there — the desktop has direct file access and doesn't need offline
+        // there - the desktop has direct file access and doesn't need offline
         // caching, and a stale SW from an older build was occasionally serving
         // a cached index.html that lacked the /index.html → / URL normalizer,
         // sending Blazor through to <NotFound> on intermittent cold starts.
@@ -175,7 +181,7 @@
 
             const notifyHost = () => {
                 try { window.chrome?.webview?.postMessage('preflight:ready'); }
-                catch { /* not in WebView2 — ignore */ }
+                catch { /* not in WebView2 - ignore */ }
             };
 
             const handle = setInterval(() => {

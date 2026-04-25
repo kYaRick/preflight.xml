@@ -34,7 +34,7 @@
         <Authors>kYaRick</Authors>
         <Company>kYaRick</Company>
         <Product>preflight.xml</Product>
-        <Description>Visual builder for Windows autounattend.xml — offline, in your browser.</Description>
+        <Description>Visual builder for Windows autounattend.xml - offline, in your browser.</Description>
         <AssemblyTitle>$(Product)</AssemblyTitle>
         <Copyright>Copyright © $([System.DateTime]::UtcNow.Year) kYaRick</Copyright>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>

@@ -4,7 +4,7 @@
 
   Renders the entire card as an <a href> so view-transitions.js (capture-phase
   click interceptor) can wrap the navigation in document.startViewTransition().
-  Programmatic Nav.NavigateTo would have skipped that interceptor — that's why
+  Programmatic Nav.NavigateTo would have skipped that interceptor - that's why
   Landing → other pages used to snap with no animation.
 
   OnSelect still fires (for ModeService.SwitchMode bookkeeping) because the

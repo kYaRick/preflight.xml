@@ -409,7 +409,7 @@ fluent-card.pf-card--interactive:hover {
 /* ─── Mode-card anchor wrapper ──────────────────────────────
    Landing/Wizard cards are wrapped in <a href> so the click-interceptor
    in view-transitions.js can wrap navigation in document.startViewTransition.
-   The anchor itself must be invisible — it inherits the card's full
+   The anchor itself must be invisible - it inherits the card's full
    click target, no underline, no extra spacing. */
 .pf-mode-card-anchor {
     display: block;
@@ -929,7 +929,7 @@ fluent-anchor[appearance="hypertext"]:hover {
     flex-direction: column;
     overflow: hidden;
     font-family: var(--pf-font-sans);
-    /* Resting (closed) state — pulled up & slightly shrunk. The .pf-overlay
+    /* Resting (closed) state - pulled up & slightly shrunk. The .pf-overlay
        wrapper handles the fade; here we drive the snap-in/out with transform
        so closing also gets a transition (the old animation: paletteIn only
        ran on entry). */
@@ -1092,7 +1092,7 @@ fluent-anchor[appearance="hypertext"]:hover {
         0 24px 80px rgba(0, 0, 0, 0.3);
     font-family: var(--pf-font-sans);
     overflow: hidden;
-    /* Same open/close pattern as .pf-palette — both transitions run via
+    /* Same open/close pattern as .pf-palette - both transitions run via
        the parent .pf-overlay.is-open class, so closing animates too. */
     opacity: 0;
     transform: translateY(-16px) scale(0.96);
@@ -1789,7 +1789,7 @@ fluent-select {
 
 /* Optional faint guide-line so the user can see where the plane WILL fly.
    Kept very low contrast (opacity ~0.08) so it does NOT read as "trail
-   already drawn ahead of the plane" — the bright trail rendered on top
+   already drawn ahead of the plane" - the bright trail rendered on top
    is the one that actually tracks progress. No fade-in animation: the
    guide should be there from frame 1 and never compete for attention. */
 .runway-track {
@@ -2839,7 +2839,7 @@ html.theme-dark .pf-xml-code .token.regex {
     align-items: center;
     justify-content: center;
     padding: 0;
-    /* Solid accent gradient instead of glass — the previous translucent
+    /* Solid accent gradient instead of glass - the previous translucent
        chrome with subtle border washed out on light backgrounds and read
        as "decorative", not "press me". Now it pops as a dedicated CTA. */
     background: var(--pf-accent-gradient);
@@ -2917,7 +2917,7 @@ body:has(.pf-xml-fab) .pf-go-top {
     display: block;
     /* Nose-up default orientation so the glyph looks ready to launch. */
     transform: rotate(-45deg);
-    /* On the new accent-gradient background a halo isn't needed — instead
+    /* On the new accent-gradient background a halo isn't needed - instead
        give the glyph a soft inner glow + a subtle drop shadow underneath
        so it reads as engraved on the button. */
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
@@ -3684,13 +3684,13 @@ body:has(.pf-xml-fab) .pf-go-top {
    wraps Blazor's navigation in document.startViewTransition()).
 
    The default UA crossfade is 250ms linear "old fades out, new fades
-   in" — it works but reads as plain. We replace it with directional
+   in" - it works but reads as plain. We replace it with directional
    slide+fade keyframes so navigation feels intentional: the page that
    leaves drifts up and dissolves, the page that enters lifts in from
    below. Mirrors the wave-of-paper feel of the rest of the brand.
 
    Falls back silently in browsers that don't implement the spec
-   (Firefox at time of writing) — the pseudo-elements simply don't
+   (Firefox at time of writing) - the pseudo-elements simply don't
    exist there and Blazor's normal click handler runs the navigation
    without any crossfade. No flicker, just instant nav. */
 ::view-transition-old(root) {
@@ -3724,10 +3724,14 @@ body:has(.pf-xml-fab) .pf-go-top {
     }
 
     @keyframes pfViewOldOut {
-        to { opacity: 0; }
+        to {
+            opacity: 0;
+        }
     }
 
     @keyframes pfViewNewIn {
-        from { opacity: 0; }
+        from {
+            opacity: 0;
+        }
     }
 }

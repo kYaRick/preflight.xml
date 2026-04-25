@@ -11,7 +11,7 @@ public partial class MainWindow : Window
 {
     // Single-shot signal that the page has actually rendered (Blazor mounted,
     // loading overlay starting to dismiss). Triggered by a postMessage from
-    // index.html — *not* by NavigationCompleted, which fires when the document
+    // index.html - *not* by NavigationCompleted, which fires when the document
     // is loaded but Blazor hasn't booted yet, so swapping the splash on
     // NavigationCompleted made the empty main frame flash for ~2s.
     public event EventHandler? FirstPageRendered;
@@ -22,7 +22,7 @@ public partial class MainWindow : Window
     // Marker we append to the WebView2 user agent so the page can tell it's
     // running inside our shell. Service worker registration is skipped (and
     // any previously-installed SWs unregistered) when this is detected,
-    // which is the fix for the "intermittent 404" — a SW from an older
+    // which is the fix for the "intermittent 404" - a SW from an older
     // build was occasionally serving a stale index.html that lacked the
     // /index.html → / URL normalizer, sending Blazor through to NotFound.
     private const string DesktopUserAgentTag = "Preflight-Desktop";
@@ -90,7 +90,7 @@ public partial class MainWindow : Window
         // Clear stale service-worker / cached-asset state from prior runs
         // BEFORE the first navigation. Without this, a SW left over from an
         // older build was occasionally serving mismatched cached HTML/WASM
-        // bundles — the page would "load" (NavigationCompleted fires) but
+        // bundles - the page would "load" (NavigationCompleted fires) but
         // Blazor never finished booting, leaving the user staring at the
         // dark WebView background after the splash dismissed. The desktop
         // host doesn't need offline caching (files are local via
@@ -106,7 +106,7 @@ public partial class MainWindow : Window
         catch
         {
             // ClearBrowsingDataAsync can throw on unsupported runtime versions;
-            // failing it is non-fatal — the JS-side fallback still cleans up.
+            // failing it is non-fatal - the JS-side fallback still cleans up.
         }
 
         WebView.CoreWebView2.NavigationCompleted += OnNavigationCompleted;
@@ -130,8 +130,8 @@ public partial class MainWindow : Window
         if (_firstPageSignaled) return;
 
         // Two-track readiness detection so we never depend on a single signal:
-        //   1. preflight:ready postMessage from the new index.html — fast path
-        //   2. DOM poll for Blazor's .layout class — backup if a stale cached
+        //   1. preflight:ready postMessage from the new index.html - fast path
+        //   2. DOM poll for Blazor's .layout class - backup if a stale cached
         //      HTML missing the postMessage call ever gets served, or if any
         //      JS error swallows the postMessage before it reaches the host
         // Both feed the same SignalFirstPageRendered() which is idempotent.
@@ -164,7 +164,7 @@ public partial class MainWindow : Window
         }
         catch
         {
-            // Mid-navigation script failures are expected — keep polling.
+            // Mid-navigation script failures are expected - keep polling.
         }
     }
 
@@ -172,7 +172,7 @@ public partial class MainWindow : Window
     {
         string? msg = null;
         try { msg = e.TryGetWebMessageAsString(); }
-        catch { /* non-string message — ignore */ }
+        catch { /* non-string message - ignore */ }
 
         if (msg == "preflight:ready") SignalFirstPageRendered();
     }
@@ -184,7 +184,7 @@ public partial class MainWindow : Window
         try
         {
             var indexPath = Path.Combine(_wwwrootPath, "index.html");
-            // FileStream ownership transfers to WebView2 — it reads on a
+            // FileStream ownership transfers to WebView2 - it reads on a
             // background thread and disposes when finished. No using/await.
             var stream = File.OpenRead(indexPath);
             e.Response = WebView.CoreWebView2.Environment.CreateWebResourceResponse(
@@ -192,7 +192,7 @@ public partial class MainWindow : Window
         }
         catch
         {
-            // Leave Response unset — WebView2 falls back to its default 404.
+            // Leave Response unset - WebView2 falls back to its default 404.
         }
     }
 

@@ -16,7 +16,7 @@ public partial class App : Application
     /// Two-window startup. The main window is parked off-screen so its HWND
     /// exists for WebView2 to attach to, but the user can't see it. When the
     /// page posts <c>preflight:ready</c> the main window is recentered and
-    /// shown the same frame the splash fades out — no overlap, no flash of
+    /// shown the same frame the splash fades out - no overlap, no flash of
     /// empty chrome around the splash.
     /// </summary>
     protected override void OnStartup(StartupEventArgs e)
@@ -57,7 +57,7 @@ public partial class App : Application
 
         // Splash fades out alone (no cross-fade). The main window is already
         // at full opacity behind it, so by the time the splash is gone the
-        // user sees the rendered page directly — no perceived overlap.
+        // user sees the rendered page directly - no perceived overlap.
         // IsHitTestVisible=false prevents the still-on-screen-but-fading
         // splash from intercepting a click meant for the now-active main
         // window during the 180ms transition.

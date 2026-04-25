@@ -163,7 +163,7 @@ window.preflightNav = (() => {
       return;
     }
 
-    // Bigger numbers than before — the previous values (14px / scale 0.992)
+    // Bigger numbers than before - the previous values (14px / scale 0.992)
     // were too subtle to read as "the page changed". Drop the blur (it was
     // expensive on low-end mobile and only added a smear, not the sense of
     // motion). Stagger more kids and longer so the page assembles in front

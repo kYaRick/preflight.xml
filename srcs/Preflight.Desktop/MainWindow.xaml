@@ -19,21 +19,21 @@
     WindowChrome enables Win11 aero-snap, drop shadow, and edge resize while
     letting us paint the title bar ourselves. CaptionHeight is the draggable
     strip; ResizeBorderThickness is the invisible band along the edges that
-    triggers the resize cursor. UseAeroCaptionButtons=False is mandatory —
+    triggers the resize cursor. UseAeroCaptionButtons=False is mandatory -
     without it Windows would draw its own min/max/close on top of ours.
   -->
     <WindowChrome.WindowChrome>
         <shell:WindowChrome CaptionHeight="36"
-                            CornerRadius="0"
-                            GlassFrameThickness="0"
-                            UseAeroCaptionButtons="False"
-                            ResizeBorderThickness="6" />
+            CornerRadius="0"
+            GlassFrameThickness="0"
+            UseAeroCaptionButtons="False"
+            ResizeBorderThickness="6" />
     </WindowChrome.WindowChrome>
 
     <Border x:Name="RootBorder"
-            Background="{StaticResource PfSurfaceDeepBrush}"
-            BorderBrush="{StaticResource PfBorderBrush}"
-            BorderThickness="1">
+        Background="{StaticResource PfSurfaceDeepBrush}"
+        BorderBrush="{StaticResource PfBorderBrush}"
+        BorderThickness="1">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="36" />
@@ -42,9 +42,9 @@
 
             <!-- ───── Custom title bar ───── -->
             <Border Grid.Row="0"
-                    Background="{StaticResource PfSurfaceBrush}"
-                    BorderBrush="{StaticResource PfBorderBrush}"
-                    BorderThickness="0,0,0,1">
+                Background="{StaticResource PfSurfaceBrush}"
+                BorderBrush="{StaticResource PfBorderBrush}"
+                BorderThickness="0,0,0,1">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -54,19 +54,19 @@
 
                     <!-- Brand mark: airplane in brand gradient + product name. -->
                     <StackPanel Grid.Column="0"
-                                Orientation="Horizontal"
-                                Margin="14,0,0,0"
-                                VerticalAlignment="Center">
+                        Orientation="Horizontal"
+                        Margin="14,0,0,0"
+                        VerticalAlignment="Center">
                         <Viewbox Width="16" Height="16">
                             <Path Data="{StaticResource PfPlaneGeometry}"
-                                  Fill="{StaticResource PfBrandGradient}" />
+                                Fill="{StaticResource PfBrandGradient}" />
                         </Viewbox>
                         <TextBlock Text="preflight.xml"
-                                   FontSize="12"
-                                   FontWeight="Medium"
-                                   Foreground="{StaticResource PfTextBrush}"
-                                   Margin="10,0,0,1"
-                                   VerticalAlignment="Center" />
+                            FontSize="12"
+                            FontWeight="Medium"
+                            Foreground="{StaticResource PfTextBrush}"
+                            Margin="10,0,0,1"
+                            VerticalAlignment="Center" />
                     </StackPanel>
 
                     <!--
@@ -75,38 +75,38 @@
                     actually minimizes instead of starting a window-drag.
                   -->
                     <StackPanel Grid.Column="2"
-                                Orientation="Horizontal"
-                                shell:WindowChrome.IsHitTestVisibleInChrome="True">
+                        Orientation="Horizontal"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True">
                         <Button x:Name="MinimizeButton"
-                                Style="{StaticResource PfCaptionButtonStyle}"
-                                ToolTip="Minimize"
-                                Click="OnMinimizeClick">
+                            Style="{StaticResource PfCaptionButtonStyle}"
+                            ToolTip="Minimize"
+                            Click="OnMinimizeClick">
                             <Path Data="M0,5 H10"
-                                  Stroke="{StaticResource PfTextBrush}"
-                                  StrokeThickness="1"
-                                  SnapsToDevicePixels="True" />
+                                Stroke="{StaticResource PfTextBrush}"
+                                StrokeThickness="1"
+                                SnapsToDevicePixels="True" />
                         </Button>
 
                         <Button x:Name="MaxRestoreButton"
-                                Style="{StaticResource PfCaptionButtonStyle}"
-                                ToolTip="Maximize"
-                                Click="OnMaxRestoreClick">
+                            Style="{StaticResource PfCaptionButtonStyle}"
+                            ToolTip="Maximize"
+                            Click="OnMaxRestoreClick">
                             <Path x:Name="MaxRestorePath"
-                                  Data="M0,0 H10 V10 H0 Z"
-                                  Stroke="{StaticResource PfTextBrush}"
-                                  StrokeThickness="1"
-                                  Fill="Transparent"
-                                  SnapsToDevicePixels="True" />
+                                Data="M0,0 H10 V10 H0 Z"
+                                Stroke="{StaticResource PfTextBrush}"
+                                StrokeThickness="1"
+                                Fill="Transparent"
+                                SnapsToDevicePixels="True" />
                         </Button>
 
                         <Button x:Name="CloseButton"
-                                Style="{StaticResource PfCaptionCloseButtonStyle}"
-                                ToolTip="Close"
-                                Click="OnCloseClick">
+                            Style="{StaticResource PfCaptionCloseButtonStyle}"
+                            ToolTip="Close"
+                            Click="OnCloseClick">
                             <Path Data="M0,0 L10,10 M10,0 L0,10"
-                                  Stroke="{StaticResource PfTextBrush}"
-                                  StrokeThickness="1"
-                                  SnapsToDevicePixels="True" />
+                                Stroke="{StaticResource PfTextBrush}"
+                                StrokeThickness="1"
+                                SnapsToDevicePixels="True" />
                         </Button>
                     </StackPanel>
                 </Grid>
@@ -117,9 +117,9 @@
                  transition straight to the rendered page; otherwise the user
                  briefly sees the empty background colour. -->
             <wv2:WebView2 Grid.Row="1"
-                          x:Name="WebView"
-                          Visibility="Hidden"
-                          DefaultBackgroundColor="#14152A" />
+                x:Name="WebView"
+                Visibility="Hidden"
+                DefaultBackgroundColor="#14152A" />
         </Grid>
     </Border>
 </Window>
