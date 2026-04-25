@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.IO;
 
@@ -22,8 +22,8 @@ public class DefaultColorSettings : IColorSettings;
 
 public enum ColorTheme
 {
-  Dark = 0,
-  Light = 1
+    Dark = 0,
+    Light = 1
 }
 
 public record class CustomColorSettings(
@@ -45,39 +45,39 @@ public record class ScriptLockScreenSettings(
 
 class PersonalizationModifier(ModifierContext context) : Modifier(context)
 {
-  public override void Process()
-  {
+    public override void Process()
     {
-      if (Configuration.ColorSettings is CustomColorSettings settings)
-      {
-        string ps1File = EmbedTextFileFromResource("SetColorTheme.ps1", before: writer =>
         {
-          writer.WriteLine($"""
+            if (Configuration.ColorSettings is CustomColorSettings settings)
+            {
+                string ps1File = EmbedTextFileFromResource("SetColorTheme.ps1", before: writer =>
+                {
+                    writer.WriteLine($"""
             $lightThemeSystem = {settings.SystemTheme:D};
             $lightThemeApps = {settings.AppsTheme:D};
             $accentColorOnStart = {(settings.AccentColorOnStart ? 1 : 0)};
             $enableTransparency = {(settings.EnableTransparency ? 1 : 0)};
             $htmlAccentColor = '{ColorTranslator.ToHtml(settings.AccentColor)}';
             """);
-        });
-        DefaultUserScript.Append(@$"reg.exe add ""HKU\DefaultUser\Software\Microsoft\Windows\DWM"" /v ColorPrevalence /t REG_DWORD /d {(settings.AccentColorOnBorders ? 1 : 0)} /f;");
-        UserOnceScript.InvokeFile(ps1File);
-        UserOnceScript.RestartExplorer();
-      }
-    }
-    {
-      void WriteWallpaperScript(Action<StringWriter> after)
-      {
-        string ps1File = EmbedTextFileFromResource("SetWallpaper.ps1", after: after);
-        UserOnceScript.InvokeFile(ps1File);
-      }
+                });
+                DefaultUserScript.Append(@$"reg.exe add ""HKU\DefaultUser\Software\Microsoft\Windows\DWM"" /v ColorPrevalence /t REG_DWORD /d {(settings.AccentColorOnBorders ? 1 : 0)} /f;");
+                UserOnceScript.InvokeFile(ps1File);
+                UserOnceScript.RestartExplorer();
+            }
+        }
+        {
+            void WriteWallpaperScript(Action<StringWriter> after)
+            {
+                string ps1File = EmbedTextFileFromResource("SetWallpaper.ps1", after: after);
+                UserOnceScript.InvokeFile(ps1File);
+            }
 
-      switch (Configuration.WallpaperSettings)
-      {
-        case ScriptWallpaperSettings settings:
-          string imageFile = @"C:\Windows\Setup\Scripts\Wallpaper";
-          string getterFile = EmbedTextFile("GetWallpaper.ps1", settings.Script);
-          SpecializeScript.Append($$"""
+            switch (Configuration.WallpaperSettings)
+            {
+                case ScriptWallpaperSettings settings:
+                    string imageFile = @"C:\Windows\Setup\Scripts\Wallpaper";
+                    string getterFile = EmbedTextFile("GetWallpaper.ps1", settings.Script);
+                    SpecializeScript.Append($$"""
             try {
               $bytes = & '{{getterFile}}';
               [System.IO.File]::WriteAllBytes( '{{imageFile}}', $bytes );
@@ -85,27 +85,27 @@ class PersonalizationModifier(ModifierContext context) : Modifier(context)
               $_;
             }
             """);
-          WriteWallpaperScript(writer =>
-          {
-            writer.WriteLine(@$"Set-WallpaperImage -LiteralPath '{imageFile}';");
-          });
-          break;
+                    WriteWallpaperScript(writer =>
+                    {
+                        writer.WriteLine(@$"Set-WallpaperImage -LiteralPath '{imageFile}';");
+                    });
+                    break;
 
-        case SolidWallpaperSettings settings:
-          WriteWallpaperScript(writer =>
-          {
-            writer.WriteLine($"Set-WallpaperColor -HtmlColor '{ColorTranslator.ToHtml(settings.Color)}';");
-          });
-          break;
-      }
-    }
-    {
-      switch (Configuration.LockScreenSettings)
-      {
-        case ScriptLockScreenSettings settings:
-          string imageFile = @"C:\Windows\Setup\Scripts\LockScreenImage";
-          string getterFile = EmbedTextFile("GetLockScreenImage.ps1", settings.Script);
-          SpecializeScript.Append($$"""
+                case SolidWallpaperSettings settings:
+                    WriteWallpaperScript(writer =>
+                    {
+                        writer.WriteLine($"Set-WallpaperColor -HtmlColor '{ColorTranslator.ToHtml(settings.Color)}';");
+                    });
+                    break;
+            }
+        }
+        {
+            switch (Configuration.LockScreenSettings)
+            {
+                case ScriptLockScreenSettings settings:
+                    string imageFile = @"C:\Windows\Setup\Scripts\LockScreenImage";
+                    string getterFile = EmbedTextFile("GetLockScreenImage.ps1", settings.Script);
+                    SpecializeScript.Append($$"""
             try {
               $bytes = & '{{getterFile}}';
               [System.IO.File]::WriteAllBytes( '{{imageFile}}', $bytes );
@@ -114,8 +114,8 @@ class PersonalizationModifier(ModifierContext context) : Modifier(context)
               $_;
             }
             """);
-          break;
-      }
+                    break;
+            }
+        }
     }
-  }
 }

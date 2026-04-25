@@ -62,13 +62,13 @@ public static class SectionRegistry
         ["time-zone"] = TimeZoneSectionDefinition.Definition,
         ["computer-name"] = ComputerNameSectionDefinition.Definition,
         ["setup-settings"] = SetupSettingsSection.Definition,
-        
+
         // Installation & System Image
         ["source-image"] = SourceImageSectionDefinition.Definition,
         ["edition"] = EditionSectionDefinition.Definition,
         ["windows-pe"] = WindowsPeSectionDefinition.Definition,
         ["disk"] = DiskSectionDefinition.Definition,
-        
+
         // System Configuration
         ["tweaks"] = SystemTweaksSection.Definition,
         ["vm-support"] = VmSupportSection.Definition,
@@ -77,7 +77,7 @@ public static class SectionRegistry
         ["applocker"] = AppLockerSection.Definition,
         ["processor-archs"] = ProcessorArchsSection.Definition,
         ["compact-os"] = CompactOsSection.Definition,
-        
+
         // Desktop & Personalization
         ["explorer"] = ExplorerSection.Definition,
         ["visual-effects"] = VisualEffectsSection.Definition,
@@ -87,14 +87,14 @@ public static class SectionRegistry
         ["start-folders"] = StartFoldersSection.Definition,
         ["personalization"] = null,  // Renders via PersonalizationSectionView
         ["network"] = null,           // Renders via NetworkSectionView
-        
+
         // Advanced Features
         ["lock-keys"] = LockKeysSection.Definition,
         ["sticky-keys"] = StickyKeysSection.Definition,
         ["scripts"] = null,           // Custom .razor (Scripts category)
         ["components"] = null,        // Custom .razor (Components category)
         ["bloatware"] = null,         // Renders via BloatwareSectionView with injected catalog
-        
+
         // User Management
         ["users"] = null,             // Renders via UsersSection.razor
     };

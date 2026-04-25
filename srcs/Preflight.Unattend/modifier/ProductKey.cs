@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using System.Xml;
 
@@ -18,19 +18,19 @@ public class CustomEditionSettings(
   string productKey
 ) : IEditionSettings
 {
-  public string ProductKey { get; } = Validate(productKey);
+    public string ProductKey { get; } = Validate(productKey);
 
-  private static string Validate(string key)
-  {
-    if (Regex.IsMatch(key, "^([A-Z0-9]{5}-){4}[A-Z0-9]{5}$"))
+    private static string Validate(string key)
     {
-      return key;
+        if (Regex.IsMatch(key, "^([A-Z0-9]{5}-){4}[A-Z0-9]{5}$"))
+        {
+            return key;
+        }
+        else
+        {
+            throw new ConfigurationException($"Product key {key} is ill-formed.");
+        }
     }
-    else
-    {
-      throw new ConfigurationException($"Product key {key} is ill-formed.");
-    }
-  }
 }
 
 public interface IInstallFromSettings;
@@ -52,62 +52,62 @@ public record class NameInstallFromSettings(
 
 class ProductKeyModifier(ModifierContext context) : Modifier(context)
 {
-  public override void Process()
-  {
+    public override void Process()
     {
-      XmlNode keyElement = Document.SelectSingleNodeOrThrow("//u:UserData/u:ProductKey/u:Key", NamespaceManager);
-      XmlNode uiElement = Document.SelectSingleNodeOrThrow("//u:UserData/u:ProductKey/u:WillShowUI", NamespaceManager);
+        {
+            XmlNode keyElement = Document.SelectSingleNodeOrThrow("//u:UserData/u:ProductKey/u:Key", NamespaceManager);
+            XmlNode uiElement = Document.SelectSingleNodeOrThrow("//u:UserData/u:ProductKey/u:WillShowUI", NamespaceManager);
 
-      void SetWithoutKey(string ui)
-      {
-        keyElement.RemoveSelf();
-        uiElement.InnerText = ui;
-      }
+            void SetWithoutKey(string ui)
+            {
+                keyElement.RemoveSelf();
+                uiElement.InnerText = ui;
+            }
 
-      void Set(string key, string ui)
-      {
-        keyElement.InnerText = key;
-        uiElement.InnerText = ui;
-      }
+            void Set(string key, string ui)
+            {
+                keyElement.InnerText = key;
+                uiElement.InnerText = ui;
+            }
 
-      switch (Configuration.EditionSettings)
-      {
-        case UnattendedEditionSettings settings:
-          Set(settings.Edition.ProductKey, "OnError");
-          break;
-        case CustomEditionSettings settings:
-          Set(settings.ProductKey, "OnError");
-          break;
-        case InteractiveEditionSettings:
-          Set("00000-00000-00000-00000-00000", "Always");
-          break;
-        case FirmwareEditionSettings:
-          SetWithoutKey("Never");
-          break;
-        default:
-          throw new NotSupportedException();
-      }
+            switch (Configuration.EditionSettings)
+            {
+                case UnattendedEditionSettings settings:
+                    Set(settings.Edition.ProductKey, "OnError");
+                    break;
+                case CustomEditionSettings settings:
+                    Set(settings.ProductKey, "OnError");
+                    break;
+                case InteractiveEditionSettings:
+                    Set("00000-00000-00000-00000-00000", "Always");
+                    break;
+                case FirmwareEditionSettings:
+                    SetWithoutKey("Never");
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+        {
+            if (Configuration.EditionSettings is CustomEditionSettings settings)
+            {
+                var elem = Util.GetOrCreateElement(Pass.specialize, "Microsoft-Windows-Shell-Setup", "ProductKey", Document, NamespaceManager);
+                elem.InnerText = settings.ProductKey;
+            }
+        }
+        {
+            switch (Configuration.InstallFromSettings)
+            {
+                case AutomaticInstallFromSettings:
+                    Document.SelectSingleNodeOrThrow("//u:InstallFrom", NamespaceManager).RemoveSelf();
+                    break;
+                case KeyInstallFromSettings settings:
+                    Document.SelectSingleNodeOrThrow("//u:InstallFrom/u:MetaData/u:Key", NamespaceManager).InnerText = settings.Key;
+                    Document.SelectSingleNodeOrThrow("//u:InstallFrom/u:MetaData/u:Value", NamespaceManager).InnerText = settings.Value;
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
     }
-    {
-      if (Configuration.EditionSettings is CustomEditionSettings settings)
-      {
-        var elem = Util.GetOrCreateElement(Pass.specialize, "Microsoft-Windows-Shell-Setup", "ProductKey", Document, NamespaceManager);
-        elem.InnerText = settings.ProductKey;
-      }
-    }
-    {
-      switch (Configuration.InstallFromSettings)
-      {
-        case AutomaticInstallFromSettings:
-          Document.SelectSingleNodeOrThrow("//u:InstallFrom", NamespaceManager).RemoveSelf();
-          break;
-        case KeyInstallFromSettings settings:
-          Document.SelectSingleNodeOrThrow("//u:InstallFrom/u:MetaData/u:Key", NamespaceManager).InnerText = settings.Key;
-          Document.SelectSingleNodeOrThrow("//u:InstallFrom/u:MetaData/u:Value", NamespaceManager).InnerText = settings.Value;
-          break;
-        default:
-          throw new NotSupportedException();
-      }
-    }
-  }
 }

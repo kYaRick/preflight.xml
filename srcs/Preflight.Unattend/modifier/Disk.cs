@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,9 +18,9 @@ public class CustomInstallToSettings(
   int installToPartition
 ) : IInstallToSettings
 {
-  public int InstallToDisk => Validation.InRange(installToDisk, min: 0);
+    public int InstallToDisk => Validation.InRange(installToDisk, min: 0);
 
-  public int InstallToPartition => Validation.InRange(installToPartition, min: 1);
+    public int InstallToPartition => Validation.InRange(installToPartition, min: 1);
 }
 
 public record class CustomPartitionSettings(
@@ -37,7 +37,7 @@ public record class UnattendedPartitionSettings(
 
 public enum CompactOsModes
 {
-  Default, Always, Never
+    Default, Always, Never
 }
 
 public interface IDiskAssertionSettings;
@@ -66,71 +66,71 @@ public record class ScriptPESetttings(
 
 static class Paths
 {
-  static internal readonly string PEScript = @"X:\pe.cmd";
-  static internal readonly string DiskpartScript = @"X:\diskpart.txt";
-  static internal readonly string DiskpartLog = @"X:\diskpart.log";
-  static internal readonly string AssertionScript = @"X:\assert.vbs";
+    static internal readonly string PEScript = @"X:\pe.cmd";
+    static internal readonly string DiskpartScript = @"X:\diskpart.txt";
+    static internal readonly string DiskpartLog = @"X:\diskpart.log";
+    static internal readonly string AssertionScript = @"X:\assert.vbs";
 }
 
 class DiskModifier(ModifierContext context) : Modifier(context)
 {
-  public override void Process()
-  {
-    if (Configuration.PESettings is ICmdPESettings)
+    public override void Process()
     {
-      foreach (var node in Document.SelectNodesOrEmpty($"/u:unattend/u:settings[@pass='{Pass.windowsPE}']/*", NamespaceManager))
-      {
-        node.RemoveSelf();
-      }
-      if (Configuration.UseNarrator)
-      {
-        GetAppender(CommandConfig.WindowsPE).Append(
-          CommandBuilder.ShellCommand(@"start X:\Windows\System32\Narrator.exe")
-        );
-      }
-    }
-
-    AssertDisk();
-
-    switch (Configuration.PESettings)
-    {
-      case ScriptPESetttings peSettings:
-        WritePeScript(Util.SplitLines(peSettings.Script));
-        break;
-
-      case GeneratePESettings peSettings:
+        if (Configuration.PESettings is ICmdPESettings)
         {
-          var writer = new StringWriter();
-
-          char[] letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-          const char bootDrive = 'S';
-          const char windowsDrive = 'W';
-          const char recoveryDrive = 'R';
-          char[] skippedDrives = ['A', 'B'];
-
-          {
-            string comp = "Microsoft-Windows-PnpCustomizationsWinPE";
-            if (Configuration.Components.Any(c => c.Key.Component == comp))
+            foreach (var node in Document.SelectNodesOrEmpty($"/u:unattend/u:settings[@pass='{Pass.windowsPE}']/*", NamespaceManager))
             {
-              throw new ConfigurationException($"Cannot create .cmd script when component ‘{comp}’ is used. Consider using a custom script and the ‘drvload.exe’ command.");
+                node.RemoveSelf();
             }
-          }
-
-          if (Configuration.Components.Any(c => c.Key.Pass == Pass.windowsPE))
-          {
-            throw new ConfigurationException("Cannot create .cmd script when custom component with pass ‘windowsPE’ is used.");
-          }
-
-          {
-            if (Configuration.LanguageSettings is UnattendedLanguageSettings settings)
+            if (Configuration.UseNarrator)
             {
-              var pair = settings.LocaleAndKeyboard;
-              writer.WriteLine("rem Set keyboard layout");
-              writer.WriteLine($"wpeutil.exe SetKeyboardLayout {pair.Locale.LCID}:{pair.Keyboard.Id}");
+                GetAppender(CommandConfig.WindowsPE).Append(
+                  CommandBuilder.ShellCommand(@"start X:\Windows\System32\Narrator.exe")
+                );
             }
-          }
+        }
 
-          writer.WriteLine($"""
+        AssertDisk();
+
+        switch (Configuration.PESettings)
+        {
+            case ScriptPESetttings peSettings:
+                WritePeScript(Util.SplitLines(peSettings.Script));
+                break;
+
+            case GeneratePESettings peSettings:
+                {
+                    var writer = new StringWriter();
+
+                    char[] letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+                    const char bootDrive = 'S';
+                    const char windowsDrive = 'W';
+                    const char recoveryDrive = 'R';
+                    char[] skippedDrives = ['A', 'B'];
+
+                    {
+                        string comp = "Microsoft-Windows-PnpCustomizationsWinPE";
+                        if (Configuration.Components.Any(c => c.Key.Component == comp))
+                        {
+                            throw new ConfigurationException($"Cannot create .cmd script when component ‘{comp}’ is used. Consider using a custom script and the ‘drvload.exe’ command.");
+                        }
+                    }
+
+                    if (Configuration.Components.Any(c => c.Key.Pass == Pass.windowsPE))
+                    {
+                        throw new ConfigurationException("Cannot create .cmd script when custom component with pass ‘windowsPE’ is used.");
+                    }
+
+                    {
+                        if (Configuration.LanguageSettings is UnattendedLanguageSettings settings)
+                        {
+                            var pair = settings.LocaleAndKeyboard;
+                            writer.WriteLine("rem Set keyboard layout");
+                            writer.WriteLine($"wpeutil.exe SetKeyboardLayout {pair.Locale.LCID}:{pair.Keyboard.Id}");
+                        }
+                    }
+
+                    writer.WriteLine($"""
             @for %%d in ({letters.Except([.. skippedDrives, bootDrive, windowsDrive, recoveryDrive]).JoinString(' ')}) do @(
                 if exist %%d:\sources\install.wim set "IMAGE_FILE=%%d:\sources\install.wim"
                 if exist %%d:\sources\install.esd set "IMAGE_FILE=%%d:\sources\install.esd"
@@ -145,16 +145,16 @@ class DiskModifier(ModifierContext context) : Modifier(context)
             @if not defined XML_FILE echo Could not locate autounattend.xml. & pause & exit /b 1
             """);
 
-          writer.WriteLine("""
+                    writer.WriteLine("""
             rem Install drivers from $WinPEDriver$ folder
             if defined PEDRIVERS_FOLDER (
                 for /R %PEDRIVERS_FOLDER% %%f IN (*.inf) do drvload.exe "%%f"
             )
             """);
 
-          if (Configuration.VirtIoGuestTools)
-          {
-            writer.WriteLine("""
+                    if (Configuration.VirtIoGuestTools)
+                    {
+                        writer.WriteLine("""
               rem Install VirtIO drivers
               set "OS_SUBFOLDER=w11"
               for /f "tokens=3 delims=." %%v in ('ver') do (
@@ -165,199 +165,199 @@ class DiskModifier(ModifierContext context) : Modifier(context)
                   drvload.exe "%VIRTIO_DRIVE%\NetKVM\%OS_SUBFOLDER%\%PROCESSOR_ARCHITECTURE%\netkvm.inf"
               )
               """);
-          }
+                    }
 
-          {
-            IEnumerable<string> diskpartScript = Configuration.PartitionSettings switch
-            {
-              InteractivePartitionSettings => throw new ConfigurationException("Cannot create .cmd script when disk is partitioned interactively. Select ‘Let Windows Setup wipe, partition and format your hard drive’ or ‘Use a custom diskpart script’ instead."),
-              CustomPartitionSettings settings => Util.SplitLines(settings.Script),
-              UnattendedPartitionSettings settings => GetDiskpartScript(settings, bootDrive: bootDrive, windowsDrive: windowsDrive, recoveryDrive: recoveryDrive),
-              _ => throw new NotSupportedException(),
-            };
+                    {
+                        IEnumerable<string> diskpartScript = Configuration.PartitionSettings switch
+                        {
+                            InteractivePartitionSettings => throw new ConfigurationException("Cannot create .cmd script when disk is partitioned interactively. Select ‘Let Windows Setup wipe, partition and format your hard drive’ or ‘Use a custom diskpart script’ instead."),
+                            CustomPartitionSettings settings => Util.SplitLines(settings.Script),
+                            UnattendedPartitionSettings settings => GetDiskpartScript(settings, bootDrive: bootDrive, windowsDrive: windowsDrive, recoveryDrive: recoveryDrive),
+                            _ => throw new NotSupportedException(),
+                        };
 
-            {
-              string expected = $"ASSIGN LETTER={windowsDrive}";
-              if (!diskpartScript.Any(line => string.Equals(line.Trim(), expected, StringComparison.OrdinalIgnoreCase)))
-              {
-                throw new ConfigurationException($"Your diskpart script must contain the line ‘{expected}’ to assign the drive letter ‘{windowsDrive}:’ to the Windows partition.");
-              }
-            }
-            {
-              string expected = $"ASSIGN LETTER={bootDrive}";
-              if (!diskpartScript.Any(line => string.Equals(line.Trim(), expected, StringComparison.OrdinalIgnoreCase)))
-              {
-                throw new ConfigurationException($"Your diskpart script must contain the line ‘{expected}’ to assign the drive letter ‘{bootDrive}:’ to the system partition.");
-              }
-            }
+                        {
+                            string expected = $"ASSIGN LETTER={windowsDrive}";
+                            if (!diskpartScript.Any(line => string.Equals(line.Trim(), expected, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                throw new ConfigurationException($"Your diskpart script must contain the line ‘{expected}’ to assign the drive letter ‘{windowsDrive}:’ to the Windows partition.");
+                            }
+                        }
+                        {
+                            string expected = $"ASSIGN LETTER={bootDrive}";
+                            if (!diskpartScript.Any(line => string.Equals(line.Trim(), expected, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                throw new ConfigurationException($"Your diskpart script must contain the line ‘{expected}’ to assign the drive letter ‘{bootDrive}:’ to the system partition.");
+                            }
+                        }
 
-            writer.WriteLine($">{Paths.DiskpartScript} (");
-            foreach (string line in EchoProcessor.Process(diskpartScript))
-            {
-              writer.WriteLine(line);
-            }
-            writer.WriteLine(")");
-            if (peSettings.PauseBeforeFormatting)
-            {
-              writer.WriteLine("""
+                        writer.WriteLine($">{Paths.DiskpartScript} (");
+                        foreach (string line in EchoProcessor.Process(diskpartScript))
+                        {
+                            writer.WriteLine(line);
+                        }
+                        writer.WriteLine(")");
+                        if (peSettings.PauseBeforeFormatting)
+                        {
+                            writer.WriteLine("""
                 @echo diskpart will now partition and format your disk
                 pause
                 """);
-            }
-            writer.WriteLine($"""
+                        }
+                        writer.WriteLine($"""
               diskpart.exe /s {Paths.DiskpartScript} || ( echo diskpart.exe encountered an error. & pause & exit /b 1 )
               """);
-          }
+                    }
 
-          {
-            if (Configuration.InstallFromSettings is IndexInstallFromSettings indexSettings)
-            {
-              writer.WriteLine($"""
+                    {
+                        if (Configuration.InstallFromSettings is IndexInstallFromSettings indexSettings)
+                        {
+                            writer.WriteLine($"""
                 set "IMG_PARAM=/Index:{indexSettings.Index}"
                 """);
-            }
-            else if (Configuration.InstallFromSettings is NameInstallFromSettings nameSettings)
-            {
-              writer.WriteLine($"""
+                        }
+                        else if (Configuration.InstallFromSettings is NameInstallFromSettings nameSettings)
+                        {
+                            writer.WriteLine($"""
                 set "IMG_PARAM=/Name:"{nameSettings.Name}""
                 """);
-            }
-            else if (Configuration.EditionSettings is UnattendedEditionSettings editionSettings)
-            {
-              writer.WriteLine($"""
+                        }
+                        else if (Configuration.EditionSettings is UnattendedEditionSettings editionSettings)
+                        {
+                            writer.WriteLine($"""
                 set "OS_VERSION=Windows 11"
                 for /f "tokens=3 delims=." %%v in ('ver') do (
                     if %%v LSS 20000 set "OS_VERSION=Windows 10"
                 )
                 set "IMG_PARAM=/Name:"%OS_VERSION% {editionSettings.Edition.DisplayName}""
                 """);
-            }
-            else
-            {
-              throw new ConfigurationException("Cannot determine which Windows image to apply. Specify image name or index in the ‘Source image’ section.");
-            }
-          }
+                        }
+                        else
+                        {
+                            throw new ConfigurationException("Cannot determine which Windows image to apply. Specify image name or index in the ‘Source image’ section.");
+                        }
+                    }
 
-          writer.WriteLine($"""
+                    writer.WriteLine($"""
             dism.exe /Apply-Image /ImageFile:%IMAGE_FILE% %SWM_PARAM% %IMG_PARAM% /ApplyDir:{windowsDrive}:\ {(Configuration.CompactOsMode == CompactOsModes.Always ? "/Compact" : "")} /CheckIntegrity /Verify || ( echo dism.exe encountered an error. & pause & exit /b 1 )
             bcdboot.exe {windowsDrive}:\Windows /s {bootDrive}: || ( echo bcdboot.exe encountered an error. & pause & exit /b 1 )
             """);
 
-          {
-            void DeleteWinRE()
-            {
-              writer.WriteLine($"""
+                    {
+                        void DeleteWinRE()
+                        {
+                            writer.WriteLine($"""
                 rem Avoid creation of recovery partition
                 del {windowsDrive}:\Windows\System32\Recovery\winre.wim
                 """);
-            }
+                        }
 
-            switch (Configuration.PartitionSettings)
-            {
-              case UnattendedPartitionSettings settings:
-                switch (settings.RecoveryMode)
-                {
-                  case RecoveryMode.None:
-                    DeleteWinRE();
-                    break;
-                  case RecoveryMode.Folder:
-                    throw new ConfigurationException($"Cannot create .cmd script when Windows RE is to be installed on {windowsDrive}:.");
-                  case RecoveryMode.Partition:
-                    // Nothing to do – Windows will automatically install RE on the recovery partition
-                    break;
-                  default:
-                    throw new NotSupportedException();
-                }
-                break;
-              case CustomPartitionSettings settings:
-                string[] keywords = [
-                  "SET ID=27",
+                        switch (Configuration.PartitionSettings)
+                        {
+                            case UnattendedPartitionSettings settings:
+                                switch (settings.RecoveryMode)
+                                {
+                                    case RecoveryMode.None:
+                                        DeleteWinRE();
+                                        break;
+                                    case RecoveryMode.Folder:
+                                        throw new ConfigurationException($"Cannot create .cmd script when Windows RE is to be installed on {windowsDrive}:.");
+                                    case RecoveryMode.Partition:
+                                        // Nothing to do – Windows will automatically install RE on the recovery partition
+                                        break;
+                                    default:
+                                        throw new NotSupportedException();
+                                }
+                                break;
+                            case CustomPartitionSettings settings:
+                                string[] keywords = [
+                                  "SET ID=27",
                   @"LABEL=""Recovery""",
                   @"SET ID=""de94bba4-06d1-4d40-a16a-bfd50179d6ac"""
-                ];
-                if (!keywords.Any(keyword => settings.Script.Contains(keyword, StringComparison.OrdinalIgnoreCase)))
-                {
-                  DeleteWinRE();
-                }
-                break;
-            }
-          }
+                                ];
+                                if (!keywords.Any(keyword => settings.Script.Contains(keyword, StringComparison.OrdinalIgnoreCase)))
+                                {
+                                    DeleteWinRE();
+                                }
+                                break;
+                        }
+                    }
 
-          writer.WriteLine($"""
+                    writer.WriteLine($"""
             mkdir {windowsDrive}:\Windows\Panther
             copy %XML_FILE% {windowsDrive}:\Windows\Panther\unattend.xml
             """);
 
-          writer.WriteLine($"""
+                    writer.WriteLine($"""
             if defined PEDRIVERS_FOLDER (
                 dism.exe /Add-Driver /Image:{windowsDrive}:\ /Driver:"%PEDRIVERS_FOLDER%" /Recurse
             )
             """);
 
-          if (Configuration.VirtIoGuestTools)
-          {
-            writer.WriteLine($"""
+                    if (Configuration.VirtIoGuestTools)
+                    {
+                        writer.WriteLine($"""
               if defined VIRTIO_DRIVE (
                   dism.exe /Add-Driver /Image:{windowsDrive}:\ /Driver:"%VIRTIO_DRIVE%\vioscsi\%OS_SUBFOLDER%\%PROCESSOR_ARCHITECTURE%\vioscsi.inf"
                   dism.exe /Add-Driver /Image:{windowsDrive}:\ /Driver:"%VIRTIO_DRIVE%\NetKVM\%OS_SUBFOLDER%\%PROCESSOR_ARCHITECTURE%\netkvm.inf"
               )
               """);
-          }
+                    }
 
-          {
-            if (Configuration.TimeZoneSettings is ExplicitTimeZoneSettings settings)
-            {
-              writer.WriteLine($"""
+                    {
+                        if (Configuration.TimeZoneSettings is ExplicitTimeZoneSettings settings)
+                        {
+                            writer.WriteLine($"""
                 dism.exe /Image:{windowsDrive}:\ /Set-TimeZone:"{settings.TimeZone.Id}"
                 """);
-            }
-          }
+                        }
+                    }
 
-          if (peSettings.Disable8Dot3Names)
-          {
-            writer.WriteLine($"""
+                    if (peSettings.Disable8Dot3Names)
+                    {
+                        writer.WriteLine($"""
               rem Strip 8.3 file names
               fsutil.exe 8dot3name set {windowsDrive}: 1
               fsutil.exe 8dot3name strip /s /f {windowsDrive}:\
               """);
-          }
+                    }
 
-          if (Configuration.DisableDefender)
-          {
-            writer.WriteLine($"""
+                    if (Configuration.DisableDefender)
+                    {
+                        writer.WriteLine($"""
               rem Disable Windows Defender
               reg.exe LOAD HKLM\mount {windowsDrive}:\Windows\System32\config\SYSTEM
               for %%s in (Sense WdBoot WdFilter WdNisDrv WdNisSvc WinDefend) do reg.exe ADD HKLM\mount\ControlSet001\Services\%%s /v Start /t REG_DWORD /d 4 /f
               reg.exe UNLOAD HKLM\mount
               """);
-          }
+                    }
 
-          if (Configuration.DisableWpbt)
-          {
-            writer.WriteLine($"""
+                    if (Configuration.DisableWpbt)
+                    {
+                        writer.WriteLine($"""
               rem Disable WPBT
               reg.exe LOAD HKLM\mount {windowsDrive}:\Windows\System32\config\SYSTEM
               reg.exe add "HKLM\mount\ControlSet001\Control\Session Manager" /v DisableWpbtExecution /t REG_DWORD /d 1 /f
               reg.exe UNLOAD HKLM\mount
               """);
-          }
+                    }
 
-          {
-            if (Configuration.LanguageSettings is UnattendedLanguageSettings settings)
-            {
-              GeoLocation location = settings.GeoLocation;
-              writer.WriteLine($"""
+                    {
+                        if (Configuration.LanguageSettings is UnattendedLanguageSettings settings)
+                        {
+                            GeoLocation location = settings.GeoLocation;
+                            writer.WriteLine($"""
                 rem Set device setup region to {location.DisplayName} (GeoID {location.Id})
                 reg.exe LOAD HKLM\mount {windowsDrive}:\Windows\System32\config\SOFTWARE
                 reg.exe ADD "HKLM\mount\Microsoft\Windows\CurrentVersion\Control Panel\DeviceRegion" /v DeviceRegion /t REG_DWORD /d {location.Id} /f
                 reg.exe UNLOAD HKLM\mount
                 """);
-            }
-          }
+                        }
+                    }
 
-          if (Configuration.UseConfigurationSet)
-          {
-            writer.WriteLine($"""
+                    if (Configuration.UseConfigurationSet)
+                    {
+                        writer.WriteLine($"""
               rem Copy $OEM$ folder if present
               set "ROBOCOPY_ARGS=/E /XX /COPY:DAT /DCOPY:DAT /R:0"
               if defined OEM_FOLDER (
@@ -368,187 +368,187 @@ class DiskModifier(ModifierContext context) : Modifier(context)
                   )
               )
               """);
-          }
+                    }
 
-          if (peSettings.PauseBeforeReboot)
-          {
-            writer.WriteLine("""
+                    if (peSettings.PauseBeforeReboot)
+                    {
+                        writer.WriteLine("""
               @echo Computer will now reboot
               pause
               """);
-          }
+                    }
 
-          writer.WriteLine("""
+                    writer.WriteLine("""
             rem Continue with next stage of Windows Setup after reboot
             wpeutil.exe reboot
             """);
 
-          WritePeScript(Util.SplitLines(writer.ToString()));
-          break;
+                    WritePeScript(Util.SplitLines(writer.ToString()));
+                    break;
+                }
+
+            case DefaultPESettings:
+                SetCompactMode();
+                SetPartitions();
+                break;
+
+            default:
+                throw new NotSupportedException();
         }
-
-      case DefaultPESettings:
-        SetCompactMode();
-        SetPartitions();
-        break;
-
-      default:
-        throw new NotSupportedException();
     }
-  }
 
-  /// <summary>
-  /// Creates the .cmd script that handles the PE stage of Windows Setup instead of setup.exe.
-  /// </summary>
-  private void WritePeScript(IEnumerable<string> lines)
-  {
-    CommandAppender appender = GetAppender(CommandConfig.WindowsPE);
-    appender.Append([
-      ..CommandBuilder.WriteToFilePE(Paths.PEScript, lines),
+    /// <summary>
+    /// Creates the .cmd script that handles the PE stage of Windows Setup instead of setup.exe.
+    /// </summary>
+    private void WritePeScript(IEnumerable<string> lines)
+    {
+        CommandAppender appender = GetAppender(CommandConfig.WindowsPE);
+        appender.Append([
+          ..CommandBuilder.WriteToFilePE(Paths.PEScript, lines),
       CommandBuilder.ShellCommand(Paths.PEScript)
-    ]);
-  }
-
-  private void AssertDisk()
-  {
-    switch (Configuration.DiskAssertionSettings)
-    {
-      case SkipDiskAssertionSettings:
-        break;
-      case ScriptDiskAssertionsSettings settings:
-        WriteScript(Util.SplitLines(settings.Script));
-        break;
+        ]);
     }
 
-    void WriteScript(IEnumerable<string> lines)
+    private void AssertDisk()
     {
-      CommandAppender appender = GetAppender(CommandConfig.WindowsPE);
-      appender.Append([
-        ..CommandBuilder.WriteToFilePE(Paths.AssertionScript, lines),
-        CommandBuilder.InvokeVBScript(Paths.AssertionScript)
-      ]);
-    }
-  }
-
-  private void SetCompactMode()
-  {
-    var target = Document.SelectSingleNodeOrThrow("//u:Compact", NamespaceManager);
-    switch (Configuration.CompactOsMode)
-    {
-      case CompactOsModes.Default:
-        target.RemoveSelf();
-        break;
-      case CompactOsModes.Always:
-        target.InnerText = "true";
-        break;
-      case CompactOsModes.Never:
-        target.InnerText = "false";
-        break;
-    }
-  }
-
-  private void SetPartitions()
-  {
-    switch (Configuration.PartitionSettings)
-    {
-      case InteractivePartitionSettings:
+        switch (Configuration.DiskAssertionSettings)
         {
-          Document.SelectSingleNodeOrThrow("//u:InstallTo", NamespaceManager).RemoveSelf();
-          break;
+            case SkipDiskAssertionSettings:
+                break;
+            case ScriptDiskAssertionsSettings settings:
+                WriteScript(Util.SplitLines(settings.Script));
+                break;
         }
-      case UnattendedPartitionSettings settings:
-        {
-          WriteScript(GetDiskpartScript(settings));
-          {
-            int partition = settings.PartitionLayout switch
-            {
-              PartitionLayout.MBR => 2,
-              PartitionLayout.GPT => 3,
-              _ => throw new ArgumentException(nameof(settings.PartitionLayout)),
-            };
-            InstallTo(disk: 0, partition: partition);
-          }
 
-          if (settings.RecoveryMode == RecoveryMode.None)
-          {
-            SpecializeScript.Append("""
+        void WriteScript(IEnumerable<string> lines)
+        {
+            CommandAppender appender = GetAppender(CommandConfig.WindowsPE);
+            appender.Append([
+              ..CommandBuilder.WriteToFilePE(Paths.AssertionScript, lines),
+        CommandBuilder.InvokeVBScript(Paths.AssertionScript)
+            ]);
+        }
+    }
+
+    private void SetCompactMode()
+    {
+        var target = Document.SelectSingleNodeOrThrow("//u:Compact", NamespaceManager);
+        switch (Configuration.CompactOsMode)
+        {
+            case CompactOsModes.Default:
+                target.RemoveSelf();
+                break;
+            case CompactOsModes.Always:
+                target.InnerText = "true";
+                break;
+            case CompactOsModes.Never:
+                target.InnerText = "false";
+                break;
+        }
+    }
+
+    private void SetPartitions()
+    {
+        switch (Configuration.PartitionSettings)
+        {
+            case InteractivePartitionSettings:
+                {
+                    Document.SelectSingleNodeOrThrow("//u:InstallTo", NamespaceManager).RemoveSelf();
+                    break;
+                }
+            case UnattendedPartitionSettings settings:
+                {
+                    WriteScript(GetDiskpartScript(settings));
+                    {
+                        int partition = settings.PartitionLayout switch
+                        {
+                            PartitionLayout.MBR => 2,
+                            PartitionLayout.GPT => 3,
+                            _ => throw new ArgumentException(nameof(settings.PartitionLayout)),
+                        };
+                        InstallTo(disk: 0, partition: partition);
+                    }
+
+                    if (settings.RecoveryMode == RecoveryMode.None)
+                    {
+                        SpecializeScript.Append("""
               ReAgentc.exe /disable;
               Remove-Item -LiteralPath 'C:\Windows\System32\Recovery\Winre.wim' -Force -ErrorAction 'SilentlyContinue';
               """);
-          }
-          break;
-        }
+                    }
+                    break;
+                }
 
-      case CustomPartitionSettings settings:
-        {
-          WriteScript(Util.SplitLines(settings.Script));
-          switch (settings.InstallTo)
-          {
-            case AvailableInstallToSettings:
-              {
-                Document.SelectSingleNodeOrThrow("//u:ImageInstall/u:OSImage/u:InstallTo", NamespaceManager).RemoveSelf();
-                var elem = Document.CreateElement("InstallToAvailablePartition", NamespaceManager.LookupNamespace("u"));
-                elem.InnerText = "true";
-                Document.SelectSingleNodeOrThrow("//u:ImageInstall/u:OSImage", NamespaceManager).AppendChild(elem);
-                break;
-              }
-            case CustomInstallToSettings custom:
-              {
-                InstallTo(disk: custom.InstallToDisk, partition: custom.InstallToPartition);
-                break;
-              }
+            case CustomPartitionSettings settings:
+                {
+                    WriteScript(Util.SplitLines(settings.Script));
+                    switch (settings.InstallTo)
+                    {
+                        case AvailableInstallToSettings:
+                            {
+                                Document.SelectSingleNodeOrThrow("//u:ImageInstall/u:OSImage/u:InstallTo", NamespaceManager).RemoveSelf();
+                                var elem = Document.CreateElement("InstallToAvailablePartition", NamespaceManager.LookupNamespace("u"));
+                                elem.InnerText = "true";
+                                Document.SelectSingleNodeOrThrow("//u:ImageInstall/u:OSImage", NamespaceManager).AppendChild(elem);
+                                break;
+                            }
+                        case CustomInstallToSettings custom:
+                            {
+                                InstallTo(disk: custom.InstallToDisk, partition: custom.InstallToPartition);
+                                break;
+                            }
+                        default:
+                            {
+                                throw new NotSupportedException();
+                            }
+                    }
+                    break;
+                }
             default:
-              {
-                throw new NotSupportedException();
-              }
-          }
-          break;
+                {
+                    throw new NotSupportedException();
+                }
         }
-      default:
-        {
-          throw new NotSupportedException();
-        }
-    }
 
-    void WriteScript(IEnumerable<string> lines)
-    {
-      CommandAppender appender = GetAppender(CommandConfig.WindowsPE);
-      appender.Append([
-        ..CommandBuilder.WriteToFilePE(Paths.DiskpartScript, lines),
+        void WriteScript(IEnumerable<string> lines)
+        {
+            CommandAppender appender = GetAppender(CommandConfig.WindowsPE);
+            appender.Append([
+              ..CommandBuilder.WriteToFilePE(Paths.DiskpartScript, lines),
         CommandBuilder.ShellCommand($@"diskpart.exe /s ""{Paths.DiskpartScript}"" >>""{Paths.DiskpartLog}"" || ( type ""{Paths.DiskpartLog}"" & echo diskpart encountered an error. & pause & exit /b 1 )"),
       ]);
-    }
-  }
-
-  private void InstallTo(int disk, int partition)
-  {
-    Document.SelectSingleNodeOrThrow("//u:ImageInstall/u:OSImage/u:InstallTo/u:DiskID", NamespaceManager).InnerText = disk.ToString();
-    Document.SelectSingleNodeOrThrow("//u:ImageInstall/u:OSImage/u:InstallTo/u:PartitionID", NamespaceManager).InnerText = partition.ToString();
-  }
-
-  public static string GetCustomDiskpartScript()
-  {
-    UnattendedPartitionSettings settings = new(
-      PartitionLayout: PartitionLayout.GPT,
-      RecoveryMode: RecoveryMode.Partition,
-      EspSize: Constants.EspDefaultSize,
-      RecoverySize: Constants.RecoveryPartitionSize
-    );
-    return string.Join("\r\n", GetDiskpartScript(settings));
-  }
-
-  internal static List<string> GetDiskpartScript(UnattendedPartitionSettings settings, char bootDrive = 'S', char windowsDrive = 'W', char recoveryDrive = 'R')
-  {
-    string IfRecovery(string line)
-    {
-      return settings.RecoveryMode == RecoveryMode.Partition ? line : "";
+        }
     }
 
-    return settings.PartitionLayout switch
+    private void InstallTo(int disk, int partition)
     {
-      PartitionLayout.MBR =>
-      [
-        "SELECT DISK=0",
+        Document.SelectSingleNodeOrThrow("//u:ImageInstall/u:OSImage/u:InstallTo/u:DiskID", NamespaceManager).InnerText = disk.ToString();
+        Document.SelectSingleNodeOrThrow("//u:ImageInstall/u:OSImage/u:InstallTo/u:PartitionID", NamespaceManager).InnerText = partition.ToString();
+    }
+
+    public static string GetCustomDiskpartScript()
+    {
+        UnattendedPartitionSettings settings = new(
+          PartitionLayout: PartitionLayout.GPT,
+          RecoveryMode: RecoveryMode.Partition,
+          EspSize: Constants.EspDefaultSize,
+          RecoverySize: Constants.RecoveryPartitionSize
+        );
+        return string.Join("\r\n", GetDiskpartScript(settings));
+    }
+
+    internal static List<string> GetDiskpartScript(UnattendedPartitionSettings settings, char bootDrive = 'S', char windowsDrive = 'W', char recoveryDrive = 'R')
+    {
+        string IfRecovery(string line)
+        {
+            return settings.RecoveryMode == RecoveryMode.Partition ? line : "";
+        }
+
+        return settings.PartitionLayout switch
+        {
+            PartitionLayout.MBR =>
+            [
+              "SELECT DISK=0",
         "CLEAN",
         "CREATE PARTITION PRIMARY SIZE=100",
         @"FORMAT QUICK FS=NTFS LABEL=""System Reserved""",
@@ -562,10 +562,10 @@ class DiskModifier(ModifierContext context) : Modifier(context)
         (IfRecovery(@"FORMAT QUICK FS=NTFS LABEL=""Recovery""")),
         (IfRecovery($"ASSIGN LETTER={recoveryDrive}")),
         (IfRecovery("SET ID=27"))
-      ],
-      PartitionLayout.GPT =>
-      [
-        "SELECT DISK=0",
+            ],
+            PartitionLayout.GPT =>
+            [
+              "SELECT DISK=0",
         "CLEAN",
         "CONVERT GPT",
         $"CREATE PARTITION EFI SIZE={settings.EspSize}",
@@ -581,8 +581,8 @@ class DiskModifier(ModifierContext context) : Modifier(context)
         (IfRecovery($"ASSIGN LETTER={recoveryDrive}")),
         (IfRecovery(@"SET ID=""de94bba4-06d1-4d40-a16a-bfd50179d6ac""")),
         (IfRecovery("GPT ATTRIBUTES=0x8000000000000001"))
-      ],
-      _ => throw new NotSupportedException()
-    };
-  }
+            ],
+            _ => throw new NotSupportedException()
+        };
+    }
 }

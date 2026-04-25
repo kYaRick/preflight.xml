@@ -1,4 +1,4 @@
-﻿using System.Xml;
+using System.Xml;
 
 namespace Schneegans.Unattend;
 
@@ -12,12 +12,12 @@ public record class ExplicitTimeZoneSettings(
 
 class TimeZoneModifier(ModifierContext context) : Modifier(context)
 {
-  public override void Process()
-  {
-    if (Configuration.TimeZoneSettings is ExplicitTimeZoneSettings settings)
+    public override void Process()
     {
-      XmlElement component = Util.GetOrCreateElement(Pass.specialize, "Microsoft-Windows-Shell-Setup", Document, NamespaceManager);
-      NewSimpleElement("TimeZone", component, settings.TimeZone.Id);
+        if (Configuration.TimeZoneSettings is ExplicitTimeZoneSettings settings)
+        {
+            XmlElement component = Util.GetOrCreateElement(Pass.specialize, "Microsoft-Windows-Shell-Setup", Document, NamespaceManager);
+            NewSimpleElement("TimeZone", component, settings.TimeZone.Id);
+        }
     }
-  }
 }
