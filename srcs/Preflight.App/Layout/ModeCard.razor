@@ -1,30 +1,41 @@
 @*
   A clickable mode tile used on the landing page. Three of these sit side-by-side
   representing Wizard / Advanced / Docs.
+
+  Renders the entire card as an <a href> so view-transitions.js (capture-phase
+  click interceptor) can wrap the navigation in document.startViewTransition().
+  Programmatic Nav.NavigateTo would have skipped that interceptor — that's why
+  Landing → other pages used to snap with no animation.
+
+  OnSelect still fires (for ModeService.SwitchMode bookkeeping) because the
+  click interceptor does NOT call stopImmediatePropagation; only preventDefault.
+  Blazor's @onclick handler runs in the bubble phase and updates the active
+  mode while the View Transition is animating the route swap.
 *@
 
-@*
-  Only the outer card carries the click handler - the CTA button is decorative and
-  shares the same target. Stacking two handlers (card + button) meant real-browser
-  clicks could fire twice and race with the navigation that follows, which looked
-  like "first click is ignored" because the second navigation cancelled the first.
-*@
-<FluentCard Class="pf-card--interactive" @onclick="HandleClick" Style="height: 100%; cursor: pointer;">
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" Style="padding: 24px; height: 100%;">
-        <div style="font-size: 48px; line-height: 1;">@Icon</div>
-        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@Title</FluentLabel>
-        <FluentLabel Typo="Typography.Body" Style="flex: 1;">@Description</FluentLabel>
-        <FluentButton Appearance="Appearance.Accent" Style="pointer-events: none;">
-            @CtaLabel
-        </FluentButton>
-    </FluentStack>
-</FluentCard>
+<a href="@Href"
+   class="pf-mode-card-anchor"
+   @onclick="HandleClick"
+   @onclick:preventDefault="false"
+   @onclick:stopPropagation="false">
+    <FluentCard Class="pf-card--interactive" Style="height: 100%;">
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" Style="padding: 24px; height: 100%;">
+            <div style="font-size: 48px; line-height: 1;">@Icon</div>
+            <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@Title</FluentLabel>
+            <FluentLabel Typo="Typography.Body" Style="flex: 1;">@Description</FluentLabel>
+            <FluentButton Appearance="Appearance.Accent" Style="pointer-events: none;">
+                @CtaLabel
+            </FluentButton>
+        </FluentStack>
+    </FluentCard>
+</a>
 
 @code {
     [Parameter, EditorRequired] public string Icon { get; set; } = "";
     [Parameter, EditorRequired] public string Title { get; set; } = "";
     [Parameter, EditorRequired] public string Description { get; set; } = "";
     [Parameter, EditorRequired] public string CtaLabel { get; set; } = "";
+    [Parameter, EditorRequired] public string Href { get; set; } = "";
     [Parameter] public EventCallback OnSelect { get; set; }
 
     private Task HandleClick() => OnSelect.InvokeAsync();

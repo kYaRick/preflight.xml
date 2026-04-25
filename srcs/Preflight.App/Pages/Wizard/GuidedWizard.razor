@@ -78,18 +78,18 @@ else
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Wrap="true" Style="row-gap: 8px;">
         @if (Step > 1)
         {
-            <FluentButton Appearance="Appearance.Outline" OnClick="Previous">← @L["Common.Back"]</FluentButton>
+            <FluentAnchor Appearance="Appearance.Outline" Href="@($"wizard/guided/{Step - 1}")">← @L["Common.Back"]</FluentAnchor>
         }
         <FluentSpacer />
         @if (Step < TotalSteps)
         {
-            <FluentButton Appearance="Appearance.Accent" OnClick="Next">@L["Common.Next"] →</FluentButton>
+            <FluentAnchor Appearance="Appearance.Accent" Href="@($"wizard/guided/{Step + 1}")">@L["Common.Next"] →</FluentAnchor>
         }
         else
         {
-            <FluentButton Appearance="Appearance.Accent" OnClick='@(() => Nav.NavigateTo("wizard/review"))'>
+            <FluentAnchor Appearance="Appearance.Accent" Href="wizard/review">
                 @L["Wizard.Guided.Finish"] →
-            </FluentButton>
+            </FluentAnchor>
         }
     </FluentStack>
 
@@ -100,7 +100,4 @@ else
     private const int TotalSteps = 5;
 
     [Parameter] public int Step { get; set; } = 1;
-
-    private void Previous() => Nav.NavigateTo($"wizard/guided/{Step - 1}");
-    private void Next() => Nav.NavigateTo($"wizard/guided/{Step + 1}");
 }

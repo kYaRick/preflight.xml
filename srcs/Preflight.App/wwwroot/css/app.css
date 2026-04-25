@@ -399,11 +399,42 @@ fluent-card.pf-card--interactive::before {
 }
 
 fluent-card.pf-card--interactive:hover {
-    transform: translateY(-3px);
+    transform: translateY(-5px) scale(1.005);
     border-color: var(--pf-card-border-hover) !important;
     box-shadow:
         var(--pf-card-highlight),
         var(--pf-card-shadow-hover) !important;
+}
+
+/* ─── Mode-card anchor wrapper ──────────────────────────────
+   Landing/Wizard cards are wrapped in <a href> so the click-interceptor
+   in view-transitions.js can wrap navigation in document.startViewTransition.
+   The anchor itself must be invisible — it inherits the card's full
+   click target, no underline, no extra spacing. */
+.pf-mode-card-anchor {
+    display: block;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    border-radius: var(--pf-radius-lg);
+}
+
+.pf-mode-card-anchor:focus {
+    outline: none;
+}
+
+.pf-mode-card-anchor:focus-visible {
+    outline: 2px solid var(--pf-accent);
+    outline-offset: 2px;
+}
+
+fluent-card.pf-card--interactive:active {
+    transform: translateY(-1px) scale(0.998);
+    transition:
+        transform 0.12s var(--pf-ease),
+        border-color 0.12s var(--pf-ease),
+        box-shadow 0.12s var(--pf-ease) !important;
 }
 
 fluent-card.pf-card--interactive:hover::before {
@@ -575,15 +606,21 @@ fluent-button[appearance="accent"]::part(control) {
 
 fluent-button[appearance="accent"]:hover::part(control) {
     filter: brightness(1.1) saturate(1.08);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
     box-shadow:
         0 1px 0 rgba(255, 255, 255, 0.2) inset,
-        0 8px 24px rgba(var(--pf-accent-rgb), 0.45);
+        0 10px 28px rgba(var(--pf-accent-rgb), 0.5);
 }
 
+/* Press: pull below the resting line so the click feels tactile.
+   transition kept short (120ms) so the tap reads as snappy, not laggy. */
 fluent-button[appearance="accent"]:active::part(control) {
-    transform: translateY(0);
-    filter: brightness(0.96);
+    transform: translateY(1px) scale(0.985);
+    filter: brightness(0.92);
+    transition:
+        filter 0.12s var(--pf-ease),
+        transform 0.12s var(--pf-ease),
+        box-shadow 0.12s var(--pf-ease);
 }
 
 /* ─── Brand logo (gradient-filled airplane glyph) ─────────────
@@ -735,8 +772,19 @@ fluent-button[appearance="outline"]:hover::part(control),
 fluent-anchor[appearance="outline"]:hover::part(control) {
     border-color: var(--pf-accent) !important;
     color: var(--pf-accent) !important;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px var(--pf-accent-ring) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px var(--pf-accent-ring) !important;
+}
+
+fluent-button[appearance="outline"]:active::part(control),
+fluent-anchor[appearance="outline"]:active::part(control) {
+    transform: translateY(1px) scale(0.985) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18) !important;
+    transition:
+        background 0.12s var(--pf-ease),
+        border-color 0.12s var(--pf-ease),
+        transform 0.12s var(--pf-ease),
+        box-shadow 0.12s var(--pf-ease) !important;
 }
 
 /* Small SVG icon slotted into a Fluent button label. Aligns with text baseline. */
@@ -827,24 +875,41 @@ fluent-anchor[appearance="hypertext"]:hover {
     outline-offset: 2px;
 }
 
-/* ─── Modal overlay (used by palette + help) ─────────────── */
+/* ─── Modal overlay (used by palette + help) ─────────────────
+   Always laid out (display: flex) but hidden via opacity + visibility +
+   pointer-events so the OPEN/CLOSE transitions actually run. With the old
+   `display: none → flex` toggle the browser skipped the opacity transition
+   on first paint of the modal; the result was an instant pop-in/pop-out
+   that read as "wooden". Visibility is delayed on close so the fade has
+   time to complete before the element becomes inert. */
 .pf-overlay {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(8px);
-    display: none;
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
     align-items: flex-start;
     justify-content: center;
     padding-top: 15vh;
     z-index: 1000;
     opacity: 0;
-    transition: opacity 0.2s var(--pf-ease);
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+        opacity 0.28s var(--pf-ease),
+        backdrop-filter 0.28s var(--pf-ease),
+        visibility 0s linear 0.28s;
 }
 
 .pf-overlay.is-open {
-    display: flex;
     opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition:
+        opacity 0.28s var(--pf-ease),
+        backdrop-filter 0.28s var(--pf-ease),
+        visibility 0s linear 0s;
 }
 
 /* ─── Command palette ─────────────────────────────────────── */
@@ -864,19 +929,20 @@ fluent-anchor[appearance="hypertext"]:hover {
     flex-direction: column;
     overflow: hidden;
     font-family: var(--pf-font-sans);
-    animation: paletteIn 0.2s var(--pf-ease-out);
+    /* Resting (closed) state — pulled up & slightly shrunk. The .pf-overlay
+       wrapper handles the fade; here we drive the snap-in/out with transform
+       so closing also gets a transition (the old animation: paletteIn only
+       ran on entry). */
+    opacity: 0;
+    transform: translateY(-16px) scale(0.96);
+    transition:
+        opacity 0.32s var(--pf-ease-out),
+        transform 0.4s var(--pf-ease-out);
 }
 
-@keyframes paletteIn {
-    from {
-        opacity: 0;
-        transform: translateY(-8px) scale(0.98);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
+.pf-overlay.is-open .pf-palette {
+    opacity: 1;
+    transform: translateY(0) scale(1);
 }
 
 .pf-palette__input-row {
@@ -1026,7 +1092,18 @@ fluent-anchor[appearance="hypertext"]:hover {
         0 24px 80px rgba(0, 0, 0, 0.3);
     font-family: var(--pf-font-sans);
     overflow: hidden;
-    animation: paletteIn 0.2s var(--pf-ease-out);
+    /* Same open/close pattern as .pf-palette — both transitions run via
+       the parent .pf-overlay.is-open class, so closing animates too. */
+    opacity: 0;
+    transform: translateY(-16px) scale(0.96);
+    transition:
+        opacity 0.32s var(--pf-ease-out),
+        transform 0.4s var(--pf-ease-out);
+}
+
+.pf-overlay.is-open .pf-help {
+    opacity: 1;
+    transform: translateY(0) scale(1);
 }
 
 .pf-help__header {
@@ -2264,7 +2341,16 @@ html.theme-dark .pf-xml-code .token.regex {
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    animation: paletteIn 0.2s var(--pf-ease-out);
+    opacity: 0;
+    transform: translateY(-16px) scale(0.96);
+    transition:
+        opacity 0.32s var(--pf-ease-out),
+        transform 0.4s var(--pf-ease-out);
+}
+
+.pf-overlay.is-open .pf-xml-dialog {
+    opacity: 1;
+    transform: translateY(0) scale(1);
 }
 
 .pf-xml-dialog__header {
@@ -2747,26 +2833,33 @@ html.theme-dark .pf-xml-code .token.regex {
        page controls (e.g. wizard Back/Next/Finish buttons at the bottom
        of /wizard/* on small screens). */
     bottom: 1.5rem;
-    width: 3rem;
-    height: 3rem;
+    width: 3.25rem;
+    height: 3.25rem;
     display: none;
     align-items: center;
     justify-content: center;
     padding: 0;
-    background: var(--pf-chrome-bg);
-    backdrop-filter: blur(14px) saturate(160%);
-    -webkit-backdrop-filter: blur(14px) saturate(160%);
-    border: 1px solid var(--pf-chrome-border);
+    /* Solid accent gradient instead of glass — the previous translucent
+       chrome with subtle border washed out on light backgrounds and read
+       as "decorative", not "press me". Now it pops as a dedicated CTA. */
+    background: var(--pf-accent-gradient);
+    border: 0;
     border-radius: 50%;
-    box-shadow: var(--pf-card-shadow);
-    color: var(--pf-accent);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.18) inset,
+        0 8px 24px rgba(var(--pf-accent-rgb), 0.42),
+        0 2px 6px rgba(0, 0, 0, 0.18);
+    /* White plane glyph with its own gradient drop-shadow gives the
+       button a "lit launchpad" feel without burying the icon in a halo. */
+    color: #ffffff;
     cursor: pointer;
     z-index: 60;
     transition:
-        transform 0.25s var(--pf-ease),
-        box-shadow 0.25s var(--pf-ease),
-        opacity 0.25s var(--pf-ease);
-    opacity: 0.9;
+        transform 0.25s var(--pf-ease-out),
+        box-shadow 0.3s var(--pf-ease-out),
+        opacity 0.25s var(--pf-ease),
+        filter 0.2s var(--pf-ease);
+    opacity: 1;
 }
 
 .pf-go-top.is-visible {
@@ -2793,10 +2886,25 @@ body:has(.pf-xml-fab) .pf-go-top {
 }
 
 .pf-go-top:hover {
-    opacity: 1;
-    transform: translateY(-2px);
-    box-shadow: var(--pf-card-shadow-hover);
-    border-color: var(--pf-accent);
+    transform: translateY(-4px) scale(1.04);
+    filter: brightness(1.1) saturate(1.1);
+    box-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.22) inset,
+        0 14px 36px rgba(var(--pf-accent-rgb), 0.55),
+        0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.pf-go-top:active {
+    transform: translateY(0) scale(0.96);
+    transition:
+        transform 0.1s var(--pf-ease),
+        box-shadow 0.1s var(--pf-ease),
+        filter 0.1s var(--pf-ease);
+}
+
+.pf-go-top:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
 }
 
 .pf-go-top:active .pf-go-top__plane {
@@ -2804,12 +2912,15 @@ body:has(.pf-xml-fab) .pf-go-top {
 }
 
 .pf-go-top__plane {
-    width: 1.375rem;
-    height: 1.375rem;
+    width: 1.5rem;
+    height: 1.5rem;
     display: block;
     /* Nose-up default orientation so the glyph looks ready to launch. */
     transform: rotate(-45deg);
-    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6)) drop-shadow(0 0 8px var(--pf-accent));
+    /* On the new accent-gradient background a halo isn't needed — instead
+       give the glyph a soft inner glow + a subtle drop shadow underneath
+       so it reads as engraved on the button. */
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.25));
 }
 
 @keyframes pfGoTopTakeoff {
@@ -3564,5 +3675,59 @@ body:has(.pf-xml-fab) .pf-go-top {
 @media (prefers-reduced-motion: reduce) {
     .pf-404__icon {
         animation: none;
+    }
+}
+
+/* ─── View Transitions API ────────────────────────────────────
+   Browser-native snapshot crossfade between routes, driven from
+   js/view-transitions.js (it intercepts internal anchor clicks and
+   wraps Blazor's navigation in document.startViewTransition()).
+
+   The default UA crossfade is 250ms linear "old fades out, new fades
+   in" — it works but reads as plain. We replace it with directional
+   slide+fade keyframes so navigation feels intentional: the page that
+   leaves drifts up and dissolves, the page that enters lifts in from
+   below. Mirrors the wave-of-paper feel of the rest of the brand.
+
+   Falls back silently in browsers that don't implement the spec
+   (Firefox at time of writing) — the pseudo-elements simply don't
+   exist there and Blazor's normal click handler runs the navigation
+   without any crossfade. No flicker, just instant nav. */
+::view-transition-old(root) {
+    animation: 0.32s cubic-bezier(0.4, 0, 1, 1) both pfViewOldOut;
+}
+
+::view-transition-new(root) {
+    animation: 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both pfViewNewIn;
+}
+
+@keyframes pfViewOldOut {
+    to {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.99);
+    }
+}
+
+@keyframes pfViewNewIn {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.992);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation-duration: 0.18s;
+        animation-delay: 0s;
+    }
+
+    @keyframes pfViewOldOut {
+        to { opacity: 0; }
+    }
+
+    @keyframes pfViewNewIn {
+        from { opacity: 0; }
     }
 }
