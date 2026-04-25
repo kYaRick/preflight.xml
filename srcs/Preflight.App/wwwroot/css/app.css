@@ -1710,20 +1710,15 @@ fluent-select {
     stroke-linecap: round;
 }
 
+/* Optional faint guide-line so the user can see where the plane WILL fly.
+   Kept very low contrast (opacity ~0.08) so it does NOT read as "trail
+   already drawn ahead of the plane" — the bright trail rendered on top
+   is the one that actually tracks progress. No fade-in animation: the
+   guide should be there from frame 1 and never compete for attention. */
 .runway-track {
     stroke: var(--pf-border-strong);
-    stroke-width: 2;
-    opacity: 0;
-    /* fades in smoothly */
-    animation: trackFadeIn 0.5s ease-out 0.1s forwards;
-}
-
-@keyframes trackFadeIn {
-    to {
-        opacity: 0.25;
-    }
-
-    /* subtle guide line */
+    stroke-width: 1.5;
+    opacity: 0.08;
 }
 
 /* Progressive fill trail (0 → 100% one-shot). It's a status bar - once
