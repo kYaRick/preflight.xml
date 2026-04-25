@@ -597,10 +597,6 @@ fluent-button[appearance="accent"]:active::part(control) {
     align-items: center;
     justify-content: center;
     flex: 0 0 auto;
-    /* Width was 2.75rem - the emoji glyph plus its drop-shadow blur bled past
-       the right edge and got shaved off by the header's rounded clip. Extra
-       horizontal padding and `overflow: visible` give the glyph room to
-       breathe without shifting neighbours. */
     min-width: 2.75rem;
     height: 2.75rem;
     padding: 0 0.375rem;
@@ -608,11 +604,6 @@ fluent-button[appearance="accent"]:active::part(control) {
     font-size: 1.75rem;
     line-height: 1;
     text-decoration: none;
-    transition: transform 0.2s var(--pf-ease);
-}
-
-.pf-brand:hover {
-    transform: scale(1.08);
 }
 
 .pf-brand:focus-visible {
@@ -623,10 +614,16 @@ fluent-button[appearance="accent"]:active::part(control) {
 
 /* Brand mark SVG - shared by header (.pf-brand), hero (.pf-hero-icon)
    and 404 (.pf-404__icon). Sizing/glow is parent-driven so each context
-   can pick what fits; base is just a smooth-rendering block. */
+   can pick what fits; base is just a smooth-rendering block.
+
+   No hover animation here: the earlier scale(1.08) on `.pf-brand` plus
+   translate(2px,-1px) on the inner SVG pushed the icon's drop-shadow
+   past the header's rounded clip on every hover - visually clipping
+   the logo. A brand mark should feel anchored, not "react". The
+   browser-default cursor on <a> and the focus-visible outline above
+   carry all the affordance this needs. */
 .pf-brand-icon {
     display: block;
-    transition: transform 0.25s var(--pf-ease);
 }
 
 /* Header pill: fixed compact size that fits the 2.75rem header chip. */
@@ -634,10 +631,6 @@ fluent-button[appearance="accent"]:active::part(control) {
     width: 2rem;
     height: 2rem;
     filter: drop-shadow(0 2px 10px var(--pf-accent-ring));
-}
-
-.pf-brand:hover .pf-brand-icon {
-    transform: translateX(2px) translateY(-1px);
 }
 
 /* Hero (.pf-hero-title--with-icon) - icon scales with the surrounding
@@ -1756,8 +1749,19 @@ fluent-select {
 .runway-trail {
     stroke: url(#runwayGradient);
     stroke-width: 2;
-    stroke-dasharray: 100%;
-    stroke-dashoffset: calc(100% - var(--blazor-load-percentage, 0%));
+    /* The <path> declares pathLength="100", so unitless 100 = full path.
+       Dasharray=100 paints the entire path as one dash; dashoffset shifts
+       the dash backwards to reveal it left-to-right.
+
+       We cannot reuse the percentage var directly: in stroke-dasharray /
+       stroke-dashoffset, % resolves to the viewport-diagonal length
+       (~sqrt((400² + 60²) / 2) ≈ 286 here), NOT the path length. The plane
+       below uses offset-distance: <%>, which IS path-relative. Without
+       converting the percentage to a unitless value the trail outruns the
+       plane. The `/ 1%` trick collapses the percentage unit (50% / 1% =
+       50), giving us a path-relative offset that stays in sync. */
+    stroke-dasharray: 100;
+    stroke-dashoffset: calc(100 - var(--blazor-load-percentage, 0%) / 1%);
     stroke-linecap: round;
     filter: drop-shadow(0 0 4px var(--pf-accent));
     opacity: 0.85;
@@ -2484,7 +2488,6 @@ html.theme-dark .pf-xml-code .token.regex {
         transform: none !important;
     }
 
-    .pf-brand:hover,
     fluent-button[appearance="accent"]:hover::part(control),
     .fluent-nav-link:hover {
         transform: none !important;
@@ -3469,8 +3472,15 @@ html.theme-dark .pf-xml-code .token.regex {
 }
 
 @keyframes pf-404-bob {
-    0%, 100% { transform: translateY(0) rotate(0); }
-    50%      { transform: translateY(-10px) rotate(-3deg); }
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(-3deg);
+    }
 }
 
 /* Subtle dashed flight trail behind the hero - visually echoes the
@@ -3515,5 +3525,7 @@ html.theme-dark .pf-xml-code .token.regex {
 
 /* Respect users who opted out of motion. */
 @media (prefers-reduced-motion: reduce) {
-    .pf-404__icon { animation: none; }
+    .pf-404__icon {
+        animation: none;
+    }
 }

@@ -1,6 +1,28 @@
-<Router AppAssembly="@typeof(App).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+@*
+    Why <NotFound> template instead of NotFoundPage="typeof(Pages.NotFound)":
+    NotFoundPage navigates the URL to the page's @page route ("/404"),
+    which on .NET 10 preview WASM standalone has surfaced edge cases
+    where unmatched paths (e.g. /wizard/404) silently fall through with
+    no render at all. The legacy <NotFound> template renders the page
+    INLINE without changing the URL - bulletproof since Blazor 3.x and
+    preserves the original URL so users can fix the address bar or hit
+    back cleanly. LayoutView wraps the page in MainLayout (same chrome
+    as every other route), since the @page directive on Pages.NotFound
+    only applies when the router enters via that route, not via the
+    template fallback.
+*@
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            @* Inside the Router's NotFound template body - Razor resolves
+               <NotFound /> to the Preflight.App.Pages.NotFound component
+               (imported via _Imports.razor), not back to the template
+               parameter, because we're inside a child element scope. *@
+            <NotFound />
+        </LayoutView>
+    </NotFound>
 </Router>

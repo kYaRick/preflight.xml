@@ -72,9 +72,14 @@
     private string? _importMessage;
     private MessageIntent _importIntent = MessageIntent.Info;
 
-    private void GoToWizard() => GoTo(AppMode.Wizard, "/wizard");
-    private void GoToAdvanced() => GoTo(AppMode.Advanced, "/advanced");
-    private void GoToDocs() => GoTo(AppMode.Docs, "/docs");
+    // Paths are passed straight to Nav.NavigateTo, which resolves them
+    // against <base href>. They MUST be base-relative (no leading slash) -
+    // on a subpath deploy (e.g. /preflight.xml/) URI-merge with a leading
+    // slash drops the base path and the browser jumps to the host root.
+    // Same rule as in CommandPalette.BuildCommands().
+    private void GoToWizard() => GoTo(AppMode.Wizard, "wizard");
+    private void GoToAdvanced() => GoTo(AppMode.Advanced, "advanced");
+    private void GoToDocs() => GoTo(AppMode.Docs, "docs");
 
     private void GoTo(AppMode mode, string path)
     {

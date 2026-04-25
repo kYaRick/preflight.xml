@@ -3,9 +3,21 @@
 @inject NavigationManager Nav
 @inject ModeService Mode
 
-<PageTitle>@L["Wizard.Guided.Title"] · Step @Step</PageTitle>
+@*
+    Out-of-range Step (e.g. /wizard/guided/0 or /wizard/guided/999) → render
+    the global NotFound page inline. The :int constraint already filters
+    non-numeric values so the Router's <NotFound> handles those, but the
+    range check has to live here.
+*@
+@if (Step < 1 || Step > TotalSteps)
+{
+    <NotFound />
+}
+else
+{
+    <PageTitle>@L["Wizard.Guided.Title"] · Step @Step</PageTitle>
 
-<FluentStack Orientation="Orientation.Vertical" HorizontalGap="24" Style="padding: 48px 16px; max-width: 1080px; margin: 0 auto;">
+    <FluentStack Orientation="Orientation.Vertical" HorizontalGap="24" Style="padding: 48px 16px; max-width: 1080px; margin: 0 auto;">
 
     @*
         Step indicator - "Step N of M" label on the left, a plane-on-runway
@@ -59,9 +71,8 @@
         case 5:
             <Step_Finish />
             break;
-        default:
-            <FluentMessageBar Intent="MessageIntent.Error">Unknown step.</FluentMessageBar>
-            break;
+        // No default needed - the @if guard at the top of the component
+        // already redirects out-of-range Step values to <NotFound />.
     }
 
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8">
@@ -82,7 +93,8 @@
         }
     </FluentStack>
 
-</FluentStack>
+    </FluentStack>
+}
 
 @code {
     private const int TotalSteps = 5;

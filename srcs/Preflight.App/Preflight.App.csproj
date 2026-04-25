@@ -32,22 +32,37 @@
   </ItemGroup>
 
   <!--
-    🔒 IL Trimmer guard for the vendored UnattendGenerator.
+    🔒 IL Trimmer guards for Newtonsoft-driven JSON deserialization.
 
     Blazor WASM Release publishing trims IL aggressively (default for net8+).
-    UnattendGenerator deserializes Bloatware.json via Newtonsoft `$type`
-    polymorphism - concrete types are referenced ONLY by string names inside
-    the JSON catalog, so the trimmer can't see those references and strips
-    them. At runtime Newtonsoft fails with
-        "Could not load type 'Schneegans.Unattend.PackageBloatwareStep, UnattendGenerator'"
-    which surfaces as Blazor's "An unhandled error has occurred" UI.
+    Three things in our JSON path are reflection-only and get stripped without
+    explicit roots, each surfacing as a different startup crash:
 
-    Pinning the assembly as a TrimmerRootAssembly preserves every public
-    type inside it. Adds ~150 KB to the published WASM bundle; without this
-    the app crashes on boot the first time anything resolves BloatwareCatalog.
+      1. UnattendGenerator (vendored Schneegans assembly) - Bloatware.json uses
+         Newtonsoft `$type` polymorphism, so concrete BloatwareStep subclasses
+         are referenced only as strings. Without this root:
+             "Could not load type 'Schneegans.Unattend.PackageBloatwareStep,
+              UnattendGenerator'"
+
+      2. System.Collections.Immutable - the catalog deserializes into
+         ImmutableList<BloatwareStep>. Newtonsoft uses ImmutableList.CreateRange
+         via reflection; nothing else calls it directly, so the trimmer drops
+         it. Without this root:
+             "Unable to find a constructor to use for type
+              System.Collections.Immutable.ImmutableList`1[BloatwareStep]"
+
+      3. Newtonsoft.Json itself - several reflection paths (ImmutableCollections
+         utils, $type resolver) are reachable only through internals; safest to
+         pin the whole assembly.
+
+    Total cost ~400 KB on top of the published WASM bundle. Without these the
+    app crashes on first construction of UnattendXmlBuilder (singleton -> first
+    page that touches the bloatware catalog).
   -->
   <ItemGroup>
     <TrimmerRootAssembly Include="UnattendGenerator" />
+    <TrimmerRootAssembly Include="System.Collections.Immutable" />
+    <TrimmerRootAssembly Include="Newtonsoft.Json" />
   </ItemGroup>
 
 </Project>

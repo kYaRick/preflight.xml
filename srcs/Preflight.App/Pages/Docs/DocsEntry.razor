@@ -5,9 +5,22 @@
 @inject IStringLocalizer<SharedResources> L
 @inject HttpClient Http
 
-<PageTitle>@_name · @L["Docs.Title"]</PageTitle>
+@*
+    Unknown slug → show the global NotFound page inline. The route MATCHES
+    the {Slug} catch-all, so the Router's <NotFound> template doesn't fire
+    here - we have to guard it ourselves. Inline-render preserves the
+    original URL so the user can correct a typo, and reuses the same
+    Pages.NotFound component for visual consistency with /wizard/404 etc.
+*@
+@if (!IsKnownSection)
+{
+    <NotFound />
+}
+else
+{
+    <PageTitle>@_name · @L["Docs.Title"]</PageTitle>
 
-<div class="pf-docs-entry" style="padding: 16px; max-width: 1400px; margin: 0 auto;">
+    <div class="pf-docs-entry" style="padding: 16px; max-width: 1400px; margin: 0 auto;">
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
         <FluentAnchor Href="docs" Appearance="Appearance.Outline">← @L["Docs.BackToIndex"]</FluentAnchor>
         @if (IsKnownSection)
@@ -115,7 +128,8 @@
             }
         </FluentGridItem>
     </FluentGrid>
-</div>
+    </div>
+}
 
 @code {
     [Parameter] public string Slug { get; set; } = "";

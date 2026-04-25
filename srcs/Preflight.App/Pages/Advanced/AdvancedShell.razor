@@ -9,9 +9,22 @@
 @inject UnattendXmlBuilder XmlBuilder
 @inject IJSRuntime JS
 
-<PageTitle>@L["Advanced.Title"] · preflight.xml</PageTitle>
+@*
+    Unknown {Section} → render the global NotFound page inline. The route
+    matches any string for the catch-all parameter, so the Router's
+    <NotFound> template doesn't fire here. URL is preserved (user can
+    fix the typo without losing history). When Section is empty (just
+    /advanced) we fall through to the normal default ("region").
+*@
+@if (!IsKnownSection)
+{
+    <NotFound />
+}
+else
+{
+    <PageTitle>@L["Advanced.Title"] · preflight.xml</PageTitle>
 
-<div class="pf-advanced-shell" style="padding: 24px 16px; max-width: 1600px; margin: 0 auto;">
+    <div class="pf-advanced-shell" style="padding: 24px 16px; max-width: 1600px; margin: 0 auto;">
     <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
         <FluentLabel Typo="Typography.PageTitle">⚙️ @L["Advanced.Title"]</FluentLabel>
         <FluentSpacer />
@@ -174,6 +187,7 @@
         </div>
     </div>
 }
+}
 
 @code {
     [Parameter] public string? Section { get; set; }
@@ -181,6 +195,13 @@
     // Kept in sync with SectionRegistry so new sections register once and both the
     // nav menu and the route-dispatch switch pick them up automatically.
     private static readonly IReadOnlyList<string> _sections = SectionRegistry.AllSectionIds;
+
+    // True when no Section was specified (default landing on /advanced shows
+    // the first section), or when the supplied Section is a real registered
+    // id. Anything else is a 404 - see the @if guard at the top of markup.
+    private bool IsKnownSection =>
+        string.IsNullOrWhiteSpace(Section) ||
+        _sections.Contains(Section, StringComparer.Ordinal);
 
     // Groups the user has explicitly expanded in addition to the one that owns the
     // active section (that one is always open).
