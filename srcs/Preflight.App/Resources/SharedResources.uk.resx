@@ -1900,7 +1900,7 @@
     <value>Підготовка…</value>
   </data>
   <data name="Wizard.Review.Tweak">
-    <value>Підкрутити в Advanced</value>
+    <value>Доналаштувати</value>
   </data>
 
   <!-- ═══ Advanced side-nav groups ═══════════════════════════ -->
@@ -1917,7 +1917,7 @@
     <value>Пошук у довідці…</value>
   </data>
   <data name="Docs.OpenInAdvanced">
-    <value>Редагувати в Advanced</value>
+    <value>Редагувати</value>
   </data>
   <data name="Docs.ResultsCount">
     <value>{0} з {1}</value>
@@ -1949,7 +1949,7 @@
     <value>Читання файлу…</value>
   </data>
   <data name="Landing.Import.Success">
-    <value>Імпортовано {0}. Відкриваю Advanced editor.</value>
+    <value>Імпортовано {0}. Відкриваю редактор.</value>
   </data>
   <data name="Landing.Import.Partial">
     <value>Частковий імпорт з {0} - частина секцій використає значення за замовчуванням.</value>

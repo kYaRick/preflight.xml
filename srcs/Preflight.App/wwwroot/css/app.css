@@ -1677,22 +1677,25 @@ fluent-select {
 
 .preflight-loader {
     position: relative;
-    transform: none;
     top: auto;
     left: auto;
     /* Fixed geometry so the SVG wave (400x60 viewBox) and the plane's
-       pixel-based offset-path share the same coordinate space. On
-       narrow phones scale the whole loader uniformly. */
+       pixel-based offset-path share the same coordinate space. The CSS
+       offset-path on .plane uses literal pixel coords (0..400), so the
+       loader's pre-transform width MUST stay at 25rem (= 400px) for the
+       plane to land on the runway. On narrow viewports we apply a uniform
+       transform: scale() instead of shrinking width - that keeps the
+       coordinate space intact while still fitting the screen. */
     width: 25rem;
     height: 6.25rem;
-    max-width: 95vw;
     z-index: 2;
-}
-
-@media (max-width: 420px) {
-    .preflight-loader {
-        transform: translate(-50%, -50%) scale(0.8);
-    }
+    /* Uniform downscale so the 400px SVG fits any viewport. The 2rem
+       safety margin on each side keeps the loader off the screen edges
+       on phones (looked stretched edge-to-edge before). transform-origin
+       defaults to center, and #loading-overlay's flex centering keeps
+       the box anchored - no translate() needed. */
+    transform: scale(min(1, calc((100vw - 4rem) / 25rem)));
+    transform-origin: center center;
 }
 
 .runway-wave {
@@ -1749,22 +1752,35 @@ fluent-select {
 .runway-trail {
     stroke: url(#runwayGradient);
     stroke-width: 2;
-    /* The <path> declares pathLength="100", so unitless 100 = full path.
-       Dasharray=100 paints the entire path as one dash; dashoffset shifts
-       the dash backwards to reveal it left-to-right.
-
-       We cannot reuse the percentage var directly: in stroke-dasharray /
-       stroke-dashoffset, % resolves to the viewport-diagonal length
-       (~sqrt((400² + 60²) / 2) ≈ 286 here), NOT the path length. The plane
-       below uses offset-distance: <%>, which IS path-relative. Without
-       converting the percentage to a unitless value the trail outruns the
-       plane. The `/ 1%` trick collapses the percentage unit (50% / 1% =
-       50), giving us a path-relative offset that stays in sync. */
+    stroke-linecap: round;
+    /* Progressive reveal MUST be in path-length space so the trail tip
+       lands exactly under the plane. The plane uses
+         offset-distance: var(--blazor-load-percentage)
+       which is path-length-relative. Mixing in a horizontal-pixel mask
+       for the reveal desyncs them on a wavy path (path length > box
+       width, so x-progress runs ahead of path-progress) - this caused
+       the previous bug where the line drew first and the plane chased
+       it. The path declares pathLength="100", so unitless dash values
+       are percent-of-path-length. The /1% trick collapses the percent
+       unit (e.g. 60% / 1% = 60) so we can pass a path-relative offset
+       where SVG would normally treat % as viewport-diagonal. */
     stroke-dasharray: 100;
     stroke-dashoffset: calc(100 - var(--blazor-load-percentage, 0%) / 1%);
-    stroke-linecap: round;
+    /* Smooth fade-in at the very start of the runway. This mask is
+       STATIC (not progress-dependent) - it always fades the leftmost
+       portion of the SVG box so the trail never starts abruptly at
+       x=0. Combined with the dashoffset reveal above, the result is:
+       trail grows from start to plane, leftmost ~12% softened. */
+    -webkit-mask-image: linear-gradient(to right,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 1) 12%,
+            rgba(0, 0, 0, 1) 100%);
+    mask-image: linear-gradient(to right,
+            rgba(0, 0, 0, 0) 0%,
+            rgba(0, 0, 0, 1) 12%,
+            rgba(0, 0, 0, 1) 100%);
     filter: drop-shadow(0 0 4px var(--pf-accent));
-    opacity: 0.85;
+    opacity: 0.9;
     transition: stroke-dashoffset 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -2589,7 +2605,13 @@ html.theme-dark .pf-xml-code .token.regex {
     position: relative;
     width: 15rem;
     height: 2.25rem;
-    flex: 0 0 auto;
+    /* Allow the runway to shrink (down to ~9rem) on narrow viewports so it
+       stays inside the wrapping step-header row instead of pushing siblings
+       out. The plane's offset-path uses the SVG's 240x36 viewBox via
+       preserveAspectRatio="none", so non-uniform scaling is fine. */
+    flex: 0 1 15rem;
+    min-width: 9rem;
+    max-width: 100%;
 }
 
 .pf-step-runway__wave {
@@ -2724,11 +2746,12 @@ html.theme-dark .pf-xml-code .token.regex {
 .pf-go-top {
     position: fixed;
     right: 1.5rem;
-    /* Sits above the XML-preview FAB when that's mounted (on /advanced) so the
-       two floating controls stack vertically instead of overlapping. On pages
-       without the FAB the button floats a little higher than the corner -
-       harmless, and keeps positions consistent across routes. */
-    bottom: 5.5rem;
+    /* Default: corner. The body:has(.pf-xml-fab) rule below pushes us up
+       on /advanced where the XML preview FAB takes the corner instead.
+       Sitting in the corner everywhere else avoids overlapping inline
+       page controls (e.g. wizard Back/Next/Finish buttons at the bottom
+       of /wizard/* on small screens). */
+    bottom: 1.5rem;
     width: 3rem;
     height: 3rem;
     display: none;
@@ -2753,6 +2776,25 @@ html.theme-dark .pf-xml-code .token.regex {
 
 .pf-go-top.is-visible {
     display: inline-flex;
+}
+
+/* On /advanced the XML-preview FAB occupies the bottom-right corner, so
+   stack the go-top above it instead of overlapping. */
+body:has(.pf-xml-fab) .pf-go-top {
+    bottom: 5.5rem;
+}
+
+@media (max-width: 600px) {
+    .pf-go-top {
+        right: 1rem;
+        bottom: 1rem;
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+    body:has(.pf-xml-fab) .pf-go-top {
+        bottom: 4.25rem;
+    }
 }
 
 .pf-go-top:hover {
