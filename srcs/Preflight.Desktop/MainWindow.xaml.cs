@@ -17,6 +17,7 @@ public partial class MainWindow : Window
     public event EventHandler? FirstPageRendered;
     private bool _firstPageSignaled;
     private DispatcherTimer? _readyTimeoutTimer;
+    private DispatcherTimer? _readyPollTimer;
 
     // Marker we append to the WebView2 user agent so the page can tell it's
     // running inside our shell. Service worker registration is skipped (and
@@ -25,6 +26,10 @@ public partial class MainWindow : Window
     // build was occasionally serving a stale index.html that lacked the
     // /index.html → / URL normalizer, sending Blazor through to NotFound.
     private const string DesktopUserAgentTag = "Preflight-Desktop";
+
+    // Cached wwwroot path used by the WebResourceRequested handler that
+    // serves index.html for bare-host requests.
+    private string _wwwrootPath = string.Empty;
 
     private static readonly Geometry MaximizeGlyph =
         Geometry.Parse("M0,0 H10 V10 H0 Z");
@@ -51,13 +56,27 @@ public partial class MainWindow : Window
 
         await WebView.EnsureCoreWebView2Async(env);
 
-        var wwwrootPath = Path.Combine(
+        _wwwrootPath = Path.Combine(
             AppDomain.CurrentDomain.BaseDirectory, "wwwroot");
 
         WebView.CoreWebView2.SetVirtualHostNameToFolderMapping(
             "preflight.app",
-            wwwrootPath,
+            _wwwrootPath,
             CoreWebView2HostResourceAccessKind.Allow);
+
+        // Bare-host directory requests need explicit handling because
+        // SetVirtualHostNameToFolderMapping doesn't serve a directory index.
+        // The initial navigation targets /index.html (which works directly),
+        // but anything that does a full reload of the current URL after our
+        // /index.html → / normalizer has run lands on / and would otherwise
+        // 404. Concretely: the language switcher calls
+        // NavigationManager.NavigateTo(Uri, forceLoad: true), which used to
+        // break in the desktop shell. Mapping / to index.html here keeps
+        // that path working.
+        WebView.CoreWebView2.AddWebResourceRequestedFilter(
+            "https://preflight.app/",
+            CoreWebView2WebResourceContext.Document);
+        WebView.CoreWebView2.WebResourceRequested += OnRootResourceRequested;
 
         var ua = WebView.CoreWebView2.Settings.UserAgent ?? string.Empty;
         if (!ua.Contains(DesktopUserAgentTag))
@@ -67,6 +86,28 @@ public partial class MainWindow : Window
 
         WebView.CoreWebView2.Settings.AreDevToolsEnabled = false;
         WebView.CoreWebView2.Settings.IsStatusBarEnabled = false;
+
+        // Clear stale service-worker / cached-asset state from prior runs
+        // BEFORE the first navigation. Without this, a SW left over from an
+        // older build was occasionally serving mismatched cached HTML/WASM
+        // bundles — the page would "load" (NavigationCompleted fires) but
+        // Blazor never finished booting, leaving the user staring at the
+        // dark WebView background after the splash dismissed. The desktop
+        // host doesn't need offline caching (files are local via
+        // SetVirtualHostNameToFolderMapping), so wiping these on every
+        // launch is essentially free.
+        try
+        {
+            await WebView.CoreWebView2.Profile.ClearBrowsingDataAsync(
+                CoreWebView2BrowsingDataKinds.ServiceWorkers
+                | CoreWebView2BrowsingDataKinds.CacheStorage
+                | CoreWebView2BrowsingDataKinds.DiskCache);
+        }
+        catch
+        {
+            // ClearBrowsingDataAsync can throw on unsupported runtime versions;
+            // failing it is non-fatal — the JS-side fallback still cleans up.
+        }
 
         WebView.CoreWebView2.NavigationCompleted += OnNavigationCompleted;
         WebView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
@@ -83,22 +124,47 @@ public partial class MainWindow : Window
     {
         // Show the WebView so the in-page loading overlay is visible behind
         // the splash. The splash itself stays up; we don't dismiss until
-        // preflight:ready arrives (Blazor actually rendered).
+        // either preflight:ready arrives or the DOM poll sees Blazor mount.
         WebView.Visibility = Visibility.Visible;
 
-        // Safety net: only arm AFTER the document has loaded — the previous
-        // version started this on window-load and could fire before WebView2
-        // even cold-started, dismissing the splash to an empty main window
-        // for 5–15s while Blazor was still booting. 15s after document-load
-        // is enough for WASM init + Blazor mount on a slow first run, and
-        // short enough that a hung page doesn't leave the user stranded.
-        if (_readyTimeoutTimer is null && !_firstPageSignaled)
+        if (_firstPageSignaled) return;
+
+        // Two-track readiness detection so we never depend on a single signal:
+        //   1. preflight:ready postMessage from the new index.html — fast path
+        //   2. DOM poll for Blazor's .layout class — backup if a stale cached
+        //      HTML missing the postMessage call ever gets served, or if any
+        //      JS error swallows the postMessage before it reaches the host
+        // Both feed the same SignalFirstPageRendered() which is idempotent.
+        _readyPollTimer ??= new DispatcherTimer(
+            TimeSpan.FromMilliseconds(400),
+            DispatcherPriority.Background,
+            OnReadyPoll,
+            Dispatcher);
+
+        // Hard fallback: 25s after document-load. Generous for a cold WebView2
+        // + WASM boot on a slow disk; short enough that a genuinely broken
+        // page doesn't leave the splash hanging forever.
+        _readyTimeoutTimer ??= new DispatcherTimer(
+            TimeSpan.FromSeconds(25),
+            DispatcherPriority.Normal,
+            (_, _) => SignalFirstPageRendered(),
+            Dispatcher);
+    }
+
+    private async void OnReadyPoll(object? sender, EventArgs e)
+    {
+        if (_firstPageSignaled) return;
+        try
         {
-            _readyTimeoutTimer = new DispatcherTimer(
-                TimeSpan.FromSeconds(15),
-                DispatcherPriority.Normal,
-                (_, _) => SignalFirstPageRendered(),
-                Dispatcher);
+            var result = await WebView.CoreWebView2.ExecuteScriptAsync(
+                "!!document.querySelector('.layout')");
+            // ExecuteScriptAsync returns the JSON-encoded result; for a bool
+            // that's the literal string "true" or "false".
+            if (result == "true") SignalFirstPageRendered();
+        }
+        catch
+        {
+            // Mid-navigation script failures are expected — keep polling.
         }
     }
 
@@ -111,16 +177,37 @@ public partial class MainWindow : Window
         if (msg == "preflight:ready") SignalFirstPageRendered();
     }
 
+    private void OnRootResourceRequested(object? sender, CoreWebView2WebResourceRequestedEventArgs e)
+    {
+        if (e.Request.Uri != "https://preflight.app/") return;
+
+        try
+        {
+            var indexPath = Path.Combine(_wwwrootPath, "index.html");
+            // FileStream ownership transfers to WebView2 — it reads on a
+            // background thread and disposes when finished. No using/await.
+            var stream = File.OpenRead(indexPath);
+            e.Response = WebView.CoreWebView2.Environment.CreateWebResourceResponse(
+                stream, 200, "OK", "Content-Type: text/html; charset=utf-8");
+        }
+        catch
+        {
+            // Leave Response unset — WebView2 falls back to its default 404.
+        }
+    }
+
     private void SignalFirstPageRendered()
     {
         if (_firstPageSignaled) return;
         _firstPageSignaled = true;
+        _readyPollTimer?.Stop();
         _readyTimeoutTimer?.Stop();
         FirstPageRendered?.Invoke(this, EventArgs.Empty);
     }
 
     private void OnClosed(object? sender, EventArgs e)
     {
+        _readyPollTimer?.Stop();
         _readyTimeoutTimer?.Stop();
     }
 
