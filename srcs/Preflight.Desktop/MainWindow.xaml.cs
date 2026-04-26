@@ -163,7 +163,7 @@ public partial class MainWindow : Window
 
         const int margin = 14;
         _bannerWindow.Left = Left + (Width - bw) / 2;
-        _bannerWindow.Top  = Top + Height - bh - margin;
+        _bannerWindow.Top = Top + Height - bh - margin;
     }
 
     private async System.Threading.Tasks.Task<string> GetCultureAsync()
