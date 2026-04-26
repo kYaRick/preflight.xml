@@ -85,5 +85,50 @@ window.preflightFiles = (() => {
     });
   }
 
-  return { download, copyText, pickText };
+  // attachDropZone: bind native HTML5 drag-and-drop events on `el` and stream
+  // the dropped file's text back to .NET via the supplied DotNetObjectReference.
+  // Toggles `is-dragover` while a drag is hovering for CSS feedback. The
+  // depth counter prevents flicker when the cursor crosses child elements
+  // (per-element dragenter/dragleave fires repeatedly on each crossing).
+  // Disposer is stashed on the element itself so detachDropZone can find it.
+  function attachDropZone(el, dotNetRef) {
+    if (!el) return;
+    // Idempotent: remove any prior binding before re-attaching.
+    detachDropZone(el);
+
+    let depth = 0;
+    const handlers = {
+      dragenter: (e) => { e.preventDefault(); depth++; el.classList.add("is-dragover"); },
+      dragover:  (e) => { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; },
+      dragleave: (e) => { e.preventDefault(); depth = Math.max(0, depth - 1); if (depth === 0) el.classList.remove("is-dragover"); },
+      drop: async (e) => {
+        e.preventDefault();
+        depth = 0;
+        el.classList.remove("is-dragover");
+        const file = e.dataTransfer?.files?.[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          await dotNetRef.invokeMethodAsync("OnFileDropped", file.name, text);
+        } catch (err) {
+          await dotNetRef.invokeMethodAsync("OnFileDroppedError", String(err?.message || err));
+        }
+      },
+    };
+
+    for (const [evt, fn] of Object.entries(handlers)) el.addEventListener(evt, fn);
+    el._pfDropZoneCleanup = () => {
+      for (const [evt, fn] of Object.entries(handlers)) el.removeEventListener(evt, fn);
+      el.classList.remove("is-dragover");
+    };
+  }
+
+  function detachDropZone(el) {
+    if (el?._pfDropZoneCleanup) {
+      el._pfDropZoneCleanup();
+      delete el._pfDropZoneCleanup;
+    }
+  }
+
+  return { download, copyText, pickText, attachDropZone, detachDropZone };
 })();

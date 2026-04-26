@@ -86,6 +86,21 @@
     <script>
         window.preflightTheme.apply(window.preflightTheme.get());
 
+        // Restore SPA route from "#__r=" hash. The desktop shell encodes the
+        // original path here when redirecting unknown routes (/wizard,
+        // /docs, ...) to /index.html - see Preflight.Desktop.MainWindow's
+        // OnNavigationStarting. Doing this BEFORE the /index.html → / strip
+        // means a single replaceState lands the canonical route before
+        // Blazor's router reads location.
+        var __pfRestorePrefix = '#__r=';
+        if (location.hash.indexOf(__pfRestorePrefix) === 0) {
+            try {
+                var __pfTarget = decodeURIComponent(
+                    location.hash.slice(__pfRestorePrefix.length));
+                history.replaceState(null, '', __pfTarget);
+            } catch (e) { /* malformed hash - ignore */ }
+        }
+
         // Normalize "<base>/index.html" → "<base>/" so Blazor's router sees the
         // canonical landing route. Required for desktop hosts (WebView2)
         // because SetVirtualHostNameToFolderMapping has no directory-index
@@ -176,7 +191,12 @@
         (() => {
             const overlay = document.getElementById('loading-overlay');
             if (!overlay) return;
-            const MIN_DISPLAY_MS = 2400;
+            // Desktop shell already shows its own splash with the same
+            // bobbing airplane, so the in-page airplane-runway overlay is
+            // a redundant second loader. Drop the minimum display window
+            // so it dismisses the moment Blazor mounts - no artificial
+            // 2.4s wait stacked on top of the splash.
+            const MIN_DISPLAY_MS = PF_IS_DESKTOP ? 0 : 2400;
             const started = Date.now();
 
             const notifyHost = () => {

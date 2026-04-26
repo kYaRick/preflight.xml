@@ -3,6 +3,7 @@
 @inject IStringLocalizer<SharedResources> L
 @inject IJSRuntime JS
 @inject NavigationManager Nav
+@inject ImportModalService ImportModal
 
 <FluentDesignTheme Mode="_themeMode" CustomColor="#6366f1" />
 
@@ -37,6 +38,10 @@
                 <span>kYaRick</span>
             </a>
             <span class="pf-footer-sep">·</span>
+            <button type="button" class="pf-footer-link pf-footer-link--btn" @onclick="() => _changelogOpen = true">
+                @L["Footer.WhatsNew"]
+            </button>
+            <span class="pf-footer-sep">·</span>
             <a class="pf-footer-link" href="https://github.com/kYaRick/preflight.xml/blob/main/LICENSE" target="_blank" rel="noopener">MIT</a>
         </div>
     </FluentFooter>
@@ -55,14 +60,33 @@
 
 <CommandPalette Open="_paletteOpen" OpenChanged="v => _paletteOpen = v" />
 <ShortcutsHelp Open="_helpOpen" OpenChanged="v => _helpOpen = v" />
+<ChangelogModal Open="_changelogOpen" OpenChanged="v => _changelogOpen = v" />
+
+@*
+  Import-XML modal lives here (not on the page that triggers it) so its
+  .pf-overlay backdrop-filter sits in the same stacking context as the
+  page header. Pages open it via ImportModalService.Open(handler) and
+  receive results through the handler they passed in. See
+  Services/ImportModalService.cs for the contract.
+*@
+<ImportXmlModal Open="ImportModal.IsOpen"
+                OpenChanged="OnImportOpenChanged"
+                OnImported="ImportModal.NotifyImportedAsync" />
 
 @code {
     private DesignThemeModes _themeMode = DesignThemeModes.System;
     private bool _paletteOpen;
     private bool _helpOpen;
+    private bool _changelogOpen;
     private bool _showGoTop;
     private DotNetObjectReference<MainLayout>? _selfRef;
     private bool _pendingRouteAnimation;
+
+    private void OnImportOpenChanged(bool open)
+    {
+        if (open) return;
+        ImportModal.Close();
+    }
 
     // Track location to know when a real navigation happened. We keep the
     // listener for future hooks (analytics, scroll restoration, etc.).
@@ -79,7 +103,10 @@
     {
         _lastLocation = Nav.Uri;
         Nav.LocationChanged += OnLocationChanged;
+        ImportModal.StateChanged += OnImportStateChanged;
     }
+
+    private void OnImportStateChanged() => InvokeAsync(StateHasChanged);
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
@@ -170,6 +197,7 @@
     public async ValueTask DisposeAsync()
     {
         Nav.LocationChanged -= OnLocationChanged;
+        ImportModal.StateChanged -= OnImportStateChanged;
         try { await JS.InvokeVoidAsync("preflightKeyboard.unregister"); } catch { /* page unload */ }
         _selfRef?.Dispose();
     }

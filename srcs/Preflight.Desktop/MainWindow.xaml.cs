@@ -46,9 +46,7 @@ public partial class MainWindow : Window
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
-        var userDataFolder = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "Preflight", "WebView2");
+        var userDataFolder = ResolveUserDataFolder();
 
         var env = await CoreWebView2Environment.CreateAsync(
             browserExecutableFolder: null,
@@ -64,19 +62,28 @@ public partial class MainWindow : Window
             _wwwrootPath,
             CoreWebView2HostResourceAccessKind.Allow);
 
-        // Bare-host directory requests need explicit handling because
-        // SetVirtualHostNameToFolderMapping doesn't serve a directory index.
-        // The initial navigation targets /index.html (which works directly),
-        // but anything that does a full reload of the current URL after our
-        // /index.html → / normalizer has run lands on / and would otherwise
-        // 404. Concretely: the language switcher calls
-        // NavigationManager.NavigateTo(Uri, forceLoad: true), which used to
-        // break in the desktop shell. Mapping / to index.html here keeps
-        // that path working.
-        WebView.CoreWebView2.AddWebResourceRequestedFilter(
-            "https://preflight.app/",
-            CoreWebView2WebResourceContext.Document);
-        WebView.CoreWebView2.WebResourceRequested += OnRootResourceRequested;
+        // SPA fallback via NavigationStarting. We can't use WebResourceRequested
+        // here: by design, that event does NOT fire for resources served by
+        // SetVirtualHostNameToFolderMapping (Microsoft confirmed this in the
+        // WebView2Feedback issue #2003) - so our previous handler was dead
+        // code, and the language switcher's full-reload landed on the
+        // "Hmmm… can't reach this page" page because nothing intercepted
+        // bare-host or SPA-route requests.
+        //
+        // NavigationStarting fires for every top-level navigation, including
+        // ones that target the virtual host. The handler cancels requests
+        // for paths that don't map to a real file under wwwroot, then
+        // re-navigates to /index.html - preserving the original SPA route
+        // as a #__r= hash fragment so the in-page boot script can restore
+        // the URL after Blazor mounts.
+        WebView.CoreWebView2.NavigationStarting += OnNavigationStarting;
+
+        // Strip the right-click "Reload / Inspect / View source" context menu
+        // that WebView2 inherits from Edge. The desktop shell shouldn't expose
+        // browser chrome to the user, and the menu also surfaces Edge-branded
+        // entries that look out-of-place against our themed window.
+        WebView.CoreWebView2.Settings.AreDefaultContextMenusEnabled = false;
+        WebView.CoreWebView2.Settings.AreBrowserAcceleratorKeysEnabled = false;
 
         var ua = WebView.CoreWebView2.Settings.UserAgent ?? string.Empty;
         if (!ua.Contains(DesktopUserAgentTag))
@@ -87,21 +94,19 @@ public partial class MainWindow : Window
         WebView.CoreWebView2.Settings.AreDevToolsEnabled = false;
         WebView.CoreWebView2.Settings.IsStatusBarEnabled = false;
 
-        // Clear stale service-worker / cached-asset state from prior runs
-        // BEFORE the first navigation. Without this, a SW left over from an
-        // older build was occasionally serving mismatched cached HTML/WASM
-        // bundles - the page would "load" (NavigationCompleted fires) but
-        // Blazor never finished booting, leaving the user staring at the
-        // dark WebView background after the splash dismissed. The desktop
-        // host doesn't need offline caching (files are local via
-        // SetVirtualHostNameToFolderMapping), so wiping these on every
-        // launch is essentially free.
+        // Clear ONLY service-worker registrations from prior runs. The desktop
+        // host disables SW registration in index.html (PF_IS_DESKTOP branch),
+        // but a SW left active from an older build can still intercept the
+        // current navigation and serve a stale response - that was the "blank
+        // dark page after splash" scenario. We deliberately do NOT clear
+        // DiskCache / CacheStorage here: an earlier version of this code did,
+        // which forced WebView2 to re-prime its HTTP cache on every launch
+        // and made every start after the very first noticeably slower than
+        // the first one. SW is the only piece that can poison the load.
         try
         {
             await WebView.CoreWebView2.Profile.ClearBrowsingDataAsync(
-                CoreWebView2BrowsingDataKinds.ServiceWorkers
-                | CoreWebView2BrowsingDataKinds.CacheStorage
-                | CoreWebView2BrowsingDataKinds.DiskCache);
+                CoreWebView2BrowsingDataKinds.ServiceWorkers);
         }
         catch
         {
@@ -111,6 +116,15 @@ public partial class MainWindow : Window
 
         WebView.CoreWebView2.NavigationCompleted += OnNavigationCompleted;
         WebView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
+        // Mirror the document <title> into Window.Title so the taskbar entry
+        // reflects whatever page Blazor's <PageTitle> currently has set
+        // (Wizard, Docs, Advanced, …). The custom title-bar text stays as
+        // the brand "preflight.xml".
+        WebView.CoreWebView2.DocumentTitleChanged += (_, _) =>
+        {
+            var t = WebView.CoreWebView2.DocumentTitle;
+            if (!string.IsNullOrEmpty(t)) Title = t;
+        };
 
         // Navigate to the index file directly. SetVirtualHostNameToFolderMapping
         // does not auto-serve a directory index, so navigating to the bare host
@@ -122,11 +136,8 @@ public partial class MainWindow : Window
 
     private void OnNavigationCompleted(object? sender, CoreWebView2NavigationCompletedEventArgs e)
     {
-        // Show the WebView so the in-page loading overlay is visible behind
-        // the splash. The splash itself stays up; we don't dismiss until
-        // either preflight:ready arrives or the DOM poll sees Blazor mount.
-        WebView.Visibility = Visibility.Visible;
-
+        // WebView is visible from the start (XAML), so we don't toggle
+        // Visibility here anymore. We only arm the readiness timers.
         if (_firstPageSignaled) return;
 
         // Two-track readiness detection so we never depend on a single signal:
@@ -156,10 +167,20 @@ public partial class MainWindow : Window
         if (_firstPageSignaled) return;
         try
         {
-            var result = await WebView.CoreWebView2.ExecuteScriptAsync(
-                "!!document.querySelector('.layout')");
-            // ExecuteScriptAsync returns the JSON-encoded result; for a bool
-            // that's the literal string "true" or "false".
+            // Defensive readiness check. Earlier versions returned true when
+            // the overlay was simply missing - but it's also missing during
+            // a brief window early in document parsing, which let the splash
+            // dismiss before Blazor had even started rendering. Now we
+            // require Blazor's `.layout` to be in the DOM (proves the SPA
+            // actually mounted) AND the in-page overlay to either be
+            // fading-out (is-done) or fully removed (post-fade cleanup).
+            var script = "(function(){"
+                + "var l=document.querySelector('.layout');"
+                + "if(!l)return false;"
+                + "var o=document.getElementById('loading-overlay');"
+                + "return !o||o.classList.contains('is-done');"
+                + "})()";
+            var result = await WebView.CoreWebView2.ExecuteScriptAsync(script);
             if (result == "true") SignalFirstPageRendered();
         }
         catch
@@ -177,23 +198,58 @@ public partial class MainWindow : Window
         if (msg == "preflight:ready") SignalFirstPageRendered();
     }
 
-    private void OnRootResourceRequested(object? sender, CoreWebView2WebResourceRequestedEventArgs e)
+    private void OnNavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs e)
     {
-        if (e.Request.Uri != "https://preflight.app/") return;
+        // SPA fallback: cancel requests that don't map to a real file under
+        // wwwroot, then redirect to /index.html. Bare-host paths reload
+        // straight to /index.html (URL normalizer in index.html will strip
+        // it back to "/"); deeper SPA routes (/wizard, /docs, …) carry the
+        // original path as a #__r= hash so the boot script can restore it
+        // before Blazor's router reads location.
+        if (string.IsNullOrEmpty(e.Uri)) return;
 
-        try
+        Uri uri;
+        try { uri = new Uri(e.Uri); }
+        catch { return; }
+
+        if (!string.Equals(uri.Host, "preflight.app", StringComparison.OrdinalIgnoreCase))
+            return;
+
+        var pathTrim = uri.AbsolutePath.TrimStart('/');
+
+        // Real file on disk? Let SetVirtualHostNameToFolderMapping serve it.
+        if (pathTrim.Length > 0)
         {
-            var indexPath = Path.Combine(_wwwrootPath, "index.html");
-            // FileStream ownership transfers to WebView2 - it reads on a
-            // background thread and disposes when finished. No using/await.
-            var stream = File.OpenRead(indexPath);
-            e.Response = WebView.CoreWebView2.Environment.CreateWebResourceResponse(
-                stream, 200, "OK", "Content-Type: text/html; charset=utf-8");
+            if (pathTrim.Contains("..", StringComparison.Ordinal)) return;
+            var localPath = Path.Combine(
+                _wwwrootPath,
+                pathTrim.Replace('/', Path.DirectorySeparatorChar));
+            if (File.Exists(localPath)) return;
         }
-        catch
+
+        // Bare host or SPA route - cancel and redirect to /index.html.
+        e.Cancel = true;
+
+        string redirect;
+        if (pathTrim.Length == 0)
         {
-            // Leave Response unset - WebView2 falls back to its default 404.
+            // "/" or "" - clean redirect; the URL normalizer in index.html
+            // will strip "/index.html" back to "/" once the page loads.
+            redirect = "https://preflight.app/index.html" + uri.Query + uri.Fragment;
         }
+        else
+        {
+            // SPA route - encode the original path so the boot script can
+            // replaceState back to it after the document loads, before
+            // Blazor's router reads window.location.
+            var route = uri.AbsolutePath + uri.Query;
+            redirect = "https://preflight.app/index.html#__r="
+                + Uri.EscapeDataString(route);
+        }
+
+        // Defer to next dispatcher pass so the cancellation is observed
+        // before the new navigation begins.
+        Dispatcher.BeginInvoke(() => WebView.CoreWebView2.Navigate(redirect));
     }
 
     private void SignalFirstPageRendered()
@@ -209,6 +265,40 @@ public partial class MainWindow : Window
     {
         _readyPollTimer?.Stop();
         _readyTimeoutTimer?.Stop();
+    }
+
+    /// <summary>
+    /// Picks where WebView2 should keep its profile (cache, localStorage,
+    /// cookies, IndexedDB). Portable-first: stash it next to the executable
+    /// so zipping or copying the install folder takes the user's settings
+    /// along - friendly to portable distribution and Blazor PWA installs.
+    /// Falls back to %LocalAppData% only when the install folder is
+    /// read-only (e.g. someone dropped the exe into Program Files), so a
+    /// privileged install location still works without elevating.
+    /// </summary>
+    private static string ResolveUserDataFolder()
+    {
+        var portable = Path.Combine(AppContext.BaseDirectory, "data", "WebView2");
+        try
+        {
+            Directory.CreateDirectory(portable);
+            // Probe write access - Directory.CreateDirectory succeeds on
+            // read-only targets too, so a real write is the only honest
+            // capability check.
+            var probe = Path.Combine(portable, ".write-probe");
+            File.WriteAllBytes(probe, Array.Empty<byte>());
+            File.Delete(probe);
+            return portable;
+        }
+        catch
+        {
+            // Read-only install location - fall back to per-user state in
+            // %LocalAppData%\Preflight\WebView2. The app still runs; the
+            // user just won't get the portable behaviour.
+            return Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Preflight", "WebView2");
+        }
     }
 
     private void OnStateChanged(object? sender, EventArgs e)

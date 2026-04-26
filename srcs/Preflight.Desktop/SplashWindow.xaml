@@ -14,10 +14,6 @@
     SnapsToDevicePixels="True">
 
     <Window.Resources>
-        <!-- Indeterminate progress shimmer: 160px-wide gradient sliding across
-             the inset progress track (492px = 540 - 24*2 horizontal margin),
-             looped forever. Driven via TranslateTransform so the bar lives in
-             render-only space and never invalidates layout. -->
         <Storyboard x:Key="ShimmerStoryboard" RepeatBehavior="Forever">
             <DoubleAnimation Storyboard.TargetName="ShimmerTransform"
                              Storyboard.TargetProperty="X"
@@ -25,8 +21,6 @@
                              Duration="0:0:1.6" />
         </Storyboard>
 
-        <!-- Gentle vertical bob on the airplane so the splash feels alive
-             instead of frozen during a slow WebView2 spin-up. -->
         <Storyboard x:Key="PlaneBobStoryboard" RepeatBehavior="Forever" AutoReverse="True">
             <DoubleAnimation Storyboard.TargetName="PlaneTransform"
                              Storyboard.TargetProperty="Y"
@@ -46,11 +40,6 @@
         </EventTrigger>
     </Window.Triggers>
 
-    <!--
-    AllowsTransparency=True lets the rounded corners blend into the desktop;
-    in exchange, every visible pixel must come from this border. Drop shadow
-    sits on the border so the rounded shape casts cleanly.
-  -->
     <Border CornerRadius="14"
             Background="{StaticResource PfSurfaceBrush}"
             BorderBrush="{StaticResource PfBorderStrongBrush}"
@@ -65,9 +54,6 @@
         </Border.Effect>
 
         <Grid>
-            <!-- Brand glow: violet radial wash behind the content, mirrors
-                 body::before in app.css. Hit-test off so it can't intercept
-                 the drag-to-move gesture. -->
             <Ellipse Width="520" Height="520"
                      HorizontalAlignment="Right" VerticalAlignment="Top"
                      Margin="0,-220,-200,0"
@@ -81,7 +67,6 @@
                 </Ellipse.Fill>
             </Ellipse>
 
-            <!-- Centered brand: bobbing airplane + product name + tagline. -->
             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
                         Margin="0,0,0,18">
                 <Viewbox Width="84" Height="84">
@@ -108,12 +93,6 @@
                            Margin="0,8,0,0" />
             </StackPanel>
 
-            <!--
-            Bottom block: progress track + status row, both inset 24px from
-            the sides and 18px from the bottom so the rounded splash corners
-            don't chop the indicator ends. The track is its own rounded-end
-            border, fully contained inside the splash content area.
-          -->
             <StackPanel VerticalAlignment="Bottom" Margin="24,0,24,18">
                 <Border Height="2"
                         CornerRadius="1"

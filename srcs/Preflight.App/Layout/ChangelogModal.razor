@@ -1,0 +1,46 @@
+@*
+  "What's new" overlay - renders the embedded CHANGELOG.md (single source of
+  truth shared with GitHub releases) into the same .pf-overlay chrome used
+  by the command palette and shortcuts help.
+
+  The markdown is parsed once via Markdig (cached inside ChangelogService)
+  and emitted as a MarkupString - Markdig's output is HTML-safe by default
+  (no raw HTML pass-through unless explicitly enabled in the pipeline).
+*@
+@inject IStringLocalizer<SharedResources> L
+@inject ChangelogService Changelog
+
+<div class="pf-overlay @(Open ? "is-open" : null)" @onclick="CloseOnBackdrop" aria-hidden="@(Open ? "false" : "true")">
+    <div class="pf-changelog" role="dialog" aria-modal="true" aria-label="@L["Changelog.Title"]" @onclick:stopPropagation="true">
+
+        <div class="pf-changelog__header">
+            <span class="pf-changelog__title">📝 @L["Changelog.Title"]</span>
+            <button type="button" class="pf-changelog__close" aria-label="@L["Common.Close"]" @onclick="Close">✕</button>
+        </div>
+
+        <div class="pf-changelog__body">
+            @* Markdig output is rendered as trusted HTML - content comes from a
+               build-embedded resource (CHANGELOG.md), not user input. *@
+            <article class="pf-changelog__content">
+                @((MarkupString)Changelog.GetHtml())
+            </article>
+        </div>
+
+        <div class="pf-changelog__footer">
+            <a class="pf-changelog__source"
+               href="https://github.com/kYaRick/preflight.xml/blob/main/CHANGELOG.md"
+               target="_blank"
+               rel="noopener">
+                @L["Changelog.ViewOnGitHub"] ↗
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
+
+    private async Task CloseOnBackdrop(MouseEventArgs _) => await Close();
+    private async Task Close() => await OpenChanged.InvokeAsync(false);
+}

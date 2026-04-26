@@ -243,13 +243,37 @@ fluent-header.header {
     max-width: min(87.5rem, 100%);
     width: 100%;
     justify-self: center;
-    background: var(--pf-chrome-bg) !important;
+    /* Header background is INTENTIONALLY more translucent than --pf-chrome-bg
+       (which sits ~0.9 alpha for chip/menu surfaces). The sticky header passes
+       page content underneath as the user scrolls; the backdrop-filter blur
+       only reads as a glass effect when there's enough alpha for the blurred
+       backdrop to show through. ~0.55-0.65 keeps the chrome readable while
+       still letting motion behind it register. */
+    background: linear-gradient(135deg,
+            rgba(241, 245, 249, 0.62) 0%,
+            rgba(241, 245, 249, 0.5) 100%) !important;
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid var(--pf-chrome-border);
     border-radius: var(--pf-radius-lg);
     box-shadow: var(--pf-card-shadow);
     z-index: 50;
+}
+
+html.theme-dark .layout>.header,
+html.theme-dark fluent-header.header {
+    background: linear-gradient(135deg,
+            rgba(36, 40, 69, 0.62) 0%,
+            rgba(36, 40, 69, 0.5) 100%) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+    html:not(.theme-light) .layout>.header,
+    html:not(.theme-light) fluent-header.header {
+        background: linear-gradient(135deg,
+                rgba(36, 40, 69, 0.62) 0%,
+                rgba(36, 40, 69, 0.5) 100%) !important;
+    }
 }
 
 /* Smooth blur tail BELOW the header - a slim, fixed strip sitting right
@@ -750,6 +774,18 @@ fluent-button[appearance="accent"]:active::part(control) {
     color: var(--pf-accent);
 }
 
+/* Footer items rendered as <button> (e.g. "What's new" → opens modal,
+   not a navigable URL) need to look identical to <a> siblings. Strip the
+   default button chrome and inherit the link family typography. */
+.pf-footer-link--btn {
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+}
+
 /* ─── Modernized Fluent outline/hypertext buttons ───────────
    Glass pills that play nice with the new palette. */
 fluent-button[appearance="outline"]::part(control),
@@ -889,9 +925,14 @@ fluent-anchor[appearance="hypertext"]:hover {
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     display: flex;
-    align-items: flex-start;
+    /* Center vertically by default - the previous flex-start + 15vh padding
+       was a Spotlight-style anchor that made bigger info modals (changelog,
+       palette in scroll mode) read as "stuck to the top". 4vh padding keeps
+       a small breathing strip on tall viewports while still letting tall
+       content scroll inside its own modal body. */
+    align-items: center;
     justify-content: center;
-    padding-top: 15vh;
+    padding: 4vh 1rem;
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
@@ -1185,6 +1226,486 @@ fluent-anchor[appearance="hypertext"]:hover {
     text-align: center;
     font-size: 0.75rem;
     color: var(--pf-text-subtle);
+}
+
+/* ─── Changelog modal ────────────────────────────────────────
+   "What's new" overlay rendered from CHANGELOG.md (embedded resource).
+   Mirrors .pf-help / .pf-palette - same chrome family - but wider so
+   release notes have room to breathe and the body scrolls when
+   the changelog grows past one viewport. */
+.pf-changelog {
+    width: min(48rem, 92vw);
+    max-height: 80vh;
+    background: var(--pf-modal-bg);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--pf-modal-border);
+    border-radius: var(--pf-radius-lg);
+    box-shadow:
+        var(--pf-card-highlight),
+        0 24px 80px rgba(0, 0, 0, 0.3),
+        0 0 80px var(--pf-accent-ring);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: var(--pf-font-sans);
+    /* Same open/close pattern as .pf-help / .pf-palette - both transitions
+       run via the parent .pf-overlay.is-open class, so closing animates too. */
+    opacity: 0;
+    transform: translateY(-16px) scale(0.96);
+    transition:
+        opacity 0.32s var(--pf-ease-out),
+        transform 0.4s var(--pf-ease-out);
+}
+
+.pf-overlay.is-open .pf-changelog {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.pf-changelog__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--pf-border);
+    flex: 0 0 auto;
+}
+
+.pf-changelog__title {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--pf-text);
+}
+
+.pf-changelog__close {
+    appearance: none;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--pf-radius-sm);
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    color: var(--pf-text-muted);
+    font-size: 1rem;
+    line-height: 1;
+    transition:
+        background 0.18s var(--pf-ease),
+        color 0.18s var(--pf-ease),
+        border-color 0.18s var(--pf-ease);
+}
+
+.pf-changelog__close:hover {
+    background: var(--pf-surface-2);
+    color: var(--pf-text);
+    border-color: var(--pf-border);
+}
+
+.pf-changelog__close:focus-visible {
+    outline: 2px solid var(--pf-accent);
+    outline-offset: 2px;
+}
+
+.pf-changelog__body {
+    overflow-y: auto;
+    flex: 1 1 auto;
+    padding: 1.25rem 1.5rem;
+}
+
+/* Markdown-rendered content. Markdig emits a flat sequence of <h2>, <h3>,
+   <ul>, <p>, <code>, <a> - so we style them generically inside this
+   scope to keep the changelog consistent without polluting global rules. */
+.pf-changelog__content {
+    color: var(--pf-text);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+}
+
+.pf-changelog__content> :first-child {
+    margin-top: 0;
+}
+
+.pf-changelog__content> :last-child {
+    margin-bottom: 0;
+}
+
+.pf-changelog__content h1,
+.pf-changelog__content h2 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--pf-text);
+    margin: 1.5rem 0 0.5rem;
+    padding-bottom: 0.375rem;
+    border-bottom: 1px solid var(--pf-border);
+}
+
+.pf-changelog__content h3 {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: var(--pf-accent);
+    margin: 1.25rem 0 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.pf-changelog__content h4 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--pf-text-muted);
+    margin: 1rem 0 0.375rem;
+}
+
+.pf-changelog__content p {
+    margin: 0.5rem 0;
+}
+
+.pf-changelog__content ul,
+.pf-changelog__content ol {
+    padding-left: 1.25rem;
+    margin: 0.5rem 0;
+}
+
+.pf-changelog__content li {
+    margin: 0.25rem 0;
+}
+
+.pf-changelog__content a {
+    color: var(--pf-accent);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--pf-accent-ring);
+    transition: color 0.15s var(--pf-ease);
+}
+
+.pf-changelog__content a:hover {
+    color: var(--pf-accent-strong, var(--pf-accent));
+    border-bottom-style: solid;
+}
+
+.pf-changelog__content code {
+    font-family: var(--pf-font-mono);
+    font-size: 0.85em;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-sm);
+    padding: 0.0625rem 0.3125rem;
+}
+
+.pf-changelog__content pre {
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    font-size: 0.8125rem;
+}
+
+.pf-changelog__content pre code {
+    background: transparent;
+    border: 0;
+    padding: 0;
+}
+
+.pf-changelog__content blockquote {
+    margin: 0.75rem 0;
+    padding: 0.5rem 1rem;
+    border-left: 3px solid var(--pf-accent);
+    background: var(--pf-surface-2);
+    color: var(--pf-text-muted);
+    border-radius: 0 var(--pf-radius-sm) var(--pf-radius-sm) 0;
+}
+
+.pf-changelog__content hr {
+    border: 0;
+    border-top: 1px solid var(--pf-border);
+    margin: 1.5rem 0;
+}
+
+.pf-changelog__footer {
+    padding: 0.75rem 1.25rem;
+    border-top: 1px solid var(--pf-border);
+    display: flex;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+}
+
+.pf-changelog__source {
+    color: var(--pf-text-muted);
+    text-decoration: none;
+    font-size: 0.8125rem;
+    transition: color 0.15s var(--pf-ease);
+}
+
+.pf-changelog__source:hover {
+    color: var(--pf-accent);
+}
+
+/* ─── Import XML modal ──────────────────────────────────────
+   Two equally-prominent paths: drop zone (drag-and-drop or click → native
+   picker) and paste pad. Same chrome family as .pf-changelog / .pf-help. */
+.pf-import {
+    width: min(36rem, 92vw);
+    max-height: 86vh;
+    background: var(--pf-modal-bg);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--pf-modal-border);
+    border-radius: var(--pf-radius-lg);
+    box-shadow:
+        var(--pf-card-highlight),
+        0 24px 80px rgba(0, 0, 0, 0.3),
+        0 0 80px var(--pf-accent-ring);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    font-family: var(--pf-font-sans);
+    opacity: 0;
+    transform: translateY(-16px) scale(0.96);
+    transition:
+        opacity 0.32s var(--pf-ease-out),
+        transform 0.4s var(--pf-ease-out);
+}
+
+.pf-overlay.is-open .pf-import {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+.pf-import__header,
+.pf-import__footer {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    flex: 0 0 auto;
+}
+
+.pf-import__header {
+    justify-content: space-between;
+    border-bottom: 1px solid var(--pf-border);
+}
+
+.pf-import__title {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: var(--pf-text);
+}
+
+.pf-import__close {
+    appearance: none;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--pf-radius-sm);
+    width: 2rem;
+    height: 2rem;
+    cursor: pointer;
+    color: var(--pf-text-muted);
+    font-size: 1rem;
+    line-height: 1;
+    transition:
+        background 0.18s var(--pf-ease),
+        color 0.18s var(--pf-ease),
+        border-color 0.18s var(--pf-ease);
+}
+
+.pf-import__close:hover {
+    background: var(--pf-surface-2);
+    color: var(--pf-text);
+    border-color: var(--pf-border);
+}
+
+.pf-import__close:focus-visible {
+    outline: 2px solid var(--pf-accent);
+    outline-offset: 2px;
+}
+
+.pf-import__body {
+    overflow-y: auto;
+    flex: 1 1 auto;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Drop zone - dashed border, big icon, hover/dragover lift. Click anywhere
+   inside opens the native picker as fallback for non-drag environments. */
+.pf-import__dropzone {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 1.5rem 1.25rem;
+    border: 2px dashed var(--pf-border-strong);
+    border-radius: var(--pf-radius-md);
+    background: var(--pf-surface-2);
+    cursor: pointer;
+    transition:
+        border-color 0.2s var(--pf-ease),
+        background 0.2s var(--pf-ease),
+        transform 0.2s var(--pf-ease-out);
+}
+
+.pf-import__dropzone:hover {
+    border-color: var(--pf-accent);
+    background: rgba(var(--pf-accent-rgb), 0.06);
+}
+
+.pf-import__dropzone.is-dragover {
+    border-color: var(--pf-accent);
+    background: rgba(var(--pf-accent-rgb), 0.12);
+    transform: scale(1.01);
+}
+
+.pf-import__dropzone-icon {
+    font-size: 2.25rem;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+}
+
+.pf-import__dropzone-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--pf-text);
+    margin-bottom: 0.25rem;
+}
+
+.pf-import__dropzone-hint {
+    font-size: 0.8125rem;
+    color: var(--pf-text-muted);
+    margin-bottom: 0.875rem;
+}
+
+.pf-import__browse {
+    appearance: none;
+    background: var(--pf-chrome-bg);
+    border: 1px solid var(--pf-border-strong);
+    border-radius: var(--pf-radius-md);
+    color: var(--pf-text);
+    padding: 0.4375rem 0.875rem;
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+        border-color 0.18s var(--pf-ease),
+        background 0.18s var(--pf-ease),
+        color 0.18s var(--pf-ease),
+        transform 0.18s var(--pf-ease);
+}
+
+.pf-import__browse:hover {
+    border-color: var(--pf-accent);
+    color: var(--pf-accent);
+    transform: translateY(-1px);
+}
+
+.pf-import__browse:active {
+    transform: translateY(0);
+}
+
+/* "OR" divider between drop zone and paste pad - two thin lines flanking
+   a centred label. */
+.pf-import__or {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    color: var(--pf-text-subtle);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.pf-import__or-line {
+    flex: 1;
+    height: 1px;
+    background: var(--pf-border);
+}
+
+.pf-import__paste-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.pf-import__paste-title {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--pf-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.pf-import__paste {
+    width: 100%;
+    box-sizing: border-box;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+    color: var(--pf-text);
+    font-family: var(--pf-font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    padding: 0.625rem 0.75rem;
+    resize: vertical;
+    transition:
+        border-color 0.18s var(--pf-ease),
+        box-shadow 0.18s var(--pf-ease);
+}
+
+.pf-import__paste:focus {
+    outline: none;
+    border-color: var(--pf-accent);
+    box-shadow: 0 0 0 3px var(--pf-accent-ring);
+}
+
+.pf-import__status {
+    padding: 0.625rem 0.875rem;
+    border-radius: var(--pf-radius-md);
+    font-size: 0.875rem;
+    line-height: 1.45;
+    border: 1px solid var(--pf-border);
+    background: var(--pf-surface-2);
+    color: var(--pf-text);
+}
+
+.pf-import__status--error {
+    border-left: 3px solid var(--pf-danger);
+}
+
+.pf-import__status--warn {
+    border-left: 3px solid var(--pf-warn);
+}
+
+.pf-import__status--success {
+    border-left: 3px solid var(--pf-accent);
+}
+
+.pf-import__footer {
+    justify-content: flex-end;
+    gap: 0.5rem;
+    border-top: 1px solid var(--pf-border);
+}
+
+.pf-import__secondary {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+    color: var(--pf-text-muted);
+    padding: 0.4375rem 0.875rem;
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+        background 0.18s var(--pf-ease),
+        color 0.18s var(--pf-ease),
+        border-color 0.18s var(--pf-ease);
+}
+
+.pf-import__secondary:hover {
+    background: var(--pf-surface-2);
+    color: var(--pf-text);
+    border-color: var(--pf-border-strong);
 }
 
 /* ─── Section content (Docs + Advanced) ─────────────────────
