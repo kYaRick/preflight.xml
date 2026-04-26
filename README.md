@@ -7,7 +7,7 @@
 <br>
 
 <p>
-  <a href="https://github.com/kYaRick/preflight.xml/releases"><img alt="Version" src="https://img.shields.io/static/v1?label=version&message=v0.1.1-alpha&color=0ea5e9"></a>
+  <a href="https://github.com/kYaRick/preflight.xml/releases"><img alt="Version" src="https://img.shields.io/static/v1?label=version&message=v0.1.2-alpha&color=0ea5e9"></a>
   <a href="https://dotnet.microsoft.com/"><img alt=".NET 10" src="https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white"></a>
   <a href="https://learn.microsoft.com/aspnet/core/blazor/"><img alt="Blazor WASM" src="https://img.shields.io/badge/Blazor-WebAssembly-512BD4?logo=blazor&logoColor=white"></a>
   <a href="https://www.fluentui-blazor.net/"><img alt="Fluent UI" src="https://img.shields.io/badge/Fluent%20UI-Blazor-0078D4?logo=microsoft&logoColor=white"></a>
@@ -21,7 +21,7 @@
 
 > [!WARNING]
 > **Pre-alpha.** The Blazor app is being scaffolded - APIs, UI and file
-> layout can change without notice until `v0.1.1`. Pin to a specific tag
+> layout can change without notice until `v0.1.2`. Pin to a specific tag
 > if you depend on it.
 
 ---
@@ -37,6 +37,22 @@ config never leaves your machine.
 > New to the `autounattend.xml` format? Microsoft's
 > [Unattended Windows Setup Reference](https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/)
 > is the canonical source.
+
+## 🖥️ App showcase
+
+<div align="center">
+  <img src="docs/assets/preflight-showcase.gif" alt="preflight.xml app showcase" width="100%">
+  <sub>UI overview: landing, desktop splash and in-app experience.</sub>
+</div>
+
+<br>
+
+## 🧠 How autounattend.xml works
+
+<div align="center">
+  <img src="docs/assets/preflight-flow.gif" alt="autounattend.xml setup flow" width="100%">
+  <sub>Concept flow: how autounattend.xml answers Windows Setup prompts end-to-end.</sub>
+</div>
 
 ## 🎯 Planned features
 

@@ -1,11 +1,23 @@
 name: 🎁 Release
 
-# Packages the PWA as a self-hostable zip and publishes a GitHub Release.
-# Triggered by pushing a `v*` tag (e.g. v0.1.0) or manually from the Actions tab.
+# Packages two artifact families into one GitHub Release per tag:
 #
-# The released zip is a portable static site: extract and serve `wwwroot/` with
-# any static file server (python http.server, nginx, caddy, IIS, ...). It's
-# also directly installable as a PWA on Windows / macOS / Linux / Android / iOS.
+#   1. PWA archive (zip + tar.gz) - Linux runner. Extract and serve wwwroot/
+#      with any static file server, or install in-browser as a PWA. The
+#      static site itself is platform-agnostic.
+#
+#   2. Windows desktop bundle (Velopack alpha channel) - Windows runner.
+#      Portable.zip for first-time download, plus RELEASES-alpha + full.nupkg
+#      that the in-app UpdateManager reads to deliver auto-updates.
+#      Setup.exe is intentionally skipped (--noInst): we distribute the
+#      portable form only. See docs/releasing.md.
+#
+# The desktop job uses `vpk upload github --merge` so its artifacts attach
+# to the same draft release that the PWA job creates - the user sees one
+# release with both downloads.
+#
+# Triggered by pushing a `v*` tag (e.g. v0.1.0) or manually from the
+# Actions tab.
 
 on:
   push:
@@ -120,7 +132,13 @@ jobs:
             Linux, Android and iOS - no download required, no admin rights, no
             Play Store. Uninstall via your browser's app menu.
 
-            ## 📥 Self-host / offline archive
+            ## 🪟 Windows desktop (portable, auto-updating)
+            Download the Windows portable zip below, unzip anywhere,
+            and run `preflight.xml.exe`. The shell will check GitHub
+            Releases for newer alpha builds in the background and offer
+            a one-click restart when an update is downloaded.
+
+            ## 📥 Self-host / offline PWA archive
             Download the zip below and serve `wwwroot/` with any static server:
 
             ```bash
@@ -139,4 +157,101 @@ jobs:
             before serving. No rebuild required.
 
             ## ✅ Integrity
-            Verify downloads against `SHA256SUMS.txt`.
+            Verify PWA downloads against `SHA256SUMS.txt`. The desktop
+            zip is signed by Velopack's release manifest (RELEASES-alpha)
+            which the auto-updater verifies on each check.
+
+  desktop:
+    name: 🪟 Package Windows desktop
+    needs: package
+    runs-on: windows-latest
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: ⚙️  Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: 💾 Cache NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~\.nuget\packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props', 'global.json') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: 🏷️  Resolve version
+        id: ver
+        shell: bash
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          VERSION="${TAG#v}"
+          echo "tag=$TAG"         >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "::notice title=Desktop release::Packaging $TAG (version $VERSION)"
+
+      - name: 🔧 Install vpk
+        shell: bash
+        run: dotnet tool install -g vpk --version 0.0.1298
+
+      - name: 🚀 Publish desktop (self-contained win-x64)
+        shell: bash
+        run: |
+          dotnet publish srcs/Preflight.Desktop/Preflight.Desktop.csproj \
+            --configuration Release \
+            --runtime win-x64 \
+            --self-contained true \
+            --nologo \
+            --output artifacts/desktop/publish
+
+      - name: 📦 vpk pack (alpha channel, portable-only)
+        shell: bash
+        run: |
+          vpk pack \
+            --packId      preflight.xml \
+            --packTitle   "preflight.xml" \
+            --packAuthors "kYaRick" \
+            --packVersion "${{ steps.ver.outputs.version }}" \
+            --packDir     artifacts/desktop/publish \
+            --mainExe     preflight.xml.exe \
+            --channel     alpha \
+            --runtime     win-x64 \
+            --outputDir   artifacts/desktop/releases \
+            --noInst
+
+      # Velopack labels the portable artifact as `<id>-<channel>-Portable.zip`
+      # (versionless, capital P). For consistency with the rest of the release
+      # asset family - lowercase, version-stamped, runtime-stamped - rename
+      # both the file and its reference in assets.<channel>.json before the
+      # upload step reads them.
+      - name: 📝 Rename portable zip (lowercase + version + runtime)
+        shell: bash
+        run: |
+          cd artifacts/desktop/releases
+          cap="preflight.xml-alpha-Portable.zip"
+          low="preflight.xml-${{ steps.ver.outputs.version }}-alpha-win-x64-portable.zip"
+          if [[ -f "$cap" ]]; then
+            mv "$cap" "$low"
+            perl -pi -e "s|\\Q$cap\\E|$low|g" assets.alpha.json
+            echo "renamed: $cap → $low"
+          fi
+
+      # --merge attaches our artifacts to the draft release the
+      # `package` job already created for this tag. --pre marks it
+      # as a pre-release (matches the alpha channel semantics).
+      - name: 🎁 Upload to GitHub Release (merge with PWA draft)
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          vpk upload github \
+            --outputDir artifacts/desktop/releases \
+            --channel   alpha \
+            --repoUrl   https://github.com/${{ github.repository }} \
+            --tag       ${{ steps.ver.outputs.tag }} \
+            --token     "$GITHUB_TOKEN" \
+            --merge \
+            --pre

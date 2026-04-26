@@ -137,7 +137,14 @@ window.preflightNav = (() => {
   // Route change animation - runs ONLY after Blazor has already committed the
   // new page content. That keeps navigation ownership entirely in Blazor and
   // avoids the router/history desync caused by the old pushState monkey-patch.
+  //
+  // Skipped when the browser supports the View Transitions API: in that case
+  // the click interceptor in view-transitions.js already wraps Blazor's DOM
+  // mutation in document.startViewTransition() and the browser crossfades
+  // the old → new snapshots natively. Running this on top would double-animate
+  // and reintroduce the flicker the View Transition was meant to kill.
   const replayRouteAnim = () => {
+    if (typeof document.startViewTransition === "function") return;
     const root = document.querySelector(".pf-page");
     if (!root) return;
 
@@ -149,39 +156,40 @@ window.preflightNav = (() => {
 
     if (reduce) {
       animateRoot(root, [{ opacity: 0.82 }, { opacity: 1 }], {
-        duration: 180,
+        duration: 200,
         easing: EASE,
         fill: "both",
       });
       return;
     }
 
+    // Bigger numbers than before - the previous values (14px / scale 0.992)
+    // were too subtle to read as "the page changed". Drop the blur (it was
+    // expensive on low-end mobile and only added a smear, not the sense of
+    // motion). Stagger more kids and longer so the page assembles in front
+    // of the user instead of snapping in.
     animateRoot(
       root,
       [
-        {
-          opacity: 0,
-          transform: "translateY(14px) scale(0.992)",
-          filter: "blur(2px)",
-        },
-        { opacity: 1, transform: "translateY(0) scale(1)", filter: "blur(0)" },
+        { opacity: 0, transform: "translateY(28px) scale(0.985)" },
+        { opacity: 1, transform: "translateY(0) scale(1)" },
       ],
-      { duration: 320, easing: EASE, fill: "both" },
+      { duration: 480, easing: EASE, fill: "both" },
     );
 
     const kids = root.querySelectorAll(
-      "h1, h2, .fluent-messagebar, fluent-card, .pf-section__head, .pf-xml-panel",
+      "h1, h2, .fluent-messagebar, fluent-card, .pf-section__head, .pf-xml-panel, fluent-anchor, fluent-button[appearance='accent']",
     );
     kids.forEach((child, i) => {
       animateRoot(
         child,
         [
-          { opacity: 0, transform: "translateY(12px)" },
+          { opacity: 0, transform: "translateY(16px)" },
           { opacity: 1, transform: "translateY(0)" },
         ],
         {
-          duration: 260,
-          delay: Math.min(i, 5) * 36,
+          duration: 380,
+          delay: 60 + Math.min(i, 8) * 50,
           easing: EASE,
           fill: "both",
         },

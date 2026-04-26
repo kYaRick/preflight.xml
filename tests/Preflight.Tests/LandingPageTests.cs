@@ -15,6 +15,7 @@ public sealed class LandingPageTests : TestContext
         Services.AddSingleton<ModeService>();
         Services.AddSingleton<PresetService>();
         Services.AddSingleton<UnattendXmlImporter>();
+        Services.AddScoped<ImportModalService>();
     }
 
     [Fact]

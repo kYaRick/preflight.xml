@@ -32,6 +32,9 @@
   <data name="Common.ScrollToTop">
     <value>Нагору</value>
   </data>
+  <data name="Common.Close">
+    <value>Закрити</value>
+  </data>
   <data name="Nav">
     <value>Перейти</value>
   </data>
@@ -115,6 +118,17 @@
   <!-- ═══ Footer ══════════════════════════════════════════════ -->
   <data name="Footer.BuiltBy">
     <value>Зроблено з любов'ю до 💛України💙</value>
+  </data>
+  <data name="Footer.WhatsNew">
+    <value>Що нового</value>
+  </data>
+
+  <!-- ═══ Changelog modal ═════════════════════════════════════ -->
+  <data name="Changelog.Title">
+    <value>Що нового</value>
+  </data>
+  <data name="Changelog.ViewOnGitHub">
+    <value>Повний журнал змін на GitHub</value>
   </data>
 
   <!-- ═══ Theme switcher ═════════════════════════════════════ -->
@@ -1900,7 +1914,7 @@
     <value>Підготовка…</value>
   </data>
   <data name="Wizard.Review.Tweak">
-    <value>Підкрутити в Advanced</value>
+    <value>Доналаштувати</value>
   </data>
 
   <!-- ═══ Advanced side-nav groups ═══════════════════════════ -->
@@ -1917,7 +1931,7 @@
     <value>Пошук у довідці…</value>
   </data>
   <data name="Docs.OpenInAdvanced">
-    <value>Редагувати в Advanced</value>
+    <value>Редагувати</value>
   </data>
   <data name="Docs.ResultsCount">
     <value>{0} з {1}</value>
@@ -1949,13 +1963,48 @@
     <value>Читання файлу…</value>
   </data>
   <data name="Landing.Import.Success">
-    <value>Імпортовано {0}. Відкриваю Advanced editor.</value>
+    <value>Імпортовано {0}. Відкриваю редактор.</value>
   </data>
   <data name="Landing.Import.Partial">
     <value>Частковий імпорт з {0} - частина секцій використає значення за замовчуванням.</value>
   </data>
   <data name="Landing.Import.Failed">
     <value>Імпорт не вдався: {0}</value>
+  </data>
+
+  <!-- ═══ Import XML modal ═══════════════════════════════════ -->
+  <data name="Import.Title">
+    <value>Імпорт autounattend.xml</value>
+  </data>
+  <data name="Import.DropHere">
+    <value>Перетягни сюди .xml</value>
+  </data>
+  <data name="Import.DropHint">
+    <value>або клацни, щоб відкрити вибір файлу</value>
+  </data>
+  <data name="Import.Browse">
+    <value>Вибрати файл…</value>
+  </data>
+  <data name="Import.Or">
+    <value>або</value>
+  </data>
+  <data name="Import.PasteTitle">
+    <value>Вставити XML</value>
+  </data>
+  <data name="Import.PastePlaceholder">
+    <value>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+&lt;unattend xmlns="urn:schemas-microsoft-com:unattend"&gt;
+  ...
+&lt;/unattend&gt;</value>
+  </data>
+  <data name="Import.ApplyPaste">
+    <value>Застосувати</value>
+  </data>
+  <data name="Import.PasteSourceName">
+    <value>(вставлений XML)</value>
+  </data>
+  <data name="Import.ReadFailed">
+    <value>Не вдалося прочитати файл: {0}</value>
   </data>
 
   <!-- ═══ Windows PE ═════════════════════════════════════════ -->

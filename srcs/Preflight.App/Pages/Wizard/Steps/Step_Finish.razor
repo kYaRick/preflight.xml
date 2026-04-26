@@ -30,7 +30,7 @@
             <FluentMessageBar Intent="MessageIntent.Error" AllowDismiss="true">@_lastError</FluentMessageBar>
         }
 
-        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" VerticalAlignment="VerticalAlignment.Center">
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" VerticalAlignment="VerticalAlignment.Center" Wrap="true" Style="row-gap: 8px;">
             <FluentButton Appearance="Appearance.Accent" OnClick="DownloadXml" Disabled="@_downloading">
                 @if (_downloading)
                 {

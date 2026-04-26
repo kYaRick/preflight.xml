@@ -152,41 +152,51 @@ else
     <span class="pf-xml-fab__count" title="@L["Advanced.Preview.LinesTooltip"]">@_xmlLineCount</span>
 </button>
 
-@if (_expanded)
-{
-    <div class="pf-overlay pf-xml-modal is-open" @ref="_modalOverlay" @onclick="CloseExpanded" role="presentation">
-        <div class="pf-xml-dialog" role="dialog" aria-modal="true" aria-label="@L["Advanced.Preview.Title"]" @onclick:stopPropagation="true">
-            <div class="pf-xml-dialog__header">
-                <span class="pf-xml-dialog__title">@L["Advanced.Preview.Title"] - autounattend.xml</span>
-                <span class="pf-xml-toolbar__meta" title="@L["Advanced.Preview.LinesTooltip"]">@_xmlLineCount @L["Advanced.Preview.Lines"]</span>
-                <div class="pf-xml-dialog__actions">
-                    <button type="button"
-                            class="pf-xml-iconbtn @(_justCopied ? "is-copied" : null)"
-                            title="@(_justCopied ? L["Advanced.Preview.Copied"] : L["Advanced.Preview.Copy"])"
-                            aria-label="@(_justCopied ? L["Advanced.Preview.Copied"] : L["Advanced.Preview.Copy"])"
-                            @onclick="CopyXml">
-                        @(_justCopied ? CheckIcon : CopyIcon)
-                    </button>
-                    <button type="button"
-                            class="pf-xml-iconbtn"
-                            title="@L["Advanced.Preview.Download"]"
-                            aria-label="@L["Advanced.Preview.Download"]"
-                            @onclick="DownloadXml">
-                        @DownloadIcon
-                    </button>
-                    <button type="button"
-                            class="pf-xml-iconbtn"
-                            title="@L["Advanced.Preview.Close"]"
-                            aria-label="@L["Advanced.Preview.Close"]"
-                            @onclick="CloseExpanded">
-                        @CloseIcon
-                    </button>
-                </div>
+@*
+  XML preview modal. Kept ALWAYS mounted (no @if (_expanded) wrapper) so
+  toggling _expanded triggers a CSS class change on a persistent element -
+  that's what fires the .pf-xml-dialog open/close transitions in app.css.
+  The previous @if-based mount/unmount remounted the whole subtree on every
+  toggle, so the browser saw "new element with .is-open already set" and
+  skipped the transition entirely (the user reported "no fade-in here").
+
+  Portal attach (preflightPortal.attach) lifts the overlay out of the
+  .pf-page-enter stacking context so it renders above the sticky header.
+  Done once on first render - moving the same persistent node to <body>
+  doesn't need to be undone.
+*@
+<div class="pf-overlay pf-xml-modal @(_expanded ? "is-open" : null)" @ref="_modalOverlay" @onclick="CloseExpanded" role="presentation" aria-hidden="@(_expanded ? "false" : "true")">
+    <div class="pf-xml-dialog" role="dialog" aria-modal="true" aria-label="@L["Advanced.Preview.Title"]" @onclick:stopPropagation="true">
+        <div class="pf-xml-dialog__header">
+            <span class="pf-xml-dialog__title">@L["Advanced.Preview.Title"] - autounattend.xml</span>
+            <span class="pf-xml-toolbar__meta" title="@L["Advanced.Preview.LinesTooltip"]">@_xmlLineCount @L["Advanced.Preview.Lines"]</span>
+            <div class="pf-xml-dialog__actions">
+                <button type="button"
+                        class="pf-xml-iconbtn @(_justCopied ? "is-copied" : null)"
+                        title="@(_justCopied ? L["Advanced.Preview.Copied"] : L["Advanced.Preview.Copy"])"
+                        aria-label="@(_justCopied ? L["Advanced.Preview.Copied"] : L["Advanced.Preview.Copy"])"
+                        @onclick="CopyXml">
+                    @(_justCopied ? CheckIcon : CopyIcon)
+                </button>
+                <button type="button"
+                        class="pf-xml-iconbtn"
+                        title="@L["Advanced.Preview.Download"]"
+                        aria-label="@L["Advanced.Preview.Download"]"
+                        @onclick="DownloadXml">
+                    @DownloadIcon
+                </button>
+                <button type="button"
+                        class="pf-xml-iconbtn"
+                        title="@L["Advanced.Preview.Close"]"
+                        aria-label="@L["Advanced.Preview.Close"]"
+                        @onclick="CloseExpanded">
+                    @CloseIcon
+                </button>
             </div>
-            <pre class="pf-xml-code language-markup"><code class="language-markup" @ref="_modalCodeEl"></code></pre>
         </div>
+        <pre class="pf-xml-code language-markup"><code class="language-markup" @ref="_modalCodeEl"></code></pre>
     </div>
-}
+</div>
 }
 
 @code {
@@ -433,19 +443,23 @@ else
             catch (JSException) { /* JS module not loaded yet - retried implicitly via next shortcut register */ }
         }
 
+        // Portal-attach the overlay ONCE on first render. Modal is now always
+        // in the DOM (just hidden via opacity/visibility), so we move it to
+        // <body> at boot to escape the .pf-page-enter stacking context.
+        // Subsequent renders don't need to re-attach.
+        if (firstRender)
+        {
+            try { await JS.InvokeVoidAsync("preflightPortal.attach", _modalOverlay); }
+            catch { /* ref not yet attached - rare; will recover on next render */ }
+        }
+
         if (!_needsHighlight && !firstRender) return;
         _needsHighlight = false;
 
-        // The sidebar preview was removed (FAB + modal replace it); only re-run
-        // Prism on the modal code element, and only when the modal is open.
+        // Re-run Prism on the modal code element only when the modal is
+        // actively open (no point burning CPU highlighting hidden content).
         if (_expanded)
         {
-            // Lift the overlay out of the .pf-page-enter stacking context so it
-            // renders above the sticky header. Idempotent - safe to call every
-            // render while the modal is open.
-            try { await JS.InvokeVoidAsync("preflightPortal.attach", _modalOverlay); }
-            catch { /* ref not yet attached - will retry on next render */ }
-
             await JS.InvokeVoidAsync("preflightPrism.highlight", _modalCodeEl, _xmlPreview);
         }
     }
@@ -466,14 +480,14 @@ else
         _needsHighlight = true;
     }
 
-    private async Task CloseExpanded()
+    private Task CloseExpanded()
     {
-        // Snap the overlay back to its original Blazor-owned parent BEFORE the
-        // @if flips false - otherwise Blazor's diff can't locate the node to
-        // remove it (we moved it to <body> via preflightPortal.attach).
-        try { await JS.InvokeVoidAsync("preflightPortal.detach", _modalOverlay); }
-        catch { /* already gone - ignore */ }
+        // The overlay stays portal'd to <body> for the whole component
+        // lifetime - no detach needed because the element is no longer
+        // mount/unmounted by an @if. Just toggle the .is-open class via
+        // _expanded and CSS handles the fade-out transition.
         _expanded = false;
+        return Task.CompletedTask;
     }
 
     private async Task CopyXml()

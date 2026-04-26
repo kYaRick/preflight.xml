@@ -16,11 +16,25 @@ set shell := ["bash", "-ceuo", "pipefail"]
 # ─── config ──────────────────────────────────────────────────
 SOLUTION  := "Preflight.slnx"
 PROJECT   := "srcs/Preflight.App/Preflight.App.csproj"
+DESKTOP   := "srcs/Preflight.Desktop/Preflight.Desktop.csproj"
 CONFIG    := "Release"
 OUT_DIR   := "artifacts/app/Preflight.App/publish"
 SITE_DIR  := OUT_DIR + "/wwwroot"
 README    := "README.md"
 BUILD_PROPS := "Directory.Build.props"
+
+# Desktop / Velopack configuration. PackId, executable name and channel
+# must be in lock-step with the values UpdateService.cs reads at runtime,
+# or the auto-update will not find its RELEASES feed.
+DESKTOP_PUBLISH := "artifacts/desktop/publish"
+DESKTOP_RELEASES := "artifacts/desktop/releases"
+DESKTOP_PACK_ID  := "preflight.xml"
+DESKTOP_MAIN_EXE := "preflight.xml.exe"
+DESKTOP_CHANNEL  := "alpha"
+DESKTOP_RUNTIME  := "win-x64"
+DESKTOP_TITLE    := "preflight.xml"
+DESKTOP_AUTHORS  := "kYaRick"
+REPO_URL         := "https://github.com/kYaRick/preflight.xml"
 
 # ─── default ─────────────────────────────────────────────────
 
@@ -125,6 +139,106 @@ publish base="/preflight.xml/":
 serve port="8080":
     @echo "🌐 serving {{SITE_DIR}} at http://localhost:{{port}}/"
     python3 -m http.server {{port}} --directory {{SITE_DIR}}
+
+# ─── desktop release ─────────────────────────────────────────
+#
+# Velopack-based packaging for Preflight.Desktop (WPF + WebView2 shell).
+# Produces a portable zip + the artifacts UpdateManager needs to discover
+# updates (RELEASES-<channel>, *-full.nupkg, optional *-delta.nupkg) -
+# Setup.exe is intentionally skipped via --noInst because the user-
+# facing distribution channel is "download portable, run, auto-update".
+#
+# Local flow:
+#   just desktop-pack            → build → publish → vpk pack
+#   just desktop-release v0.1.2  → above + vpk upload github (needs token)
+#
+# CI uses the same recipes from .github/workflows/release.yml.
+
+# 📦 publish the desktop shell as a self-contained win-x64 single-folder
+#    build into {{DESKTOP_PUBLISH}}. This is what `vpk pack` consumes via
+#    --packDir; running this on its own is useful for local sanity checks
+#    of the .exe before invoking the packager.
+desktop-publish:
+    @echo "🖥️  publishing {{DESKTOP}} ({{CONFIG}}, {{DESKTOP_RUNTIME}}) → {{DESKTOP_PUBLISH}}"
+    -rm -rf {{DESKTOP_PUBLISH}}
+    dotnet publish {{DESKTOP}} \
+        --configuration {{CONFIG}} \
+        --runtime {{DESKTOP_RUNTIME}} \
+        --self-contained true \
+        --nologo \
+        --output {{DESKTOP_PUBLISH}}
+    @echo "✅ desktop publish ready → {{DESKTOP_PUBLISH}}"
+
+# 📥 install the vpk global tool if it's missing. Idempotent - safe to run
+#    every time. Pinned version matches the Velopack PackageReference in
+#    Directory.Packages.props so the SDK and the runtime library agree on
+#    the on-disk RELEASES format.
+desktop-vpk-install:
+    @if ! command -v vpk >/dev/null 2>&1; then \
+      echo "🔧 installing vpk global tool…"; \
+      dotnet tool install -g vpk --version 0.0.1298; \
+    else \
+      echo "✓ vpk already installed ($(vpk --version 2>&1 | head -1))"; \
+    fi
+
+# 📦 pack the published desktop folder into a portable Velopack release.
+#    --noInst   skips Setup.exe (we don't ship a managed installer).
+#    --channel  must match UpdateService.Channel in the desktop code, or
+#               UpdateManager will look for RELEASES-<other> and find none.
+#    Output:
+#      {{DESKTOP_RELEASES}}/preflight.xml-alpha-Portable.zip   ← user download
+#      {{DESKTOP_RELEASES}}/preflight.xml-{ver}-alpha-full.nupkg
+#      {{DESKTOP_RELEASES}}/preflight.xml-{ver}-alpha-delta.nupkg  (when prev exists)
+#      {{DESKTOP_RELEASES}}/RELEASES-alpha                      ← UpdateManager index
+desktop-pack version="": desktop-vpk-install desktop-publish
+    @ver="{{version}}"; \
+    if [[ -z "$ver" ]]; then \
+      version_prefix="$(grep -oPm1 '(?<=<VersionPrefix>)[^<]+' {{BUILD_PROPS}})"; \
+      version_suffix="$(grep -oPm1 '(?<=<VersionSuffix>)[^<]+' {{BUILD_PROPS}} || true)"; \
+      ver="$version_prefix"; \
+      if [[ -n "$version_suffix" ]]; then ver="$ver-$version_suffix"; fi; \
+    fi; \
+    echo "📦 vpk pack ($ver, channel {{DESKTOP_CHANNEL}}) → {{DESKTOP_RELEASES}}"; \
+    vpk pack \
+      --packId           {{DESKTOP_PACK_ID}} \
+      --packTitle        "{{DESKTOP_TITLE}}" \
+      --packAuthors      "{{DESKTOP_AUTHORS}}" \
+      --packVersion      "$ver" \
+      --packDir          {{DESKTOP_PUBLISH}} \
+      --mainExe          {{DESKTOP_MAIN_EXE}} \
+      --channel          {{DESKTOP_CHANNEL}} \
+      --runtime          {{DESKTOP_RUNTIME}} \
+      --outputDir        {{DESKTOP_RELEASES}} \
+      --noInst; \
+    cap="{{DESKTOP_PACK_ID}}-{{DESKTOP_CHANNEL}}-Portable.zip"; \
+    low="{{DESKTOP_PACK_ID}}-$ver-{{DESKTOP_CHANNEL}}-{{DESKTOP_RUNTIME}}-portable.zip"; \
+    if [[ -f "{{DESKTOP_RELEASES}}/$cap" ]]; then \
+      mv "{{DESKTOP_RELEASES}}/$cap" "{{DESKTOP_RELEASES}}/$low"; \
+      perl -pi -e "s|\\Q$cap\\E|$low|g" "{{DESKTOP_RELEASES}}/assets.{{DESKTOP_CHANNEL}}.json"; \
+      echo "📝 renamed Portable.zip → $low (assets manifest patched)"; \
+    fi; \
+    echo "✅ desktop pack ready → {{DESKTOP_RELEASES}}"
+
+# 🚀 upload the packed release to a GitHub draft release matching the tag.
+#    --merge lets us co-exist with the PWA archive that release.yml uploads
+#    in parallel. Token must come from the environment; locally that's a
+#    PAT exported as GITHUB_TOKEN; in CI it's the workflow's auto-provided
+#    secrets.GITHUB_TOKEN.
+desktop-release tag: (desktop-pack)
+    @if [[ -z "${GITHUB_TOKEN:-}" ]]; then \
+      echo "❌ GITHUB_TOKEN not set in environment"; \
+      exit 1; \
+    fi
+    @echo "🎁 vpk upload github → {{REPO_URL}} ({{tag}})"
+    vpk upload github \
+      --outputDir {{DESKTOP_RELEASES}} \
+      --channel   {{DESKTOP_CHANNEL}} \
+      --repoUrl   {{REPO_URL}} \
+      --tag       {{tag}} \
+      --token     "$GITHUB_TOKEN" \
+      --merge \
+      --pre
+    @echo "✅ desktop artifacts uploaded to release {{tag}}"
 
 # ─── maintenance ─────────────────────────────────────────────
 

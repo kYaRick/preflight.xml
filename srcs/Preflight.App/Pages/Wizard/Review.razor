@@ -8,7 +8,7 @@
 
 <PageTitle>@L["Wizard.Review.Title"] · preflight.xml</PageTitle>
 
-<FluentStack Orientation="Orientation.Vertical" HorizontalGap="24" Style="padding: 48px 16px; max-width: 900px; margin: 0 auto;">
+<FluentStack Orientation="Orientation.Vertical" HorizontalGap="24" Style="padding: 48px 16px 96px; max-width: 900px; margin: 0 auto;">
 
     <FluentLabel Typo="Typography.PageTitle">📋 @L["Wizard.Review.Title"]</FluentLabel>
     <FluentLabel Typo="Typography.Subject">@L["Wizard.Review.Subtitle"]</FluentLabel>
@@ -33,7 +33,7 @@
         </FluentMessageBar>
     }
 
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8">
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Wrap="true" Style="row-gap: 8px;">
         <FluentAnchor Href="wizard" Appearance="Appearance.Outline">← @L["Common.Back"]</FluentAnchor>
         <FluentAnchor Href="advanced" Appearance="Appearance.Outline">⚙️ @L["Wizard.Review.Tweak"]</FluentAnchor>
         <FluentSpacer />

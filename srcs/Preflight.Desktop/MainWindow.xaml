@@ -1,0 +1,302 @@
+<Window
+    x:Class="Preflight.Desktop.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+    xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
+    Title="preflight.xml"
+    Width="1080"
+    Height="900"
+    MinWidth="800"
+    MinHeight="600"
+    Background="{StaticResource PfSurfaceDeepBrush}"
+    Foreground="{StaticResource PfTextBrush}"
+    Icon="favicon.ico"
+    ResizeMode="CanResize"
+    SnapsToDevicePixels="True"
+    UseLayoutRounding="True"
+    WindowStartupLocation="CenterScreen"
+    WindowStyle="None">
+
+    <!--
+        WindowChrome enables Win11 aero-snap, drop shadow, and edge resize while
+        letting us paint the title bar ourselves. CaptionHeight is the draggable
+        strip; ResizeBorderThickness is the invisible band along the edges that
+        triggers the resize cursor. UseAeroCaptionButtons=False is mandatory -
+        without it Windows would draw its own min/max/close on top of ours.
+    -->
+    <WindowChrome.WindowChrome>
+        <shell:WindowChrome
+            CaptionHeight="36"
+            CornerRadius="14"
+            GlassFrameThickness="0"
+            ResizeBorderThickness="6"
+            UseAeroCaptionButtons="False" />
+    </WindowChrome.WindowChrome>
+
+    <!--
+        In-window splash animations. The splash is an overlay that sits
+        inside this single window's body (Grid.Row=1), above the WebView
+        but BELOW the title bar (no Grid.RowSpan, so the brand chrome stays
+        visible the whole time). The WebView itself is Visibility=Hidden
+        until SignalFirstPageRendered fires; this avoids the WPF airspace
+        problem (a hidden WebView2 doesn't paint, so the WPF splash
+        overlay can sit on top without being punched through). The
+        trade-off vs the previous two-window approach is that
+        Visibility=Hidden parks WebView2 in Chromium's background-tab
+        throttle, slowing Blazor's mount somewhat - accepted in exchange
+        for the single-window UX.
+    -->
+    <Window.Resources>
+        <Storyboard x:Key="SplashShimmerStoryboard" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="SplashShimmerTransform"
+                Storyboard.TargetProperty="X"
+                From="-160" To="492"
+                Duration="0:0:1.6" />
+        </Storyboard>
+        <Storyboard x:Key="SplashPlaneBobStoryboard" AutoReverse="True" RepeatBehavior="Forever">
+            <DoubleAnimation Storyboard.TargetName="SplashPlaneTransform"
+                Storyboard.TargetProperty="Y"
+                From="0" To="-6"
+                Duration="0:0:1.4">
+                <DoubleAnimation.EasingFunction>
+                    <SineEase EasingMode="EaseInOut" />
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+        </Storyboard>
+    </Window.Resources>
+
+    <Window.Triggers>
+        <EventTrigger RoutedEvent="Loaded">
+            <BeginStoryboard Storyboard="{StaticResource SplashShimmerStoryboard}" />
+            <BeginStoryboard Storyboard="{StaticResource SplashPlaneBobStoryboard}" />
+        </EventTrigger>
+    </Window.Triggers>
+
+    <Border
+        x:Name="RootBorder"
+        Background="{StaticResource PfSurfaceDeepBrush}"
+        BorderBrush="{StaticResource PfBorderBrush}"
+        BorderThickness="1"
+        CornerRadius="14">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!--  ───── Custom title bar ─────  -->
+            <Border
+                x:Name="TitleBarRoot"
+                Grid.Row="0"
+                Height="36"
+                Visibility="Collapsed"
+                Background="{StaticResource PfSurfaceBrush}"
+                BorderBrush="{StaticResource PfBorderBrush}"
+                BorderThickness="0,0,0,1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  Brand mark: airplane in brand gradient + product name.  -->
+                    <StackPanel
+                        Grid.Column="0"
+                        Margin="14,0,0,0"
+                        VerticalAlignment="Center"
+                        Orientation="Horizontal">
+                        <Viewbox Width="16" Height="16">
+                            <Path Data="{StaticResource PfPlaneGeometry}"
+                                Fill="{StaticResource PfBrandGradient}" />
+                        </Viewbox>
+                        <TextBlock
+                            Margin="10,0,0,1"
+                            VerticalAlignment="Center"
+                            FontSize="12"
+                            FontWeight="Medium"
+                            Foreground="{StaticResource PfTextBrush}"
+                            Text="preflight.xml" />
+                    </StackPanel>
+
+                    <!--
+                        Caption buttons. IsHitTestVisibleInChrome opts each one out
+                        of the WindowChrome drag region, so a click on minimize
+                        actually minimizes instead of starting a window-drag.
+                    -->
+                    <StackPanel
+                        Grid.Column="2"
+                        shell:WindowChrome.IsHitTestVisibleInChrome="True"
+                        Orientation="Horizontal">
+                        <Button
+                            x:Name="MinimizeButton"
+                            Click="OnMinimizeClick"
+                            Style="{StaticResource PfCaptionButtonStyle}"
+                            ToolTip="Minimize">
+                            <Path
+                                Data="M0,5 H10"
+                                SnapsToDevicePixels="True"
+                                Stroke="{StaticResource PfTextBrush}"
+                                StrokeThickness="1" />
+                        </Button>
+
+                        <Button
+                            x:Name="MaxRestoreButton"
+                            Click="OnMaxRestoreClick"
+                            Style="{StaticResource PfCaptionButtonStyle}"
+                            ToolTip="Maximize">
+                            <Path
+                                x:Name="MaxRestorePath"
+                                Data="M0,0 H10 V10 H0 Z"
+                                Fill="Transparent"
+                                SnapsToDevicePixels="True"
+                                Stroke="{StaticResource PfTextBrush}"
+                                StrokeThickness="1" />
+                        </Button>
+
+                        <Button
+                            x:Name="CloseButton"
+                            Click="OnCloseClick"
+                            Style="{StaticResource PfCaptionCloseButtonStyle}"
+                            ToolTip="Close">
+                            <Path
+                                Data="M0,0 L10,10 M10,0 L0,10"
+                                SnapsToDevicePixels="True"
+                                Stroke="{StaticResource PfTextBrush}"
+                                StrokeThickness="1" />
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!--
+                ───── WebView host ─────
+                Hidden until the in-window splash dismisses. WebView2 is a
+                Win32 child HWND that ignores WPF airspace, so the only
+                reliable way to keep a WPF visual (the splash overlay
+                below) on top without punch-through is to disable the
+                WebView2 renderer. Visibility=Hidden does that -
+                CoreWebView2Controller.IsVisible flips to false. JavaScript
+                still runs (per WebView2's contract), so Blazor can mount
+                in the background, but Chromium throttles requestAnimationFrame
+                and layout while hidden, so mount is slower than with a
+                visible WebView. Accepted trade-off for single-window UX.
+            -->
+            <Grid Grid.Row="1">
+                <wv2:WebView2
+                    x:Name="WebView"
+                    Visibility="Hidden"
+                    DefaultBackgroundColor="#14152A" />
+
+                <!--
+                    ───── In-window splash overlay ─────
+                    Sits inside the body (Grid.Row=1, NOT spanning the title
+                    bar), above the WebView in the visual tree so it
+                    visually covers it. The WebView is Visibility=Hidden
+                    while this overlay is up, so there's no WPF airspace
+                    conflict - overlay's WPF visuals render normally on top
+                    of nothing (HWND not painting). Title bar stays visible
+                    above this overlay throughout, so the chrome doesn't
+                    "jump in" when the splash dismisses - single-window
+                    feel from launch to ready.
+                -->
+                <Border x:Name="SplashOverlay"
+                    Background="{StaticResource PfSurfaceDeepBrush}">
+                    <Grid>
+                        <Ellipse Width="640" Height="640"
+                            HorizontalAlignment="Right" VerticalAlignment="Top"
+                            Margin="0,-260,-220,0"
+                            IsHitTestVisible="False"
+                            Opacity="0.55">
+                            <Ellipse.Fill>
+                                <RadialGradientBrush>
+                                    <GradientStop Color="#FFA855F7" Offset="0" />
+                                    <GradientStop Color="#006D28D9" Offset="1" />
+                                </RadialGradientBrush>
+                            </Ellipse.Fill>
+                        </Ellipse>
+
+                        <Grid Margin="26,14,26,10">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <Grid Grid.Row="0">
+                                <StackPanel VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,0,0,6">
+                                    <Viewbox Width="84" Height="84">
+                                        <Path Data="{StaticResource PfPlaneGeometry}"
+                                            Fill="{StaticResource PfBrandGradient}"
+                                            RenderTransformOrigin="0.5,0.5">
+                                            <Path.RenderTransform>
+                                                <TranslateTransform x:Name="SplashPlaneTransform" />
+                                            </Path.RenderTransform>
+                                        </Path>
+                                    </Viewbox>
+                                    <TextBlock Text="preflight.xml"
+                                        FontFamily="Segoe UI Variable Display, Segoe UI"
+                                        FontSize="32"
+                                        FontWeight="SemiBold"
+                                        Foreground="{StaticResource PfTextBrush}"
+                                        HorizontalAlignment="Center"
+                                        Margin="0,20,0,0" />
+                                    <TextBlock Text="Visual builder for Windows autounattend.xml"
+                                        FontFamily="Segoe UI Variable, Segoe UI"
+                                        FontSize="12"
+                                        Foreground="{StaticResource PfTextSubtleBrush}"
+                                        HorizontalAlignment="Center"
+                                        Margin="0,9,0,0" />
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Grid.Row="1"
+                                HorizontalAlignment="Stretch"
+                                Margin="0,0,0,2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="2" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <Border Grid.Row="0"
+                                    Height="2"
+                                    CornerRadius="1"
+                                    Background="{StaticResource PfBorderBrush}"
+                                    ClipToBounds="True">
+                                    <Rectangle Width="160" HorizontalAlignment="Left">
+                                        <Rectangle.Fill>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                <GradientStop Color="#006D28D9" Offset="0" />
+                                                <GradientStop Color="#FFA855F7" Offset="0.5" />
+                                                <GradientStop Color="#006D28D9" Offset="1" />
+                                            </LinearGradientBrush>
+                                        </Rectangle.Fill>
+                                        <Rectangle.RenderTransform>
+                                            <TranslateTransform x:Name="SplashShimmerTransform"
+                                                X="-160" />
+                                        </Rectangle.RenderTransform>
+                                    </Rectangle>
+                                </Border>
+
+                                <Grid Grid.Row="1" Margin="0,10,0,0">
+                                    <TextBlock Text="Loading…"
+                                        HorizontalAlignment="Left"
+                                        FontFamily="Segoe UI Variable, Segoe UI"
+                                        FontSize="11"
+                                        Foreground="{StaticResource PfTextSubtleBrush}" />
+                                    <TextBlock x:Name="SplashVersionText"
+                                        HorizontalAlignment="Right"
+                                        FontFamily="Segoe UI Variable, Segoe UI"
+                                        FontSize="11"
+                                        Foreground="{StaticResource PfTextSubtleBrush}" />
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

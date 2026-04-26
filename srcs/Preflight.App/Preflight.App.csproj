@@ -26,6 +26,30 @@
     <ProjectReference Include="..\Preflight.Unattend\Preflight.Unattend.csproj" />
   </ItemGroup>
 
+  <!--
+    📝 CHANGELOG embedded as resource so the in-app "What's new" modal
+    and the GitHub release-notes never drift apart. Source of truth lives
+    at the repo root: docs reference it, contributors edit it there, and
+    the desktop release pipeline pulls the same file. LogicalName pins
+    the resource key the app reads via assembly.GetManifestResourceStream.
+
+    Per-language file (CHANGELOG.uk.md) is loaded when CurrentUICulture's
+    two-letter code matches; otherwise ChangelogService falls back to the
+    canonical CHANGELOG.md. Add a new translation by dropping
+    CHANGELOG.{xx}.md alongside the EN file and adding it here.
+
+    WithCulture="false" is critical: MSBuild treats files named like
+    `*.<lang>.*` (e.g. CHANGELOG.uk.md) as culture-specific resources and
+    routes them into a satellite assembly (uk\Preflight.App.resources.dll)
+    instead of the main one. ChangelogService loads via
+    GetManifestResourceStream on the MAIN assembly, so the resource needs
+    to live there. WithCulture="false" overrides the auto-detection.
+  -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\CHANGELOG.md"    LogicalName="CHANGELOG.md"    WithCulture="false" />
+    <EmbeddedResource Include="..\..\CHANGELOG.uk.md" LogicalName="CHANGELOG.uk.md" WithCulture="false" />
+  </ItemGroup>
+
   <ItemGroup>
     <ServiceWorker Include="wwwroot\service-worker.js"
       PublishedContent="wwwroot\service-worker.published.js" />

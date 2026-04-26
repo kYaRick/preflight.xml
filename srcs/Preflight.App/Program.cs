@@ -26,6 +26,8 @@ builder.Services.AddSingleton<PresetService>();
 builder.Services.AddSingleton<UnattendXmlBuilder>();
 builder.Services.AddSingleton<UnattendXmlImporter>();
 builder.Services.AddSingleton<BloatwareCatalog>();
+builder.Services.AddSingleton<ChangelogService>();
+builder.Services.AddScoped<ImportModalService>();
 
 var host = builder.Build();
 

@@ -32,6 +32,9 @@
   <data name="Common.ScrollToTop">
     <value>Scroll to top</value>
   </data>
+  <data name="Common.Close">
+    <value>Close</value>
+  </data>
   <data name="Nav">
     <value>Go</value>
   </data>
@@ -115,6 +118,17 @@
   <!-- ═══ Footer ══════════════════════════════════════════════ -->
   <data name="Footer.BuiltBy">
     <value>Built with love to 💛Ukraine💙 by</value>
+  </data>
+  <data name="Footer.WhatsNew">
+    <value>What's new</value>
+  </data>
+
+  <!-- ═══ Changelog modal ═════════════════════════════════════ -->
+  <data name="Changelog.Title">
+    <value>What's new</value>
+  </data>
+  <data name="Changelog.ViewOnGitHub">
+    <value>View full changelog on GitHub</value>
   </data>
 
   <!-- ═══ Theme switcher ═════════════════════════════════════ -->
@@ -977,7 +991,8 @@
     <value>Lost in flight</value>
   </data>
   <data name="NotFound.Message">
-    <value>The page you're looking for took off without us. Pick a runway and we'll get you back on course.</value>
+    <value>The page you're looking for took off without us. Pick a runway and we'll get you back on
+      course.</value>
   </data>
   <data name="NotFound.GoHome">
     <value>🏠 Back home</value>
@@ -1955,6 +1970,41 @@
     <value>Import failed: {0}</value>
   </data>
 
+  <!-- ═══ Import XML modal ═══════════════════════════════════ -->
+  <data name="Import.Title">
+    <value>Import autounattend.xml</value>
+  </data>
+  <data name="Import.DropHere">
+    <value>Drop your .xml here</value>
+  </data>
+  <data name="Import.DropHint">
+    <value>or click to open the file picker</value>
+  </data>
+  <data name="Import.Browse">
+    <value>Browse…</value>
+  </data>
+  <data name="Import.Or">
+    <value>or</value>
+  </data>
+  <data name="Import.PasteTitle">
+    <value>Paste XML</value>
+  </data>
+  <data name="Import.PastePlaceholder">
+    <value>&lt;?xml version="1.0" encoding="utf-8"?&gt;
+      &lt;unattend xmlns="urn:schemas-microsoft-com:unattend"&gt;
+      ...
+      &lt;/unattend&gt;</value>
+  </data>
+  <data name="Import.ApplyPaste">
+    <value>Apply</value>
+  </data>
+  <data name="Import.PasteSourceName">
+    <value>(pasted XML)</value>
+  </data>
+  <data name="Import.ReadFailed">
+    <value>Could not read file: {0}</value>
+  </data>
+
   <!-- ═══ Windows PE ═════════════════════════════════════════ -->
   <data name="Pe.Mode.Label">
     <value>PE behaviour</value>
@@ -2002,5 +2052,4 @@
       rem Runs inside Windows PE before install...
       exit 0</value>
   </data>
-
 </root>

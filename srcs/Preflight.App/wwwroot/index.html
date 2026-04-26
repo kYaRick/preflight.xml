@@ -12,7 +12,9 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
 
     <!-- Fluent UI -->
     <link href="_content/Microsoft.FluentUI.AspNetCore.Components/css/reboot.css" rel="stylesheet" />
@@ -39,17 +41,21 @@
     <!-- Open Graph / social previews -->
     <meta property="og:type" content="website" />
     <meta property="og:title" content="preflight.xml" />
-    <meta property="og:description" content="Visual builder for Windows autounattend.xml - in your browser, offline, instantly." />
+    <meta property="og:description"
+        content="Visual builder for Windows autounattend.xml - in your browser, offline, instantly." />
     <meta property="og:url" content="https://kyarick.github.io/preflight.xml/" />
-    <meta property="og:image" content="https://raw.githubusercontent.com/kYaRick/preflight.xml/main/.github/assets/social-card.svg" />
+    <meta property="og:image"
+        content="https://raw.githubusercontent.com/kYaRick/preflight.xml/main/.github/assets/social-card.svg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="preflight.xml" />
     <meta property="og:locale" content="en_US" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="preflight.xml" />
-    <meta name="twitter:description" content="Visual builder for Windows autounattend.xml - in your browser, offline, instantly." />
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/kYaRick/preflight.xml/main/.github/assets/social-card.svg" />
+    <meta name="twitter:description"
+        content="Visual builder for Windows autounattend.xml - in your browser, offline, instantly." />
+    <meta name="twitter:image"
+        content="https://raw.githubusercontent.com/kYaRick/preflight.xml/main/.github/assets/social-card.svg" />
 
     <script type="importmap"></script>
 
@@ -73,11 +79,40 @@
     <script src="js/files.js"></script>
     <script src="js/scroll.js"></script>
     <script src="js/prism-helper.js"></script>
+    <script src="js/view-transitions.js"></script>
 
     <!-- Apply persisted theme to <html> BEFORE CSS paints, so the loading
          screen matches the user's choice even before Blazor boots. -->
     <script>
         window.preflightTheme.apply(window.preflightTheme.get());
+
+        // Restore SPA route from "#__r=" hash. The desktop shell encodes the
+        // original path here when redirecting unknown routes (/wizard,
+        // /docs, ...) to /index.html - see Preflight.Desktop.MainWindow's
+        // OnNavigationStarting. Doing this BEFORE the /index.html → / strip
+        // means a single replaceState lands the canonical route before
+        // Blazor's router reads location.
+        var __pfRestorePrefix = '#__r=';
+        if (location.hash.indexOf(__pfRestorePrefix) === 0) {
+            try {
+                var __pfTarget = decodeURIComponent(
+                    location.hash.slice(__pfRestorePrefix.length));
+                history.replaceState(null, '', __pfTarget);
+            } catch (e) { /* malformed hash - ignore */ }
+        }
+
+        // Normalize "<base>/index.html" → "<base>/" so Blazor's router sees the
+        // canonical landing route. Required for desktop hosts (WebView2)
+        // because SetVirtualHostNameToFolderMapping has no directory-index
+        // behavior - the only way in is to navigate explicitly to the file -
+        // and Blazor would otherwise resolve "/index.html" against base="/"
+        // and fall through to <NotFound>. Harmless on the web (GitHub Pages
+        // already serves index.html as the directory default).
+        if (location.pathname.endsWith('/index.html')) {
+            history.replaceState(null, '',
+                location.pathname.slice(0, -'index.html'.length)
+                + location.search + location.hash);
+        }
     </script>
 </head>
 
@@ -108,7 +143,7 @@
                  background-clip:text quirks across browsers/themes. -->
             <svg class="plane" viewBox="0 0 24 24" aria-hidden="true">
                 <path fill="url(#planeGradient)"
-                      d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1l3.5 1v-1.5L13 19v-5.5z" />
+                    d="M21 16v-2l-8-5V3.5A1.5 1.5 0 0 0 11.5 2A1.5 1.5 0 0 0 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1l3.5 1v-1.5L13 19v-5.5z" />
             </svg>
             <div class="runway-status"></div>
         </div>
@@ -124,7 +159,20 @@
 
     <script src="_framework/blazor.webassembly#[.{fingerprint}].js"></script>
     <script>
-        navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });
+        // Preflight.Desktop tags its WebView2 user agent so the page can tell
+        // it's running inside the WPF shell. We skip service worker registration
+        // there - the desktop has direct file access and doesn't need offline
+        // caching, and a stale SW from an older build was occasionally serving
+        // a cached index.html that lacked the /index.html → / URL normalizer,
+        // sending Blazor through to <NotFound> on intermittent cold starts.
+        const PF_IS_DESKTOP = navigator.userAgent.includes('Preflight-Desktop');
+        if (PF_IS_DESKTOP && navigator.serviceWorker) {
+            navigator.serviceWorker.getRegistrations().then(regs => {
+                regs.forEach(r => r.unregister());
+            }).catch(() => { /* best-effort cleanup */ });
+        } else if (navigator.serviceWorker) {
+            navigator.serviceWorker.register('service-worker.js', { updateViaCache: 'none' });
+        }
 
         // Loader-dismiss policy:
         //   • Normal first visit: keep the loader for at least MIN_DISPLAY_MS
@@ -133,14 +181,28 @@
         //     boots, the router resolves NoMatch and renders <NotFound>.
         //     Holding the loader 2.4s on top of a destination the user can't
         //     reach is hostile - fade as soon as Blazor has mounted.
+        //   • Desktop host: post `preflight:ready` to the WPF shell as the
+        //     overlay starts fading, so its splash window cross-fades to the
+        //     main window in sync with the in-page overlay (no double-loading
+        //     visual, no flash of empty chrome).
         //
         // Uses setInterval (not rAF) so the check fires even if the tab is
         // temporarily hidden - otherwise the overlay could stay up forever.
         (() => {
             const overlay = document.getElementById('loading-overlay');
             if (!overlay) return;
-            const MIN_DISPLAY_MS = 2400;
+            // Desktop shell already shows its own splash with the same
+            // bobbing airplane, so the in-page airplane-runway overlay is
+            // a redundant second loader. Drop the minimum display window
+            // so it dismisses the moment Blazor mounts - no artificial
+            // 2.4s wait stacked on top of the splash.
+            const MIN_DISPLAY_MS = PF_IS_DESKTOP ? 0 : 2400;
             const started = Date.now();
+
+            const notifyHost = () => {
+                try { window.chrome?.webview?.postMessage('preflight:ready'); }
+                catch { /* not in WebView2 - ignore */ }
+            };
 
             const handle = setInterval(() => {
                 const blazorReady = !!document.querySelector('.layout');
@@ -153,6 +215,7 @@
                     // starts fading. Without this, the page-enter would run
                     // silently underneath the loader and be invisible.
                     window.preflightNav?.replayPageAnim?.();
+                    notifyHost();
                     setTimeout(() => overlay.remove(), 500);
                 }
             }, 120);

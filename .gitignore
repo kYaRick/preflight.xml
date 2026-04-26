@@ -111,3 +111,13 @@ node_modules/
 .aider*
 .copilot/
 *.ai-cache
+
+# ─────────────────────────────────────────────────────────────
+#  Preflight.Desktop - build-time generated output only
+# ─────────────────────────────────────────────────────────────
+srcs/Preflight.Desktop/blazor-temp/
+srcs/Preflight.Desktop/wwwroot/
+# Portable WebView2 profile (cache, localStorage, cookies, IndexedDB).
+# Created next to the executable on first run. Already inside ignored
+# bin/ for dev builds, but listed here for any out-of-tree run.
+**/data/WebView2/

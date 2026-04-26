@@ -21,6 +21,7 @@
 | Deploy a new build to the live site           | [publishing.md](publishing.md)                 |
 | Ship a versioned release & self-host archive  | [releasing.md](releasing.md)                   |
 | Resync vendored `Preflight.Unattend`          | [upstream-sync.md](upstream-sync.md)           |
+| Add an entry to the changelog                 | [changelog.md](changelog.md)                   |
 
 ## 🎨 Conventions
 

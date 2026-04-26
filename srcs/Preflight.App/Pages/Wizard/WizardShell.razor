@@ -4,36 +4,40 @@
 
 <PageTitle>@L["Wizard.Title"] · preflight.xml</PageTitle>
 
-<FluentStack Orientation="Orientation.Vertical" HorizontalGap="24" Style="padding: 48px 16px; max-width: 720px; margin: 0 auto;">
+<FluentStack Orientation="Orientation.Vertical" HorizontalGap="24" Style="padding: 48px 16px 96px; max-width: 720px; margin: 0 auto;">
 
     <FluentLabel Typo="Typography.PageTitle">✈️ @L["Wizard.Title"]</FluentLabel>
     <FluentLabel Typo="Typography.Subject">@L["Wizard.Entry.Prompt"]</FluentLabel>
 
     <FluentGrid Spacing="3" Justify="JustifyContent.Center" Style="margin-top: 16px;">
         <FluentGridItem xs="12" sm="6">
-            <FluentCard Class="pf-card--interactive" Style="height: 100%; cursor: pointer;" @onclick='@(() => Nav.NavigateTo("wizard/guided/1"))'>
-                <FluentStack Orientation="Orientation.Vertical" VerticalGap="14" Style="padding: 28px 24px 24px;">
-                    <div style="font-size: 40px; line-height: 1; margin-bottom: 6px;">🧭</div>
-                    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@L["Wizard.Guided.Title"]</FluentLabel>
-                    <FluentLabel Typo="Typography.Body">@L["Wizard.Guided.Description"]</FluentLabel>
-                    <FluentButton Appearance="Appearance.Accent" Style="pointer-events: none;">
-                        @L["Wizard.Guided.Cta"]
-                    </FluentButton>
-                </FluentStack>
-            </FluentCard>
+            <a href="wizard/guided/1" class="pf-mode-card-anchor">
+                <FluentCard Class="pf-card--interactive" Style="height: 100%;">
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="14" Style="padding: 28px 24px 24px;">
+                        <div style="font-size: 40px; line-height: 1; margin-bottom: 6px;">🧭</div>
+                        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@L["Wizard.Guided.Title"]</FluentLabel>
+                        <FluentLabel Typo="Typography.Body">@L["Wizard.Guided.Description"]</FluentLabel>
+                        <FluentButton Appearance="Appearance.Accent" Style="pointer-events: none;">
+                            @L["Wizard.Guided.Cta"]
+                        </FluentButton>
+                    </FluentStack>
+                </FluentCard>
+            </a>
         </FluentGridItem>
 
         <FluentGridItem xs="12" sm="6">
-            <FluentCard Class="pf-card--interactive" Style="height: 100%; cursor: pointer;" @onclick='@(() => Nav.NavigateTo("wizard/presets"))'>
-                <FluentStack Orientation="Orientation.Vertical" VerticalGap="14" Style="padding: 28px 24px 24px;">
-                    <div style="font-size: 40px; line-height: 1; margin-bottom: 6px;">🎛️</div>
-                    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@L["Wizard.Presets.Title"]</FluentLabel>
-                    <FluentLabel Typo="Typography.Body">@L["Wizard.Presets.Description"]</FluentLabel>
-                    <FluentButton Appearance="Appearance.Accent" Style="pointer-events: none;">
-                        @L["Wizard.Presets.Cta"]
-                    </FluentButton>
-                </FluentStack>
-            </FluentCard>
+            <a href="wizard/presets" class="pf-mode-card-anchor">
+                <FluentCard Class="pf-card--interactive" Style="height: 100%;">
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="14" Style="padding: 28px 24px 24px;">
+                        <div style="font-size: 40px; line-height: 1; margin-bottom: 6px;">🎛️</div>
+                        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@L["Wizard.Presets.Title"]</FluentLabel>
+                        <FluentLabel Typo="Typography.Body">@L["Wizard.Presets.Description"]</FluentLabel>
+                        <FluentButton Appearance="Appearance.Accent" Style="pointer-events: none;">
+                            @L["Wizard.Presets.Cta"]
+                        </FluentButton>
+                    </FluentStack>
+                </FluentCard>
+            </a>
         </FluentGridItem>
     </FluentGrid>
 

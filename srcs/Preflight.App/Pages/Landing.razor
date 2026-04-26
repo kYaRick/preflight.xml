@@ -1,10 +1,8 @@
 @page "/"
-@using Preflight.App.Services
 @inject IStringLocalizer<SharedResources> L
 @inject NavigationManager Nav
 @inject ModeService Mode
-@inject UnattendXmlImporter Importer
-@inject IJSRuntime JS
+@inject ImportModalService ImportModal
 
 <PageTitle>preflight.xml</PageTitle>
 
@@ -26,35 +24,31 @@
                       Title="@L["Landing.Wizard.Title"]"
                       Description="@L["Landing.Wizard.Description"]"
                       CtaLabel="@L["Landing.Wizard.Cta"]"
-                      OnSelect="GoToWizard" />
+                      Href="wizard"
+                      OnSelect="@(() => Mode.SwitchMode(AppMode.Wizard))" />
         </FluentGridItem>
         <FluentGridItem xs="12" sm="12" md="4">
             <ModeCard Icon="⚙️"
                       Title="@L["Landing.Advanced.Title"]"
                       Description="@L["Landing.Advanced.Description"]"
                       CtaLabel="@L["Landing.Advanced.Cta"]"
-                      OnSelect="GoToAdvanced" />
+                      Href="advanced"
+                      OnSelect="@(() => Mode.SwitchMode(AppMode.Advanced))" />
         </FluentGridItem>
         <FluentGridItem xs="12" sm="12" md="4">
             <ModeCard Icon="📖"
                       Title="@L["Landing.Docs.Title"]"
                       Description="@L["Landing.Docs.Description"]"
                       CtaLabel="@L["Landing.Docs.Cta"]"
-                      OnSelect="GoToDocs" />
+                      Href="docs"
+                      OnSelect="@(() => Mode.SwitchMode(AppMode.Docs))" />
         </FluentGridItem>
     </FluentGrid>
 
     <FluentStack Orientation="Orientation.Vertical" VerticalGap="10" HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 32px 16px; text-align: center;">
         <FluentLabel Typo="Typography.Body">@L["Landing.Import.Prompt"]</FluentLabel>
-        <FluentButton Appearance="Appearance.Outline" OnClick="OnImportClicked" Disabled="@_importing">
-            @if (_importing)
-            {
-                <text>⏳ @L["Landing.Import.Reading"]</text>
-            }
-            else
-            {
-                <text>📥 @L["Landing.Import.Button"]</text>
-            }
+        <FluentButton Appearance="Appearance.Outline" OnClick="OpenImport">
+            <text>📥 @L["Landing.Import.Button"]</text>
         </FluentButton>
 
         @if (_importMessage is not null)
@@ -68,61 +62,44 @@
 </div>
 
 @code {
-    private bool _importing;
     private string? _importMessage;
     private MessageIntent _importIntent = MessageIntent.Info;
 
-    // Paths are passed straight to Nav.NavigateTo, which resolves them
-    // against <base href>. They MUST be base-relative (no leading slash) -
-    // on a subpath deploy (e.g. /preflight.xml/) URI-merge with a leading
-    // slash drops the base path and the browser jumps to the host root.
-    // Same rule as in CommandPalette.BuildCommands().
-    private void GoToWizard() => GoTo(AppMode.Wizard, "wizard");
-    private void GoToAdvanced() => GoTo(AppMode.Advanced, "advanced");
-    private void GoToDocs() => GoTo(AppMode.Docs, "docs");
+    // The modal itself is rendered by MainLayout (so its overlay sits in
+    // the layout-root stacking context and can blur the sticky header).
+    // Here we only own the trigger and the result handling.
+    private void OpenImport() => ImportModal.Open(HandleImported);
 
-    private void GoTo(AppMode mode, string path)
-    {
-        Mode.SwitchMode(mode);
-        Nav.NavigateTo(path);
-    }
-
-    private async Task OnImportClicked()
+    private async Task HandleImported(ImportXmlModal.ImportPayload payload)
     {
         _importMessage = null;
-        _importing = true;
-        StateHasChanged();
         try
         {
-            // JS opens the OS file picker; returns { name, text } or null on cancel.
-            var file = await JS.InvokeAsync<PickedFile?>("preflightFiles.pickText", ".xml");
-            if (file is null)
-            {
-                _importing = false;
-                return;
-            }
-
-            var result = Importer.Import(file.Text);
-            switch (result.Status)
+            switch (payload.Result.Status)
             {
                 case ImportStatus.Roundtrip:
-                    Mode.ReplaceConfig(result.Config!);
+                    Mode.ReplaceConfig(payload.Result.Config!);
                     _importIntent = MessageIntent.Success;
-                    _importMessage = string.Format(L["Landing.Import.Success"].Value, file.Name);
+                    _importMessage = string.Format(L["Landing.Import.Success"].Value, payload.SourceName);
+                    ImportModal.Close();
                     Nav.NavigateTo("advanced");
                     break;
 
                 case ImportStatus.Partial:
-                    Mode.ReplaceConfig(result.Config!);
+                    Mode.ReplaceConfig(payload.Result.Config!);
                     _importIntent = MessageIntent.Warning;
-                    _importMessage = string.Format(L["Landing.Import.Partial"].Value, file.Name)
-                        + " " + string.Join(" ", result.Messages);
+                    _importMessage = string.Format(L["Landing.Import.Partial"].Value, payload.SourceName)
+                        + " " + string.Join(" ", payload.Result.Messages);
+                    ImportModal.Close();
                     Nav.NavigateTo("advanced");
                     break;
 
                 case ImportStatus.Failed:
+                    // Fallback path: if failure reaches page-level handling,
+                    // close modal so the landing banner is actually visible.
                     _importIntent = MessageIntent.Error;
-                    _importMessage = string.Format(L["Landing.Import.Failed"].Value, string.Join(" ", result.Messages));
+                    _importMessage = string.Format(L["Landing.Import.Failed"].Value, string.Join(" ", payload.Result.Messages));
+                    ImportModal.Close();
                     break;
             }
         }
@@ -131,15 +108,8 @@
             _importIntent = MessageIntent.Error;
             _importMessage = string.Format(L["Landing.Import.Failed"].Value, ex.Message);
         }
-        finally
-        {
-            _importing = false;
-            StateHasChanged();
-        }
+        await InvokeAsync(StateHasChanged);
     }
 
     private void DismissImport() => _importMessage = null;
-
-    // Matches the { name, text } shape returned by preflightFiles.pickText().
-    private sealed record PickedFile(string Name, string Text);
 }

@@ -1,0 +1,138 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!-- OutputType / TargetFramework / UseWPF / AssemblyName / ApplicationIcon
+         are set centrally in Directory.Build.props (Desktop section). -->
+
+    <PropertyGroup>
+        <RootNamespace>Preflight.Desktop</RootNamespace>
+        <!--
+            Custom Main lives in Program.cs so Velopack's install / update
+            hooks can short-circuit before WPF constructs anything. See
+            Program.cs for the rationale.
+        -->
+        <StartupObject>Preflight.Desktop.Program</StartupObject>
+
+        <!--
+            Size-optimisation knobs for the published self-contained bundle.
+
+            PublishReadyToRun=false   - skip ahead-of-time native code
+                                        generation. R2R adds ~15-20 MB to a
+                                        WPF + WebView2 self-contained bundle
+                                        in exchange for a ~200 ms cold-start
+                                        win. For a one-window utility that
+                                        already shows a splash during boot
+                                        the user can't perceive the
+                                        difference - the bytes are worth
+                                        more than the milliseconds.
+
+            (PublishTrimmed is intentionally NOT enabled. WPF uses heavy
+             XAML reflection and Newtonsoft.Json's polymorphic $type
+             deserialisation in UnattendGenerator both fall over with the
+             default IL trimmer. The trade is not worth the breakage risk.)
+        -->
+        <PublishReadyToRun>false</PublishReadyToRun>
+    </PropertyGroup>
+
+    <!--
+        CI restore can run on Linux/macOS, but this project targets
+        net10.0-windows (set centrally). On non-Windows hosts the SDK
+        requires EnableWindowsTargeting=true to restore reference packs.
+    -->
+    <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    </PropertyGroup>
+
+    <!-- Development-only feature flags. Uncomment/comment individual PropertyGroups to toggle. -->
+
+    <!--
+        UPDATE_TEST: Enable update service testing mode.
+        Allows simulating UpdateReady, dry-run restart, and env-based test configuration.
+        Only compiled in Debug builds. Remove this PropertyGroup to disable.
+    -->
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <DefineConstants>$(DefineConstants);UPDATE_TEST</DefineConstants>
+    </PropertyGroup>
+
+    <!--
+        Disable WPF's default ApplicationDefinition (which auto-generates a
+        Main) and re-include App.xaml as a Page so InitializeComponent still
+        wires up the resource dictionary. Custom Main lives in Program.cs.
+    -->
+    <ItemGroup>
+        <ApplicationDefinition Remove="App.xaml" />
+        <Page Include="App.xaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Web.WebView2" />
+        <PackageReference Include="Velopack" />
+    </ItemGroup>
+
+    <!-- Embed the brand icon as a WPF resource so Window.Icon and any
+         in-XAML <Image Source="favicon.ico"> references resolve via the
+         pack:// URI scheme without copying the file into this folder. -->
+    <ItemGroup>
+        <Resource Include="$(PreflightIconPath)" Link="favicon.ico" />
+    </ItemGroup>
+
+    <!--
+    Build and publish integration.
+    After every Build: publish the Blazor WASM project and copy its wwwroot
+    next to this executable so WebView2 can serve the files at runtime
+    (both in `dotnet run` from bin/<cfg>/ and after `dotnet publish`).
+
+    Two targets share one Blazor publish so we don't pay the WASM cost
+    twice when both Build and Publish are invoked in the same dotnet
+    invocation. PrepareBlazorWasm runs before Build, dropping the static
+    files into a temp folder; CopyBlazorToOutDir mirrors them next to the
+    debug exe; CopyBlazorToPublishDir mirrors them into the publish output
+    so vpk pack (using "publish" as packDir) ships the PWA in the bundle.
+  -->
+    <PropertyGroup>
+        <_BlazorTemp>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', 'blazor-temp'))</_BlazorTemp>
+        <_BlazorAppDir>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '..',
+            'Preflight.App'))</_BlazorAppDir>
+        <_BlazorAppProject>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '..',
+            'Preflight.App', 'Preflight.App.csproj'))</_BlazorAppProject>
+        <_BlazorIndexHtml>$([MSBuild]::NormalizePath('$(_BlazorTemp)', 'wwwroot', 'index.html'))</_BlazorIndexHtml>
+    </PropertyGroup>
+
+    <Target Name="PrepareBlazorWasm"
+        BeforeTargets="Build;Publish"
+        Inputs="$(_BlazorAppProject);$(_BlazorAppDir)/wwwroot/**/*;$(_BlazorAppDir)/**/*.razor;$(_BlazorAppDir)/**/*.cs;$(_BlazorAppDir)/Resources/**/*.resx"
+        Outputs="$(_BlazorIndexHtml)">
+        <Message Text="Publishing Preflight.App (Blazor WASM) → $(_BlazorTemp)" Importance="high" />
+        <Exec
+            Command="dotnet publish &quot;$(_BlazorAppProject)&quot; -c Release -o &quot;$(_BlazorTemp)&quot; --nologo" />
+    </Target>
+
+    <Target Name="CopyBlazorToOutDir" AfterTargets="Build" DependsOnTargets="PrepareBlazorWasm">
+        <ItemGroup>
+            <_BlazorOutFiles Include="$(_BlazorTemp)/wwwroot/**/*" />
+        </ItemGroup>
+        <Copy SourceFiles="@(_BlazorOutFiles)"
+            DestinationFolder="$(OutDir)wwwroot\%(RecursiveDir)"
+            SkipUnchangedFiles="true" />
+        <Message Text="Blazor wwwroot → $(OutDir)wwwroot" Importance="high" />
+    </Target>
+
+    <Target Name="CopyBlazorToPublishDir" AfterTargets="Publish"
+        DependsOnTargets="PrepareBlazorWasm">
+        <ItemGroup>
+            <!--
+                Skip the .gz pre-compressed Blazor assets - WebView2 reads
+                Brotli (.br) natively and Brotli is ~20% smaller. Shipping
+                both .gz AND .br doubles the cost of every Blazor framework
+                file for zero runtime benefit in the desktop shell.
+            -->
+            <_BlazorPubFiles Include="$(_BlazorTemp)/wwwroot/**/*"
+                Exclude="$(_BlazorTemp)/wwwroot/**/*.gz" />
+        </ItemGroup>
+        <Copy SourceFiles="@(_BlazorPubFiles)"
+            DestinationFolder="$(PublishDir)wwwroot\%(RecursiveDir)"
+            SkipUnchangedFiles="true" />
+        <Message Text="Blazor wwwroot → $(PublishDir)wwwroot (no .gz)" Importance="high" />
+        <RemoveDir Directories="$(_BlazorTemp)" />
+    </Target>
+
+</Project>

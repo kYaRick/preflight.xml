@@ -32,6 +32,16 @@
         <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
+    <ItemGroup Label="Desktop (WPF + WebView2)">
+        <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.3912.50" />
+        <!--
+            Velopack handles desktop packaging + auto-update from GitHub Releases.
+            Pinned: pre-1.0 ships breaking changes between minor bumps, so an
+            unpinned reference would silently change update semantics.
+        -->
+        <PackageVersion Include="Velopack" Version="0.0.1298" />
+    </ItemGroup>
+
     <ItemGroup Label="Testing">
         <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
         <PackageVersion Include="bunit" Version="1.32.7" />

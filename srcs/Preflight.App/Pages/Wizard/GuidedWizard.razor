@@ -17,7 +17,7 @@ else
 {
     <PageTitle>@L["Wizard.Guided.Title"] · Step @Step</PageTitle>
 
-    <FluentStack Orientation="Orientation.Vertical" HorizontalGap="24" Style="padding: 48px 16px; max-width: 1080px; margin: 0 auto;">
+    <FluentStack Orientation="Orientation.Vertical" HorizontalGap="24" Style="padding: 48px 16px 96px; max-width: 1080px; margin: 0 auto;">
 
     @*
         Step indicator - "Step N of M" label on the left, a plane-on-runway
@@ -26,7 +26,7 @@ else
         fades toward its tail, and the plane glyph planted at the current
         progress percentage (offset-path along the same S-curve).
     *@
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="12" VerticalAlignment="VerticalAlignment.Center">
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="12" VerticalAlignment="VerticalAlignment.Center" Wrap="true" Style="row-gap: 8px;">
         <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
             @(string.Format(L["Wizard.Guided.StepOf"].Value, Step, TotalSteps))
         </FluentLabel>
@@ -75,21 +75,21 @@ else
         // already redirects out-of-range Step values to <NotFound />.
     }
 
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8">
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Wrap="true" Style="row-gap: 8px;">
         @if (Step > 1)
         {
-            <FluentButton Appearance="Appearance.Outline" OnClick="Previous">← @L["Common.Back"]</FluentButton>
+            <FluentAnchor Appearance="Appearance.Outline" Href="@($"wizard/guided/{Step - 1}")">← @L["Common.Back"]</FluentAnchor>
         }
         <FluentSpacer />
         @if (Step < TotalSteps)
         {
-            <FluentButton Appearance="Appearance.Accent" OnClick="Next">@L["Common.Next"] →</FluentButton>
+            <FluentAnchor Appearance="Appearance.Accent" Href="@($"wizard/guided/{Step + 1}")">@L["Common.Next"] →</FluentAnchor>
         }
         else
         {
-            <FluentButton Appearance="Appearance.Accent" OnClick='@(() => Nav.NavigateTo("wizard/review"))'>
+            <FluentAnchor Appearance="Appearance.Accent" Href="wizard/review">
                 @L["Wizard.Guided.Finish"] →
-            </FluentButton>
+            </FluentAnchor>
         }
     </FluentStack>
 
@@ -100,7 +100,4 @@ else
     private const int TotalSteps = 5;
 
     [Parameter] public int Step { get; set; } = 1;
-
-    private void Previous() => Nav.NavigateTo($"wizard/guided/{Step - 1}");
-    private void Next() => Nav.NavigateTo($"wizard/guided/{Step + 1}");
 }

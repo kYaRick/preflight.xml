@@ -1,0 +1,236 @@
+@*
+  In-app XML import modal - replaces Landing's previous "open native file
+  picker" flow. Two equally-prominent paths in the same modal:
+
+    1. Drop zone - drag an autounattend.xml file from Explorer.
+    2. Paste pad - paste raw XML text from clipboard.
+
+  Plus a "Browse..." button that still falls back to the native picker
+  for users on platforms where DnD is awkward (touch screens, some Linux
+  WMs). All three feed the same UnattendXmlImporter so the result handling
+  is identical regardless of how the XML arrived.
+
+  Result reporting goes through OnImported(ImportResult, fileName) so the
+  parent owns navigation. We only own the modal state and the input UX.
+*@
+@inject IStringLocalizer<SharedResources> L
+@inject IJSRuntime JS
+@inject UnattendXmlImporter Importer
+@implements IAsyncDisposable
+
+<div class="pf-overlay @(Open ? "is-open" : null)" @onclick="CloseOnBackdrop" aria-hidden="@(Open ? "false" : "true")">
+    <div class="pf-import" role="dialog" aria-modal="true" aria-label="@L["Import.Title"]" @onclick:stopPropagation="true">
+
+        <div class="pf-import__header">
+            <span class="pf-import__title">📥 @L["Import.Title"]</span>
+            <button type="button" class="pf-import__close" aria-label="@L["Common.Close"]" @onclick="Close">✕</button>
+        </div>
+
+        <div class="pf-import__body">
+
+            @* Drop zone - primary path. Click also opens the native picker
+               so users who don't realise it accepts drops still have a way in. *@
+            <div class="pf-import__dropzone" @ref="_dropZone" @onclick="BrowseAsync">
+                <div class="pf-import__dropzone-icon" aria-hidden="true">📂</div>
+                <div class="pf-import__dropzone-title">@L["Import.DropHere"]</div>
+                <div class="pf-import__dropzone-hint">@L["Import.DropHint"]</div>
+                <button type="button" class="pf-import__browse" @onclick:stopPropagation="true" @onclick="BrowseAsync">
+                    @L["Import.Browse"]
+                </button>
+            </div>
+
+            @* OR divider *@
+            <div class="pf-import__or">
+                <span class="pf-import__or-line"></span>
+                <span class="pf-import__or-text">@L["Import.Or"]</span>
+                <span class="pf-import__or-line"></span>
+            </div>
+
+            @* Paste pad - secondary path. Plain textarea, monospace font for
+               readability of XML. Submits via Apply button or Ctrl+Enter. *@
+            <label class="pf-import__paste-label">
+                <span class="pf-import__paste-title">@L["Import.PasteTitle"]</span>
+                <textarea class="pf-import__paste"
+                          rows="8"
+                          placeholder="@L["Import.PastePlaceholder"]"
+                          spellcheck="false"
+                          @bind="_pasted"
+                          @bind:event="oninput"
+                          @onkeydown="OnPasteKeyDown"></textarea>
+            </label>
+
+            @if (_status is not null)
+            {
+                <div class="pf-import__status pf-import__status--@_statusKind">
+                    @_status
+                </div>
+            }
+        </div>
+
+        <div class="pf-import__footer">
+            <button type="button" class="pf-import__secondary" @onclick="Close">
+                @L["Common.Close"]
+            </button>
+            <FluentButton Appearance="Appearance.Accent"
+                          Disabled="@(string.IsNullOrWhiteSpace(_pasted) || _busy)"
+                          OnClick="ApplyPasted">
+                @if (_busy)
+                {
+                    <text>⏳ @L["Wizard.Review.Preparing"]</text>
+                }
+                else
+                {
+                    <text>✓ @L["Import.ApplyPaste"]</text>
+                }
+            </FluentButton>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool Open { get; set; }
+    [Parameter] public EventCallback<bool> OpenChanged { get; set; }
+    [Parameter] public EventCallback<ImportPayload> OnImported { get; set; }
+
+    private ElementReference _dropZone;
+    private DotNetObjectReference<ImportXmlModal>? _selfRef;
+    private bool _attached;
+    private bool _busy;
+    private string _pasted = string.Empty;
+    private string? _status;
+    private string _statusKind = "info"; // info | warn | error | success
+
+    /// <summary>
+    /// Plain DTO for the parent: result of running the importer over user
+    /// input plus the source name (file name or "(paste)") so the parent
+    /// can surface a meaningful "Imported X" message.
+    /// </summary>
+    public sealed record ImportPayload(ImportResult Result, string SourceName);
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Attach the drop-zone listeners exactly once. Open/close toggles only
+        // visibility (the modal stays in the DOM tree to keep its open/close
+        // transitions running), so we don't need to re-attach on every toggle.
+        if (firstRender || (_attached == false && Open))
+        {
+            _selfRef ??= DotNetObjectReference.Create(this);
+            try
+            {
+                await JS.InvokeVoidAsync("preflightFiles.attachDropZone", _dropZone, _selfRef);
+                _attached = true;
+            }
+            catch
+            {
+                /* helper not yet loaded - the OnAfterRenderAsync next render will retry */
+            }
+        }
+    }
+
+    private async Task BrowseAsync()
+    {
+        try
+        {
+            var picked = await JS.InvokeAsync<PickedFile?>("preflightFiles.pickText", ".xml");
+            if (picked is null) return;
+            await ProcessAsync(picked.Name, picked.Text);
+        }
+        catch (Exception ex)
+        {
+            SetStatus("error", ex.Message);
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnFileDropped(string name, string text)
+    {
+        await ProcessAsync(name, text);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    [JSInvokable]
+    public Task OnFileDroppedError(string message)
+    {
+        SetStatus("error", string.Format(L["Import.ReadFailed"].Value, message));
+        return InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnPasteKeyDown(KeyboardEventArgs e)
+    {
+        // Ctrl+Enter (or Cmd+Enter) submits - common shortcut for textarea
+        // dialogs (Slack, GitHub, Discord all use it). Plain Enter still
+        // inserts a newline for users still composing the paste.
+        if (e.Key == "Enter" && (e.CtrlKey || e.MetaKey))
+        {
+            await ApplyPasted();
+        }
+    }
+
+    private async Task ApplyPasted()
+    {
+        if (string.IsNullOrWhiteSpace(_pasted)) return;
+        await ProcessAsync(L["Import.PasteSourceName"], _pasted);
+    }
+
+    private async Task ProcessAsync(string sourceName, string xml)
+    {
+        _busy = true;
+        _status = null;
+        StateHasChanged();
+        try
+        {
+            var result = Importer.Import(xml);
+
+            // Keep failed imports inside the modal so the user sees the
+            // validation reason immediately and can correct/retry in place.
+            if (result.Status == ImportStatus.Failed)
+            {
+                var details = string.Join(" ", result.Messages);
+                SetStatus("error", string.Format(L["Landing.Import.Failed"].Value, details));
+                return;
+            }
+
+            await OnImported.InvokeAsync(new ImportPayload(result, sourceName));
+            // Parent will close the modal on success - leaving it open with a
+            // status message would be redundant if the route changed under us.
+        }
+        catch (Exception ex)
+        {
+            SetStatus("error", ex.Message);
+        }
+        finally
+        {
+            _busy = false;
+            StateHasChanged();
+        }
+    }
+
+    private void SetStatus(string kind, string message)
+    {
+        _statusKind = kind;
+        _status = message;
+    }
+
+    private async Task CloseOnBackdrop(MouseEventArgs _) => await Close();
+    private async Task Close()
+    {
+        _pasted = string.Empty;
+        _status = null;
+        await OpenChanged.InvokeAsync(false);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try
+        {
+            await JS.InvokeVoidAsync("preflightFiles.detachDropZone", _dropZone);
+        }
+        catch
+        {
+            /* page tearing down */
+        }
+        _selfRef?.Dispose();
+    }
+
+    private sealed record PickedFile(string Name, string Text);
+}
