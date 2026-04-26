@@ -110,7 +110,7 @@ The desktop app is a pure .NET 10 WPF + WebView2 shell:
 ### Splash & Loading
 
 - The startup splash is **in-window** (not a separate window), created as an overlay in [MainWindow.xaml](../srcs/Preflight.Desktop/MainWindow.xaml).
-- Splash size adapts to compact mode on launch (680x420), then resizes to full dimensions (1080x900) once Blazor is ready.
+- Splash size adapts to compact mode on launch (580x320), then resizes to full dimensions (1080x900) once Blazor is ready.
 - Rounded corners and styling use Fluent Design tokens from App.xaml.
 
 ### Update Flow
