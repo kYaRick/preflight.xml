@@ -133,10 +133,10 @@ jobs:
             Play Store. Uninstall via your browser's app menu.
 
             ## 🪟 Windows desktop (portable, auto-updating)
-            Download `preflight.xml-alpha-Portable.zip` below, unzip
-            anywhere, and run `preflight.xml.exe`. The shell will check
-            GitHub Releases for newer alpha builds in the background and
-            offer a one-click restart when an update is downloaded.
+            Download the Windows portable zip below, unzip anywhere,
+            and run `preflight.xml.exe`. The shell will check GitHub
+            Releases for newer alpha builds in the background and offer
+            a one-click restart when an update is downloaded.
 
             ## 📥 Self-host / offline PWA archive
             Download the zip below and serve `wwwroot/` with any static server:
