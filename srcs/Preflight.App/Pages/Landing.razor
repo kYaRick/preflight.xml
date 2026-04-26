@@ -95,11 +95,11 @@
                     break;
 
                 case ImportStatus.Failed:
-                    // Keep the modal open so the user can fix and retry; surface
-                    // the error inline next to the input fields rather than as a
-                    // banner on the (still-visible) Landing page.
+                    // Fallback path: if failure reaches page-level handling,
+                    // close modal so the landing banner is actually visible.
                     _importIntent = MessageIntent.Error;
                     _importMessage = string.Format(L["Landing.Import.Failed"].Value, string.Join(" ", payload.Result.Messages));
+                    ImportModal.Close();
                     break;
             }
         }

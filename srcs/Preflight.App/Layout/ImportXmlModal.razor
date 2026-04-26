@@ -180,6 +180,16 @@
         try
         {
             var result = Importer.Import(xml);
+
+            // Keep failed imports inside the modal so the user sees the
+            // validation reason immediately and can correct/retry in place.
+            if (result.Status == ImportStatus.Failed)
+            {
+                var details = string.Join(" ", result.Messages);
+                SetStatus("error", string.Format(L["Landing.Import.Failed"].Value, details));
+                return;
+            }
+
             await OnImported.InvokeAsync(new ImportPayload(result, sourceName));
             // Parent will close the modal on success - leaving it open with a
             // status message would be redundant if the route changed under us.

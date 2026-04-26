@@ -11,7 +11,7 @@ Pipeline: [`release.yml`](../.github/workflows/release.yml). Two jobs:
 | Job        | Runner          | Output                                                                       |
 | :--------- | :-------------- | :--------------------------------------------------------------------------- |
 | `package`  | `ubuntu-latest` | `preflight.xml-pwa-X.Y.Z.zip` + `.tar.gz` + `SHA256SUMS.txt`                 |
-| `desktop`  | `windows-latest`| `preflight.xml-alpha-Portable.zip` + `RELEASES-alpha` + full/delta nupkg     |
+| `desktop`  | `windows-latest`| `preflight.xml-X.Y.Z-alpha-win-x64-portable.zip` + `RELEASES-alpha` + full/delta nupkg |
 
 The `desktop` job runs after `package` and uses `vpk upload github
 --merge` to attach its artifacts to the same draft release - users see
@@ -166,7 +166,7 @@ cd wwwroot-
 The `desktop` job ships a portable bundle:
 
 ```
-preflight.xml-alpha-Portable.zip
+preflight.xml-<ver>-alpha-win-x64-portable.zip
 └── preflight.xml.exe    ← double-click to run
 ```
 
@@ -200,7 +200,7 @@ just desktop-pack 0.1.2-rc1  # explicit version override
 
 # Output:
 #   artifacts/desktop/releases/
-#   ├── preflight.xml-alpha-Portable.zip
+#   ├── preflight.xml-<ver>-alpha-win-x64-portable.zip
 #   ├── preflight.xml-<ver>-alpha-full.nupkg
 #   ├── preflight.xml-<ver>-alpha-delta.nupkg  (if a previous release exists)
 #   ├── RELEASES-alpha

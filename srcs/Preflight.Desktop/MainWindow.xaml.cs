@@ -94,7 +94,7 @@ public partial class MainWindow : Window
     /// </summary>
     private async void OnUpdateReady(object? sender, string version)
     {
-        await Dispatcher.InvokeAsync(async () =>
+        var op = Dispatcher.InvokeAsync(async () =>
         {
             var lang = await GetCultureAsync().ConfigureAwait(true);
 
@@ -128,6 +128,8 @@ public partial class MainWindow : Window
             // Show() triggers layout; reposition now that dimensions are known.
             RepositionBannerWindow();
         });
+
+        await op.Task.Unwrap();
     }
 
     private void RetranslateBannerWindow(string lang)

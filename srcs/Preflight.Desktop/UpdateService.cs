@@ -67,7 +67,11 @@ public sealed partial class UpdateService
     /// <summary>The version that has been downloaded and is ready to apply.</summary>
     public string? PendingVersion { get; private set; }
 
-    /// <summary>Fires on the calling thread when a new version is downloaded and ready.</summary>
+    /// <summary>
+    /// Fires when a new version is downloaded and ready.
+    /// May be raised from a background thread; UI subscribers must marshal
+    /// back to the dispatcher before touching controls.
+    /// </summary>
     public event EventHandler<string>? UpdateReady;
 
     public UpdateService()

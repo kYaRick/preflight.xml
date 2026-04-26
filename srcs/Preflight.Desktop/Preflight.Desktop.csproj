@@ -90,14 +90,19 @@
   -->
     <PropertyGroup>
         <_BlazorTemp>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', 'blazor-temp'))</_BlazorTemp>
+        <_BlazorAppDir>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '..',
+            'Preflight.App'))</_BlazorAppDir>
         <_BlazorAppProject>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '..',
             'Preflight.App', 'Preflight.App.csproj'))</_BlazorAppProject>
         <_BlazorIndexHtml>$([MSBuild]::NormalizePath('$(_BlazorTemp)', 'wwwroot', 'index.html'))</_BlazorIndexHtml>
     </PropertyGroup>
 
-    <Target Name="PrepareBlazorWasm" BeforeTargets="Build;Publish">
+    <Target Name="PrepareBlazorWasm"
+        BeforeTargets="Build;Publish"
+        Inputs="$(_BlazorAppProject);$(_BlazorAppDir)/wwwroot/**/*;$(_BlazorAppDir)/**/*.razor;$(_BlazorAppDir)/**/*.cs;$(_BlazorAppDir)/Resources/**/*.resx"
+        Outputs="$(_BlazorIndexHtml)">
         <Message Text="Publishing Preflight.App (Blazor WASM) → $(_BlazorTemp)" Importance="high" />
-        <Exec Condition="!Exists('$(_BlazorIndexHtml)')"
+        <Exec
             Command="dotnet publish &quot;$(_BlazorAppProject)&quot; -c Release -o &quot;$(_BlazorTemp)&quot; --nologo" />
     </Target>
 

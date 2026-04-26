@@ -44,6 +44,7 @@ public sealed class ImportModalService
     {
         if (!IsOpen) return;
         IsOpen = false;
+        ResultHandler = null;
         StateChanged?.Invoke();
     }
 
