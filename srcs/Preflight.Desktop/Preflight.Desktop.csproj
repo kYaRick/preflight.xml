@@ -89,18 +89,21 @@
     so vpk pack (using "publish" as packDir) ships the PWA in the bundle.
   -->
     <PropertyGroup>
-        <_BlazorTemp>$(MSBuildProjectDirectory)\blazor-temp</_BlazorTemp>
+        <_BlazorTemp>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', 'blazor-temp'))</_BlazorTemp>
+        <_BlazorAppProject>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '..',
+            'Preflight.App', 'Preflight.App.csproj'))</_BlazorAppProject>
+        <_BlazorIndexHtml>$([MSBuild]::NormalizePath('$(_BlazorTemp)', 'wwwroot', 'index.html'))</_BlazorIndexHtml>
     </PropertyGroup>
 
     <Target Name="PrepareBlazorWasm" BeforeTargets="Build;Publish">
         <Message Text="Publishing Preflight.App (Blazor WASM) → $(_BlazorTemp)" Importance="high" />
-        <Exec Condition="!Exists('$(_BlazorTemp)\wwwroot\index.html')"
-            Command="dotnet publish ..\Preflight.App\Preflight.App.csproj -c Release -o &quot;$(_BlazorTemp)&quot; --nologo" />
+        <Exec Condition="!Exists('$(_BlazorIndexHtml)')"
+            Command="dotnet publish &quot;$(_BlazorAppProject)&quot; -c Release -o &quot;$(_BlazorTemp)&quot; --nologo" />
     </Target>
 
     <Target Name="CopyBlazorToOutDir" AfterTargets="Build" DependsOnTargets="PrepareBlazorWasm">
         <ItemGroup>
-            <_BlazorOutFiles Include="$(_BlazorTemp)\wwwroot\**\*" />
+            <_BlazorOutFiles Include="$(_BlazorTemp)/wwwroot/**/*" />
         </ItemGroup>
         <Copy SourceFiles="@(_BlazorOutFiles)"
             DestinationFolder="$(OutDir)wwwroot\%(RecursiveDir)"
@@ -117,8 +120,8 @@
                 both .gz AND .br doubles the cost of every Blazor framework
                 file for zero runtime benefit in the desktop shell.
             -->
-            <_BlazorPubFiles Include="$(_BlazorTemp)\wwwroot\**\*"
-                Exclude="$(_BlazorTemp)\wwwroot\**\*.gz" />
+            <_BlazorPubFiles Include="$(_BlazorTemp)/wwwroot/**/*"
+                Exclude="$(_BlazorTemp)/wwwroot/**/*.gz" />
         </ItemGroup>
         <Copy SourceFiles="@(_BlazorPubFiles)"
             DestinationFolder="$(PublishDir)wwwroot\%(RecursiveDir)"
