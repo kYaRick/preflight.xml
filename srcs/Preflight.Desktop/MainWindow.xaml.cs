@@ -1,9 +1,11 @@
 using System;
 using System.IO;
+using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Microsoft.Web.WebView2.Core;
 
@@ -11,6 +13,11 @@ namespace Preflight.Desktop;
 
 public partial class MainWindow : Window
 {
+    private const double SplashWindowWidth = 580;
+    private const double SplashWindowHeight = 320;
+    private const double SplashCornerRadius = 18;
+    private const double ReadyCornerRadius = 14;
+
     // Single-shot signal that the page has actually rendered (Blazor mounted,
     // loading overlay starting to dismiss). Triggered by a postMessage from
     // index.html - *not* by NavigationCompleted, which fires when the document
@@ -40,6 +47,12 @@ public partial class MainWindow : Window
     // app folder takes these preferences along.
     private string _settingsFolder = string.Empty;
 
+    // Configured window geometry from XAML (the "ready" app frame).
+    private readonly double _readyWindowWidth;
+    private readonly double _readyWindowHeight;
+    private readonly double _readyMinWidth;
+    private readonly double _readyMinHeight;
+
     private static readonly Geometry MaximizeGlyph =
         Geometry.Parse("M0,0 H10 V10 H0 Z");
     private static readonly Geometry RestoreGlyph =
@@ -48,6 +61,15 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+
+        _readyWindowWidth = Width;
+        _readyWindowHeight = Height;
+        _readyMinWidth = MinWidth;
+        _readyMinHeight = MinHeight;
+        EnterSplashWindowMode();
+
+        SplashVersionText.Text = "v" + GetInformationalVersion();
+        FirstPageRendered += (_, _) => DismissSplashOverlay();
         Loaded += OnLoaded;
         Closed += OnClosed;
         StateChanged += OnStateChanged;
@@ -119,6 +141,89 @@ public partial class MainWindow : Window
         // to shut our window down so the binary swap can succeed.
         App.Updates.ApplyAndRestart();
         Application.Current.Shutdown();
+    }
+
+    /// <summary>
+    /// Pulled from AssemblyInformationalVersionAttribute (set by the SDK from
+    /// Directory.Build.props's Version), so the splash overlay always shows
+    /// the same version string as the README badge.
+    /// </summary>
+    private static string GetInformationalVersion()
+    {
+        var attr = Assembly.GetExecutingAssembly()
+            .GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+        if (attr is null) return "0.0.0";
+        var v = attr.InformationalVersion;
+        var plus = v.IndexOf('+');
+        return plus < 0 ? v : v[..plus];
+    }
+
+    /// <summary>
+    /// Dismiss the in-window splash overlay once Blazor has signalled ready.
+    /// Sequence: stop the looping shimmer / plane-bob storyboards (cheap
+    /// hygiene), flip WebView back to Visible so its renderer un-throttles
+    /// and paints the settled DOM, then fade the overlay out and remove it
+    /// from the layout. The fade runs on the overlay's Opacity; once
+    /// Completed, Visibility=Collapsed pulls it out of hit-testing entirely.
+    /// </summary>
+    private void DismissSplashOverlay()
+    {
+        if (TryFindResource("SplashShimmerStoryboard") is Storyboard sh)
+            sh.Stop(this);
+        if (TryFindResource("SplashPlaneBobStoryboard") is Storyboard pb)
+            pb.Stop(this);
+
+        RestoreReadyWindowMode();
+
+        // Keep startup visually clean: show desktop chrome only after the
+        // app is ready and the splash starts dismissing.
+        TitleBarRoot.Visibility = Visibility.Visible;
+
+        // Un-throttle WebView2: from now on it paints, replacing the splash
+        // overlay's surface with the rendered Blazor page in 1–2 frames.
+        WebView.Visibility = Visibility.Visible;
+
+        SplashOverlay.IsHitTestVisible = false;
+        var fade = new DoubleAnimation
+        {
+            From = 1,
+            To = 0,
+            Duration = TimeSpan.FromMilliseconds(280),
+            EasingFunction = new SineEase { EasingMode = EasingMode.EaseOut },
+        };
+        fade.Completed += (_, _) => SplashOverlay.Visibility = Visibility.Collapsed;
+        SplashOverlay.BeginAnimation(OpacityProperty, fade);
+    }
+
+    private void EnterSplashWindowMode()
+    {
+        MinWidth = 0;
+        MinHeight = 0;
+        Width = SplashWindowWidth;
+        Height = SplashWindowHeight;
+        RootBorder.CornerRadius = new CornerRadius(SplashCornerRadius);
+    }
+
+    private void RestoreReadyWindowMode()
+    {
+        var centerX = Left + (ActualWidth > 0 ? ActualWidth : Width) / 2;
+        var centerY = Top + (ActualHeight > 0 ? ActualHeight : Height) / 2;
+
+        MinWidth = _readyMinWidth;
+        MinHeight = _readyMinHeight;
+        Width = _readyWindowWidth;
+        Height = _readyWindowHeight;
+        RootBorder.CornerRadius = new CornerRadius(ReadyCornerRadius);
+
+        // Keep the resize transition anchored to the same center point.
+        var workArea = SystemParameters.WorkArea;
+        var targetLeft = centerX - (Width / 2);
+        var targetTop = centerY - (Height / 2);
+        var maxLeft = workArea.Right - Width;
+        var maxTop = workArea.Bottom - Height;
+
+        Left = Math.Min(Math.Max(targetLeft, workArea.Left), Math.Max(workArea.Left, maxLeft));
+        Top = Math.Min(Math.Max(targetTop, workArea.Top), Math.Max(workArea.Top, maxTop));
     }
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
@@ -360,12 +465,29 @@ public partial class MainWindow : Window
         Dispatcher.BeginInvoke(() => WebView.CoreWebView2.Navigate(redirect));
     }
 
-    private void SignalFirstPageRendered()
+    /// <summary>
+    /// Buffer between "page is ready" (Blazor mounted, in-page overlay
+    /// dismissed) and the splash starting its cross-fade. Without this, the
+    /// splash hand-off lands right when theme.js's page-enter animation
+    /// (translateY + scale + blur on .pf-page, ~550ms, plus staggered
+    /// children up to ~660ms) is mid-flight — the user sees the splash
+    /// dissolve into cards still flying into position. 500ms is enough to
+    /// catch the bulk of the animation while still feeling responsive.
+    /// </summary>
+    private const int FirstPageRenderedSettleDelayMs = 500;
+
+    private async void SignalFirstPageRendered()
     {
         if (_firstPageSignaled) return;
         _firstPageSignaled = true;
         _readyPollTimer?.Stop();
         _readyTimeoutTimer?.Stop();
+
+        // Hold the splash up while the in-page page-enter animation settles,
+        // so the cross-fade reveals fully-rendered content rather than
+        // mid-flight cards.
+        await Task.Delay(FirstPageRenderedSettleDelayMs).ConfigureAwait(true);
+
         FirstPageRendered?.Invoke(this, EventArgs.Empty);
     }
 
@@ -593,6 +715,9 @@ public partial class MainWindow : Window
         RootBorder.BorderThickness = WindowState == WindowState.Maximized
             ? new Thickness(0)
             : new Thickness(1);
+        RootBorder.CornerRadius = WindowState == WindowState.Maximized
+            ? new CornerRadius(0)
+            : new CornerRadius(ReadyCornerRadius);
         MaxRestoreButton.ToolTip = WindowState == WindowState.Maximized
             ? "Restore"
             : "Maximize";
