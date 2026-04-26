@@ -15,6 +15,13 @@ public partial class App : Application
     private static readonly TimeSpan HandoffDuration = TimeSpan.FromMilliseconds(240);
 
     /// <summary>
+    /// Background updater. Process-wide single instance so the splash and
+    /// the main window can both observe the same UpdateReady event without
+    /// firing duplicate downloads.
+    /// </summary>
+    public static UpdateService Updates { get; } = new();
+
+    /// <summary>
     /// Two-window startup, Visual-Studio style. The splash floats alone on
     /// the desktop while the main window provisions WebView2 and renders
     /// Blazor in the background. The main window IS shown so WebView2's
@@ -46,6 +53,11 @@ public partial class App : Application
         };
         main.FirstPageRendered += (_, _) => RevealMain(main, splash);
         main.Show();
+
+        // Kick the updater off after the windows are constructed. The
+        // service has its own startup grace period (~8s) so this won't
+        // contend with WebView2 cold-boot for network bandwidth.
+        Updates.StartBackgroundCheck();
     }
 
     /// <summary>

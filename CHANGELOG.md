@@ -25,6 +25,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Custom XML import modal - drag-and-drop zone, paste pad, and a "Browse"
   fallback to the OS picker, all in one styled dialog instead of the
   bare-browser file dialog.
+- Windows desktop auto-update (Velopack, alpha channel) - the desktop
+  shell quietly checks GitHub Releases for newer alpha builds in the
+  background, downloads the delta, and offers a one-click "Restart now"
+  banner inside the app. No installer, no admin rights - portable zip
+  in, portable update out.
 
 ### Changed
 
@@ -75,4 +80,27 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Promoted the import XML modal to a top-level layout slot via
   `ImportModalService` so its overlay sits above the FluentLayout
   stacking context.
+- Switched Preflight.Desktop's AssemblyName from `Preflight` to
+  `preflight.xml` so the executable, Velopack PackId and live PWA name
+  all match. The published exe is now `preflight.xml.exe`; Windows hides
+  the `.exe` in the UI so the user sees `preflight.xml`.
+- Custom WPF entry point (`Program.Main`) so `VelopackApp.Build().Run()`
+  intercepts hook commands (`--veloapp-install` / `--veloapp-uninstall`
+  / `--veloapp-updated`) before any window is constructed.
+- Added `UpdateService` with `GithubSource` + `ExplicitChannel="alpha"`,
+  fired from `App.OnStartup` after an 8s grace period. Failures are
+  swallowed - desktop runs offline-first; missing updates are not an
+  error condition.
+- New justfile recipes `desktop-publish`, `desktop-pack`,
+  `desktop-release` wrap the dotnet publish + `vpk pack --noInst`
+  (portable-only) + `vpk upload github --merge --pre` flow.
+- Extended `release.yml` with a `desktop` job on `windows-latest` that
+  runs after the PWA package job, producing
+  `preflight.xml-alpha-Portable.zip` + `RELEASES-alpha` + the matching
+  full/delta nupkg files, and merging them into the same draft GitHub
+  Release the PWA job already created.
+- Split the Blazor wwwroot copy in Preflight.Desktop.csproj into
+  `CopyBlazorToOutDir` (post-Build) + `CopyBlazorToPublishDir`
+  (post-Publish) so `dotnet publish --output …` ships the PWA inside
+  the bundle - vpk pack used to ship a desktop folder with no wwwroot.
 <!-- internal:end -->

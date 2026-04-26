@@ -26,6 +26,11 @@
   клавіш.
 - Кастомна модалка імпорту XML - drag-and-drop зона, поле для вставки
   тексту, та "Вибрати файл..." як запасний шлях через системний пікер.
+- Авто-оновлення для Windows-версії (Velopack, alpha-канал) - десктопна
+  оболонка тихо перевіряє GitHub Releases на нові alpha-білди у фоні,
+  довантажує дельту, і пропонує плашку "Перезапустити" просто всередині
+  додатку. Без інсталятора, без admin-прав - portable zip заходить,
+  portable update виходить.
 
 ### Змінено
 
@@ -77,4 +82,27 @@
 - Модалка імпорту XML піднята в layout-слот верхнього рівня через
   `ImportModalService`, щоб її overlay був над stacking-контекстом
   FluentLayout.
+- AssemblyName Preflight.Desktop змінено з `Preflight` на
+  `preflight.xml`, щоб ім'я екзешника, Velopack PackId і назва живого
+  PWA збігалися. Опублікований файл тепер `preflight.xml.exe`; Windows
+  ховає `.exe` в інтерфейсі, тож юзер бачить `preflight.xml`.
+- Кастомна WPF entry-point точка (`Program.Main`), щоб
+  `VelopackApp.Build().Run()` перехоплював hook-команди (`--veloapp-install`
+  / `--veloapp-uninstall` / `--veloapp-updated`) до того як WPF
+  сконструює перше вікно.
+- Доданий `UpdateService` з `GithubSource` + `ExplicitChannel="alpha"`,
+  стартує з `App.OnStartup` після 8с-grace періоду. Помилки ковтаються
+  - десктоп працює offline-first; відсутність оновлення - не помилка.
+- Нові justfile-рецепти `desktop-publish`, `desktop-pack`,
+  `desktop-release` обгортають dotnet publish + `vpk pack --noInst`
+  (тільки portable) + `vpk upload github --merge --pre`.
+- `release.yml` отримав новий job `desktop` на `windows-latest`, який
+  виконується після PWA-package, генерує
+  `preflight.xml-alpha-Portable.zip` + `RELEASES-alpha` + повний/дельта
+  nupkg, і мерджить артефакти в той самий draft GitHub Release, що
+  створив PWA-job.
+- Копіювання Blazor wwwroot у Preflight.Desktop.csproj розбито на
+  `CopyBlazorToOutDir` (post-Build) + `CopyBlazorToPublishDir`
+  (post-Publish), щоб `dotnet publish --output …` клав PWA всередину
+  бандла - раніше vpk pack пакував desktop-папку без wwwroot.
 <!-- internal:end -->

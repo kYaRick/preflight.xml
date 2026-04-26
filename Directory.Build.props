@@ -65,11 +65,18 @@
     inherits the same target framework, output type, icon, and minimum window
     metadata without duplicating boilerplate.
   -->
+    <!--
+        AssemblyName == final exe name == Velopack PackId == Velopack mainExe.
+        Keeping all four aligned means the installed app appears in the
+        Start menu and Programs list under the same name as the live PWA.
+        Windows hides the trailing ".exe" so users see "preflight.xml" -
+        the dotted middle is intentional, not a bug.
+    -->
     <PropertyGroup Condition="'$(MSBuildProjectName)' == 'Preflight.Desktop'" Label="Desktop">
         <OutputType>WinExe</OutputType>
         <TargetFramework>net10.0-windows</TargetFramework>
         <UseWPF>true</UseWPF>
-        <AssemblyName>Preflight</AssemblyName>
+        <AssemblyName>preflight.xml</AssemblyName>
         <ApplicationIcon>$(PreflightIconPath)</ApplicationIcon>
         <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     </PropertyGroup>

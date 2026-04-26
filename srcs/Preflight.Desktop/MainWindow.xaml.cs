@@ -1,5 +1,7 @@
 using System;
 using System.IO;
+using System.Text.Json;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -31,6 +33,13 @@ public partial class MainWindow : Window
     // serves index.html for bare-host requests.
     private string _wwwrootPath = string.Empty;
 
+    // Cached settings folder (sibling to the WebView2 user-data folder).
+    // Last-used save / open directories are persisted here so the file
+    // dialogs come back to where the user left off across launches. Uses
+    // the same root as the portable WebView2 profile, so distributing the
+    // app folder takes these preferences along.
+    private string _settingsFolder = string.Empty;
+
     private static readonly Geometry MaximizeGlyph =
         Geometry.Parse("M0,0 H10 V10 H0 Z");
     private static readonly Geometry RestoreGlyph =
@@ -42,11 +51,80 @@ public partial class MainWindow : Window
         Loaded += OnLoaded;
         Closed += OnClosed;
         StateChanged += OnStateChanged;
+
+        // Subscribe to the singleton updater. When a download completes the
+        // service raises UpdateReady from a background thread; marshal back
+        // to the dispatcher to flip the banner's visibility safely.
+        App.Updates.UpdateReady += OnUpdateReady;
+    }
+
+    /// <summary>
+    /// Fills the banner copy in the user's current UI culture. Reads the
+    /// same `preflight.culture` localStorage key the file dialogs use, so
+    /// the desktop chrome stays in sync with whatever the in-page switcher
+    /// selected.
+    /// </summary>
+    private async void OnUpdateReady(object? sender, string version)
+    {
+        await Dispatcher.InvokeAsync(async () =>
+        {
+            var lang = await GetCultureAsync().ConfigureAwait(true);
+
+            (string title, string subtitle, string restart, string later) = lang switch
+            {
+                "uk" => (
+                    $"✈️ Готова нова версія {version}",
+                    "Перезапустіть, щоб застосувати оновлення.",
+                    "Перезапустити",
+                    "Пізніше"),
+                _ => (
+                    $"✈️ Update {version} ready",
+                    "Restart preflight.xml to apply the new build.",
+                    "Restart now",
+                    "Later"),
+            };
+
+            UpdateBannerTitle.Text = title;
+            UpdateBannerSubtitle.Text = subtitle;
+            UpdateRestartText.Text = restart;
+            UpdateDismissText.Text = later;
+            UpdateBanner.Visibility = Visibility.Visible;
+        });
+    }
+
+    private async System.Threading.Tasks.Task<string> GetCultureAsync()
+    {
+        try
+        {
+            var raw = await WebView.CoreWebView2.ExecuteScriptAsync(
+                "(window.preflightCulture && window.preflightCulture.get && window.preflightCulture.get()) || 'en'");
+            return raw?.Trim('"') ?? "en";
+        }
+        catch
+        {
+            return "en";
+        }
+    }
+
+    private void OnUpdateDismissClick(object sender, RoutedEventArgs e)
+    {
+        UpdateBanner.Visibility = Visibility.Collapsed;
+        // The downloaded bits stay on disk - Velopack will pick them up at
+        // the user's next restart even without an explicit "apply" click.
+    }
+
+    private void OnUpdateRestartClick(object sender, RoutedEventArgs e)
+    {
+        // Apply runs in Velopack's update.exe child process; we just need
+        // to shut our window down so the binary swap can succeed.
+        App.Updates.ApplyAndRestart();
+        Application.Current.Shutdown();
     }
 
     private async void OnLoaded(object sender, RoutedEventArgs e)
     {
         var userDataFolder = ResolveUserDataFolder();
+        _settingsFolder = Path.GetDirectoryName(userDataFolder) ?? userDataFolder;
 
         var env = await CoreWebView2Environment.CreateAsync(
             browserExecutableFolder: null,
@@ -116,6 +194,12 @@ public partial class MainWindow : Window
 
         WebView.CoreWebView2.NavigationCompleted += OnNavigationCompleted;
         WebView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
+        // Intercept the WebView2/Edge default download bar so the user gets
+        // a system-themed Save-As dialog (Win11's IFileDialog auto-themes
+        // light/dark) instead of the in-page browser-style bar. The path
+        // the user picks is persisted as the last-save directory so the
+        // next save lands in the same place.
+        WebView.CoreWebView2.DownloadStarting += OnDownloadStarting;
         // Mirror the document <title> into Window.Title so the taskbar entry
         // reflects whatever page Blazor's <PageTitle> currently has set
         // (Wizard, Docs, Advanced, …). The custom title-bar text stays as
@@ -194,8 +278,32 @@ public partial class MainWindow : Window
         string? msg = null;
         try { msg = e.TryGetWebMessageAsString(); }
         catch { /* non-string message - ignore */ }
+        if (msg is null) return;
 
-        if (msg == "preflight:ready") SignalFirstPageRendered();
+        if (msg == "preflight:ready") { SignalFirstPageRendered(); return; }
+
+        // RPC for the JS-side file picker. Format:
+        //   file:open:<accept>:<correlation-id>
+        // We respond via PostWebMessageAsString with:
+        //   file:open:result:{"id":"...","name":"...","text":"..."}
+        // Handled async so the OS dialog is modal to the main window
+        // without blocking the WebView2 message loop.
+        const string OpenPrefix = "file:open:";
+        const string OpenResultPrefix = "file:open:result:";
+        if (msg.StartsWith(OpenPrefix, StringComparison.Ordinal)
+            && !msg.StartsWith(OpenResultPrefix, StringComparison.Ordinal))
+        {
+            var rest = msg[OpenPrefix.Length..];
+            // The accept mask never contains a ':' (it's something like
+            // ".xml" or ".json"), so a single split is unambiguous.
+            var sep = rest.IndexOf(':');
+            if (sep > 0)
+            {
+                var accept = rest[..sep];
+                var requestId = rest[(sep + 1)..];
+                _ = HandleFileOpenRequestAsync(accept, requestId);
+            }
+        }
     }
 
     private void OnNavigationStarting(object? sender, CoreWebView2NavigationStartingEventArgs e)
@@ -265,6 +373,175 @@ public partial class MainWindow : Window
     {
         _readyPollTimer?.Stop();
         _readyTimeoutTimer?.Stop();
+        App.Updates.UpdateReady -= OnUpdateReady;
+    }
+
+    // ─── File save: WebView2 download interception ───────────────────────
+    //
+    // CoreWebView2.DownloadStarting fires for every initiated download.
+    // Setting e.Handled = true suppresses the WebView2/Edge download bar
+    // (the in-WebView strip at the bottom that looks out-of-place against
+    // a desktop chrome). We then put up a Win11-themed Save-As dialog,
+    // assign e.ResultFilePath to whatever the user chose, and let the
+    // download proceed silently to that destination. The handler uses
+    // e.GetDeferral() so the synchronous OS dialog doesn't make the WV2
+    // message pump wait inside the event invocation.
+
+    private async void OnDownloadStarting(object? sender, CoreWebView2DownloadStartingEventArgs e)
+    {
+        var deferral = e.GetDeferral();
+        try
+        {
+            e.Handled = true;
+
+            var suggestedName = Path.GetFileName(e.ResultFilePath);
+            var ext = Path.GetExtension(suggestedName);
+            var initialDir = ReadLastDir(LastSaveDirFile);
+            var title = await GetLocalizedTitleAsync("save").ConfigureAwait(true);
+
+            var dialog = new Microsoft.Win32.SaveFileDialog
+            {
+                FileName = suggestedName,
+                Title = title,
+                InitialDirectory = initialDir,
+                AddExtension = true,
+                OverwritePrompt = true,
+            };
+            if (!string.IsNullOrEmpty(ext))
+            {
+                var label = ext.TrimStart('.').ToUpperInvariant();
+                dialog.Filter = $"{label} (*{ext})|*{ext}|All files (*.*)|*.*";
+                dialog.DefaultExt = ext;
+            }
+
+            if (dialog.ShowDialog(this) == true)
+            {
+                e.ResultFilePath = dialog.FileName;
+                WriteLastDir(LastSaveDirFile, Path.GetDirectoryName(dialog.FileName));
+            }
+            else
+            {
+                e.Cancel = true;
+            }
+        }
+        finally
+        {
+            deferral.Complete();
+        }
+    }
+
+    // ─── File open: postMessage RPC from JS ──────────────────────────────
+    //
+    // files.js (PF_IS_DESKTOP branch) posts "file:open:<accept>:<id>" when
+    // Blazor calls preflightFiles.pickText. We reply with the file's text
+    // payload via PostWebMessageAsString. Tied together by correlation id
+    // so multiple in-flight pickers don't cross.
+
+    private async Task HandleFileOpenRequestAsync(string accept, string requestId)
+    {
+        var initialDir = ReadLastDir(LastOpenDirFile);
+        var title = await GetLocalizedTitleAsync("open").ConfigureAwait(true);
+
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = title,
+            InitialDirectory = initialDir,
+            CheckFileExists = true,
+            Multiselect = false,
+        };
+        if (!string.IsNullOrEmpty(accept) && accept.StartsWith('.'))
+        {
+            var label = accept.TrimStart('.').ToUpperInvariant();
+            dialog.Filter = $"{label} (*{accept})|*{accept}|All files (*.*)|*.*";
+            dialog.DefaultExt = accept;
+        }
+
+        string? name = null;
+        string? text = null;
+        if (dialog.ShowDialog(this) == true)
+        {
+            try
+            {
+                text = await File.ReadAllTextAsync(dialog.FileName).ConfigureAwait(true);
+                name = Path.GetFileName(dialog.FileName);
+                WriteLastDir(LastOpenDirFile, Path.GetDirectoryName(dialog.FileName));
+            }
+            catch
+            {
+                // Read failure - reply with null payload so the JS promise
+                // resolves null (matches user-cancel semantics on the JS side).
+            }
+        }
+
+        var payload = JsonSerializer.Serialize(new { id = requestId, name, text });
+        try
+        {
+            WebView.CoreWebView2.PostWebMessageAsString("file:open:result:" + payload);
+        }
+        catch
+        {
+            // CoreWebView2 may have been disposed during the dialog if the
+            // user closed the window - nothing to do.
+        }
+    }
+
+    // ─── Localization helper ──────────────────────────────────────────────
+    //
+    // Reads the persisted UI culture from JS (preflightCulture.get reads
+    // localStorage["preflight.culture"]) and returns a localized title for
+    // the given dialog kind. Falls back to English on any error so the
+    // dialog still has a sane title even if the JS bridge is unavailable.
+
+    private async Task<string> GetLocalizedTitleAsync(string kind)
+    {
+        try
+        {
+            var raw = await WebView.CoreWebView2.ExecuteScriptAsync(
+                "(window.preflightCulture && window.preflightCulture.get && window.preflightCulture.get()) || 'en'");
+            var lang = raw?.Trim('"') ?? "en";
+            return (kind, lang) switch
+            {
+                ("save", "uk") => "Зберегти файл як…",
+                ("open", "uk") => "Відкрити файл",
+                ("save", _) => "Save file as…",
+                ("open", _) => "Open file",
+                _ => "preflight.xml",
+            };
+        }
+        catch
+        {
+            return kind == "save" ? "Save file as…" : "Open file";
+        }
+    }
+
+    // ─── Last-directory persistence ───────────────────────────────────────
+
+    private string LastSaveDirFile => Path.Combine(_settingsFolder, "last-save-dir.txt");
+    private string LastOpenDirFile => Path.Combine(_settingsFolder, "last-open-dir.txt");
+
+    private static string ReadLastDir(string path)
+    {
+        try
+        {
+            if (File.Exists(path))
+            {
+                var dir = File.ReadAllText(path).Trim();
+                if (Directory.Exists(dir)) return dir;
+            }
+        }
+        catch { /* ignore */ }
+        return Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+    }
+
+    private static void WriteLastDir(string path, string? dir)
+    {
+        if (string.IsNullOrEmpty(dir) || !Directory.Exists(dir)) return;
+        try
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            File.WriteAllText(path, dir);
+        }
+        catch { /* ignore */ }
     }
 
     /// <summary>
@@ -293,11 +570,14 @@ public partial class MainWindow : Window
         catch
         {
             // Read-only install location - fall back to per-user state in
-            // %LocalAppData%\Preflight\WebView2. The app still runs; the
+            // %LocalAppData%\preflight.xml\WebView2. The app still runs; the
             // user just won't get the portable behaviour.
+            // Folder name matches the Velopack packId so a future
+            // managed install (Setup.exe) and the portable fallback share
+            // one user-data directory.
             return Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                "Preflight", "WebView2");
+                "preflight.xml", "WebView2");
         }
     }
 

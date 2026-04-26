@@ -5,10 +5,27 @@
 
     <PropertyGroup>
         <RootNamespace>Preflight.Desktop</RootNamespace>
+        <!--
+            Custom Main lives in Program.cs so Velopack's install / update
+            hooks can short-circuit before WPF constructs anything. See
+            Program.cs for the rationale.
+        -->
+        <StartupObject>Preflight.Desktop.Program</StartupObject>
     </PropertyGroup>
+
+    <!--
+        Disable WPF's default ApplicationDefinition (which auto-generates a
+        Main) and re-include App.xaml as a Page so InitializeComponent still
+        wires up the resource dictionary. Custom Main lives in Program.cs.
+    -->
+    <ItemGroup>
+        <ApplicationDefinition Remove="App.xaml" />
+        <Page Include="App.xaml" />
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.Web.WebView2" />
+        <PackageReference Include="Velopack" />
     </ItemGroup>
 
     <!-- Embed the brand icon as a WPF resource so Window.Icon and any
@@ -20,20 +37,45 @@
 
     <!--
     After every Build: publish the Blazor WASM project and copy its wwwroot
-    output next to this executable so WebView2 can serve the files.
+    next to this executable so WebView2 can serve the files at runtime
+    (both in `dotnet run` from bin/<cfg>/ and after `dotnet publish`).
+
+    Two targets share one Blazor publish so we don't pay the WASM cost
+    twice when both Build and Publish are invoked in the same dotnet
+    invocation. PrepareBlazorWasm runs before Build, dropping the static
+    files into a temp folder; CopyBlazorToOutDir mirrors them next to the
+    debug exe; CopyBlazorToPublishDir mirrors them into the publish output
+    so vpk pack (using "publish" as packDir) ships the PWA in the bundle.
   -->
-    <Target Name="PublishAndCopyBlazor" AfterTargets="Build">
-        <Message Text="Publishing Preflight.App (Blazor WASM)..." Importance="high" />
-        <Exec
-            Command="dotnet publish ..\Preflight.App\Preflight.App.csproj -c Release -o $(MSBuildProjectDirectory)\blazor-temp --nologo" />
+    <PropertyGroup>
+        <_BlazorTemp>$(MSBuildProjectDirectory)\blazor-temp</_BlazorTemp>
+    </PropertyGroup>
+
+    <Target Name="PrepareBlazorWasm" BeforeTargets="Build;Publish">
+        <Message Text="Publishing Preflight.App (Blazor WASM) → $(_BlazorTemp)" Importance="high" />
+        <Exec Condition="!Exists('$(_BlazorTemp)\wwwroot\index.html')"
+              Command="dotnet publish ..\Preflight.App\Preflight.App.csproj -c Release -o &quot;$(_BlazorTemp)&quot; --nologo" />
+    </Target>
+
+    <Target Name="CopyBlazorToOutDir" AfterTargets="Build" DependsOnTargets="PrepareBlazorWasm">
         <ItemGroup>
-            <BlazorFiles Include="$(MSBuildProjectDirectory)\blazor-temp\wwwroot\**\*" />
+            <_BlazorOutFiles Include="$(_BlazorTemp)\wwwroot\**\*" />
         </ItemGroup>
-        <Copy SourceFiles="@(BlazorFiles)"
-            DestinationFolder="$(OutDir)wwwroot\%(RecursiveDir)"
-            SkipUnchangedFiles="true" />
-        <RemoveDir Directories="$(MSBuildProjectDirectory)\blazor-temp" />
-        <Message Text="Blazor wwwroot copied to $(OutDir)wwwroot" Importance="high" />
+        <Copy SourceFiles="@(_BlazorOutFiles)"
+              DestinationFolder="$(OutDir)wwwroot\%(RecursiveDir)"
+              SkipUnchangedFiles="true" />
+        <Message Text="Blazor wwwroot → $(OutDir)wwwroot" Importance="high" />
+    </Target>
+
+    <Target Name="CopyBlazorToPublishDir" AfterTargets="Publish" DependsOnTargets="PrepareBlazorWasm">
+        <ItemGroup>
+            <_BlazorPubFiles Include="$(_BlazorTemp)\wwwroot\**\*" />
+        </ItemGroup>
+        <Copy SourceFiles="@(_BlazorPubFiles)"
+              DestinationFolder="$(PublishDir)wwwroot\%(RecursiveDir)"
+              SkipUnchangedFiles="true" />
+        <Message Text="Blazor wwwroot → $(PublishDir)wwwroot" Importance="high" />
+        <RemoveDir Directories="$(_BlazorTemp)" />
     </Target>
 
 </Project>

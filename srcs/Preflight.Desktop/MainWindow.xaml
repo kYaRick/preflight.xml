@@ -138,10 +138,83 @@
                 signals ready, App fades the window in and dismisses the
                 splash - see App.OnStartup + MainWindow.FirstPageRendered.
             -->
-            <wv2:WebView2
-                x:Name="WebView"
-                Grid.Row="1"
-                DefaultBackgroundColor="#14152A" />
+            <Grid Grid.Row="1">
+                <wv2:WebView2
+                    x:Name="WebView"
+                    DefaultBackgroundColor="#14152A" />
+
+                <!--
+                    Update-ready banner. Appears above the WebView when the
+                    background updater finishes downloading a new release.
+                    Pinned to the bottom so it doesn't cover the page header
+                    and out-of-flow so toggling it doesn't reflow the WebView
+                    underneath.
+                -->
+                <Border x:Name="UpdateBanner"
+                        VerticalAlignment="Bottom"
+                        HorizontalAlignment="Stretch"
+                        Margin="14,0,14,14"
+                        Padding="14,10"
+                        Background="{StaticResource PfSurfaceBrush}"
+                        BorderBrush="{StaticResource PfBorderStrongBrush}"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Visibility="Collapsed">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000"
+                                          Direction="270"
+                                          ShadowDepth="2"
+                                          Opacity="0.45"
+                                          BlurRadius="18" />
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Viewbox Grid.Column="0" Width="20" Height="20" Margin="0,0,12,0">
+                            <Path Data="{StaticResource PfPlaneGeometry}"
+                                  Fill="{StaticResource PfBrandGradient}" />
+                        </Viewbox>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock x:Name="UpdateBannerTitle"
+                                       FontFamily="Segoe UI Variable, Segoe UI"
+                                       FontSize="13"
+                                       FontWeight="SemiBold"
+                                       Foreground="{StaticResource PfTextBrush}" />
+                            <TextBlock x:Name="UpdateBannerSubtitle"
+                                       FontFamily="Segoe UI Variable, Segoe UI"
+                                       FontSize="11"
+                                       Foreground="{StaticResource PfTextSubtleBrush}" />
+                        </StackPanel>
+                        <Button Grid.Column="2"
+                                x:Name="UpdateDismissButton"
+                                Click="OnUpdateDismissClick"
+                                Margin="8,0,6,0"
+                                Padding="10,4"
+                                Background="Transparent"
+                                BorderBrush="{StaticResource PfBorderBrush}"
+                                BorderThickness="1"
+                                Foreground="{StaticResource PfTextMutedBrush}"
+                                Cursor="Hand">
+                            <TextBlock x:Name="UpdateDismissText" FontSize="12" />
+                        </Button>
+                        <Button Grid.Column="3"
+                                x:Name="UpdateRestartButton"
+                                Click="OnUpdateRestartClick"
+                                Padding="14,6"
+                                Background="{StaticResource PfBrandGradient}"
+                                BorderThickness="0"
+                                Foreground="White"
+                                FontWeight="SemiBold"
+                                Cursor="Hand">
+                            <TextBlock x:Name="UpdateRestartText" FontSize="12" />
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
         </Grid>
     </Border>
 </Window>

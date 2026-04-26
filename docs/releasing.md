@@ -2,12 +2,22 @@
 
 # 🎁 Releasing
 
-<sub>Tag-driven. Push <code>vX.Y.Z</code> → a portable PWA archive lands in a draft GitHub Release.</sub>
+<sub>Tag-driven. Push <code>vX.Y.Z</code> → a portable PWA archive AND a Velopack desktop bundle land in a single draft GitHub Release.</sub>
 
 </div>
 
-Pipeline: [`release.yml`](../.github/workflows/release.yml). This page
-is the operator's handbook.
+Pipeline: [`release.yml`](../.github/workflows/release.yml). Two jobs:
+
+| Job        | Runner          | Output                                                                       |
+| :--------- | :-------------- | :--------------------------------------------------------------------------- |
+| `package`  | `ubuntu-latest` | `preflight.xml-pwa-X.Y.Z.zip` + `.tar.gz` + `SHA256SUMS.txt`                 |
+| `desktop`  | `windows-latest`| `preflight.xml-alpha-Portable.zip` + `RELEASES-alpha` + full/delta nupkg     |
+
+The `desktop` job runs after `package` and uses `vpk upload github
+--merge` to attach its artifacts to the same draft release - users see
+one release with all downloads.
+
+This page is the operator's handbook.
 
 ---
 
@@ -151,10 +161,81 @@ cd wwwroot-
 
 ## 📱 Install as a desktop app
 
-The archive is a PWA. Served over HTTPS, browsers offer an install
-button in the address bar; installing creates a standalone window with
-its own icon; uninstalling is one click in the browser's app menu.
-Works on Windows, macOS, Linux desktop, Android, iOS / iPadOS.
+### Native Windows shell (recommended on Windows)
+
+The `desktop` job ships a portable bundle:
+
+```
+preflight.xml-alpha-Portable.zip
+└── preflight.xml.exe    ← double-click to run
+```
+
+Unzip anywhere - no admin rights, no installer, no registry writes (the
+WebView2 profile and last-used folder preferences live in a `data/`
+folder next to the exe). On launch the app polls GitHub Releases for
+newer builds in the alpha channel and shows a one-click "Restart now"
+banner inside the window when an update finishes downloading.
+
+> [!NOTE]
+> The shell embeds the same Blazor PWA as the live site - no in-page
+> functionality is lost. The native window adds OS-themed file dialogs,
+> a custom title bar, and the auto-update affordance.
+
+### Cross-platform PWA
+
+The PWA archive is the canonical install for everything except a
+Windows machine that wants Windows-shell ergonomics. Served over
+HTTPS, browsers offer an install button in the address bar; installing
+creates a standalone window with its own icon; uninstalling is one
+click in the browser's app menu. Works on Windows, macOS, Linux
+desktop, Android, iOS / iPadOS.
+
+## 🖥️ Local desktop packaging
+
+For a smoke test of the desktop bundle without pushing a tag:
+
+```bash
+just desktop-pack            # auto-version from Directory.Build.props
+just desktop-pack 0.1.2-rc1  # explicit version override
+
+# Output:
+#   artifacts/desktop/releases/
+#   ├── preflight.xml-alpha-Portable.zip
+#   ├── preflight.xml-<ver>-alpha-full.nupkg
+#   ├── preflight.xml-<ver>-alpha-delta.nupkg  (if a previous release exists)
+#   ├── RELEASES-alpha
+#   ├── assets.alpha.json
+#   └── releases.alpha.json
+```
+
+The recipe installs `vpk` via `dotnet tool install -g vpk` if missing,
+publishes the desktop project as `win-x64` self-contained, then runs
+`vpk pack --noInst` (no Setup.exe; we ship the portable form only).
+
+To publish a local-built bundle to GitHub manually:
+
+```bash
+export GITHUB_TOKEN=ghp_xxx     # PAT with `repo` scope
+just desktop-release v0.1.2     # vpk upload github --merge --pre
+```
+
+## 🛰️ Auto-update internals
+
+The desktop reads `RELEASES-alpha` and the `*-full.nupkg` /
+`*-delta.nupkg` siblings from the GitHub Release matching the **alpha
+channel**. The channel name is wired in three places that must agree:
+
+| File                                                   | Setting                       |
+| :----------------------------------------------------- | :---------------------------- |
+| `srcs/Preflight.Desktop/UpdateService.cs`              | `Channel = "alpha"`           |
+| `justfile`                                             | `DESKTOP_CHANNEL := "alpha"`  |
+| `.github/workflows/release.yml` (desktop job)          | `--channel alpha`             |
+
+Bumping the channel name (e.g. `alpha` → `stable` once 1.0 ships) is
+all three at once - missing one breaks update discovery silently.
+`UpdateManager.IsInstalled` returns false in dev (running from
+`bin/Debug`) and for portable extractions where Velopack's `Update.exe`
+is absent, so no update activity happens during local development.
 
 ## 🔢 Versioning
 
