@@ -38,6 +38,22 @@ config never leaves your machine.
 > [Unattended Windows Setup Reference](https://learn.microsoft.com/en-us/windows-hardware/customize/desktop/unattend/)
 > is the canonical source.
 
+## 🖥️ App showcase
+
+<div align="center">
+  <img src="docs/assets/preflight-showcase.gif" alt="preflight.xml app showcase" width="100%">
+  <sub>UI overview: landing, desktop splash and in-app experience.</sub>
+</div>
+
+<br>
+
+## 🧠 How autounattend.xml works
+
+<div align="center">
+  <img src="docs/assets/preflight-flow.gif" alt="autounattend.xml setup flow" width="100%">
+  <sub>Concept flow: how autounattend.xml answers Windows Setup prompts end-to-end.</sub>
+</div>
+
 ## 🎯 Planned features
 
 <table>
