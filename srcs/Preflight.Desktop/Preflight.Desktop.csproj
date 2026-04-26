@@ -33,6 +33,15 @@
         <PublishReadyToRun>false</PublishReadyToRun>
     </PropertyGroup>
 
+    <!--
+        CI restore can run on Linux/macOS, but this project targets
+        net10.0-windows (set centrally). On non-Windows hosts the SDK
+        requires EnableWindowsTargeting=true to restore reference packs.
+    -->
+    <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    </PropertyGroup>
+
     <!-- Development-only feature flags. Uncomment/comment individual PropertyGroups to toggle. -->
 
     <!--
