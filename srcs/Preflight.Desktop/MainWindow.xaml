@@ -6,7 +6,7 @@
     xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
     Title="preflight.xml"
     Width="1080"
-    Height="900"
+    Height="920"
     MinWidth="800"
     MinHeight="600"
     Background="{StaticResource PfSurfaceDeepBrush}"

@@ -210,6 +210,13 @@ desktop-pack version="": desktop-vpk-install desktop-publish
       --runtime          {{DESKTOP_RUNTIME}} \
       --outputDir        {{DESKTOP_RELEASES}} \
       --noInst; \
+    cap="{{DESKTOP_PACK_ID}}-{{DESKTOP_CHANNEL}}-Portable.zip"; \
+    low="{{DESKTOP_PACK_ID}}-$ver-{{DESKTOP_CHANNEL}}-{{DESKTOP_RUNTIME}}-portable.zip"; \
+    if [[ -f "{{DESKTOP_RELEASES}}/$cap" ]]; then \
+      mv "{{DESKTOP_RELEASES}}/$cap" "{{DESKTOP_RELEASES}}/$low"; \
+      perl -pi -e "s|\\Q$cap\\E|$low|g" "{{DESKTOP_RELEASES}}/assets.{{DESKTOP_CHANNEL}}.json"; \
+      echo "📝 renamed Portable.zip → $low (assets manifest patched)"; \
+    fi; \
     echo "✅ desktop pack ready → {{DESKTOP_RELEASES}}"
 
 # 🚀 upload the packed release to a GitHub draft release matching the tag.

@@ -11,6 +11,26 @@
             Program.cs for the rationale.
         -->
         <StartupObject>Preflight.Desktop.Program</StartupObject>
+
+        <!--
+            Size-optimisation knobs for the published self-contained bundle.
+
+            PublishReadyToRun=false   - skip ahead-of-time native code
+                                        generation. R2R adds ~15-20 MB to a
+                                        WPF + WebView2 self-contained bundle
+                                        in exchange for a ~200 ms cold-start
+                                        win. For a one-window utility that
+                                        already shows a splash during boot
+                                        the user can't perceive the
+                                        difference - the bytes are worth
+                                        more than the milliseconds.
+
+            (PublishTrimmed is intentionally NOT enabled. WPF uses heavy
+             XAML reflection and Newtonsoft.Json's polymorphic $type
+             deserialisation in UnattendGenerator both fall over with the
+             default IL trimmer. The trade is not worth the breakage risk.)
+        -->
+        <PublishReadyToRun>false</PublishReadyToRun>
     </PropertyGroup>
 
     <!--
@@ -69,12 +89,18 @@
 
     <Target Name="CopyBlazorToPublishDir" AfterTargets="Publish" DependsOnTargets="PrepareBlazorWasm">
         <ItemGroup>
-            <_BlazorPubFiles Include="$(_BlazorTemp)\wwwroot\**\*" />
+            <!--
+                Skip the .gz pre-compressed Blazor assets - WebView2 reads
+                Brotli (.br) natively and Brotli is ~20% smaller. Shipping
+                both .gz AND .br doubles the cost of every Blazor framework
+                file for zero runtime benefit in the desktop shell.
+            -->
+            <_BlazorPubFiles Include="$(_BlazorTemp)\wwwroot\**\*" Exclude="$(_BlazorTemp)\wwwroot\**\*.gz" />
         </ItemGroup>
         <Copy SourceFiles="@(_BlazorPubFiles)"
               DestinationFolder="$(PublishDir)wwwroot\%(RecursiveDir)"
               SkipUnchangedFiles="true" />
-        <Message Text="Blazor wwwroot → $(PublishDir)wwwroot" Importance="high" />
+        <Message Text="Blazor wwwroot → $(PublishDir)wwwroot (no .gz)" Importance="high" />
         <RemoveDir Directories="$(_BlazorTemp)" />
     </Target>
 

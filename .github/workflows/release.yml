@@ -222,6 +222,23 @@ jobs:
             --outputDir   artifacts/desktop/releases \
             --noInst
 
+      # Velopack labels the portable artifact as `<id>-<channel>-Portable.zip`
+      # (versionless, capital P). For consistency with the rest of the release
+      # asset family - lowercase, version-stamped, runtime-stamped - rename
+      # both the file and its reference in assets.<channel>.json before the
+      # upload step reads them.
+      - name: 📝 Rename portable zip (lowercase + version + runtime)
+        shell: bash
+        run: |
+          cd artifacts/desktop/releases
+          cap="preflight.xml-alpha-Portable.zip"
+          low="preflight.xml-${{ steps.ver.outputs.version }}-alpha-win-x64-portable.zip"
+          if [[ -f "$cap" ]]; then
+            mv "$cap" "$low"
+            perl -pi -e "s|\\Q$cap\\E|$low|g" assets.alpha.json
+            echo "renamed: $cap → $low"
+          fi
+
       # --merge attaches our artifacts to the draft release the
       # `package` job already created for this tag. --pre marks it
       # as a pre-release (matches the alpha channel semantics).
