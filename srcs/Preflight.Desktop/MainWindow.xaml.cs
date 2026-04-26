@@ -362,16 +362,38 @@ public partial class MainWindow : Window
         WebView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
 
         // Patch preflightCulture.set so it also posts a message to the
-        // desktop shell whenever the user switches language. The shell uses
-        // this to retranslate any visible update banner immediately.
+        // desktop shell whenever the user switches language. The helper
+        // object may be created after document-start, so retry briefly.
         await WebView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("""
             (function () {
-                const _orig = window.preflightCulture?.set;
-                if (!_orig) return;
-                window.preflightCulture.set = function (value) {
-                    _orig.call(this, value);
-                    window.chrome.webview.postMessage('preflight:culture:' + value);
-                };
+                function patchCultureSetter() {
+                    const obj = window.preflightCulture;
+                    if (!obj || typeof obj.set !== 'function' || obj.__pfCultureBridgePatched) {
+                        return false;
+                    }
+
+                    const orig = obj.set.bind(obj);
+                    obj.set = function (value) {
+                        orig(value);
+                        try {
+                            window.chrome.webview.postMessage('preflight:culture:' + value);
+                        } catch (_) {
+                            // Ignore host-bridge errors.
+                        }
+                    };
+                    obj.__pfCultureBridgePatched = true;
+                    return true;
+                }
+
+                if (patchCultureSetter()) return;
+
+                const timer = setInterval(function () {
+                    if (patchCultureSetter()) {
+                        clearInterval(timer);
+                    }
+                }, 100);
+
+                setTimeout(function () { clearInterval(timer); }, 10000);
             })();
             """);
         // Intercept the WebView2/Edge default download bar so the user gets

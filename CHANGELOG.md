@@ -13,7 +13,7 @@ All notable changes to **preflight.xml** are documented here. Format follows
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 <!-- internal:end -->
 
-## [Unreleased]
+## v0.1.2-alpha
 
 ### Added
 
@@ -47,6 +47,12 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   like they're falling off the page.
 - Advanced XML preview modal now fades in/out with the same chrome family
   as the other modals (previously it snapped open with no transition).
+- Desktop update UI now uses a dedicated overlay window (WPF) instead of
+  an in-tree panel/popup, so the banner is no longer clipped or hidden by
+  WebView2 HWND airspace.
+- Update checks now start after the first rendered app frame (post-splash)
+  instead of immediately at process startup, preventing update UI from
+  racing the compact splash phase.
 
 ### Fixed
 
@@ -61,6 +67,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   it) - the modal was rendered inside the body grid, which trapped its
   backdrop-filter inside a stacking context that sat below the sticky
   header.
+- Desktop update banner positioning is now anchored to the main window and
+  continuously reflowed on move/resize, eliminating random off-window
+  placement.
+- Desktop update banner now re-translates immediately when UI language is
+  changed in-app (via `preflightCulture.set` bridge to the desktop shell).
 
 <!-- internal:start -->
 ### Maintenance
@@ -103,4 +114,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `CopyBlazorToOutDir` (post-Build) + `CopyBlazorToPublishDir`
   (post-Publish) so `dotnet publish --output …` ships the PWA inside
   the bundle - vpk pack used to ship a desktop folder with no wwwroot.
+- Added `UpdateBannerWindow` (transparent, owner-bound overlay window) for
+  desktop update notifications, including localization refresh and explicit
+  restart/dismiss callbacks wired to `UpdateService`.
 <!-- internal:end -->
