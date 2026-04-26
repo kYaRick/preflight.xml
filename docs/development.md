@@ -47,7 +47,7 @@ When the Update Test profile is active:
 - The banner shows version `0.1.2-alpha-test` and localized copy about the available update.
 - Clicking "Restart now" will show a message: `"Test mode: restart and update apply were skipped."` instead of actually restarting.
   - This allows you to test the UI flow without closing the app.
-  - See [OnUpdateRestartClick](../srcs/Preflight.Desktop/MainWindow.xaml.cs#L137) for the dry-run logic.
+  - See [OnBannerRestartRequested](../srcs/Preflight.Desktop/MainWindow.xaml.cs) for the dry-run logic.
 
 #### Environment Variables
 
