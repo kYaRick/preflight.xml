@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Velopack;
 using Velopack.Sources;
@@ -35,7 +34,7 @@ namespace Preflight.Desktop;
 /// works; the user just upgrades by re-downloading the next portable zip.
 /// </para>
 /// </remarks>
-public sealed class UpdateService
+public sealed partial class UpdateService
 {
     private const string RepoUrl = "https://github.com/kYaRick/preflight.xml";
 
@@ -55,6 +54,16 @@ public sealed class UpdateService
     private readonly UpdateManager _manager;
     private bool _started;
 
+    public bool IsDryRunEnabled
+    {
+        get
+        {
+            var enabled = false;
+            TryGetDryRunEnabled(ref enabled);
+            return enabled;
+        }
+    }
+
     /// <summary>The version that has been downloaded and is ready to apply.</summary>
     public string? PendingVersion { get; private set; }
 
@@ -72,6 +81,8 @@ public sealed class UpdateService
         {
             ExplicitChannel = Channel,
         });
+
+        ConfigureUpdateTestHooks();
     }
 
     /// <summary>Idempotently kicks off the background update check.</summary>
@@ -79,6 +90,14 @@ public sealed class UpdateService
     {
         if (_started) return;
         _started = true;
+
+        Task? simulationTask = null;
+        TryGetUpdateTestSimulationTask(ref simulationTask);
+        if (simulationTask is not null)
+        {
+            _ = simulationTask;
+            return;
+        }
 
         // Fire-and-forget. We capture exceptions inside the loop so the
         // task scheduler never sees an unobserved task exception.
@@ -90,21 +109,32 @@ public sealed class UpdateService
     /// after <see cref="UpdateReady"/> has fired - calling it without a
     /// downloaded update is a no-op (Velopack throws which we swallow).
     /// </summary>
-    public void ApplyAndRestart()
+    public bool ApplyAndRestart()
     {
+        var skipApply = false;
+        OnDryRunApplyRequested(ref skipApply);
+        if (skipApply) return false;
+
         try
         {
             _manager.WaitExitThenApplyUpdates(null);
             // Velopack dispatches the relaunch; the caller still needs to
             // shut its UI down so Update.exe can replace the binaries
             // without a file lock conflict.
+            return true;
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine(
                 $"[UpdateService] ApplyAndRestart failed: {ex.Message}");
+            return false;
         }
     }
+
+    partial void ConfigureUpdateTestHooks();
+    partial void TryGetUpdateTestSimulationTask(ref Task? simulationTask);
+    partial void OnDryRunApplyRequested(ref bool skipApply);
+    partial void TryGetDryRunEnabled(ref bool enabled);
 
     private async Task RunOnceAsync()
     {

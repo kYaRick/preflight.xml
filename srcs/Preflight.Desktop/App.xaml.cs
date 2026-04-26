@@ -12,7 +12,7 @@ public partial class App : Application
     public static UpdateService Updates { get; } = new();
 
     /// <summary>
-    /// Single-window startup. The splash is no longer a separate window —
+    /// Single-window startup. The splash is no longer a separate window -
     /// it lives inside MainWindow as an overlay (see SplashOverlay in
     /// MainWindow.xaml). Title bar + frame are shared between the splash
     /// phase and the rendered-app phase, so the user sees one window
@@ -26,6 +26,9 @@ public partial class App : Application
         var main = new MainWindow();
         main.Show();
 
-        Updates.StartBackgroundCheck();
+        // Don't start checking for updates yet - wait until the page has
+        // rendered and the UI is stable (FirstPageRendered event).
+        // This avoids update notifications competing with splash animations.
+        main.FirstPageRendered += (_, _) => Updates.StartBackgroundCheck();
     }
 }

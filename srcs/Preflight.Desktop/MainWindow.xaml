@@ -44,7 +44,7 @@
         overlay can sit on top without being punched through). The
         trade-off vs the previous two-window approach is that
         Visibility=Hidden parks WebView2 in Chromium's background-tab
-        throttle, slowing Blazor's mount somewhat — accepted in exchange
+        throttle, slowing Blazor's mount somewhat - accepted in exchange
         for the single-window UX.
     -->
     <Window.Resources>
@@ -176,7 +176,7 @@
                 Win32 child HWND that ignores WPF airspace, so the only
                 reliable way to keep a WPF visual (the splash overlay
                 below) on top without punch-through is to disable the
-                WebView2 renderer. Visibility=Hidden does that —
+                WebView2 renderer. Visibility=Hidden does that -
                 CoreWebView2Controller.IsVisible flips to false. JavaScript
                 still runs (per WebView2's contract), so Blazor can mount
                 in the background, but Chromium throttles requestAnimationFrame
@@ -190,87 +190,15 @@
                     DefaultBackgroundColor="#14152A" />
 
                 <!--
-                    Update-ready banner. Appears above the WebView when the
-                    background updater finishes downloading a new release.
-                    Pinned to the bottom so it doesn't cover the page header
-                    and out-of-flow so toggling it doesn't reflow the WebView
-                    underneath.
-                -->
-                <Border x:Name="UpdateBanner"
-                    VerticalAlignment="Bottom"
-                    HorizontalAlignment="Stretch"
-                    Margin="14,0,14,14"
-                    Padding="14,10"
-                    Background="{StaticResource PfSurfaceBrush}"
-                    BorderBrush="{StaticResource PfBorderStrongBrush}"
-                    BorderThickness="1"
-                    CornerRadius="10"
-                    Visibility="Collapsed">
-                    <Border.Effect>
-                        <DropShadowEffect Color="#000000"
-                            Direction="270"
-                            ShadowDepth="2"
-                            Opacity="0.45"
-                            BlurRadius="18" />
-                    </Border.Effect>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <Viewbox Grid.Column="0" Width="20" Height="20" Margin="0,0,12,0">
-                            <Path Data="{StaticResource PfPlaneGeometry}"
-                                Fill="{StaticResource PfBrandGradient}" />
-                        </Viewbox>
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                            <TextBlock x:Name="UpdateBannerTitle"
-                                FontFamily="Segoe UI Variable, Segoe UI"
-                                FontSize="13"
-                                FontWeight="SemiBold"
-                                Foreground="{StaticResource PfTextBrush}" />
-                            <TextBlock x:Name="UpdateBannerSubtitle"
-                                FontFamily="Segoe UI Variable, Segoe UI"
-                                FontSize="11"
-                                Foreground="{StaticResource PfTextSubtleBrush}" />
-                        </StackPanel>
-                        <Button Grid.Column="2"
-                            x:Name="UpdateDismissButton"
-                            Click="OnUpdateDismissClick"
-                            Margin="8,0,6,0"
-                            Padding="10,4"
-                            Background="Transparent"
-                            BorderBrush="{StaticResource PfBorderBrush}"
-                            BorderThickness="1"
-                            Foreground="{StaticResource PfTextMutedBrush}"
-                            Cursor="Hand">
-                            <TextBlock x:Name="UpdateDismissText" FontSize="12" />
-                        </Button>
-                        <Button Grid.Column="3"
-                            x:Name="UpdateRestartButton"
-                            Click="OnUpdateRestartClick"
-                            Padding="14,6"
-                            Background="{StaticResource PfBrandGradient}"
-                            BorderThickness="0"
-                            Foreground="White"
-                            FontWeight="SemiBold"
-                            Cursor="Hand">
-                            <TextBlock x:Name="UpdateRestartText" FontSize="12" />
-                        </Button>
-                    </Grid>
-                </Border>
-
-                <!--
                     ───── In-window splash overlay ─────
                     Sits inside the body (Grid.Row=1, NOT spanning the title
                     bar), above the WebView in the visual tree so it
                     visually covers it. The WebView is Visibility=Hidden
                     while this overlay is up, so there's no WPF airspace
-                    conflict — overlay's WPF visuals render normally on top
+                    conflict - overlay's WPF visuals render normally on top
                     of nothing (HWND not painting). Title bar stays visible
                     above this overlay throughout, so the chrome doesn't
-                    "jump in" when the splash dismisses — single-window
+                    "jump in" when the splash dismisses - single-window
                     feel from launch to ready.
                 -->
                 <Border x:Name="SplashOverlay"

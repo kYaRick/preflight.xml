@@ -991,7 +991,8 @@
     <value>Lost in flight</value>
   </data>
   <data name="NotFound.Message">
-    <value>The page you're looking for took off without us. Pick a runway and we'll get you back on course.</value>
+    <value>The page you're looking for took off without us. Pick a runway and we'll get you back on
+      course.</value>
   </data>
   <data name="NotFound.GoHome">
     <value>🏠 Back home</value>
@@ -1990,9 +1991,9 @@
   </data>
   <data name="Import.PastePlaceholder">
     <value>&lt;?xml version="1.0" encoding="utf-8"?&gt;
-&lt;unattend xmlns="urn:schemas-microsoft-com:unattend"&gt;
-  ...
-&lt;/unattend&gt;</value>
+      &lt;unattend xmlns="urn:schemas-microsoft-com:unattend"&gt;
+      ...
+      &lt;/unattend&gt;</value>
   </data>
   <data name="Import.ApplyPaste">
     <value>Apply</value>
@@ -2051,5 +2052,4 @@
       rem Runs inside Windows PE before install...
       exit 0</value>
   </data>
-
 </root>

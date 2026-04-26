@@ -4,6 +4,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
@@ -73,18 +74,23 @@ public partial class MainWindow : Window
         Loaded += OnLoaded;
         Closed += OnClosed;
         StateChanged += OnStateChanged;
+        SizeChanged += (_, _) => RepositionBannerWindow();
+        LocationChanged += (_, _) => RepositionBannerWindow();
 
         // Subscribe to the singleton updater. When a download completes the
         // service raises UpdateReady from a background thread; marshal back
-        // to the dispatcher to flip the banner's visibility safely.
+        // to the dispatcher to show the overlay banner window.
         App.Updates.UpdateReady += OnUpdateReady;
     }
 
+    // Overlay window that shows the update banner above WebView2.
+    private UpdateBannerWindow? _bannerWindow;
+    // Remembers the version string so the banner can be retranslated on lang change.
+    private string? _updateReadyVersion;
+
     /// <summary>
-    /// Fills the banner copy in the user's current UI culture. Reads the
-    /// same `preflight.culture` localStorage key the file dialogs use, so
-    /// the desktop chrome stays in sync with whatever the in-page switcher
-    /// selected.
+    /// Shows the update-ready banner in a separate transparent overlay window
+    /// so it always renders above WebView2's HWND airspace.
     /// </summary>
     private async void OnUpdateReady(object? sender, string version)
     {
@@ -106,12 +112,58 @@ public partial class MainWindow : Window
                     "Later"),
             };
 
-            UpdateBannerTitle.Text = title;
-            UpdateBannerSubtitle.Text = subtitle;
-            UpdateRestartText.Text = restart;
-            UpdateDismissText.Text = later;
-            UpdateBanner.Visibility = Visibility.Visible;
+            _updateReadyVersion = version;
+
+            if (_bannerWindow is null)
+            {
+                _bannerWindow = new UpdateBannerWindow { Owner = this };
+                _bannerWindow.DismissRequested += (_, _) => _bannerWindow.Hide();
+                _bannerWindow.RestartRequested += OnBannerRestartRequested;
+                // After the first layout pass we get real ActualWidth/Height.
+                _bannerWindow.ContentRendered += (_, _) => RepositionBannerWindow();
+            }
+
+            _bannerWindow.SetContent(title, subtitle, restart, later);
+            _bannerWindow.Show();
+            // Show() triggers layout; reposition now that dimensions are known.
+            RepositionBannerWindow();
         });
+    }
+
+    private void RetranslateBannerWindow(string lang)
+    {
+        if (_bannerWindow is null || _updateReadyVersion is null) return;
+
+        (string title, string subtitle, string restart, string later) = lang switch
+        {
+            "uk" => (
+                $"✈️ Готова нова версія {_updateReadyVersion}",
+                "Перезапустіть, щоб застосувати оновлення.",
+                "Перезапустити",
+                "Пізніше"),
+            _ => (
+                $"✈️ Update {_updateReadyVersion} ready",
+                "Restart preflight.xml to apply the new build.",
+                "Restart now",
+                "Later"),
+        };
+
+        _bannerWindow.SetContent(title, subtitle, restart, later);
+    }
+
+    private void RepositionBannerWindow()
+    {
+        if (_bannerWindow is null) return;
+
+        // Force a layout pass so ActualWidth/Height are valid even if called
+        // before the window has painted.
+        _bannerWindow.UpdateLayout();
+        var bw = _bannerWindow.ActualWidth > 0 ? _bannerWindow.ActualWidth : 400;
+        var bh = _bannerWindow.ActualHeight > 0 ? _bannerWindow.ActualHeight : 70;
+
+        const int margin = 14;
+        _bannerWindow.Left = Left + (Width - bw) / 2;
+        _bannerWindow.Top  = Top + Height - bh - margin;
     }
 
     private async System.Threading.Tasks.Task<string> GetCultureAsync()
@@ -128,19 +180,28 @@ public partial class MainWindow : Window
         }
     }
 
-    private void OnUpdateDismissClick(object sender, RoutedEventArgs e)
+    private async void OnBannerRestartRequested(object? sender, EventArgs e)
     {
-        UpdateBanner.Visibility = Visibility.Collapsed;
-        // The downloaded bits stay on disk - Velopack will pick them up at
-        // the user's next restart even without an explicit "apply" click.
-    }
+        if (App.Updates.ApplyAndRestart())
+        {
+            Application.Current.Shutdown();
+            return;
+        }
 
-    private void OnUpdateRestartClick(object sender, RoutedEventArgs e)
-    {
-        // Apply runs in Velopack's update.exe child process; we just need
-        // to shut our window down so the binary swap can succeed.
-        App.Updates.ApplyAndRestart();
-        Application.Current.Shutdown();
+        if (_bannerWindow is null) return;
+
+        var lang = await GetCultureAsync().ConfigureAwait(true);
+        _bannerWindow.SetSubtitle(App.Updates.IsDryRunEnabled
+            ? lang switch
+            {
+                "uk" => "Тестовий режим: перезапуск та застосування оновлення пропущено.",
+                _ => "Test mode: restart and update apply were skipped.",
+            }
+            : lang switch
+            {
+                "uk" => "Не вдалося застосувати оновлення. Спробуйте пізніше.",
+                _ => "Could not apply the update. Please try again later.",
+            });
     }
 
     /// <summary>
@@ -299,6 +360,20 @@ public partial class MainWindow : Window
 
         WebView.CoreWebView2.NavigationCompleted += OnNavigationCompleted;
         WebView.CoreWebView2.WebMessageReceived += OnWebMessageReceived;
+
+        // Patch preflightCulture.set so it also posts a message to the
+        // desktop shell whenever the user switches language. The shell uses
+        // this to retranslate any visible update banner immediately.
+        await WebView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("""
+            (function () {
+                const _orig = window.preflightCulture?.set;
+                if (!_orig) return;
+                window.preflightCulture.set = function (value) {
+                    _orig.call(this, value);
+                    window.chrome.webview.postMessage('preflight:culture:' + value);
+                };
+            })();
+            """);
         // Intercept the WebView2/Edge default download bar so the user gets
         // a system-themed Save-As dialog (Win11's IFileDialog auto-themes
         // light/dark) instead of the in-page browser-style bar. The path
@@ -387,6 +462,14 @@ public partial class MainWindow : Window
 
         if (msg == "preflight:ready") { SignalFirstPageRendered(); return; }
 
+        const string CulturePrefix = "preflight:culture:";
+        if (msg.StartsWith(CulturePrefix, StringComparison.Ordinal))
+        {
+            var lang = msg[CulturePrefix.Length..];
+            RetranslateBannerWindow(lang);
+            return;
+        }
+
         // RPC for the JS-side file picker. Format:
         //   file:open:<accept>:<correlation-id>
         // We respond via PostWebMessageAsString with:
@@ -470,7 +553,7 @@ public partial class MainWindow : Window
     /// dismissed) and the splash starting its cross-fade. Without this, the
     /// splash hand-off lands right when theme.js's page-enter animation
     /// (translateY + scale + blur on .pf-page, ~550ms, plus staggered
-    /// children up to ~660ms) is mid-flight — the user sees the splash
+    /// children up to ~660ms) is mid-flight - the user sees the splash
     /// dissolve into cards still flying into position. 500ms is enough to
     /// catch the bulk of the animation while still feeling responsive.
     /// </summary>
@@ -496,6 +579,8 @@ public partial class MainWindow : Window
         _readyPollTimer?.Stop();
         _readyTimeoutTimer?.Stop();
         App.Updates.UpdateReady -= OnUpdateReady;
+        _bannerWindow?.Close();
+        _bannerWindow = null;
     }
 
     // ─── File save: WebView2 download interception ───────────────────────

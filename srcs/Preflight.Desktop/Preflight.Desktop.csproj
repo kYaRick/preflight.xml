@@ -33,6 +33,17 @@
         <PublishReadyToRun>false</PublishReadyToRun>
     </PropertyGroup>
 
+    <!-- Development-only feature flags. Uncomment/comment individual PropertyGroups to toggle. -->
+
+    <!--
+        UPDATE_TEST: Enable update service testing mode.
+        Allows simulating UpdateReady, dry-run restart, and env-based test configuration.
+        Only compiled in Debug builds. Remove this PropertyGroup to disable.
+    -->
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+        <DefineConstants>$(DefineConstants);UPDATE_TEST</DefineConstants>
+    </PropertyGroup>
+
     <!--
         Disable WPF's default ApplicationDefinition (which auto-generates a
         Main) and re-include App.xaml as a Page so InitializeComponent still
@@ -56,6 +67,7 @@
     </ItemGroup>
 
     <!--
+    Build and publish integration.
     After every Build: publish the Blazor WASM project and copy its wwwroot
     next to this executable so WebView2 can serve the files at runtime
     (both in `dotnet run` from bin/<cfg>/ and after `dotnet publish`).
@@ -74,7 +86,7 @@
     <Target Name="PrepareBlazorWasm" BeforeTargets="Build;Publish">
         <Message Text="Publishing Preflight.App (Blazor WASM) → $(_BlazorTemp)" Importance="high" />
         <Exec Condition="!Exists('$(_BlazorTemp)\wwwroot\index.html')"
-              Command="dotnet publish ..\Preflight.App\Preflight.App.csproj -c Release -o &quot;$(_BlazorTemp)&quot; --nologo" />
+            Command="dotnet publish ..\Preflight.App\Preflight.App.csproj -c Release -o &quot;$(_BlazorTemp)&quot; --nologo" />
     </Target>
 
     <Target Name="CopyBlazorToOutDir" AfterTargets="Build" DependsOnTargets="PrepareBlazorWasm">
@@ -82,12 +94,13 @@
             <_BlazorOutFiles Include="$(_BlazorTemp)\wwwroot\**\*" />
         </ItemGroup>
         <Copy SourceFiles="@(_BlazorOutFiles)"
-              DestinationFolder="$(OutDir)wwwroot\%(RecursiveDir)"
-              SkipUnchangedFiles="true" />
+            DestinationFolder="$(OutDir)wwwroot\%(RecursiveDir)"
+            SkipUnchangedFiles="true" />
         <Message Text="Blazor wwwroot → $(OutDir)wwwroot" Importance="high" />
     </Target>
 
-    <Target Name="CopyBlazorToPublishDir" AfterTargets="Publish" DependsOnTargets="PrepareBlazorWasm">
+    <Target Name="CopyBlazorToPublishDir" AfterTargets="Publish"
+        DependsOnTargets="PrepareBlazorWasm">
         <ItemGroup>
             <!--
                 Skip the .gz pre-compressed Blazor assets - WebView2 reads
@@ -95,11 +108,12 @@
                 both .gz AND .br doubles the cost of every Blazor framework
                 file for zero runtime benefit in the desktop shell.
             -->
-            <_BlazorPubFiles Include="$(_BlazorTemp)\wwwroot\**\*" Exclude="$(_BlazorTemp)\wwwroot\**\*.gz" />
+            <_BlazorPubFiles Include="$(_BlazorTemp)\wwwroot\**\*"
+                Exclude="$(_BlazorTemp)\wwwroot\**\*.gz" />
         </ItemGroup>
         <Copy SourceFiles="@(_BlazorPubFiles)"
-              DestinationFolder="$(PublishDir)wwwroot\%(RecursiveDir)"
-              SkipUnchangedFiles="true" />
+            DestinationFolder="$(PublishDir)wwwroot\%(RecursiveDir)"
+            SkipUnchangedFiles="true" />
         <Message Text="Blazor wwwroot → $(PublishDir)wwwroot (no .gz)" Importance="high" />
         <RemoveDir Directories="$(_BlazorTemp)" />
     </Target>

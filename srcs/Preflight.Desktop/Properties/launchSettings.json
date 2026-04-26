@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Preflight.Desktop": {
+      "commandName": "Project"
+    },
+    "Preflight.Desktop Update Test": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "PREFLIGHT_DESKTOP_UPDATE_TEST_MODE": "1",
+        "PREFLIGHT_DESKTOP_UPDATE_TEST_VERSION": "0.1.2-alpha-test",
+        "PREFLIGHT_DESKTOP_UPDATE_TEST_DELAY_MS": "1200",
+        "PREFLIGHT_DESKTOP_UPDATE_DRY_RUN": "1"
+      }
+    }
+  }
+}
