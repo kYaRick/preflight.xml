@@ -64,7 +64,7 @@ jobs:
         run: just publish
 
       - name: 📤 Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: artifacts/app/Preflight.App/publish/wwwroot
 
