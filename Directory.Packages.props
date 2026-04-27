@@ -6,13 +6,13 @@
     </PropertyGroup>
 
     <ItemGroup Label="Blazor WebAssembly">
-        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.5" />
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.7" />
         <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-            Version="10.0.5" />
+            Version="10.0.7" />
     </ItemGroup>
 
     <ItemGroup Label="Localization">
-        <PackageVersion Include="Microsoft.Extensions.Localization" Version="10.0.0" />
+        <PackageVersion Include="Microsoft.Extensions.Localization" Version="10.0.7" />
     </ItemGroup>
 
     <ItemGroup Label="Transitive pins (security)">
@@ -20,16 +20,16 @@
     </ItemGroup>
 
     <ItemGroup Label="UI">
-        <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.12.1" />
+        <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.14.1" />
         <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.12.1" />
     </ItemGroup>
 
     <ItemGroup Label="Content rendering">
-        <PackageVersion Include="Markdig" Version="0.38.0" />
+        <PackageVersion Include="Markdig" Version="1.1.3" />
     </ItemGroup>
 
     <ItemGroup Label="Unattend generator (vendored from cschneegans/unattend-generator)">
-        <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     </ItemGroup>
 
     <ItemGroup Label="Desktop (WPF + WebView2)">
@@ -43,11 +43,11 @@
     </ItemGroup>
 
     <ItemGroup Label="Testing">
-        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-        <PackageVersion Include="bunit" Version="1.32.7" />
-        <PackageVersion Include="coverlet.collector" Version="6.0.4" />
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.4.0" />
+        <PackageVersion Include="bunit" Version="2.7.2" />
+        <PackageVersion Include="coverlet.collector" Version="10.0.0" />
         <PackageVersion Include="xunit" Version="2.9.3" />
-        <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
+        <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     </ItemGroup>
 
 </Project>
