@@ -38,7 +38,7 @@ jobs:
         uses: extractions/setup-just@v2
 
       - name: 💾 Cache NuGet
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Packages.props', 'global.json') }}
