@@ -20,19 +20,29 @@
     <File Path="justfile" />
   </Folder>
 
-  <!-- Project docs -->
+  <!-- Project docs (top-level + docs/) -->
   <Folder Name="/docs/">
     <File Path="README.md" />
     <File Path="AGENTS.md" />
     <File Path="CONTRIBUTING.md" />
     <File Path="SECURITY.md" />
     <File Path="NOTICE" />
+    <File Path="CHANGELOG.md" />
+    <File Path="CHANGELOG.uk.md" />
     <File Path="docs/README.md" />
     <File Path="docs/architecture.md" />
     <File Path="docs/ci-cd.md" />
+    <File Path="docs/changelog.md" />
+    <File Path="docs/development.md" />
     <File Path="docs/publishing.md" />
     <File Path="docs/releasing.md" />
     <File Path="docs/upstream-sync.md" />
+  </Folder>
+
+  <!-- Licenses & third-party attribution -->
+  <Folder Name="/legal/">
+    <File Path="LICENSE" />
+    <File Path="LICENSES/schneegans-MIT.txt" />
   </Folder>
 
   <!-- GitHub Actions & repo meta -->

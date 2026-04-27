@@ -27,7 +27,7 @@
     </PropertyGroup>
 
     <PropertyGroup Label="Package">
-        <VersionPrefix>0.1.2</VersionPrefix>
+        <VersionPrefix>0.1.3</VersionPrefix>
         <VersionSuffix>alpha</VersionSuffix>
         <Version>$(VersionPrefix)-$(VersionSuffix)</Version>
         <PackageVersion>$(Version)</PackageVersion>
