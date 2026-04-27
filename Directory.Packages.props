@@ -29,7 +29,7 @@
     </ItemGroup>
 
     <ItemGroup Label="Unattend generator (vendored from cschneegans/unattend-generator)">
-        <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageVersion Include="Newtonsoft.Json" Version="13.0.4" />
     </ItemGroup>
 
     <ItemGroup Label="Desktop (WPF + WebView2)">
