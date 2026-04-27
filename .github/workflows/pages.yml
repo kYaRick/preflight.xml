@@ -58,7 +58,7 @@ jobs:
         run: just restore
 
       - name: ⚙️ Configure Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: 🚀 Publish (base /preflight.xml/)
         run: just publish
