@@ -1,6 +1,5 @@
 name-template: "v$RESOLVED_VERSION"
 tag-template: "v$RESOLVED_VERSION"
-target-commitish: main
 categories:
   - title: "✨ Features"
     labels: ["✨ enhancement", "feat"]
