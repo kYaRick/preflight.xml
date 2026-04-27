@@ -229,12 +229,17 @@
                     if (len > 0) html.style.setProperty('--pf-trail-length-px', `${len}px`);
                 } catch { /* getTotalLength can throw on detached / pre-layout SVG */ }
             }
+            let _lastTrailProgress = null;
             const syncTrail = () => {
                 const raw = html.style.getPropertyValue('--blazor-load-percentage')
                     || getComputedStyle(html).getPropertyValue('--blazor-load-percentage');
                 if (!raw) return;
                 const num = parseFloat(raw);
-                if (!Number.isNaN(num)) html.style.setProperty('--pf-trail-progress', String(num));
+                if (Number.isNaN(num)) return;
+                const next = String(num);
+                if (next === _lastTrailProgress) return;
+                _lastTrailProgress = next;
+                html.style.setProperty('--pf-trail-progress', next);
             };
             syncTrail();
             const trailObserver = new MutationObserver(syncTrail);
