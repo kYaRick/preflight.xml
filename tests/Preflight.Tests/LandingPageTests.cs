@@ -1,4 +1,3 @@
-using Bunit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Preflight.App.Pages;
@@ -6,7 +5,7 @@ using Preflight.App.Services;
 
 namespace Preflight.Tests;
 
-public sealed class LandingPageTests : TestContext
+public sealed class LandingPageTests : BunitContext
 {
     public LandingPageTests()
     {
@@ -21,7 +20,7 @@ public sealed class LandingPageTests : TestContext
     [Fact]
     public void Landing_renders_three_mode_cards()
     {
-        var cut = RenderComponent<Landing>();
+        var cut = Render<Landing>();
 
         // Resx resources are not loaded into the bUnit AppDomain, so IStringLocalizer
         // returns either the resolved string or the raw key as fallback. Assert on a
