@@ -13,6 +13,24 @@ All notable changes to **preflight.xml** are documented here. Format follows
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 <!-- internal:end -->
 
+## v0.1.3-alpha
+
+### Fixed
+
+- "Open in Advanced" button on docs pages now works on GitHub Pages -
+  the link no longer escapes the `/preflight.xml/` base path because
+  of a stray leading slash in the href.
+- Loading-screen runway no longer renders fully drawn from the first
+  frame in WebView2 / older Chromium - the trail now actually grows
+  behind the plane as Blazor reports boot progress, instead of
+  appearing pre-drawn.
+
+### Changed
+
+- Cosmetic polish on the loading screen - taller container with proper
+  breathing room above and below the wave, so the plane's glow halo is
+  no longer clipped at the top of tall waves or at the runway baseline.
+
 ## v0.1.2-alpha
 
 ### Added

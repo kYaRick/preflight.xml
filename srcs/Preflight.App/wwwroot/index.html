@@ -137,7 +137,7 @@
                     </linearGradient>
                 </defs>
                 <path class="runway-track" d="M 0 30 Q 50 5, 100 30 T 200 30 T 300 30 T 400 30" />
-                <path class="runway-trail" d="M 0 30 Q 50 5, 100 30 T 200 30 T 300 30 T 400 30" pathLength="100" />
+                <path class="runway-trail" d="M 0 30 Q 50 5, 100 30 T 200 30 T 300 30 T 400 30" />
             </svg>
             <!-- Inline SVG airplane, gradient-filled. Always visible, no
                  background-clip:text quirks across browsers/themes. -->
@@ -198,11 +198,47 @@
             // 2.4s wait stacked on top of the splash.
             const MIN_DISPLAY_MS = PF_IS_DESKTOP ? 0 : 2400;
             const started = Date.now();
+            const html = document.documentElement;
 
             const notifyHost = () => {
                 try { window.chrome?.webview?.postMessage('preflight:ready'); }
                 catch { /* not in WebView2 - ignore */ }
             };
+
+            // Bridge Blazor's "47%" string → unitless 47 in --pf-trail-progress.
+            // Also pin --pf-trail-length-px to the path's actual computed length
+            // (~416 user units for the wave curve). The trail dash-array uses
+            // absolute pixels rather than relying on SVG `pathLength` scaling,
+            // because Chromium / WebView2 does NOT apply pathLength to length-
+            // typed dash values that were computed via CSS calc() / var() - it
+            // treats them as raw px. With dasharray "30px 100px" on a 416px
+            // path the pattern WAS repeating (drawn at 0-30, 130-160, 260-290,
+            // 390-416), which is exactly the "line ahead of the plane" the
+            // user reported. Computing dasharray from the real path length
+            // sidesteps the issue entirely.
+            //
+            // Observation-driven, not polled: a MutationObserver watches <html>'s
+            // style attribute and mirrors --blazor-load-percentage to
+            // --pf-trail-progress in the SAME frame Blazor writes it. Polling at
+            // 120ms (the previous approach) made the plane and trail start their
+            // CSS transitions out of phase.
+            const trailPath = document.querySelector('.runway-trail');
+            if (trailPath) {
+                try {
+                    const len = trailPath.getTotalLength();
+                    if (len > 0) html.style.setProperty('--pf-trail-length-px', `${len}px`);
+                } catch { /* getTotalLength can throw on detached / pre-layout SVG */ }
+            }
+            const syncTrail = () => {
+                const raw = html.style.getPropertyValue('--blazor-load-percentage')
+                    || getComputedStyle(html).getPropertyValue('--blazor-load-percentage');
+                if (!raw) return;
+                const num = parseFloat(raw);
+                if (!Number.isNaN(num)) html.style.setProperty('--pf-trail-progress', String(num));
+            };
+            syncTrail();
+            const trailObserver = new MutationObserver(syncTrail);
+            trailObserver.observe(html, { attributes: true, attributeFilter: ['style'] });
 
             const handle = setInterval(() => {
                 const blazorReady = !!document.querySelector('.layout');
@@ -210,6 +246,10 @@
                 const minElapsed = Date.now() - started >= MIN_DISPLAY_MS;
                 if (blazorReady && (minElapsed || isNotFound)) {
                     clearInterval(handle);
+                    trailObserver.disconnect();
+                    // Pin trail at 100% before fade-out so the runway lands on
+                    // the right-hand crest instead of freezing mid-flight.
+                    html.style.setProperty('--pf-trail-progress', '100');
                     overlay.classList.add('is-done');
                     // Trigger the first page-enter animation AFTER the loader
                     // starts fading. Without this, the page-enter would run
