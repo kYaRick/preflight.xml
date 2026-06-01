@@ -198,6 +198,18 @@ desktop-pack version="": desktop-vpk-install desktop-publish
       ver="$version_prefix"; \
       if [[ -n "$version_suffix" ]]; then ver="$ver-$version_suffix"; fi; \
     fi; \
+    if [[ -n "${GITHUB_TOKEN:-}" ]]; then \
+      echo "📥 vpk download (prior release → delta base)"; \
+      vpk download github \
+        --outputDir {{DESKTOP_RELEASES}} \
+        --channel   {{DESKTOP_CHANNEL}} \
+        --repoUrl   {{REPO_URL}} \
+        --token     "$GITHUB_TOKEN" \
+        --pre \
+      || echo "ℹ️  no prior {{DESKTOP_CHANNEL}} release - packing full-only"; \
+    else \
+      echo "ℹ️  GITHUB_TOKEN unset - skipping delta base download (full-only pack)"; \
+    fi; \
     echo "📦 vpk pack ($ver, channel {{DESKTOP_CHANNEL}}) → {{DESKTOP_RELEASES}}"; \
     vpk pack \
       --packId           {{DESKTOP_PACK_ID}} \

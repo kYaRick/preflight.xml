@@ -207,6 +207,27 @@ jobs:
             --nologo \
             --output artifacts/desktop/publish
 
+      # Delta packages are diffs against the PREVIOUS release. vpk pack only
+      # emits a *-delta.nupkg when the prior release's *-full.nupkg is present
+      # in --outputDir. The runner checks out clean every run, so without this
+      # step outputDir is empty, no diff base exists, and every release ships
+      # full-only - the updater always pulls the whole package. Pull the latest
+      # published alpha release in first so pack has something to diff against.
+      # --pre because the alpha channel is a pre-release; the first ever release
+      # has nothing to download, so don't fail the build when it finds nothing.
+      - name: 📥 vpk download (prior release → delta base)
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          vpk download github \
+            --outputDir artifacts/desktop/releases \
+            --channel   alpha \
+            --repoUrl   https://github.com/${{ github.repository }} \
+            --token     "$GITHUB_TOKEN" \
+            --pre \
+          || echo "::notice title=Delta::No prior alpha release found - packing full-only (expected for first release)"
+
       - name: 📦 vpk pack (alpha channel, portable-only)
         shell: bash
         run: |
