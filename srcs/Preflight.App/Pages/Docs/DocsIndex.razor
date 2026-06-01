@@ -5,15 +5,11 @@
 <PageTitle>@L["Docs.Title"] · preflight.xml</PageTitle>
 
 <div style="padding: 24px 16px; max-width: 1400px; margin: 0 auto;">
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
-        <FluentLabel Typo="Typography.PageTitle">📖 @L["Docs.Title"]</FluentLabel>
-        <FluentSpacer />
-        <FluentAnchor Href="" Appearance="Appearance.Outline">← @L["Common.BackToHome"]</FluentAnchor>
-    </FluentStack>
-
-    <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 16px 0;">@L["Docs.Subtitle"]</FluentLabel>
-
     @*
+        No page heading / subtitle / back button here - the topbar logo already
+        carries "Documentation" and links home. Just the search field and the
+        section cards, so the index opens straight into the content.
+
         Inline search that filters the cards grid by title + subtitle (case
         insensitive). A plain input, no wrapping card, no counter - just enough
         surface for a user to narrow the list without adding visual weight.

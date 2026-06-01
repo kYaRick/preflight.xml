@@ -20,6 +20,9 @@
   <data name="Common.BackToHome">
     <value>На головну</value>
   </data>
+  <data name="Common.Loading">
+    <value>Завантаження…</value>
+  </data>
   <data name="Common.Next">
     <value>Далі</value>
   </data>
@@ -196,6 +199,18 @@
   </data>
   <data name="Landing.Import.ComingSoon">
     <value>Імпорт наявних .xml з'явиться у наступних фазах.</value>
+  </data>
+  <data name="Landing.Guide.Title">
+    <value>Як використати файл</value>
+  </data>
+  <data name="Landing.Guide.Subtitle">
+    <value>Куди покласти autounattend.xml, щоб Windows Setup його підхопив - USB, Ventoy, ISO, VM.</value>
+  </data>
+  <data name="Landing.Guide.Cta">
+    <value>Читати гайд</value>
+  </data>
+  <data name="Landing.Import.Description">
+    <value>Завантаж наявний autounattend.xml і продовж редагування з того місця, де зупинився.</value>
   </data>
 
   <!-- ═══ Wizard ══════════════════════════════════════════════ -->
@@ -441,9 +456,6 @@
   <data name="Advanced.Section.scripts">
     <value>📜 Скрипти</value>
   </data>
-  <data name="Advanced.Section.wdac">
-    <value>🛡️ WDAC</value>
-  </data>
   <data name="Advanced.Section.applocker">
     <value>🔐 AppLocker</value>
   </data>
@@ -566,51 +578,6 @@
   </data>
   <data name="Scripts.RestartExplorer.Description">
     <value>Застосовує реєстрові зміни без перезавантаження.</value>
-  </data>
-
-  <!-- ═══ WDAC section ════════════════════════════════════════ -->
-  <data name="Section.wdac.Subtitle">
-    <value>Windows Defender Application Control - обмеження запуску виконуваних файлів.</value>
-  </data>
-  <data name="Wdac.Mode.Label">
-    <value>Режим</value>
-  </data>
-  <data name="Wdac.Mode.Description">
-    <value>«Не налаштовано» пропускає WDAC. «Базова» розгортає політику за замовчуванням.</value>
-  </data>
-  <data name="Wdac.Mode.NotConfigured">
-    <value>Не налаштовано</value>
-  </data>
-  <data name="Wdac.Mode.Basic">
-    <value>Базова політика</value>
-  </data>
-  <data name="Wdac.Enforcement.Label">
-    <value>Застосування</value>
-  </data>
-  <data name="Wdac.Enforcement.Description">
-    <value>«Тільки аудит» логує порушення, «Застосовувати» блокує. Дійсне лише у режимі «Базова
-      політика».</value>
-  </data>
-  <data name="Wdac.Enforcement.Audit">
-    <value>Лише аудит</value>
-  </data>
-  <data name="Wdac.Enforcement.AuditOnBootFail">
-    <value>Аудит при збою завантаження</value>
-  </data>
-  <data name="Wdac.Enforcement.Enforce">
-    <value>Застосовувати</value>
-  </data>
-  <data name="Wdac.ScriptEnforcement.Label">
-    <value>Застосування до скриптів</value>
-  </data>
-  <data name="Wdac.ScriptEnforcement.Description">
-    <value>«Обмежено» блокує недовірені PowerShell/VBScript; «Без обмежень» дозволяє їх.</value>
-  </data>
-  <data name="Wdac.ScriptEnforcement.Restricted">
-    <value>Обмежено</value>
-  </data>
-  <data name="Wdac.ScriptEnforcement.Unrestricted">
-    <value>Без обмежень</value>
   </data>
 
   <!-- ═══ AppLocker section ═══════════════════════════════════ -->
@@ -1072,6 +1039,9 @@
   <data name="SourceImage.Mode.ByName">
     <value>За назвою</value>
   </data>
+  <data name="SourceImage.Mode.Interactive">
+    <value>Запитати під час встановлення</value>
+  </data>
   <data name="SourceImage.ImageIndex.Label">
     <value>Індекс образу</value>
   </data>
@@ -1086,6 +1056,13 @@
   </data>
   <data name="SourceImage.ImageName.Placeholder">
     <value>Windows 11 Pro</value>
+  </data>
+  <data name="SourceImage.SkipIntegrityCheck.Label">
+    <value>Пропустити перевірку цілісності образу</value>
+  </data>
+  <data name="SourceImage.SkipIntegrityCheck.Description">
+    <value>Прибирає прапорці dism.exe /CheckIntegrity /Verify під час застосування образу. Швидше,
+      але довіряє носію. Діє лише коли диском керує програма (авто-очистка / власний скрипт).</value>
   </data>
 
   <!-- ═══ Compact OS ═════════════════════════════════════════ -->
@@ -1161,14 +1138,10 @@
     <value>Середовище відновлення</value>
   </data>
   <data name="Disk.Recovery.Description">
-    <value>Де Windows розміщує WinRE. Окремий розділ - стандарт, папка економить місце, без WinRE -
-      не встановлювати.</value>
+    <value>Де Windows розміщує WinRE. Окремий розділ - стандарт; без WinRE - не встановлювати.</value>
   </data>
   <data name="Disk.Recovery.Partition">
     <value>Окремий розділ відновлення</value>
-  </data>
-  <data name="Disk.Recovery.Folder">
-    <value>У розділі Windows</value>
   </data>
   <data name="Disk.Recovery.None">
     <value>Не встановлювати WinRE</value>
@@ -1193,16 +1166,10 @@
       ...</value>
   </data>
   <data name="Disk.InstallDiskIndex.Label">
-    <value>Індекс диска для встановлення</value>
+    <value>Індекс цільового диска</value>
   </data>
   <data name="Disk.InstallDiskIndex.Description">
-    <value>Індекс фізичного диска (з нуля), куди Setup записує Windows. 0 - перший диск.</value>
-  </data>
-  <data name="Disk.InstallPartitionIndex.Label">
-    <value>Індекс розділу для встановлення</value>
-  </data>
-  <data name="Disk.InstallPartitionIndex.Description">
-    <value>Індекс розділу на обраному диску (з 1). Ігнорується в режимі AutoWipe.</value>
+    <value>Індекс диска (з нуля), який буде очищено та куди встановиться Windows. 0 - перший диск.</value>
   </data>
 
   <!-- ═══ Edition ════════════════════════════════════════════ -->

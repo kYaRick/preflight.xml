@@ -94,6 +94,10 @@
                 }
                 break;
 
+            case "guide":
+                _crumbs.Add(new Crumb(L["Landing.Guide.Title"], null));
+                break;
+
             case "docs":
                 _crumbs.Add(new Crumb(L["Docs.Title"], "docs"));
                 if (segments.Length >= 2)

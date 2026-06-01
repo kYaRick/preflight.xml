@@ -48,7 +48,7 @@
 </FluentLayout>
 
 <button type="button"
-        class="pf-go-top @(_showGoTop ? "is-visible" : null)"
+        class="pf-go-top"
         title="@L[@"Common.ScrollToTop"]"
         aria-label="@L[@"Common.ScrollToTop"]"
         @onclick="ScrollToTop">
@@ -78,7 +78,6 @@
     private bool _paletteOpen;
     private bool _helpOpen;
     private bool _changelogOpen;
-    private bool _showGoTop;
     private DotNetObjectReference<MainLayout>? _selfRef;
     private bool _pendingRouteAnimation;
 
@@ -150,14 +149,6 @@
             _pendingRouteAnimation = false;
             await JS.InvokeVoidAsync("preflightNav.replayRouteAnim");
         }
-    }
-
-    [JSInvokable]
-    public void OnScrollVisibility(bool visible)
-    {
-        if (_showGoTop == visible) return;
-        _showGoTop = visible;
-        InvokeAsync(StateHasChanged);
     }
 
     private async Task ScrollToTop()

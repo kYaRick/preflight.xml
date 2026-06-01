@@ -45,19 +45,47 @@
         </FluentGridItem>
     </FluentGrid>
 
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="10" HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 32px 16px; text-align: center;">
-        <FluentLabel Typo="Typography.Body">@L["Landing.Import.Prompt"]</FluentLabel>
-        <FluentButton Appearance="Appearance.Outline" OnClick="OpenImport">
-            <text>📥 @L["Landing.Import.Button"]</text>
-        </FluentButton>
+    @*
+        Secondary actions paired as two cards under the primary trio: a "how to
+        use" guide (navigates to /guide) and "already have a config" (opens the
+        import modal). Same 1200px frame as the primary trio; two half-width cards
+        (md=6) so the pair stretches edge-to-edge, level with the three above.
+    *@
+    <FluentGrid Spacing="3" Justify="JustifyContent.Center" Style="padding: 8px 16px 48px; max-width: 1200px; margin: 0 auto;">
+        <FluentGridItem xs="12" sm="6" md="6">
+            <a href="guide" class="pf-mode-card-anchor">
+                <FluentCard Class="pf-card--interactive" Style="height: 100%;">
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8" Style="padding: 16px 18px; height: 100%;">
+                        <div style="font-size: 30px; line-height: 1;">🚀</div>
+                        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@L["Landing.Guide.Title"]</FluentLabel>
+                        <FluentLabel Typo="Typography.Body" Style="flex: 1;">@L["Landing.Guide.Subtitle"]</FluentLabel>
+                        <FluentButton Appearance="Appearance.Accent" Style="pointer-events: none;">@L["Landing.Guide.Cta"]</FluentButton>
+                    </FluentStack>
+                </FluentCard>
+            </a>
+        </FluentGridItem>
+        <FluentGridItem xs="12" sm="6" md="6">
+            <div class="pf-mode-card-anchor" role="button" tabindex="0" @onclick="OpenImport" @onkeydown="OnImportKey">
+                <FluentCard Class="pf-card--interactive" Style="height: 100%;">
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="8" Style="padding: 16px 18px; height: 100%;">
+                        <div style="font-size: 30px; line-height: 1;">📥</div>
+                        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@L["Landing.Import.Prompt"]</FluentLabel>
+                        <FluentLabel Typo="Typography.Body" Style="flex: 1;">@L["Landing.Import.Description"]</FluentLabel>
+                        <FluentButton Appearance="Appearance.Accent" Style="pointer-events: none;">📥 @L["Landing.Import.Button"]</FluentButton>
+                    </FluentStack>
+                </FluentCard>
+            </div>
+        </FluentGridItem>
+    </FluentGrid>
 
-        @if (_importMessage is not null)
-        {
-            <FluentMessageBar Intent="@_importIntent" AllowDismiss="true" OnDismiss="DismissImport" Style="max-width: 720px;">
+    @if (_importMessage is not null)
+    {
+        <div style="max-width: 720px; margin: 0 auto; padding: 0 16px 48px; text-align: center;">
+            <FluentMessageBar Intent="@_importIntent" AllowDismiss="true" OnDismiss="DismissImport">
                 @_importMessage
             </FluentMessageBar>
-        }
-    </FluentStack>
+        </div>
+    }
 
 </div>
 
@@ -65,10 +93,17 @@
     private string? _importMessage;
     private MessageIntent _importIntent = MessageIntent.Info;
 
-    // The modal itself is rendered by MainLayout (so its overlay sits in
-    // the layout-root stacking context and can blur the sticky header).
-    // Here we only own the trigger and the result handling.
+    // The modal itself is rendered by MainLayout (so its overlay sits in the
+    // layout-root stacking context and can blur the sticky header). Here we only
+    // own the trigger and the result handling.
     private void OpenImport() => ImportModal.Open(HandleImported);
+
+    // Keyboard activation for the div-based import card (Enter / Space) so the
+    // tile is reachable without a mouse, like a real button.
+    private void OnImportKey(KeyboardEventArgs e)
+    {
+        if (e.Key is "Enter" or " " or "Spacebar") OpenImport();
+    }
 
     private async Task HandleImported(ImportXmlModal.ImportPayload payload)
     {
@@ -95,8 +130,8 @@
                     break;
 
                 case ImportStatus.Failed:
-                    // Fallback path: if failure reaches page-level handling,
-                    // close modal so the landing banner is actually visible.
+                    // Fallback path: if failure reaches page-level handling, close
+                    // the modal so the landing banner is actually visible.
                     _importIntent = MessageIntent.Error;
                     _importMessage = string.Format(L["Landing.Import.Failed"].Value, string.Join(" ", payload.Result.Messages));
                     ImportModal.Close();

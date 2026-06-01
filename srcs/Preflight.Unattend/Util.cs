@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Xml;
 using System.Xml.Schema;
@@ -87,7 +86,7 @@ internal static class Util
                 yield return line;
             }
         }
-        return Enumerate().ToList();
+        return [.. Enumerate()];
     }
 
     public static XmlElement GetOrCreateElement(Pass pass, string component, XmlDocument doc, XmlNamespaceManager ns)

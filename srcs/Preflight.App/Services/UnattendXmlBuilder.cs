@@ -87,13 +87,12 @@ public sealed class UnattendXmlBuilder
             LanguageSettings = MapLanguage(ui.Region),
             AccountSettings = MapAccounts(ui.Users, ui.FirstLogon),
             EditionSettings = MapEdition(ui.Edition),
-            PartitionSettings = MapDisk(ui.Disk),
+            PESettings = MapPe(ui),
             Bloatwares = MapBloatware(ui.Bloatware),
             ExpressSettings = MapExpressSettings(ui.Privacy.ExpressSettings),
             LockKeySettings = MapLockKeys(ui.LockKeys),
             StickyKeysSettings = MapStickyKeys(ui.StickyKeys),
             ScriptSettings = MapScripts(ui.Scripts),
-            WdacSettings = MapWdac(ui.Wdac),
             AppLockerSettings = MapAppLocker(ui.AppLocker),
             Components = MapComponents(ui.Components),
         };
@@ -193,28 +192,56 @@ public sealed class UnattendXmlBuilder
         _ => "pro",
     };
 
-    private static IPartitionSettings MapDisk(DiskSettings disk) => disk.Mode switch
+    // ─── Windows PE stage (disk + image apply) ─────────────────────
+    // Upstream folded partitioning, install-image selection and the dism /Apply-Image
+    // step into a single Configuration.PESettings. Disk.Mode picks which IPESettings we
+    // emit:
+    //   Interactive  → DefaultPESettings  (Windows Setup partitions + installs normally)
+    //   AutoWipe     → GeneratePESettings with an UnattendedPartitionSettings layout
+    //   CustomScript → GeneratePESettings with a custom diskpart script
+    // The source-image / PE-toggle / CompactOs / Defender flags only take effect in the
+    // generate path, because that's the only path where our .cmd applies the image itself.
+    private static IPESettings MapPe(UnattendConfig ui) => ui.Disk.Mode switch
     {
-        DiskMode.AutoWipe => new UnattendedPartitionSettings(
-            PartitionLayout: disk.PartitionStyle == PartitionStyle.Gpt
+        DiskMode.AutoWipe => BuildGeneratePe(ui, new UnattendedPartitionSettings(
+            TargetDisk: ui.Disk.InstallDiskIndex ?? 0,
+            PartitionLayout: ui.Disk.PartitionStyle == PartitionStyle.Gpt
                 ? SchneegansPartitionLayout.GPT
                 : SchneegansPartitionLayout.MBR,
-            RecoveryMode: disk.Recovery switch
+            RecoveryMode: ui.Disk.Recovery switch
             {
                 Preflight.App.Models.RecoveryMode.OnRecoveryPartition => SchneegansRecoveryMode.Partition,
-                Preflight.App.Models.RecoveryMode.OnWindowsPartition => SchneegansRecoveryMode.Folder,
                 Preflight.App.Models.RecoveryMode.Remove => SchneegansRecoveryMode.None,
                 _ => SchneegansRecoveryMode.Partition,
             },
-            EspSize: disk.EspSizeMb,
-            RecoverySize: disk.RecoverySizeMb),
-        DiskMode.CustomScript when !string.IsNullOrWhiteSpace(disk.CustomScript) =>
-            new CustomPartitionSettings(
-                disk.CustomScript!,
-                disk.InstallDiskIndex is int d && disk.InstallPartitionIndex is int p
-                    ? new CustomInstallToSettings(d, p)
-                    : new AvailableInstallToSettings()),
-        _ => new InteractivePartitionSettings(),
+            SystemSize: ui.Disk.EspSizeMb,
+            RecoverySize: ui.Disk.RecoverySizeMb)),
+        DiskMode.CustomScript when !string.IsNullOrWhiteSpace(ui.Disk.CustomScript) =>
+            BuildGeneratePe(ui, new CustomPartitionSettings(ui.Disk.CustomScript!)),
+        _ => new DefaultPESettings(ui.Setup.BypassRequirementsCheck),
+    };
+
+    private static GeneratePESettings BuildGeneratePe(UnattendConfig ui, IPartitionSettings partition) =>
+        new(
+            PartitionSettings: partition,
+            // No UI for disk pre-flight assertions; skip so an already-partitioned disk
+            // doesn't halt an auto-wipe install.
+            DiskAssertionSettings: new SkipDiskAssertionSettings(),
+            InstallFromSettings: MapInstallFrom(ui.SourceImage),
+            DisableDefender: ui.Security.DisableDefender,
+            Disable8Dot3Names: ui.Pe.Disable8Dot3Names,
+            PauseBeforeFormatting: ui.Pe.PauseBeforePartition,
+            PauseBeforeReboot: ui.Pe.PauseBeforeReboot,
+            CompactOs: ui.CompactOs.Mode == CompactOsMode.Enabled,
+            SkipIntegrityCheck: ui.SourceImage.SkipIntegrityCheck);
+
+    private static IInstallFromSettings MapInstallFrom(SourceImageSettings img) => img.Mode switch
+    {
+        SourceImageMode.ByIndex => new IndexInstallFromSettings(img.ImageIndex),
+        SourceImageMode.ByName when !string.IsNullOrWhiteSpace(img.ImageName)
+            => new NameInstallFromSettings(img.ImageName!),
+        SourceImageMode.Interactive => new InteractiveInstallFromSettings(),
+        _ => new AutomaticInstallFromSettings(),
     };
 
     private ImmutableList<Bloatware> MapBloatware(BloatwareSettings bloatware)
@@ -361,25 +388,6 @@ public sealed class UnattendXmlBuilder
             .ToImmutableList();
 
         return new ScriptSettings(all, ui.RestartExplorer);
-    }
-
-    // ─── WDAC ──────────────────────────────────────────────────────
-
-    private static IWdacSettings MapWdac(WdacSettings ui)
-    {
-        if (ui.Mode != WdacMode.Basic) return new SkipWdacSettings();
-
-        var audit = ui.Enforcement switch
-        {
-            WdacEnforcement.Audit => WdacAuditModes.Auditing,
-            WdacEnforcement.AuditOnBootFail => WdacAuditModes.AuditingOnBootFailure,
-            WdacEnforcement.Enforce => WdacAuditModes.Enforcement,
-            _ => WdacAuditModes.Auditing,
-        };
-        var script = ui.ScriptEnforcement == WdacScriptEnforcement.Unrestricted
-            ? WdacScriptModes.Unrestricted
-            : WdacScriptModes.Restricted;
-        return new ConfigureWdacSettings(audit, script);
     }
 
     // ─── AppLocker ─────────────────────────────────────────────────

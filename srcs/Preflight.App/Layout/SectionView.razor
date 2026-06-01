@@ -9,6 +9,12 @@
 
 <div class="pf-section @(ViewMode == SectionMode.Docs ? "pf-section--docs" : "pf-section--advanced")">
 
+    @* Slim indeterminate bar while the section's data (lists) streams in. *@
+    @if (_loading)
+    {
+        <div class="pf-section__loading" role="status" aria-label="@L[@"Common.Loading"]"></div>
+    }
+
     @if (ShowHeader)
     {
         <header class="pf-section__head">
@@ -73,7 +79,7 @@
                         }
                         else
                         {
-                            <a class="pf-option__learn-more" href="@option.LearnMoreUrl">@L["Section.LearnMore"]</a>
+                            <a class="pf-option__learn-more" href="@ToRelativeHref(option.LearnMoreUrl)">@L["Section.LearnMore"]</a>
                         }
                     }
                 </div>
@@ -103,6 +109,7 @@
     [Parameter] public string[]? OptionIds { get; set; }
 
     private string? _introHtml;
+    private bool _loading;
     private IReadOnlyList<OptionDefinition> _filteredOptions = [];
     private readonly Dictionary<string, IReadOnlyList<DataEntry>> _jsonCache = new(StringComparer.Ordinal);
     // Tracks which JSON sources are currently in-flight so Dropdowns can render a
@@ -144,17 +151,34 @@
 
     private async Task LoadAsync()
     {
-        _introHtml = await TryRenderMarkdownAsync(Section.IntroMarkdownPath);
+        // The intro .md is ONLY rendered in Docs mode (see the markup guard). Fetching
+        // it in Advanced was a wasted HTTP round-trip on every section open - skip it
+        // there so switching sections in the editor doesn't wait on a file it'll never
+        // show.
+        _introHtml = ViewMode == SectionMode.Docs
+            ? await TryRenderMarkdownAsync(Section.IntroMarkdownPath)
+            : null;
 
         // Mark every not-yet-cached JSON source as loading *before* we start fetching so
         // the first render of RenderDropdown gets a skeleton instead of an empty list.
-        foreach (var option in _filteredOptions.Where(o => o.JsonSource is not null))
+        var pending = _filteredOptions
+            .Where(o => o.JsonSource is not null && !_jsonCache.ContainsKey(o.JsonSource!))
+            .ToArray();
+
+        if (pending.Length == 0)
         {
-            if (!_jsonCache.ContainsKey(option.JsonSource!)) _loadingSources.Add(option.JsonSource!);
+            _loading = false;
+            return;
         }
+
+        // Section-level loading flag drives the slim progress bar at the top of the
+        // card, so a section whose lists are still streaming in reads as "loading"
+        // rather than a half-empty form.
+        _loading = true;
+        foreach (var option in pending) _loadingSources.Add(option.JsonSource!);
         StateHasChanged();
 
-        foreach (var option in _filteredOptions.Where(o => o.JsonSource is not null))
+        foreach (var option in pending)
         {
             if (_jsonCache.ContainsKey(option.JsonSource!)) continue;
             try
@@ -168,6 +192,9 @@
             // behind the slowest one - the ones that finished earlier paint immediately.
             StateHasChanged();
         }
+
+        _loading = false;
+        StateHasChanged();
     }
 
     private async Task<string?> TryRenderMarkdownAsync(string pathTemplate)
@@ -177,7 +204,7 @@
         try
         {
             var md = await Http.GetStringAsync(path);
-            return Markdown.ToHtml(md);
+            return RenderArticleHtml(md);
         }
         catch (HttpRequestException)
         {
@@ -186,7 +213,7 @@
                 try
                 {
                     var fallback = await Http.GetStringAsync(pathTemplate.Replace("{locale}", "en", StringComparison.Ordinal));
-                    return Markdown.ToHtml(fallback);
+                    return RenderArticleHtml(fallback);
                 }
                 catch (HttpRequestException) { /* no content - fine, intro is optional */ }
             }
@@ -194,11 +221,48 @@
         }
     }
 
+    // Render an article-style .md (section intros, the landing deployment guide)
+    // to HTML. Markdig emits bare <a href> with no target/rel, so the SPA would
+    // try to navigate external links in-place (and the desktop WebView2 host
+    // ignores them). Rewrite http(s) anchors to open in a new tab / the system
+    // browser, matching how option "Learn more" links behave. Relative/internal
+    // links are left untouched so they stay SPA navigations.
+    // Advanced extensions so real-world .md renders fully: pipe/grid tables,
+    // bare-URL autolinks, task lists, footnotes, strikethrough, heading anchors.
+    // The default pipeline silently drops tables and leaves URLs as plain text.
+    private static readonly Markdig.MarkdownPipeline _articlePipeline =
+        new Markdig.MarkdownPipelineBuilder()
+            .UseAdvancedExtensions()
+            .Build();
+
+    internal static string RenderArticleHtml(string md) =>
+        System.Text.RegularExpressions.Regex.Replace(
+            Markdown.ToHtml(StripLeadingH1(md), _articlePipeline),
+            "<a href=\"(https?://[^\"]*)\"",
+            "<a target=\"_blank\" rel=\"noopener noreferrer\" href=\"$1\"");
+
+    // The page chrome already renders the section title (resx in Advanced, the page
+    // heading in Docs). Every intro .md opens with a "# Title" that duplicates it, so
+    // drop the leading H1 to avoid showing the name twice.
+    internal static string StripLeadingH1(string md)
+    {
+        var trimmed = md.TrimStart('﻿', ' ', '\t', '\r', '\n');
+        if (!trimmed.StartsWith("# ", StringComparison.Ordinal)) return md;
+        var nl = trimmed.IndexOf('\n');
+        return nl < 0 ? "" : trimmed[(nl + 1)..].TrimStart('\r', '\n');
+    }
+
     private void OnConfigChanged() => InvokeAsync(StateHasChanged);
 
     private static bool IsExternalUrl(string url) =>
         url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
         || url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
+
+    // Internal hrefs must be relative so they resolve against <base href> - the app
+    // is published under a subpath (/preflight.xml/) on GitHub Pages, where a
+    // root-absolute "/docs/x" would 404. The rest of the app uses bare "docs/{id}".
+    private static string ToRelativeHref(string url) =>
+        url.StartsWith('/') ? url.TrimStart('/') : url;
 
     public void Dispose()
     {
