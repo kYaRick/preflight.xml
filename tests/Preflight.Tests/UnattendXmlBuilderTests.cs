@@ -144,15 +144,58 @@ public sealed class UnattendXmlBuilderTests
     }
 
     [Fact]
-    public void Disk_AutoWipe_GPT_targets_partition_3_MBR_targets_partition_2()
+    public void Disk_AutoWipe_emits_pe_diskpart_script_per_partition_style()
     {
-        // AutoWipe mode is required to produce an unattended partition layout with an InstallTo element.
-        // GPT layout: EFI(1) + MSR(2) + Windows(3). MBR layout: System(1) + Windows(2).
-        var gpt = Build(new UnattendConfig { Disk = { Mode = DiskMode.AutoWipe, PartitionStyle = PartitionStyle.Gpt } });
-        Assert.Equal("3", (string?)gpt.Descendants(Ns + "InstallTo").Single().Element(Ns + "PartitionID"));
+        // Upstream folded disk handling into a Windows PE .cmd (diskpart + dism /Apply-Image)
+        // instead of an autounattend <DiskConfiguration>/<InstallTo>. The diskpart lines are
+        // echoed into the PE script verbatim, so assert the layout markers in the raw XML.
+        var gpt = new UnattendXmlBuilder().Build(
+            new UnattendConfig { Disk = { Mode = DiskMode.AutoWipe, PartitionStyle = PartitionStyle.Gpt } });
+        Assert.Contains("CONVERT GPT", gpt, StringComparison.Ordinal);
+        Assert.Contains("CREATE PARTITION EFI", gpt, StringComparison.Ordinal);
+        Assert.Contains("/Apply-Image", gpt, StringComparison.Ordinal);
 
-        var mbr = Build(new UnattendConfig { Disk = { Mode = DiskMode.AutoWipe, PartitionStyle = PartitionStyle.Mbr } });
-        Assert.Equal("2", (string?)mbr.Descendants(Ns + "InstallTo").Single().Element(Ns + "PartitionID"));
+        // MBR lays out a primary system partition with no GPT conversion or EFI partition.
+        var mbr = new UnattendXmlBuilder().Build(
+            new UnattendConfig { Disk = { Mode = DiskMode.AutoWipe, PartitionStyle = PartitionStyle.Mbr } });
+        Assert.DoesNotContain("CONVERT GPT", mbr, StringComparison.Ordinal);
+        Assert.DoesNotContain("CREATE PARTITION EFI", mbr, StringComparison.Ordinal);
+        Assert.Contains("/Apply-Image", mbr, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void SourceImage_selection_drives_dism_apply_image_param()
+    {
+        // Install-from selection only takes effect on the generated-PE (AutoWipe) path,
+        // where our .cmd runs dism /Apply-Image with the chosen index/name.
+        var byIndex = new UnattendXmlBuilder().Build(new UnattendConfig
+        {
+            Disk = { Mode = DiskMode.AutoWipe },
+            SourceImage = { Mode = SourceImageMode.ByIndex, ImageIndex = 4 },
+        });
+        Assert.Contains("/Index:4", byIndex, StringComparison.Ordinal);
+
+        var byName = new UnattendXmlBuilder().Build(new UnattendConfig
+        {
+            Disk = { Mode = DiskMode.AutoWipe },
+            SourceImage = { Mode = SourceImageMode.ByName, ImageName = "Windows 11 Pro" },
+        });
+        Assert.Contains("/Name:", byName, StringComparison.Ordinal);
+        Assert.Contains("Windows 11 Pro", byName, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void SkipIntegrityCheck_toggles_dism_checkintegrity_flag()
+    {
+        UnattendConfig Cfg(bool skip) => new()
+        {
+            Disk = { Mode = DiskMode.AutoWipe },
+            SourceImage = { Mode = SourceImageMode.ByIndex, ImageIndex = 1, SkipIntegrityCheck = skip },
+        };
+
+        // Default keeps the integrity check; enabling the toggle drops it.
+        Assert.Contains("/CheckIntegrity", new UnattendXmlBuilder().Build(Cfg(false)), StringComparison.Ordinal);
+        Assert.DoesNotContain("/CheckIntegrity", new UnattendXmlBuilder().Build(Cfg(true)), StringComparison.Ordinal);
     }
 
     [Fact]

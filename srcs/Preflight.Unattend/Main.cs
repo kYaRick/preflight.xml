@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -7,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
-using Newtonsoft.Json;
 
 namespace Schneegans.Unattend;
 
@@ -24,12 +24,12 @@ public enum Pass
 
 public enum RecoveryMode
 {
-    None, Folder, Partition
+    None, Partition
 }
 
 public enum PartitionLayout
 {
-    MBR, GPT
+    MBR, GPT, Automatic
 }
 
 public enum ProcessorArchitecture
@@ -286,9 +286,6 @@ public class ConfigurationException(string? message) : Exception(message);
 public record class Configuration(
   ILanguageSettings LanguageSettings,
   IAccountSettings AccountSettings,
-  IPartitionSettings PartitionSettings,
-  IInstallFromSettings InstallFromSettings,
-  IDiskAssertionSettings DiskAssertionSettings,
   IEditionSettings EditionSettings,
   ILockoutSettings LockoutSettings,
   IPasswordExpirationSettings PasswordExpirationSettings,
@@ -296,7 +293,6 @@ public record class Configuration(
   IComputerNameSettings ComputerNameSettings,
   ITimeZoneSettings TimeZoneSettings,
   IWifiSettings WifiSettings,
-  IWdacSettings WdacSettings,
   IAppLockerSettings AppLockerSettings,
   ImmutableHashSet<ProcessorArchitecture> ProcessorArchitectures,
   ImmutableDictionary<ComponentAndPass, string> Components,
@@ -308,7 +304,6 @@ public record class Configuration(
   ILockScreenSettings LockScreenSettings,
   IColorSettings ColorSettings,
   IPESettings PESettings,
-  bool BypassRequirementsCheck,
   bool BypassNetworkCheck,
   bool EnableLongPaths,
   bool EnableRemoteDesktop,
@@ -317,7 +312,6 @@ public record class Configuration(
   bool AllowPowerShellScripts,
   bool DisableLastAccess,
   bool PreventAutomaticReboot,
-  bool DisableDefender,
   bool DisableSac,
   bool DisableUac,
   bool DisableSmartScreen,
@@ -358,7 +352,6 @@ public record class Configuration(
   TaskbarSearchMode TaskbarSearch,
   IStartPinsSettings StartPinsSettings,
   IStartTilesSettings StartTilesSettings,
-  CompactOsModes CompactOsMode,
   ITaskbarIcons TaskbarIcons,
   IEffects Effects,
   IDesktopIconSettings DesktopIcons,
@@ -369,9 +362,6 @@ public record class Configuration(
     public static Configuration Default => new(
       LanguageSettings: new InteractiveLanguageSettings(),
       AccountSettings: new InteractiveMicrosoftAccountSettings(),
-      PartitionSettings: new InteractivePartitionSettings(),
-      InstallFromSettings: new AutomaticInstallFromSettings(),
-      DiskAssertionSettings: new SkipDiskAssertionSettings(),
       EditionSettings: new InteractiveEditionSettings(),
       LockoutSettings: new DefaultLockoutSettings(),
       PasswordExpirationSettings: new DefaultPasswordExpirationSettings(),
@@ -379,7 +369,6 @@ public record class Configuration(
       ComputerNameSettings: new RandomComputerNameSettings(),
       TimeZoneSettings: new ImplicitTimeZoneSettings(),
       WifiSettings: new InteractiveWifiSettings(),
-      WdacSettings: new SkipWdacSettings(),
       AppLockerSettings: new SkipAppLockerSettings(),
       ProcessorArchitectures: [ProcessorArchitecture.amd64],
       Components: ImmutableDictionary.Create<ComponentAndPass, string>(),
@@ -390,8 +379,9 @@ public record class Configuration(
       WallpaperSettings: new DefaultWallpaperSettings(),
       LockScreenSettings: new DefaultLockScreenSettings(),
       ColorSettings: new DefaultColorSettings(),
-      PESettings: new DefaultPESettings(),
-      BypassRequirementsCheck: false,
+      PESettings: new DefaultPESettings(
+        BypassRequirementsCheck: true
+      ),
       BypassNetworkCheck: false,
       EnableLongPaths: false,
       EnableRemoteDesktop: false,
@@ -400,7 +390,6 @@ public record class Configuration(
       AllowPowerShellScripts: false,
       DisableLastAccess: false,
       PreventAutomaticReboot: false,
-      DisableDefender: false,
       DisableSac: false,
       DisableUac: false,
       DisableSmartScreen: false,
@@ -441,13 +430,14 @@ public record class Configuration(
       TaskbarSearch: TaskbarSearchMode.Box,
       StartPinsSettings: new DefaultStartPinsSettings(),
       StartTilesSettings: new DefaultStartTilesSettings(),
-      CompactOsMode: CompactOsModes.Default,
       TaskbarIcons: new DefaultTaskbarIcons(),
       Effects: new DefaultEffects(),
       DesktopIcons: new DefaultDesktopIconSettings(),
       StickyKeysSettings: new DefaultStickyKeysSettings(),
       StartFolderSettings: new DefaultStartFolderSettings()
     );
+
+    internal bool IsDefenderDisabled => PESettings is GeneratePESettings peSettings && peSettings.DisableDefender;
 }
 
 /// <summary>
@@ -458,9 +448,9 @@ public abstract class PowerShellSequence
     private bool needsExplorerRestart = false;
     private readonly List<string> commands = [];
 
-    protected abstract string Activity();
+    protected abstract string Activity { get; }
 
-    protected abstract string LogFile();
+    protected abstract string LogFile { get; }
 
     public void Append(string command)
     {
@@ -510,7 +500,7 @@ public abstract class PowerShellSequence
         [float] $complete = 0;
         [float] $increment = 100 / $scripts.Count;
         foreach( $script in $scripts ) {
-          Write-Progress -Id 0 -Activity '{{Activity()}} Do not close this window.' -PercentComplete $complete;
+          Write-Progress -Id 0 -Activity '{{Activity}} Do not close this window.' -PercentComplete $complete;
           '*** Will now execute command «{0}».' -f $(
             $script.ToString().Trim() -replace '\s+', ' ' -replace '^(.{99})(.+)$', '$1…';
           );
@@ -520,7 +510,7 @@ public abstract class PowerShellSequence
           "`r`n" * 3;
           $complete += $increment;
         }
-      } *>&1 | Out-String -Width 1KB -Stream >> "{{LogFile()}}";
+      } *>&1 | Out-String -Width 1KB -Stream >> "{{LogFile}}";
       """);
 
         return writer.ToString();
@@ -532,15 +522,9 @@ public abstract class PowerShellSequence
 /// </summary>
 public class UserOnceSequence : PowerShellSequence
 {
-    protected override string Activity()
-    {
-        return "Running scripts to configure this user account.";
-    }
+    protected override string Activity => "Running scripts to configure this user account.";
 
-    protected override string LogFile()
-    {
-        return @"$env:TEMP\UserOnce.log";
-    }
+    protected override string LogFile => @"$env:TEMP\UserOnce.log";
 }
 
 /// <summary>
@@ -548,15 +532,9 @@ public class UserOnceSequence : PowerShellSequence
 /// </summary>
 public class FirstLogonSequence : PowerShellSequence
 {
-    protected override string Activity()
-    {
-        return "Running scripts to finalize your Windows installation.";
-    }
+    protected override string Activity => "Running scripts to finalize your Windows installation.";
 
-    protected override string LogFile()
-    {
-        return @"C:\Windows\Setup\Scripts\FirstLogon.log";
-    }
+    protected override string LogFile => @"C:\Windows\Setup\Scripts\FirstLogon.log";
 }
 
 /// <summary>
@@ -564,15 +542,9 @@ public class FirstLogonSequence : PowerShellSequence
 /// </summary>
 public class DefaultUserSequence : PowerShellSequence
 {
-    protected override string Activity()
-    {
-        return "Running scripts to modify the default user’’s registry hive.";
-    }
+    protected override string Activity => "Running scripts to modify the default user’’s registry hive.";
 
-    protected override string LogFile()
-    {
-        return @"C:\Windows\Setup\Scripts\DefaultUser.log";
-    }
+    protected override string LogFile => @"C:\Windows\Setup\Scripts\DefaultUser.log";
 }
 
 /// <summary>
@@ -580,15 +552,9 @@ public class DefaultUserSequence : PowerShellSequence
 /// </summary>
 public class SpecializeSequence : PowerShellSequence
 {
-    protected override string Activity()
-    {
-        return "Running scripts to customize your Windows installation.";
-    }
+    protected override string Activity => "Running scripts to customize your Windows installation.";
 
-    protected override string LogFile()
-    {
-        return @"C:\Windows\Setup\Scripts\Specialize.log";
-    }
+    protected override string LogFile => @"C:\Windows\Setup\Scripts\Specialize.log";
 }
 
 public interface IKeyed
@@ -886,11 +852,68 @@ public static class Constants
 
     public const int RecoveryPartitionSize = 1000;
 
-    public const int EspDefaultSize = 300;
-
-    public static readonly string DiskpartScript = DiskModifier.GetCustomDiskpartScript();
+    public const int SystemPartitionSize = 300;
 
     public const string MyNamespaceUri = "https://schneegans.de/windows/unattend-generator/";
+
+    public const int DiskAssertionMinSizeGiB = 100;
+
+    public const int DiskAssertionMaxSizeGiB = 4000;
+
+    private static readonly UnattendedPartitionSettings partitionSettings = new(
+      TargetDisk: 0,
+      PartitionLayout: PartitionLayout.GPT,
+      RecoveryMode: RecoveryMode.Partition,
+      SystemSize: SystemPartitionSize,
+      RecoverySize: RecoveryPartitionSize
+    );
+
+    private static readonly GeneratedDiskAssertionsSettings assertionSettings = new();
+
+    public static string SampleDiskpartScript => DiskModifier.GetDiskpartScript(partitionSettings).JoinLines();
+
+    public static string SampleDiskAssertionScript => DiskModifier.GetDiskAssertionScript(assertionSettings, partitionSettings).JoinLines();
+
+    public static string SamplePEScript
+    {
+        get
+        {
+            UnattendGenerator generator = new();
+
+            GeneratePESettings pe = new(
+              Disable8Dot3Names: true,
+              PauseBeforeFormatting: false,
+              PauseBeforeReboot: false,
+              CompactOs: false,
+              SkipIntegrityCheck: false,
+              DisableDefender: true,
+              PartitionSettings: partitionSettings with { PartitionLayout = PartitionLayout.Automatic },
+              DiskAssertionSettings: assertionSettings,
+              InstallFromSettings: new AutomaticInstallFromSettings()
+            );
+
+            Configuration conf = Configuration.Default with
+            {
+                PESettings = pe,
+                LanguageSettings = new UnattendedLanguageSettings(
+                ImageLanguage: generator.Lookup<ImageLanguage>("en-US"),
+                LocaleAndKeyboard: new LocaleAndKeyboard(
+                  generator.Lookup<UserLocale>("en-US"),
+                  generator.Lookup<KeyboardIdentifier>("00000409")
+                ),
+                LocaleAndKeyboard2: null,
+                LocaleAndKeyboard3: null,
+                GeoLocation: generator.Lookup<GeoLocation>("244")
+              ),
+                UseConfigurationSet = true,
+                EditionSettings = new UnattendedEditionSettings(
+                Edition: generator.Lookup<WindowsEdition>("pro")
+              )
+            };
+
+            return DiskModifier.GetPEScript(conf, pe, generator).JoinLines();
+        }
+    }
 }
 
 public class UnattendGenerator
@@ -1110,7 +1133,6 @@ public class UnattendGenerator
       new OptimizationsModifier(context),
       new PersonalizationModifier(context),
       new TimeZoneModifier(context),
-      new WdacModifier(context),
       new AppLockerModifier(context),
       new ScriptModifier(context),
       new SpecializeModifier(context),

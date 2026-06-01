@@ -12,6 +12,7 @@ cschneegans/unattend-generator
   Copyright (c) 2024-2025 Christoph Schneegans
   Licensed under the MIT License. See LICENSES/schneegans-MIT.txt.
   Source: https://github.com/cschneegans/unattend-generator
+  Vendored revision: bf1399141716a23e95ff2aa36a3e9ced61279ac7 (2026-05-22)
   Vendored into srcs/Preflight.Unattend/ - compiled into the
   preflight.xml binary as the XML generation engine. Source files
   kept as close to upstream as practical so diffs remain reviewable
