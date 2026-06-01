@@ -305,6 +305,40 @@ html.theme-dark fluent-header.header {
             rgba(0, 0, 0, 0) 100%);
 }
 
+/* Cloak strip ABOVE the header. The header is a floating island with a small
+   gap to the viewport top, so content scrolling up would otherwise peek through
+   that gap. We don't just blur that sliver - we HIDE it: a solid page-background
+   fill at the very top fades down to transparent, so content vanishes before it
+   clears the header instead of poking above it. Layered over a backdrop blur
+   (masked the same way) so the disappearance still reads as a soft blurred
+   transition rather than a hard cut. Mirror of the .layout::after tail below. */
+.layout::before {
+    content: '';
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1.75rem;
+    /* viewport top → into the header band; header glass cloaks the overlap */
+    pointer-events: none;
+    z-index: 40;
+    /* under the header (50), above page content */
+    background: linear-gradient(to bottom,
+            var(--pf-bg) 0%,
+            rgba(var(--pf-bg-rgb), 0.85) 40%,
+            rgba(var(--pf-bg-rgb), 0) 100%);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    -webkit-mask-image: linear-gradient(to bottom,
+            rgba(0, 0, 0, 1) 0%,
+            rgba(0, 0, 0, 0.6) 55%,
+            rgba(0, 0, 0, 0) 100%);
+    mask-image: linear-gradient(to bottom,
+            rgba(0, 0, 0, 1) 0%,
+            rgba(0, 0, 0, 0.6) 55%,
+            rgba(0, 0, 0, 0) 100%);
+}
+
 .layout>.body-content {
     padding: 1.5rem 0;
     /* breathing room between the header island and page content */
@@ -2058,25 +2092,28 @@ fluent-anchor[appearance="hypertext"]:hover {
     font-size: 0.92rem;
 }
 
-/* Advanced page layout: allow all content to flow naturally.
+/* Advanced + Docs page layout: allow all content to flow naturally.
    FluentGrid is a flex row; default align-items (stretch) makes the main
-   content column grow to match the tall left navigation. Pin items to the
-   top explicitly so the content card hugs its own height. */
+   content column grow to match the tall left navigation (and vice versa).
+   Pin items to the top explicitly so each card hugs its own content height. */
 fluent-grid,
 fluent-grid-item,
 fluent-card {
     overflow: visible !important;
 }
 
-.pf-advanced-shell .fluent-grid {
+.pf-advanced-shell .fluent-grid,
+.pf-docs-entry .fluent-grid {
     align-items: flex-start !important;
 }
 
-.pf-advanced-shell fluent-grid-item>div {
+.pf-advanced-shell fluent-grid-item>div,
+.pf-docs-entry fluent-grid-item>div {
     align-self: flex-start;
 }
 
-.pf-advanced-shell fluent-card {
+.pf-advanced-shell fluent-card,
+.pf-docs-entry fluent-card {
     height: auto;
 }
 
@@ -3355,7 +3392,26 @@ html.theme-dark .pf-xml-code .token.regex {
    over the middle of the cards grid rather than hugging the left edge. */
 .pf-docs-search {
     max-width: 32.5rem;
-    margin: 0 auto 1rem;
+    margin: 0 auto 2.5rem;
+}
+
+/* Search input lifts on hover / focus so the field reads as interactive -
+   accent border + soft glow, matching the rest of the chrome. */
+.pf-docs-search .pf-nav-search__input {
+    transition: border-color 0.18s var(--pf-ease),
+        background 0.18s var(--pf-ease),
+        box-shadow 0.18s var(--pf-ease);
+}
+
+.pf-docs-search:hover .pf-nav-search__input {
+    border-color: var(--pf-border-strong);
+    background: var(--pf-bg);
+}
+
+.pf-docs-search .pf-nav-search__input:focus,
+.pf-docs-search:focus-within .pf-nav-search__input {
+    border-color: var(--pf-accent);
+    box-shadow: 0 0 0 3px rgba(var(--pf-accent-rgb), 0.18);
 }
 
 /* ─── Themed global scrollbars ───────────────────────────────

@@ -6,11 +6,12 @@
 @*
     Custom Advanced layout for the "Disk & install target" section.
 
-    Schneegans exposes three disjoint partition-settings flavours (Interactive /
-    Unattended / CustomScript) plus an orthogonal "install to" pair. A flat option
-    list would make every sub-field always visible; the conditional blocks below
-    render only the subset that actually applies to the current mode so the form
-    stays compact.
+    Schneegans picks one of three PE/partition flavours: Interactive (Windows Setup
+    handles the disk), Unattended (we wipe and lay out the target disk) and CustomScript
+    (a user diskpart script). The conditional blocks below render only the subset that
+    applies to the current mode so the form stays compact. The target-disk index only
+    matters for Unattended (it becomes UnattendedPartitionSettings.TargetDisk); a custom
+    script selects its own disk via "SELECT DISK=".
 *@
 
 <div class="pf-section pf-section--advanced">
@@ -43,6 +44,11 @@
                                  ShowHeader="false"
                                  OptionIds="@(new[] { "recovery-size-mb" })" />
                 }
+
+                <SectionView Section="@DiskSectionDefinition.Definition"
+                             ViewMode="SectionView.SectionMode.Advanced"
+                             ShowHeader="false"
+                             OptionIds="@(new[] { "install-disk-index" })" />
             </div>
         }
 
@@ -53,16 +59,6 @@
                              ViewMode="SectionView.SectionMode.Advanced"
                              ShowHeader="false"
                              OptionIds="@(new[] { "custom-script" })" />
-            </div>
-        }
-
-        @if (ModeSvc.Config.Disk.Mode != DiskMode.Interactive)
-        {
-            <div class="pf-section__group">
-                <SectionView Section="@DiskSectionDefinition.Definition"
-                             ViewMode="SectionView.SectionMode.Advanced"
-                             ShowHeader="false"
-                             OptionIds="@(new[] { "install-disk-index", "install-partition-index" })" />
             </div>
         }
 

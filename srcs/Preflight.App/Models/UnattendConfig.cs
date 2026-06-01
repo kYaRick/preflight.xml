@@ -35,7 +35,6 @@ public sealed class UnattendConfig
     public CompactOsSettings CompactOs { get; init; } = new();
     public TimeZoneSettings TimeZoneSettings { get; init; } = new();
     public CustomScriptsSettings Scripts { get; init; } = new();
-    public WdacSettings Wdac { get; init; } = new();
     public AppLockerSettings AppLocker { get; init; } = new();
     public XmlComponentsSettings Components { get; init; } = new();
 }
@@ -69,7 +68,6 @@ public sealed class DiskSettings
     public int RecoverySizeMb { get; set; } = 1000;
     public string? CustomScript { get; set; }
     public int? InstallDiskIndex { get; set; }
-    public int? InstallPartitionIndex { get; set; }
 }
 
 public enum DiskMode
@@ -88,7 +86,6 @@ public enum PartitionStyle
 public enum RecoveryMode
 {
     OnRecoveryPartition,
-    OnWindowsPartition,
     Remove,
 }
 
@@ -99,6 +96,10 @@ public sealed class SourceImageSettings
     public SourceImageMode Mode { get; set; } = SourceImageMode.Automatic;
     public int ImageIndex { get; set; } = 1;
     public string? ImageName { get; set; }
+
+    // dism /Apply-Image runs /CheckIntegrity /Verify unless this is set. Skipping is
+    // faster but trusts the source media; only honored in the generated-PE disk path.
+    public bool SkipIntegrityCheck { get; set; }
 }
 
 public enum SourceImageMode
@@ -106,6 +107,7 @@ public enum SourceImageMode
     Automatic,
     ByIndex,
     ByName,
+    Interactive,
 }
 
 // ─── Windows PE stage ────────────────────────────────────────────
@@ -689,33 +691,6 @@ public enum CustomScriptType
     VbScript,
 }
 
-// ─── WDAC ────────────────────────────────────────────────────────
-
-public sealed class WdacSettings
-{
-    public WdacMode Mode { get; set; } = WdacMode.NotConfigured;
-    public WdacEnforcement Enforcement { get; set; } = WdacEnforcement.Audit;
-    public WdacScriptEnforcement ScriptEnforcement { get; set; } = WdacScriptEnforcement.Restricted;
-}
-
-public enum WdacMode
-{
-    NotConfigured,
-    Basic,
-}
-
-public enum WdacEnforcement
-{
-    Audit,
-    AuditOnBootFail,
-    Enforce,
-}
-
-public enum WdacScriptEnforcement
-{
-    Restricted,
-    Unrestricted,
-}
 
 // ─── AppLocker ───────────────────────────────────────────────────
 

@@ -67,7 +67,6 @@ public static class DiskSectionDefinition
                 InlineValues =
                 [
                     new("OnRecoveryPartition", "Disk.Recovery.Partition"),
-                    new("OnWindowsPartition", "Disk.Recovery.Folder"),
                     new("Remove", "Disk.Recovery.None"),
                 ],
                 GetString = c => c.Disk.Recovery.ToString(),
@@ -106,17 +105,6 @@ public static class DiskSectionDefinition
                 Max = 31,
                 GetInt = c => c.Disk.InstallDiskIndex ?? 0,
                 SetInt = (c, v) => c.Disk.InstallDiskIndex = v,
-            },
-            new OptionDefinition
-            {
-                Id = "install-partition-index",
-                LabelKey = "Disk.InstallPartitionIndex.Label",
-                DescriptionKey = "Disk.InstallPartitionIndex.Description",
-                Kind = OptionKind.Number,
-                Min = 1,
-                Max = 128,
-                GetInt = c => c.Disk.InstallPartitionIndex ?? 0,
-                SetInt = (c, v) => c.Disk.InstallPartitionIndex = v,
             },
         ],
     };

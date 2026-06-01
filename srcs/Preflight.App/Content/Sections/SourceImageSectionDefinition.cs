@@ -27,6 +27,7 @@ public static class SourceImageSectionDefinition
                     new("Automatic", "SourceImage.Mode.Automatic"),
                     new("ByIndex", "SourceImage.Mode.ByIndex"),
                     new("ByName", "SourceImage.Mode.ByName"),
+                    new("Interactive", "SourceImage.Mode.Interactive"),
                 ],
                 GetString = c => c.SourceImage.Mode.ToString(),
                 SetString = (c, v) => c.SourceImage.Mode = Enum.TryParse<SourceImageMode>(v, out var m) ? m : SourceImageMode.Automatic,
@@ -51,6 +52,15 @@ public static class SourceImageSectionDefinition
                 PlaceholderKey = "SourceImage.ImageName.Placeholder",
                 GetString = c => c.SourceImage.ImageName,
                 SetString = (c, v) => c.SourceImage.ImageName = string.IsNullOrWhiteSpace(v) ? null : v,
+            },
+            new OptionDefinition
+            {
+                Id = "skip-integrity-check",
+                LabelKey = "SourceImage.SkipIntegrityCheck.Label",
+                DescriptionKey = "SourceImage.SkipIntegrityCheck.Description",
+                Kind = OptionKind.Checkbox,
+                GetBool = c => c.SourceImage.SkipIntegrityCheck,
+                SetBool = (c, v) => c.SourceImage.SkipIntegrityCheck = v,
             },
         ],
     };

@@ -438,9 +438,6 @@
   <data name="Advanced.Section.scripts">
     <value>📜 Custom scripts</value>
   </data>
-  <data name="Advanced.Section.wdac">
-    <value>🛡️ WDAC</value>
-  </data>
   <data name="Advanced.Section.applocker">
     <value>🔐 AppLocker</value>
   </data>
@@ -564,52 +561,6 @@
   </data>
   <data name="Scripts.RestartExplorer.Description">
     <value>Applies any shell-related registry tweaks without a reboot.</value>
-  </data>
-
-  <!-- ═══ WDAC section ════════════════════════════════════════ -->
-  <data name="Section.wdac.Subtitle">
-    <value>Windows Defender Application Control - lock down which binaries can execute.</value>
-  </data>
-  <data name="Wdac.Mode.Label">
-    <value>Mode</value>
-  </data>
-  <data name="Wdac.Mode.Description">
-    <value>Choose "Not configured" to skip WDAC entirely, or "Basic" to deploy a built-in policy
-      allowing Windows, Program Files and Program Files (x86), with known write-able folders denied.</value>
-  </data>
-  <data name="Wdac.Mode.NotConfigured">
-    <value>Not configured</value>
-  </data>
-  <data name="Wdac.Mode.Basic">
-    <value>Basic policy</value>
-  </data>
-  <data name="Wdac.Enforcement.Label">
-    <value>Enforcement</value>
-  </data>
-  <data name="Wdac.Enforcement.Description">
-    <value>Audit logs violations without blocking, "Enforce" blocks. Only applies when Mode = Basic
-      policy.</value>
-  </data>
-  <data name="Wdac.Enforcement.Audit">
-    <value>Audit only</value>
-  </data>
-  <data name="Wdac.Enforcement.AuditOnBootFail">
-    <value>Audit on boot failure</value>
-  </data>
-  <data name="Wdac.Enforcement.Enforce">
-    <value>Enforce</value>
-  </data>
-  <data name="Wdac.ScriptEnforcement.Label">
-    <value>Script enforcement</value>
-  </data>
-  <data name="Wdac.ScriptEnforcement.Description">
-    <value>"Restricted" blocks untrusted PowerShell/VBScript; "Unrestricted" lets them run.</value>
-  </data>
-  <data name="Wdac.ScriptEnforcement.Restricted">
-    <value>Restricted</value>
-  </data>
-  <data name="Wdac.ScriptEnforcement.Unrestricted">
-    <value>Unrestricted</value>
   </data>
 
   <!-- ═══ AppLocker section ═══════════════════════════════════ -->
@@ -1077,6 +1028,9 @@
   <data name="SourceImage.Mode.ByName">
     <value>By name</value>
   </data>
+  <data name="SourceImage.Mode.Interactive">
+    <value>Ask during setup</value>
+  </data>
   <data name="SourceImage.ImageIndex.Label">
     <value>Image index</value>
   </data>
@@ -1091,6 +1045,13 @@
   </data>
   <data name="SourceImage.ImageName.Placeholder">
     <value>Windows 11 Pro</value>
+  </data>
+  <data name="SourceImage.SkipIntegrityCheck.Label">
+    <value>Skip image integrity check</value>
+  </data>
+  <data name="SourceImage.SkipIntegrityCheck.Description">
+    <value>Drops the dism.exe /CheckIntegrity /Verify flags when applying the image. Faster, but
+      trusts the source media. Only applies when the disk is managed (auto-wipe / custom script).</value>
   </data>
 
   <!-- ═══ Compact OS ═════════════════════════════════════════ -->
@@ -1164,14 +1125,10 @@
     <value>Recovery environment</value>
   </data>
   <data name="Disk.Recovery.Description">
-    <value>Where Windows puts WinRE. A dedicated partition is the default; folder saves space; none
-      skips WinRE entirely.</value>
+    <value>Where Windows puts WinRE. A dedicated partition is the default; none skips WinRE entirely.</value>
   </data>
   <data name="Disk.Recovery.Partition">
     <value>Dedicated recovery partition</value>
-  </data>
-  <data name="Disk.Recovery.Folder">
-    <value>Inside the Windows partition</value>
   </data>
   <data name="Disk.Recovery.None">
     <value>Do not install WinRE</value>
@@ -1196,16 +1153,10 @@
       ...</value>
   </data>
   <data name="Disk.InstallDiskIndex.Label">
-    <value>Install disk index</value>
+    <value>Target disk index</value>
   </data>
   <data name="Disk.InstallDiskIndex.Description">
-    <value>Zero-based disk index Setup writes Windows to. 0 is the first physical disk.</value>
-  </data>
-  <data name="Disk.InstallPartitionIndex.Label">
-    <value>Install partition index</value>
-  </data>
-  <data name="Disk.InstallPartitionIndex.Description">
-    <value>1-based partition index on the chosen disk. Ignored for AutoWipe mode.</value>
+    <value>Zero-based index of the disk to wipe and install Windows to. 0 is the first physical disk.</value>
   </data>
 
   <!-- ═══ Edition ════════════════════════════════════════════ -->

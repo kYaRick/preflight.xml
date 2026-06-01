@@ -5,7 +5,9 @@
 
 @*
     Custom Advanced layout for the "Source image" section - IInstallFromSettings
-    has three disjoint shapes; show only the field matching the active mode.
+    has four disjoint shapes (Automatic / ByIndex / ByName / Interactive); show only
+    the field matching the active mode. The integrity-check toggle applies to the dism
+    /Apply-Image step regardless of mode, so it's always shown.
 *@
 
 <div class="pf-section pf-section--advanced">
@@ -42,6 +44,11 @@
                              OptionIds="@(new[] { "image-name" })" />
             </div>
         }
+
+        <SectionView Section="@SourceImageSectionDefinition.Definition"
+                     ViewMode="SectionView.SectionMode.Advanced"
+                     ShowHeader="false"
+                     OptionIds="@(new[] { "skip-integrity-check" })" />
 
     </section>
 </div>
