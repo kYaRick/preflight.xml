@@ -2004,6 +2004,40 @@ fluent-anchor[appearance="hypertext"]:hover {
     line-height: 1.45;
 }
 
+/* Docs reading column: a single outer surface. The intro prose and each option
+   render *inside* it as flat blocks - subtle dividers, no raised card treatment -
+   so the page reads as one panel rather than a stack of competing cards. */
+.pf-docs-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.pf-docs-content__head {
+    padding-bottom: 0.875rem;
+    margin-bottom: 0.25rem;
+    border-bottom: 1px solid var(--pf-border);
+}
+
+.pf-docs-content .pf-section__intro,
+.pf-docs-content .pf-option {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0.75rem 0;
+}
+
+/* Hairline separators between consecutive blocks instead of card edges. */
+.pf-docs-content .pf-section__intro + .pf-section__options,
+.pf-docs-content .pf-option + .pf-option {
+    border-top: 1px solid var(--pf-border);
+}
+
+.pf-docs-content .pf-section__options {
+    gap: 0;
+}
+
 /* The main h1 + subtitle pair at the top of a Docs page is currently rendered by
    FluentLabel as <h2 class="fluent-typography"> at 32px - too heavy for a docs
    reference. Scale it down to the size we use for section titles elsewhere so the

@@ -73,7 +73,7 @@
                         }
                         else
                         {
-                            <a class="pf-option__learn-more" href="@option.LearnMoreUrl">@L["Section.LearnMore"]</a>
+                            <a class="pf-option__learn-more" href="@ToRelativeHref(option.LearnMoreUrl)">@L["Section.LearnMore"]</a>
                         }
                     }
                 </div>
@@ -177,7 +177,7 @@
         try
         {
             var md = await Http.GetStringAsync(path);
-            return Markdown.ToHtml(md);
+            return Markdown.ToHtml(StripLeadingH1(md));
         }
         catch (HttpRequestException)
         {
@@ -186,7 +186,7 @@
                 try
                 {
                     var fallback = await Http.GetStringAsync(pathTemplate.Replace("{locale}", "en", StringComparison.Ordinal));
-                    return Markdown.ToHtml(fallback);
+                    return Markdown.ToHtml(StripLeadingH1(fallback));
                 }
                 catch (HttpRequestException) { /* no content - fine, intro is optional */ }
             }
@@ -194,11 +194,28 @@
         }
     }
 
+    // The page chrome already renders the section title (resx in Advanced, the page
+    // heading in Docs). Every intro .md opens with a "# Title" that duplicates it, so
+    // drop the leading H1 to avoid showing the name twice.
+    internal static string StripLeadingH1(string md)
+    {
+        var trimmed = md.TrimStart('﻿', ' ', '\t', '\r', '\n');
+        if (!trimmed.StartsWith("# ", StringComparison.Ordinal)) return md;
+        var nl = trimmed.IndexOf('\n');
+        return nl < 0 ? "" : trimmed[(nl + 1)..].TrimStart('\r', '\n');
+    }
+
     private void OnConfigChanged() => InvokeAsync(StateHasChanged);
 
     private static bool IsExternalUrl(string url) =>
         url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
         || url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
+
+    // Internal hrefs must be relative so they resolve against <base href> - the app
+    // is published under a subpath (/preflight.xml/) on GitHub Pages, where a
+    // root-absolute "/docs/x" would 404. The rest of the app uses bare "docs/{id}".
+    private static string ToRelativeHref(string url) =>
+        url.StartsWith('/') ? url.TrimStart('/') : url;
 
     public void Dispose()
     {
