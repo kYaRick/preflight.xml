@@ -16,11 +16,14 @@
 
 <div class="pf-section pf-section--advanced">
 
-    <header class="pf-section__head">
-        <h2 class="pf-section__title">@L[DiskSectionDefinition.Definition.TitleKey]</h2>
-        <p class="pf-section__subtitle">@L[DiskSectionDefinition.Definition.SubtitleKey]</p>
-        <a class="pf-section__docs-link" href="@($"docs/{DiskSectionDefinition.Definition.Id}")">@L["Section.Docs.Link"]</a>
-    </header>
+    @if (ShowHeader)
+    {
+        <header class="pf-section__head">
+            <h2 class="pf-section__title">@L[DiskSectionDefinition.Definition.TitleKey]</h2>
+            <p class="pf-section__subtitle">@L[DiskSectionDefinition.Definition.SubtitleKey]</p>
+            <a class="pf-section__docs-link" href="@($"docs/{DiskSectionDefinition.Definition.Id}")">@L["Section.Docs.Link"]</a>
+        </header>
+    }
 
     <section class="pf-section__options">
 
@@ -66,6 +69,10 @@
 </div>
 
 @code {
+    // Suppressed inside the guided Wizard, where GuidedWizard renders one unified
+    // contextual header per step. Defaults true so the Advanced editor is unchanged.
+    [Parameter] public bool ShowHeader { get; set; } = true;
+
     protected override void OnInitialized() => ModeSvc.StateChanged += OnStateChanged;
     private void OnStateChanged() => InvokeAsync(StateHasChanged);
     public void Dispose() => ModeSvc.StateChanged -= OnStateChanged;

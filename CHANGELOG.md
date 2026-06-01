@@ -13,6 +13,34 @@ All notable changes to **preflight.xml** are documented here. Format follows
 to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 <!-- internal:end -->
 
+## v0.1.4-alpha
+
+### Added
+
+- "Windows image to install" section gained an **Ask during setup** mode
+  (pick the image index interactively while Setup runs) and a **Skip image
+  integrity check** toggle that drops the `dism /CheckIntegrity /Verify`
+  pass for a faster apply.
+
+### Changed
+
+- Disk handling now runs through the refreshed Windows PE engine -
+  partitioning and image apply happen in a generated PE script. The
+  target-disk index, source-image selection, Compact OS and Defender
+  toggles take effect when the disk is managed (auto-wipe / custom script).
+<!-- internal:start -->
+- Synced the vendored `cschneegans/unattend-generator` engine to upstream
+  `bf13991` (2026-05-22) and re-pointed the adapter at its new `IPESettings`
+  API (disk, install-image and dism settings are now one nested type).
+<!-- internal:end -->
+
+### Removed
+
+- **WDAC (Windows Defender Application Control)** section - upstream dropped
+  WDAC support, so the option is gone.
+- Disk recovery "Inside the Windows partition" option and the separate
+  install-partition index, both no longer supported by the install engine.
+
 ## v0.1.3-alpha
 
 ### Fixed

@@ -191,23 +191,37 @@ body::before {
     z-index: 0;
     opacity: 0.9;
     transition: opacity 0.4s var(--pf-ease);
+    /* Pre-promote this fixed layer at load so the browser doesn't build its
+       compositing layer LAZILY on the first scroll - creating fixed-element
+       layers mid-scroll is a one-time hitch ("смикання при першому скролі"). */
+    will-change: transform;
 }
 
 /* Very subtle noise texture for surface grit. SVG is data-embedded
-   so it works offline and doesn't add a network request. */
+   so it works offline and doesn't add a network request.
+
+   NO mix-blend-mode here. A position:fixed, full-viewport layer with
+   mix-blend-mode:overlay forces the browser to re-blend the ENTIRE viewport
+   against the content beneath it on every scroll frame - on many GPUs that
+   reads as the page "re-rendering / content re-animating" while scrolling
+   (reported across pages, since this layer is global). Plain normal blending
+   composites once and stays put. Opacity nudged up a touch to keep the grain
+   visible without the blend mode. */
 body::after {
     content: '';
     position: fixed;
     inset: 0;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='4'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-    opacity: 0.025;
+    opacity: 0.04;
     pointer-events: none;
     z-index: 0;
-    mix-blend-mode: overlay;
+    /* Same reason as body::before - eager layer so the first scroll doesn't
+       pay for building this fixed full-viewport layer. */
+    will-change: transform;
 }
 
 html.theme-dark body::after {
-    opacity: 0.04;
+    opacity: 0.055;
 }
 
 #app {
@@ -236,7 +250,7 @@ html.theme-dark body::after {
 .layout>.header,
 fluent-header.header {
     position: sticky;
-    top: 0.75rem;
+    top: 0;
     margin: 0 !important;
     padding: 0 1.25rem !important;
     height: 3.5rem !important;
@@ -248,96 +262,46 @@ fluent-header.header {
        page content underneath as the user scrolls; the backdrop-filter blur
        only reads as a glass effect when there's enough alpha for the blurred
        backdrop to show through. ~0.55-0.65 keeps the chrome readable while
-       still letting motion behind it register. */
-    background: linear-gradient(135deg,
-            rgba(241, 245, 249, 0.62) 0%,
-            rgba(241, 245, 249, 0.5) 100%) !important;
+       still letting motion behind it register.
+
+       Flat fill (was a 135deg diagonal gradient): the diagonal made one corner
+       visibly denser than the other, and the backdrop blur over the page's
+       radial glow amplified it into an "uneven header". A single uniform alpha
+       reads as one even pane of glass. */
+    background: rgba(241, 245, 249, 0.58) !important;
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid var(--pf-chrome-border);
     border-radius: var(--pf-radius-lg);
     box-shadow: var(--pf-card-shadow);
     z-index: 50;
+    /* Pre-promote the sticky header's backdrop-filter to its own compositing
+       layer at load. Without this the browser creates that layer LAZILY on the
+       first scroll, and building + first-rasterizing the blur mid-scroll is a
+       one-time hitch ("смикання при першому скролі"). will-change forces the
+       layer up front so the first scroll is as smooth as every later one. */
+    will-change: transform;
 }
 
 html.theme-dark .layout>.header,
 html.theme-dark fluent-header.header {
-    background: linear-gradient(135deg,
-            rgba(36, 40, 69, 0.62) 0%,
-            rgba(36, 40, 69, 0.5) 100%) !important;
+    background: rgba(36, 40, 69, 0.58) !important;
 }
 
 @media (prefers-color-scheme: dark) {
+
     html:not(.theme-light) .layout>.header,
     html:not(.theme-light) fluent-header.header {
-        background: linear-gradient(135deg,
-                rgba(36, 40, 69, 0.62) 0%,
-                rgba(36, 40, 69, 0.5) 100%) !important;
+        background: rgba(36, 40, 69, 0.58) !important;
     }
 }
 
-/* Smooth blur tail BELOW the header - a slim, fixed strip sitting right
-   under the sticky header's bottom edge. Content that scrolls under the
-   header already gets blurred by the header's own backdrop-filter; this
-   strip adds a short fade-out so the blur doesn't stop with a hard line
-   where the header's glass panel ends. The mask makes the effect taper
-   to zero within ~18px so nothing beyond that is touched. */
-.layout::after {
-    content: '';
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 4.25rem;
-    /* 12px gap + 56px header height */
-    height: 1.125rem;
-    pointer-events: none;
-    z-index: 40;
-    /* under the header (50), above page content */
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    -webkit-mask-image: linear-gradient(to bottom,
-            rgba(0, 0, 0, 0.9) 0%,
-            rgba(0, 0, 0, 0.5) 45%,
-            rgba(0, 0, 0, 0) 100%);
-    mask-image: linear-gradient(to bottom,
-            rgba(0, 0, 0, 0.9) 0%,
-            rgba(0, 0, 0, 0.5) 45%,
-            rgba(0, 0, 0, 0) 100%);
-}
-
-/* Cloak strip ABOVE the header. The header is a floating island with a small
-   gap to the viewport top, so content scrolling up would otherwise peek through
-   that gap. We don't just blur that sliver - we HIDE it: a solid page-background
-   fill at the very top fades down to transparent, so content vanishes before it
-   clears the header instead of poking above it. Layered over a backdrop blur
-   (masked the same way) so the disappearance still reads as a soft blurred
-   transition rather than a hard cut. Mirror of the .layout::after tail below. */
-.layout::before {
-    content: '';
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
-    height: 1.75rem;
-    /* viewport top → into the header band; header glass cloaks the overlap */
-    pointer-events: none;
-    z-index: 40;
-    /* under the header (50), above page content */
-    background: linear-gradient(to bottom,
-            var(--pf-bg) 0%,
-            rgba(var(--pf-bg-rgb), 0.85) 40%,
-            rgba(var(--pf-bg-rgb), 0) 100%);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    -webkit-mask-image: linear-gradient(to bottom,
-            rgba(0, 0, 0, 1) 0%,
-            rgba(0, 0, 0, 0.6) 55%,
-            rgba(0, 0, 0, 0) 100%);
-    mask-image: linear-gradient(to bottom,
-            rgba(0, 0, 0, 1) 0%,
-            rgba(0, 0, 0, 0.6) 55%,
-            rgba(0, 0, 0, 0) 100%);
-}
+/* No cloak strip above the header. The sticky header pins flush to the viewport
+   top (top: 0), so scrolling content slides directly under its glass instead of
+   peeking through a gap. Earlier attempts to keep a 0.75rem top gap and mask it
+   (a flat fill, then an extended-glass pseudo) either killed the ambient
+   body::before glow as a dark band or read as a separate frosted bar above the
+   rounded island. Pinning flush removes the gap, so neither hack is needed. */
 
 .layout>.body-content {
     padding: 1.5rem 0;
@@ -955,9 +919,14 @@ fluent-anchor[appearance="hypertext"]:hover {
 .pf-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    /* Scrim + blur live on .is-open ONLY. These overlays are always mounted
+       (so open/close can transition), and Chromium composites backdrop-filter
+       even on a visibility:hidden / opacity:0 layer - 4 stacked hidden overlays
+       therefore hazed and darkened the whole page (most visible against the
+       header). Closed = paint nothing. */
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     display: flex;
     /* Center vertically by default - the previous flex-start + 15vh padding
        was a Spotlight-style anchor that made bigger info modals (changelog,
@@ -973,6 +942,7 @@ fluent-anchor[appearance="hypertext"]:hover {
     pointer-events: none;
     transition:
         opacity 0.28s var(--pf-ease),
+        background 0.28s var(--pf-ease),
         backdrop-filter 0.28s var(--pf-ease),
         visibility 0s linear 0.28s;
 }
@@ -981,8 +951,12 @@ fluent-anchor[appearance="hypertext"]:hover {
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     transition:
         opacity 0.28s var(--pf-ease),
+        background 0.28s var(--pf-ease),
         backdrop-filter 0.28s var(--pf-ease),
         visibility 0s linear 0s;
 }
@@ -1802,6 +1776,74 @@ fluent-anchor[appearance="hypertext"]:hover {
     box-shadow: var(--pf-card-highlight), var(--pf-card-shadow);
 }
 
+/* Landing "How to use the file" - collapsible guide. The <details> is the card;
+   the rendered article reuses .pf-section__intro for typography but drops its
+   own card chrome so we don't nest a panel inside a panel. */
+.pf-guide {
+    background: var(--pf-card-bg);
+    border: 1px solid var(--pf-card-border);
+    border-radius: var(--pf-radius-lg);
+    box-shadow: var(--pf-card-highlight), var(--pf-card-shadow);
+    overflow: hidden;
+}
+
+.pf-guide__summary {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1.125rem 1.375rem;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+}
+
+.pf-guide__summary::-webkit-details-marker {
+    display: none;
+}
+
+.pf-guide__icon {
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.pf-guide__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.pf-guide__title {
+    font-weight: 600;
+    color: var(--pf-text);
+    font-size: 1.0625rem;
+}
+
+.pf-guide__subtitle {
+    color: var(--pf-text-muted);
+    font-size: 0.875rem;
+    line-height: 1.4;
+}
+
+.pf-guide__chevron {
+    margin-left: auto;
+    color: var(--pf-text-muted);
+    font-size: 1.25rem;
+    transition: transform 0.18s ease;
+}
+
+.pf-guide[open] .pf-guide__chevron {
+    transform: rotate(180deg);
+}
+
+.pf-guide__body.pf-section__intro {
+    border: 0;
+    border-top: 1px solid var(--pf-card-border);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
 .pf-section__intro> :first-child,
 .pf-section__intro p:first-child,
 .pf-section__intro h1:first-child,
@@ -1888,6 +1930,125 @@ fluent-anchor[appearance="hypertext"]:hover {
     color: var(--pf-text-muted);
     font-size: 0.86rem;
     margin-bottom: 0.75rem;
+}
+
+/* ─── Markdown article typography: links, code blocks, quotes, tables ───
+   These elements previously fell back to raw browser defaults (ugly blue
+   underlines, unstyled <pre>, borderless tables). Style them to the pf-*
+   palette so rendered .md (docs, section intros, the deployment guide) reads
+   like polished reference. */
+
+/* Heading sizes - h2/h3 sized elsewhere; pin h1/h4 so the full scale is set. */
+.pf-section__intro h1 {
+    font-size: clamp(1.5rem, 2vw, 1.75rem);
+}
+
+.pf-section__intro h4 {
+    font-size: 0.95rem;
+}
+
+/* Inline links: accent text with an offset underline that thickens on hover. */
+.pf-section__intro a {
+    color: var(--pf-accent-strong, var(--pf-accent));
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--pf-accent) 45%, transparent);
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 1px;
+    transition: color 0.15s var(--pf-ease), text-decoration-color 0.15s var(--pf-ease);
+}
+
+.pf-section__intro a:hover {
+    color: var(--pf-accent);
+    text-decoration-color: currentColor;
+    text-decoration-thickness: 2px;
+}
+
+/* External links open a new tab (rewritten in RenderArticleHtml) - mark them
+   with a small ↗ so it's clear they leave the app. */
+.pf-section__intro a[target="_blank"]::after {
+    content: "↗";
+    display: inline-block;
+    margin-left: 0.15em;
+    font-size: 0.82em;
+    vertical-align: 0.08em;
+    opacity: 0.7;
+}
+
+/* Fenced code blocks: a proper panel, scrollable, no inline-pill chrome on the
+   inner <code> (that styling is for inline spans only). */
+.pf-section__intro pre {
+    margin: 0.875rem 0;
+    padding: 0.875rem 1rem;
+    background: var(--pf-surface-2);
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+    overflow-x: auto;
+    font-family: var(--pf-font-mono);
+    font-size: 0.85rem;
+    line-height: 1.6;
+}
+
+.pf-section__intro pre code {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--pf-text);
+    font-size: inherit;
+}
+
+/* Blockquotes: accent rule on the left, muted text. */
+.pf-section__intro blockquote {
+    margin: 0.875rem 0;
+    padding: 0.5rem 0 0.5rem 1rem;
+    border-left: 3px solid var(--pf-accent);
+    color: var(--pf-text-muted);
+    background: color-mix(in srgb, var(--pf-accent) 6%, transparent);
+    border-radius: 0 var(--pf-radius-sm) var(--pf-radius-sm) 0;
+}
+
+.pf-section__intro blockquote> :first-child { margin-top: 0; }
+.pf-section__intro blockquote> :last-child { margin-bottom: 0; }
+
+/* Tables: collapsed borders, header band, zebra-free but padded cells. */
+.pf-section__intro table {
+    width: 100%;
+    margin: 1rem 0;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    border: 1px solid var(--pf-border);
+    border-radius: var(--pf-radius-md);
+    overflow: hidden;
+}
+
+.pf-section__intro th,
+.pf-section__intro td {
+    padding: 0.5rem 0.7rem;
+    border: 1px solid var(--pf-border);
+    text-align: left;
+    vertical-align: top;
+}
+
+.pf-section__intro th {
+    background: var(--pf-surface-2);
+    color: var(--pf-text);
+    font-weight: 600;
+}
+
+.pf-section__intro td {
+    color: var(--pf-text-muted);
+}
+
+/* Horizontal rule: a visible divider that fades at both ends. Plain
+   border-top on --pf-border was nearly invisible against the card. */
+.pf-section__intro hr {
+    margin: 1.75rem 0;
+    height: 1px;
+    border: 0;
+    background: linear-gradient(to right,
+            transparent,
+            var(--pf-border-strong) 15%,
+            var(--pf-border-strong) 85%,
+            transparent);
 }
 
 .pf-section__options {
@@ -2063,8 +2224,8 @@ fluent-anchor[appearance="hypertext"]:hover {
 }
 
 /* Hairline separators between consecutive blocks instead of card edges. */
-.pf-docs-content .pf-section__intro + .pf-section__options,
-.pf-docs-content .pf-option + .pf-option {
+.pf-docs-content .pf-section__intro+.pf-section__options,
+.pf-docs-content .pf-option+.pf-option {
     border-top: 1px solid var(--pf-border);
 }
 
@@ -2462,7 +2623,12 @@ fluent-select {
             rgba(0, 0, 0, 0) 0%,
             rgba(0, 0, 0, 1) 12%,
             rgba(0, 0, 0, 1) 100%);
-    filter: drop-shadow(0 0 4px var(--pf-accent));
+    /* Explicit SVG filter (defined in index.html) instead of CSS drop-shadow:
+       a path-level CSS drop-shadow is clipped to the default SVG filter region
+       (-10%..120% of the path's bbox), which severed the halo at the wave's
+       crests and troughs since they land on the bbox edge. #trailGlow uses a
+       wide region so the glow renders fully at every peak and dip. */
+    filter: url(#trailGlow);
     opacity: 0.9;
     /* Match the plane's offset-distance transition so the trail tip and
        the plane glide together (both 0.35s, same easing). Transitioning
@@ -3014,17 +3180,19 @@ html.theme-dark .pf-xml-code .token.regex {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.625rem 0.875rem;
+    padding: 0.4rem 0.75rem 0.4rem 0.45rem;
     border-radius: 999px;
-    background: var(--pf-chrome-bg);
-    border: 1px solid var(--pf-border-strong);
+    /* Match the app's card surface (same bg/border/blur/shadow tokens) so the
+       button reads as part of the same material language, not a stray overlay. */
+    background: var(--pf-card-bg);
+    border: 1px solid var(--pf-card-border);
     color: var(--pf-text);
     cursor: pointer;
-    backdrop-filter: blur(12px) saturate(160%);
-    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    backdrop-filter: blur(14px) saturate(140%);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
     box-shadow:
-        0 8px 24px rgba(0, 0, 0, 0.18),
-        0 2px 6px rgba(0, 0, 0, 0.08);
+        var(--pf-card-highlight),
+        var(--pf-card-shadow);
     transition:
         transform 0.18s var(--pf-ease),
         background 0.18s var(--pf-ease),
@@ -3033,12 +3201,12 @@ html.theme-dark .pf-xml-code .token.regex {
 }
 
 .pf-xml-fab:hover {
-    transform: translateY(-1px);
-    background: var(--pf-surface-2);
-    border-color: var(--pf-accent);
+    transform: translateY(-2px);
+    border-color: var(--pf-card-border-hover);
     box-shadow:
-        0 12px 28px rgba(0, 0, 0, 0.22),
-        0 0 18px var(--pf-accent-ring);
+        var(--pf-card-highlight),
+        var(--pf-card-shadow-hover),
+        0 0 16px var(--pf-accent-ring);
 }
 
 .pf-xml-fab:active {
@@ -3050,9 +3218,18 @@ html.theme-dark .pf-xml-code .token.regex {
     outline-offset: 2px;
 }
 
+/* Accent chip behind the glyph - gives the button a clear identity tile
+   instead of a bare icon, echoing how accent is used elsewhere in the UI. */
 .pf-xml-fab__icon {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.625rem;
+    height: 1.625rem;
+    border-radius: 50%;
+    background: rgba(var(--pf-accent-rgb), 0.14);
     color: var(--pf-accent);
+    flex: none;
 }
 
 .pf-xml-fab__icon svg {
@@ -3300,6 +3477,11 @@ html.theme-dark .pf-xml-code .token.regex {
    S-curve: the track is a faint guide, the trail a gradient accent that
    fades toward its tail, and the plane rides the curve at --pf-step-progress
    (0-100%). 36px tall, 240px wide by default - fits next to "Step 2 of 5". */
+/* Step progress: a straight runway with an accent fill and a plane parked at
+   the fill tip. The old wavy S-curve + offset-path plane read as a meaningless
+   squiggle and never animated (each step is a full page navigation, so a CSS
+   transition never saw the value change). A straight bar reads instantly as
+   "progress", and a fill-in keyframe on mount makes every step feel alive. */
 .pf-step-runway {
     --pf-step-progress: 0%;
     position: relative;
@@ -3892,6 +4074,54 @@ body:has(.pf-xml-fab) .pf-go-top {
     }
 }
 
+/* Section-level indeterminate progress bar. Shown while a section's data
+   (dropdown/checkbox lists) is still streaming in, so opening a heavier
+   section reads as "loading" rather than a half-painted form. Pinned to the
+   top edge of the section's card; a short accent sliver sweeps left→right. */
+.pf-section {
+    position: relative;
+}
+
+.pf-section__loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    overflow: hidden;
+    border-radius: 3px 3px 0 0;
+    background: rgba(var(--pf-accent-rgb, 139, 92, 246), 0.12);
+    z-index: 3;
+}
+
+.pf-section__loading::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 40%;
+    border-radius: inherit;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            var(--pf-accent) 50%,
+            transparent 100%);
+    animation: pfSectionLoading 1.1s ease-in-out infinite;
+}
+
+@keyframes pfSectionLoading {
+    0% {
+        transform: translateX(-110%);
+    }
+
+    100% {
+        transform: translateX(310%);
+    }
+}
+
+/* Intentionally still animates under reduced-motion: it's a transient
+   progress affordance, and a frozen bar reads as "stuck". */
+
 /* ─── Custom scripts section ──────────────────────────────
    Each phase is a card: title + description on the left, "Add script"
    on the right. Slots grow below as the user adds them; empty phases
@@ -4330,46 +4560,15 @@ body:has(.pf-xml-fab) .pf-go-top {
    Falls back silently in browsers that don't implement the spec
    (Firefox at time of writing) - the pseudo-elements simply don't
    exist there and Blazor's normal click handler runs the navigation
-   without any crossfade. No flicker, just instant nav. */
-::view-transition-old(root) {
-    animation: 0.32s cubic-bezier(0.4, 0, 1, 1) both pfViewOldOut;
-}
+   without any crossfade. No flicker, just instant nav.
 
+   OPACITY-ONLY crossfade. Earlier versions slid/scaled the page (and tried
+   isolating the content with view-transition-name), but ANY transform here
+   warped or jerked the layout - sliding the header/footer, morphing the
+   persistent content box between routes. A plain opacity dissolve is calm,
+   never moves anything, and reads as "the page changed" without the jank. */
+::view-transition-old(root),
 ::view-transition-new(root) {
-    animation: 0.42s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both pfViewNewIn;
-}
-
-@keyframes pfViewOldOut {
-    to {
-        opacity: 0;
-        transform: translateY(-12px) scale(0.99);
-    }
-}
-
-@keyframes pfViewNewIn {
-    from {
-        opacity: 0;
-        transform: translateY(18px) scale(0.992);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-
-    ::view-transition-old(root),
-    ::view-transition-new(root) {
-        animation-duration: 0.18s;
-        animation-delay: 0s;
-    }
-
-    @keyframes pfViewOldOut {
-        to {
-            opacity: 0;
-        }
-    }
-
-    @keyframes pfViewNewIn {
-        from {
-            opacity: 0;
-        }
-    }
+    animation-duration: 0.22s;
+    animation-timing-function: ease;
 }

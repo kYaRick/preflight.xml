@@ -1,0 +1,63 @@
+@page "/guide"
+@using System.Globalization
+@inject IStringLocalizer<SharedResources> L
+@inject HttpClient Http
+
+@*
+    "How to use" deployment guide as its own page (reached from the Landing
+    "How to use" card). The article markdown lives in
+    content/guides/deployment.{locale}.md (en fallback) and renders through the
+    same Markdig pipeline the Docs pages use - so it matches /docs visually.
+*@
+
+<PageTitle>@L["Landing.Guide.Title"] · preflight.xml</PageTitle>
+
+<div class="pf-docs-entry" style="padding: 16px; max-width: 960px; margin: 0 auto;">
+
+    <header class="pf-docs-content__head" style="margin-bottom: 16px;">
+        <FluentLabel Typo="Typography.PageTitle">🚀 @L["Landing.Guide.Title"]</FluentLabel>
+        <FluentLabel Typo="Typography.Body" Style="margin: 4px 0 0 0; opacity: 0.8;">@L["Landing.Guide.Subtitle"]</FluentLabel>
+    </header>
+
+    <FluentCard Class="pf-docs-content" Style="padding: 24px 28px;">
+        @if (_guideHtml is not null)
+        {
+            <section class="pf-section__intro">
+                @((MarkupString)_guideHtml)
+            </section>
+        }
+        else
+        {
+            <FluentMessageBar Intent="MessageIntent.Info" AllowDismiss="false">
+                @L["Docs.Entry.ComingSoon"]
+            </FluentMessageBar>
+        }
+    </FluentCard>
+
+</div>
+
+@code {
+    private string? _guideHtml;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Locale-aware load with en fallback, mirroring DocsEntry / the old
+        // inline Landing guide. A missing file leaves the info message visible.
+        var locale = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        _guideHtml = await TryLoadGuide($"content/guides/deployment.{locale}.md")
+                     ?? (locale != "en" ? await TryLoadGuide("content/guides/deployment.en.md") : null);
+    }
+
+    private async Task<string?> TryLoadGuide(string path)
+    {
+        try
+        {
+            var md = await Http.GetStringAsync(path);
+            return SectionView.RenderArticleHtml(md);
+        }
+        catch (HttpRequestException)
+        {
+            return null;
+        }
+    }
+}

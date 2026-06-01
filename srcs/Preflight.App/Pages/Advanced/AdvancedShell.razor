@@ -25,14 +25,6 @@ else
     <PageTitle>@L["Advanced.Title"] · preflight.xml</PageTitle>
 
     <div class="pf-advanced-shell" style="padding: 24px 16px; max-width: 1600px; margin: 0 auto;">
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" VerticalAlignment="VerticalAlignment.Center">
-        <FluentLabel Typo="Typography.PageTitle">⚙️ @L["Advanced.Title"]</FluentLabel>
-        <FluentSpacer />
-        <FluentAnchor Href="" Appearance="Appearance.Outline">← @L["Common.BackToHome"]</FluentAnchor>
-    </FluentStack>
-
-    <FluentLabel Typo="Typography.Body" Style="margin: 8px 0 24px 0;">@L["Advanced.Subtitle"]</FluentLabel>
-
     <FluentGrid Spacing="3" Style="align-items: flex-start;">
 
         <!-- Left column: sections navigation. Filter input (top) narrows by label,
@@ -41,6 +33,12 @@ else
         <FluentGridItem xs="12" md="3">
             <FluentCard Class="pf-nav-card" Style="padding: 6px; position: sticky; top: 16px;">
                 <div class="pf-nav-toolbar">
+                    <button type="button"
+                            class="pf-nav-toggle @(_sidebarGrouped ? "is-active" : null)"
+                            title="@L[@"Advanced.SidebarGrouped"]"
+                            @onclick="ToggleSidebarGrouping">
+                        @(_sidebarGrouped ? "▤" : "≡")
+                    </button>
                     <div class="pf-nav-search">
                         <span class="pf-nav-search__icon" aria-hidden="true">🔎</span>
                         <input type="search"
@@ -54,12 +52,6 @@ else
                             <button type="button" class="pf-nav-search__clear" aria-label="Clear" @onclick="ClearSidebarFilter">✕</button>
                         }
                     </div>
-                    <button type="button"
-                            class="pf-nav-toggle @(_sidebarGrouped ? "is-active" : null)"
-                            title="@L[@"Advanced.SidebarGrouped"]"
-                            @onclick="ToggleSidebarGrouping">
-                        @(_sidebarGrouped ? "▤" : "≡")
-                    </button>
                 </div>
 
                 <nav class="pf-nav-groups" aria-label="@L[@"Advanced.Title"]">
@@ -147,8 +139,8 @@ else
         title="@($"{L["Advanced.Preview.Title"]} - {L["Advanced.Preview.Open"]} (Ctrl+Shift+X)")"
         aria-label="@L["Advanced.Preview.Open"]"
         @onclick="OpenExpanded">
-    <span class="pf-xml-fab__icon" aria-hidden="true">@EyeIcon</span>
-    <span class="pf-xml-fab__label">XML</span>
+    <span class="pf-xml-fab__icon" aria-hidden="true">@CodeIcon</span>
+    <span class="pf-xml-fab__label">Code</span>
     <span class="pf-xml-fab__count" title="@L["Advanced.Preview.LinesTooltip"]">@_xmlLineCount</span>
 </button>
 
@@ -527,8 +519,10 @@ else
     private static readonly MarkupString CloseIcon = new(
         "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><line x1='18' y1='6' x2='6' y2='18'></line><line x1='6' y1='6' x2='18' y2='18'></line></svg>");
 
-    private static readonly MarkupString EyeIcon = new(
-        "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><path d='M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z'></path><circle cx='12' cy='12' r='3'></circle></svg>");
+    // Code glyph (</>) for the floating preview button - reads as "show the
+    // generated code" more directly than the eye, now that the label says "Code".
+    private static readonly MarkupString CodeIcon = new(
+        "<svg viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' aria-hidden='true'><polyline points='16 18 22 12 16 6'></polyline><polyline points='8 6 2 12 8 18'></polyline></svg>");
 
     public void Dispose()
     {

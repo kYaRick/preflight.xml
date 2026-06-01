@@ -135,6 +135,15 @@
                         <stop offset="0%" stop-color="#a855f7" />
                         <stop offset="100%" stop-color="#6d28d9" />
                     </linearGradient>
+                    <!-- Trail glow. An explicit filter (not CSS drop-shadow) so we
+                         can set a generous region: a CSS drop-shadow on an inner SVG
+                         path is clipped to the default -10%..120% objectBoundingBox
+                         region, which cut the halo dead at the wave's crests/troughs
+                         because they sit on the bbox edge. The big y region below
+                         lets the glow bloom past the curve at every peak and dip. -->
+                    <filter id="trailGlow" x="-5%" y="-80%" width="110%" height="260%">
+                        <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#a855f7" flood-opacity="0.9" />
+                    </filter>
                 </defs>
                 <path class="runway-track" d="M 0 30 Q 50 5, 100 30 T 200 30 T 300 30 T 400 30" />
                 <path class="runway-trail" d="M 0 30 Q 50 5, 100 30 T 200 30 T 300 30 T 400 30" />

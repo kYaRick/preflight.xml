@@ -20,6 +20,9 @@
   <data name="Common.BackToHome">
     <value>На головну</value>
   </data>
+  <data name="Common.Loading">
+    <value>Завантаження…</value>
+  </data>
   <data name="Common.Next">
     <value>Далі</value>
   </data>
@@ -196,6 +199,18 @@
   </data>
   <data name="Landing.Import.ComingSoon">
     <value>Імпорт наявних .xml з'явиться у наступних фазах.</value>
+  </data>
+  <data name="Landing.Guide.Title">
+    <value>Як використати файл</value>
+  </data>
+  <data name="Landing.Guide.Subtitle">
+    <value>Куди покласти autounattend.xml, щоб Windows Setup його підхопив - USB, Ventoy, ISO, VM.</value>
+  </data>
+  <data name="Landing.Guide.Cta">
+    <value>Читати гайд</value>
+  </data>
+  <data name="Landing.Import.Description">
+    <value>Завантаж наявний autounattend.xml і продовж редагування з того місця, де зупинився.</value>
   </data>
 
   <!-- ═══ Wizard ══════════════════════════════════════════════ -->

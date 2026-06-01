@@ -1,7 +1,6 @@
 @page "/docs/{Slug}"
 @using Preflight.App.Content
 @using System.Globalization
-@using Markdig
 @inject IStringLocalizer<SharedResources> L
 @inject HttpClient Http
 
@@ -190,7 +189,7 @@ else
         try
         {
             var md = await Http.GetStringAsync(path);
-            return Markdown.ToHtml(SectionView.StripLeadingH1(md));
+            return SectionView.RenderArticleHtml(md);
         }
         catch (HttpRequestException)
         {
@@ -199,7 +198,7 @@ else
                 try
                 {
                     var fallback = await Http.GetStringAsync(pathTemplate.Replace("{locale}", "en", StringComparison.Ordinal));
-                    return Markdown.ToHtml(SectionView.StripLeadingH1(fallback));
+                    return SectionView.RenderArticleHtml(fallback);
                 }
                 catch (HttpRequestException)
                 {

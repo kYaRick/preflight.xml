@@ -18,11 +18,14 @@
 
 <div class="pf-section pf-section--advanced pf-users">
 
-    <header class="pf-section__head">
-        <h2 class="pf-section__title">@L["Advanced.Section.users"]</h2>
-        <p class="pf-section__subtitle">@L["Section.users.Subtitle"]</p>
-        <a class="pf-section__docs-link" href="docs/users">@L["Section.Docs.Link"]</a>
-    </header>
+    @if (ShowHeader)
+    {
+        <header class="pf-section__head">
+            <h2 class="pf-section__title">@L["Advanced.Section.users"]</h2>
+            <p class="pf-section__subtitle">@L["Section.users.Subtitle"]</p>
+            <a class="pf-section__docs-link" href="docs/users">@L["Section.Docs.Link"]</a>
+        </header>
+    }
 
     @* ── Accounts table ───────────────────────────────────────── *@
     <section class="pf-option pf-users__block">
@@ -263,6 +266,10 @@
 </div>
 
 @code {
+    // Suppressed inside the guided Wizard, where GuidedWizard renders one unified
+    // contextual header per step. Defaults true so the Advanced editor is unchanged.
+    [Parameter] public bool ShowHeader { get; set; } = true;
+
     private UnattendConfig Config => Mode.Config;
     private FirstLogonSettings FirstLogon => Mode.Config.FirstLogon;
     private AccountSecuritySettings Security => Mode.Config.AccountSecurity;

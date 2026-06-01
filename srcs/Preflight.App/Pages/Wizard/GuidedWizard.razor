@@ -54,6 +54,18 @@ else
         </div>
     </FluentStack>
 
+    @*
+        Unified wizard-voice header for every step - emoji + friendly title + a
+        one-line "why this step matters" blurb. Reuses the app's pf-section__head
+        styling but deliberately omits the docs link: inside a guided flow the
+        section components render headerless (ShowHeader=false), so this is the
+        single, consistent heading the user sees per step.
+    *@
+    <header class="pf-section__head">
+        <h2 class="pf-section__title">@CurrentHeader.Emoji @L[CurrentHeader.TitleKey]</h2>
+        <p class="pf-section__subtitle">@L[CurrentHeader.SubtitleKey]</p>
+    </header>
+
     @switch (Step)
     {
         case 1:
@@ -100,4 +112,20 @@ else
     private const int TotalSteps = 5;
 
     [Parameter] public int Step { get; set; } = 1;
+
+    private sealed record StepHeader(string Emoji, string TitleKey, string SubtitleKey);
+
+    // Per-step contextual header. Keyed by step number so the heading lives in one
+    // place instead of five differing per-section treatments. Reuses the existing
+    // Step.{Name}.Title / .Description resx keys (already wizard-voiced, en + uk).
+    private static readonly IReadOnlyDictionary<int, StepHeader> _headers = new Dictionary<int, StepHeader>
+    {
+        [1] = new("🌍", "Step.Language.Title", "Step.Language.Description"),
+        [2] = new("💽", "Step.Disk.Title", "Step.Disk.Description"),
+        [3] = new("👤", "Step.Users.Title", "Step.Users.Description"),
+        [4] = new("🔒", "Step.Privacy.Title", "Step.Privacy.Description"),
+        [5] = new("🏁", "Step.Finish.Title", "Step.Finish.Description"),
+    };
+
+    private StepHeader CurrentHeader => _headers[Step];
 }

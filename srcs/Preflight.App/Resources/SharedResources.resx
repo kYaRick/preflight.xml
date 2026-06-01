@@ -20,6 +20,9 @@
   <data name="Common.BackToHome">
     <value>Back to home</value>
   </data>
+  <data name="Common.Loading">
+    <value>Loading…</value>
+  </data>
   <data name="Common.Next">
     <value>Next</value>
   </data>
@@ -195,6 +198,18 @@
   </data>
   <data name="Landing.Import.ComingSoon">
     <value>Importing existing .xml files is coming in a later phase.</value>
+  </data>
+  <data name="Landing.Guide.Title">
+    <value>How to use the file</value>
+  </data>
+  <data name="Landing.Guide.Subtitle">
+    <value>Where to put autounattend.xml so Windows Setup picks it up - USB, Ventoy, ISO, VM.</value>
+  </data>
+  <data name="Landing.Guide.Cta">
+    <value>Read the guide</value>
+  </data>
+  <data name="Landing.Import.Description">
+    <value>Bring in an existing autounattend.xml and pick up editing where you left off.</value>
   </data>
 
   <!-- ═══ Wizard ══════════════════════════════════════════════ -->
