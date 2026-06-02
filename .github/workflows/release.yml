@@ -238,6 +238,7 @@ jobs:
             --packVersion "${{ steps.ver.outputs.version }}" \
             --packDir     artifacts/desktop/publish \
             --mainExe     preflight.xml.exe \
+            --icon        srcs/Preflight.App/wwwroot/favicon.ico \
             --channel     alpha \
             --runtime     win-x64 \
             --outputDir   artifacts/desktop/releases \
