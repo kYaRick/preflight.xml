@@ -161,6 +161,15 @@
     <value>Збирай файл автоматизованої інсталяції Windows візуально - офлайн і миттєво (але це не
       точно)...</value>
   </data>
+  <data name="Landing.Download.Label">
+    <value>Завантажити застосунок</value>
+  </data>
+  <data name="Landing.Download.Aria">
+    <value>Завантажити десктопний застосунок з релізів GitHub</value>
+  </data>
+  <data name="Landing.Download.Toggle">
+    <value>Показати завантаження застосунку - тягни, щоб посунути</value>
+  </data>
   <data name="Landing.Status">
     <value>🟧 Pre-alpha - редактор активно розробляється.</value>
   </data>

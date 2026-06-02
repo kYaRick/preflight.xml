@@ -6,7 +6,7 @@
     xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
     Title="preflight.xml"
     Width="1080"
-    Height="900"
+    Height="670"
     MinWidth="800"
     MinHeight="600"
     Background="{StaticResource PfSurfaceDeepBrush}"
@@ -49,15 +49,22 @@
     -->
     <Window.Resources>
         <Storyboard x:Key="SplashShimmerStoryboard" RepeatBehavior="Forever">
-            <DoubleAnimation Storyboard.TargetName="SplashShimmerTransform"
+            <DoubleAnimation
+                Storyboard.TargetName="SplashShimmerTransform"
                 Storyboard.TargetProperty="X"
-                From="-160" To="492"
+                From="-160"
+                To="492"
                 Duration="0:0:1.6" />
         </Storyboard>
-        <Storyboard x:Key="SplashPlaneBobStoryboard" AutoReverse="True" RepeatBehavior="Forever">
-            <DoubleAnimation Storyboard.TargetName="SplashPlaneTransform"
+        <Storyboard
+            x:Key="SplashPlaneBobStoryboard"
+            AutoReverse="True"
+            RepeatBehavior="Forever">
+            <DoubleAnimation
+                Storyboard.TargetName="SplashPlaneTransform"
                 Storyboard.TargetProperty="Y"
-                From="0" To="-6"
+                From="0"
+                To="-6"
                 Duration="0:0:1.4">
                 <DoubleAnimation.EasingFunction>
                     <SineEase EasingMode="EaseInOut" />
@@ -90,10 +97,10 @@
                 x:Name="TitleBarRoot"
                 Grid.Row="0"
                 Height="36"
-                Visibility="Collapsed"
                 Background="{StaticResource PfSurfaceBrush}"
                 BorderBrush="{StaticResource PfBorderBrush}"
-                BorderThickness="0,0,0,1">
+                BorderThickness="0,0,0,1"
+                Visibility="Collapsed">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
@@ -108,8 +115,7 @@
                         VerticalAlignment="Center"
                         Orientation="Horizontal">
                         <Viewbox Width="16" Height="16">
-                            <Path Data="{StaticResource PfPlaneGeometry}"
-                                Fill="{StaticResource PfBrandGradient}" />
+                            <Path Data="{StaticResource PfPlaneGeometry}" Fill="{StaticResource PfBrandGradient}" />
                         </Viewbox>
                         <TextBlock
                             Margin="10,0,0,1"
@@ -186,8 +192,8 @@
             <Grid Grid.Row="1">
                 <wv2:WebView2
                     x:Name="WebView"
-                    Visibility="Hidden"
-                    DefaultBackgroundColor="#14152A" />
+                    DefaultBackgroundColor="#14152A"
+                    Visibility="Hidden" />
 
                 <!--
                     ───── In-window splash overlay ─────
@@ -201,18 +207,20 @@
                     "jump in" when the splash dismisses - single-window
                     feel from launch to ready.
                 -->
-                <Border x:Name="SplashOverlay"
-                    Background="{StaticResource PfSurfaceDeepBrush}">
+                <Border x:Name="SplashOverlay" Background="{StaticResource PfSurfaceDeepBrush}">
                     <Grid>
-                        <Ellipse Width="640" Height="640"
-                            HorizontalAlignment="Right" VerticalAlignment="Top"
+                        <Ellipse
+                            Width="640"
+                            Height="640"
                             Margin="0,-260,-220,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
                             IsHitTestVisible="False"
                             Opacity="0.55">
                             <Ellipse.Fill>
                                 <RadialGradientBrush>
-                                    <GradientStop Color="#FFA855F7" Offset="0" />
-                                    <GradientStop Color="#006D28D9" Offset="1" />
+                                    <GradientStop Offset="0" Color="#FFA855F7" />
+                                    <GradientStop Offset="1" Color="#006D28D9" />
                                 </RadialGradientBrush>
                             </Ellipse.Fill>
                         </Ellipse>
@@ -224,11 +232,13 @@
                             </Grid.RowDefinitions>
 
                             <Grid Grid.Row="0">
-                                <StackPanel VerticalAlignment="Center"
+                                <StackPanel
+                                    Margin="0,0,0,6"
                                     HorizontalAlignment="Center"
-                                    Margin="0,0,0,6">
+                                    VerticalAlignment="Center">
                                     <Viewbox Width="84" Height="84">
-                                        <Path Data="{StaticResource PfPlaneGeometry}"
+                                        <Path
+                                            Data="{StaticResource PfPlaneGeometry}"
                                             Fill="{StaticResource PfBrandGradient}"
                                             RenderTransformOrigin="0.5,0.5">
                                             <Path.RenderTransform>
@@ -236,57 +246,62 @@
                                             </Path.RenderTransform>
                                         </Path>
                                     </Viewbox>
-                                    <TextBlock Text="preflight.xml"
+                                    <TextBlock
+                                        Margin="0,20,0,0"
+                                        HorizontalAlignment="Center"
                                         FontFamily="Segoe UI Variable Display, Segoe UI"
                                         FontSize="32"
                                         FontWeight="SemiBold"
                                         Foreground="{StaticResource PfTextBrush}"
+                                        Text="preflight.xml" />
+                                    <TextBlock
+                                        Margin="0,9,0,0"
                                         HorizontalAlignment="Center"
-                                        Margin="0,20,0,0" />
-                                    <TextBlock Text="Visual builder for Windows autounattend.xml"
                                         FontFamily="Segoe UI Variable, Segoe UI"
                                         FontSize="12"
                                         Foreground="{StaticResource PfTextSubtleBrush}"
-                                        HorizontalAlignment="Center"
-                                        Margin="0,9,0,0" />
+                                        Text="Visual builder for Windows autounattend.xml" />
                                 </StackPanel>
                             </Grid>
 
-                            <Grid Grid.Row="1"
-                                HorizontalAlignment="Stretch"
-                                Margin="0,0,0,2">
+                            <Grid
+                                Grid.Row="1"
+                                Margin="0,0,0,2"
+                                HorizontalAlignment="Stretch">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="2" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <Border Grid.Row="0"
+                                <Border
+                                    Grid.Row="0"
                                     Height="2"
-                                    CornerRadius="1"
                                     Background="{StaticResource PfBorderBrush}"
-                                    ClipToBounds="True">
+                                    ClipToBounds="True"
+                                    CornerRadius="1">
                                     <Rectangle Width="160" HorizontalAlignment="Left">
                                         <Rectangle.Fill>
                                             <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
-                                                <GradientStop Color="#006D28D9" Offset="0" />
-                                                <GradientStop Color="#FFA855F7" Offset="0.5" />
-                                                <GradientStop Color="#006D28D9" Offset="1" />
+                                                <GradientStop Offset="0" Color="#006D28D9" />
+                                                <GradientStop Offset="0.5" Color="#FFA855F7" />
+                                                <GradientStop Offset="1" Color="#006D28D9" />
                                             </LinearGradientBrush>
                                         </Rectangle.Fill>
                                         <Rectangle.RenderTransform>
-                                            <TranslateTransform x:Name="SplashShimmerTransform"
-                                                X="-160" />
+                                            <TranslateTransform x:Name="SplashShimmerTransform" X="-160" />
                                         </Rectangle.RenderTransform>
                                     </Rectangle>
                                 </Border>
 
                                 <Grid Grid.Row="1" Margin="0,10,0,0">
-                                    <TextBlock Text="Loading…"
+                                    <TextBlock
                                         HorizontalAlignment="Left"
                                         FontFamily="Segoe UI Variable, Segoe UI"
                                         FontSize="11"
-                                        Foreground="{StaticResource PfTextSubtleBrush}" />
-                                    <TextBlock x:Name="SplashVersionText"
+                                        Foreground="{StaticResource PfTextSubtleBrush}"
+                                        Text="Loading…" />
+                                    <TextBlock
+                                        x:Name="SplashVersionText"
                                         HorizontalAlignment="Right"
                                         FontFamily="Segoe UI Variable, Segoe UI"
                                         FontSize="11"

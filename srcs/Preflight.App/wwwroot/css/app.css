@@ -33,10 +33,10 @@
             rgba(255, 255, 255, 0.92) 55%,
             rgba(139, 92, 246, 0.03) 100%);
     --pf-card-border: rgba(99, 102, 241, 0.14);
-    --pf-card-border-hover: rgba(139, 92, 246, 0.38);
+    --pf-card-border-hover: rgba(139, 92, 246, 0.28);
     --pf-card-shadow: 0 4px 20px rgba(15, 23, 42, 0.05),
         0 1px 2px rgba(15, 23, 42, 0.04);
-    --pf-card-shadow-hover: 0 12px 40px rgba(99, 102, 241, 0.18),
+    --pf-card-shadow-hover: 0 5px 14px rgba(99, 102, 241, 0.08),
         0 2px 6px rgba(15, 23, 42, 0.06);
     --pf-card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 
@@ -92,11 +92,11 @@
                 rgba(28, 31, 54, 0.95) 55%,
                 rgba(168, 85, 247, 0.05) 100%);
         --pf-card-border: rgba(139, 92, 246, 0.22);
-        --pf-card-border-hover: rgba(168, 85, 247, 0.6);
+        --pf-card-border-hover: rgba(168, 85, 247, 0.42);
         --pf-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
             0 2px 8px rgba(0, 0, 0, 0.2);
-        --pf-card-shadow-hover: 0 20px 60px rgba(139, 92, 246, 0.38),
-            0 4px 12px rgba(0, 0, 0, 0.4);
+        --pf-card-shadow-hover: 0 6px 18px rgba(139, 92, 246, 0.13),
+            0 4px 12px rgba(0, 0, 0, 0.3);
         --pf-card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
         --pf-chrome-bg: rgba(36, 40, 69, 0.92);
@@ -138,11 +138,11 @@ html.theme-dark {
             rgba(28, 31, 54, 0.95) 55%,
             rgba(168, 85, 247, 0.05) 100%);
     --pf-card-border: rgba(139, 92, 246, 0.22);
-    --pf-card-border-hover: rgba(168, 85, 247, 0.6);
+    --pf-card-border-hover: rgba(168, 85, 247, 0.42);
     --pf-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
         0 2px 8px rgba(0, 0, 0, 0.2);
-    --pf-card-shadow-hover: 0 20px 60px rgba(139, 92, 246, 0.38),
-        0 4px 12px rgba(0, 0, 0, 0.4);
+    --pf-card-shadow-hover: 0 6px 18px rgba(139, 92, 246, 0.13),
+        0 4px 12px rgba(0, 0, 0, 0.3);
     --pf-card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
     --pf-chrome-bg: rgba(36, 40, 69, 0.92);
@@ -181,15 +181,15 @@ body::before {
     content: '';
     position: fixed;
     inset: -20% -10% auto -10%;
-    height: 70vh;
+    height: 48vh;
     background:
-        radial-gradient(ellipse 60% 50% at 50% 0%,
-            rgba(var(--pf-accent-rgb), 0.18) 0%,
-            rgba(var(--pf-accent-rgb), 0.08) 30%,
-            transparent 70%);
+        radial-gradient(ellipse 50% 42% at 50% 0%,
+            rgba(var(--pf-accent-rgb), 0.11) 0%,
+            rgba(var(--pf-accent-rgb), 0.045) 32%,
+            transparent 68%);
     pointer-events: none;
     z-index: 0;
-    opacity: 0.9;
+    opacity: 0.75;
     transition: opacity 0.4s var(--pf-ease);
     /* Pre-promote this fixed layer at load so the browser doesn't build its
        compositing layer LAZILY on the first scroll - creating fixed-element
@@ -413,7 +413,7 @@ fluent-card.pf-card--interactive::before {
     inset: -1px;
     border-radius: inherit;
     background: radial-gradient(circle at 20% 0%,
-            rgba(var(--pf-accent-rgb), 0.08) 0%,
+            rgba(var(--pf-accent-rgb), 0.05) 0%,
             transparent 50%);
     opacity: 0;
     transition: opacity 0.35s var(--pf-ease);
@@ -421,7 +421,7 @@ fluent-card.pf-card--interactive::before {
 }
 
 fluent-card.pf-card--interactive:hover {
-    transform: translateY(-5px) scale(1.005);
+    transform: translateY(-2px);
     border-color: var(--pf-card-border-hover) !important;
     box-shadow:
         var(--pf-card-highlight),
@@ -3644,6 +3644,142 @@ html.theme-dark .pf-xml-code .token.regex {
    Appears bottom-left after the user scrolls past ~400px. Clicking it
    scrolls the page back to top with a brief "takeoff" animation on the
    plane glyph (tilt + translate). Mirrors the loading screen motif. */
+/* ─── Web-only desktop-app download dock (left edge) ─────────
+   A thin, tall handle clings to the left viewport edge; tapping it slides the
+   download panel out (the handle rides out with it). Draggable vertically via
+   --pf-dock-top (px, persisted in localStorage). Hidden in the packaged desktop
+   shell (html.pf-desktop). Interaction lives in js/edge-dock.js. */
+.pf-edge-dock {
+    --pf-dock-handle-w: 1.25rem;
+    position: fixed;
+    left: 0;
+    top: var(--pf-dock-top, 50%);
+    z-index: 60;
+    display: flex;
+    align-items: stretch;
+    /* Closed: slide left so only the handle pokes past the edge. */
+    transform: translate(calc(-100% + var(--pf-dock-handle-w)), -50%);
+    transition: transform 0.28s var(--pf-ease-out);
+}
+
+.pf-edge-dock.is-open {
+    transform: translate(0, -50%);
+}
+
+/* Closed: fully hide the download panel. Sliding it off-screen still left its
+   box-shadow / border edge bleeding a sliver past the viewport edge that was
+   visible AND clickable. visibility:hidden removes it from both paint and hit-
+   testing, so closed shows ONLY the handle. */
+.pf-edge-dock__link {
+    pointer-events: none;
+}
+
+.pf-edge-dock.is-open .pf-edge-dock__link {
+    pointer-events: auto;
+}
+
+/* Download panel - flush to the edge, merges into the handle. */
+.pf-edge-dock__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.85rem;
+    background: var(--pf-chrome-bg);
+    color: var(--pf-text);
+    font-weight: 500;
+    font-size: 0.8125rem;
+    white-space: nowrap;
+    text-decoration: none;
+    border: 1px solid var(--pf-chrome-border);
+    border-left: 0;
+    border-right: 0;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+/* Shadow only when open - when closed the panel sits just off the left edge and
+   its shadow was the sliver bleeding into view past the edge. */
+.pf-edge-dock.is-open .pf-edge-dock__link {
+    box-shadow: var(--pf-card-shadow);
+}
+
+.pf-edge-dock__link:hover {
+    color: var(--pf-accent);
+}
+
+.pf-edge-dock__icon {
+    font-size: 0.95rem;
+    line-height: 1;
+}
+
+/* The always-visible edge handle (rounded right cap). */
+.pf-edge-dock__handle {
+    flex: 0 0 var(--pf-dock-handle-w);
+    min-height: 4.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: var(--pf-chrome-bg);
+    color: var(--pf-text-muted);
+    border: 1px solid var(--pf-chrome-border);
+    border-left: 0;
+    border-radius: 0 0.75rem 0.75rem 0;
+    /* Tight rightward shadow only - the old var(--pf-card-shadow) (0 8px 32px)
+       cast a big soft halo that bled into the viewport past the handle and read
+       as "a piece of the slid-out button". */
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    cursor: grab;
+    opacity: 0.6;
+    touch-action: none;
+    transition: opacity 0.18s var(--pf-ease-out),
+        color 0.18s var(--pf-ease-out);
+}
+
+.pf-edge-dock__handle:hover {
+    opacity: 1;
+    color: var(--pf-text);
+}
+
+.pf-edge-dock__handle:active {
+    cursor: grabbing;
+}
+
+.pf-edge-dock__handle:focus-visible {
+    opacity: 1;
+    outline: 2px solid var(--pf-accent);
+    outline-offset: 2px;
+}
+
+.pf-edge-dock.is-open .pf-edge-dock__handle {
+    opacity: 1;
+}
+
+.pf-edge-dock__chevron {
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: transform 0.28s var(--pf-ease-out);
+}
+
+.pf-edge-dock.is-open .pf-edge-dock__chevron {
+    transform: rotate(180deg);
+}
+
+/* Inside the desktop app: never advertise the download. */
+html.pf-desktop .pf-edge-dock {
+    display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .pf-edge-dock,
+    .pf-edge-dock__chevron {
+        transition: none;
+    }
+}
+
 .pf-go-top {
     position: fixed;
     right: 1.5rem;
@@ -4469,7 +4605,7 @@ body:has(.pf-xml-fab) .pf-go-top {
     background-clip: text;
     color: transparent;
     /* Soft purple glow so the gradient text reads against any theme. */
-    text-shadow: 0 8px 28px rgba(var(--pf-accent-rgb), 0.18);
+    text-shadow: 0 5px 16px rgba(var(--pf-accent-rgb), 0.12);
 }
 
 .pf-404__icon {

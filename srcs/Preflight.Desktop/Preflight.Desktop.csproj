@@ -6,6 +6,13 @@
     <PropertyGroup>
         <RootNamespace>Preflight.Desktop</RootNamespace>
         <!--
+            Required by the [LibraryImport] source generator (SYSLIB1062): the
+            generated P/Invoke marshalling for the WM_GETMINMAXINFO monitor
+            interop in MainWindow uses pointers. Only the generated stubs use
+            unsafe; no hand-written unsafe blocks in this project.
+        -->
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <!--
             Custom Main lives in Program.cs so Velopack's install / update
             hooks can short-circuit before WPF constructs anything. See
             Program.cs for the rationale.

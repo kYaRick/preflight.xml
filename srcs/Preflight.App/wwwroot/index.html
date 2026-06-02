@@ -80,11 +80,20 @@
     <script src="js/scroll.js"></script>
     <script src="js/prism-helper.js"></script>
     <script src="js/view-transitions.js"></script>
+    <script src="js/edge-dock.js"></script>
 
     <!-- Apply persisted theme to <html> BEFORE CSS paints, so the loading
          screen matches the user's choice even before Blazor boots. -->
     <script>
         window.preflightTheme.apply(window.preflightTheme.get());
+
+        // Tag <html> when running inside the Preflight.Desktop WebView2 shell
+        // (its user agent carries the "Preflight-Desktop" marker). Done before
+        // first paint so web-only chrome - e.g. the "download the app" CTA - is
+        // hidden via CSS with no flicker, and never shown inside the native app.
+        if (navigator.userAgent.indexOf('Preflight-Desktop') !== -1) {
+            document.documentElement.classList.add('pf-desktop');
+        }
 
         // Restore SPA route from "#__r=" hash. The desktop shell encodes the
         // original path here when redirecting unknown routes (/wizard,

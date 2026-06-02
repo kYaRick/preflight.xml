@@ -1,10 +1,12 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
@@ -81,6 +83,115 @@ public partial class MainWindow : Window
         // service raises UpdateReady from a background thread; marshal back
         // to the dispatcher to show the overlay banner window.
         App.Updates.UpdateReady += OnUpdateReady;
+    }
+
+    // ───── Maximize fix ─────
+    // A borderless WindowChrome window (WindowStyle=None) maximizes ~8px past
+    // every monitor edge, shoving the custom title bar - and its min/max/close
+    // buttons - off the top of the screen, and covering the taskbar. Hooking
+    // WM_GETMINMAXINFO and clamping the maximized rect to the monitor's WORK
+    // area keeps the title bar fully on-screen and leaves the taskbar visible.
+    private const int WmGetMinMaxInfo = 0x0024;
+    private const uint MonitorDefaultToNearest = 0x00000002;
+
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        if (PresentationSource.FromVisual(this) is HwndSource source)
+        {
+            source.AddHook(WindowProc);
+        }
+    }
+
+    private static IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
+        if (msg == WmGetMinMaxInfo)
+        {
+            // A throw inside a WndProc hook is fatal to the window, and this
+            // message fires during window creation - any interop hiccup must
+            // degrade to Windows' default maximize, never crash the app.
+            try
+            {
+                ClampMaximizedToWorkArea(hwnd, lParam);
+                handled = true;
+            }
+            catch
+            {
+                handled = false;
+            }
+        }
+
+        return IntPtr.Zero;
+    }
+
+    private static void ClampMaximizedToWorkArea(IntPtr hwnd, IntPtr lParam)
+    {
+        IntPtr monitor = MonitorFromWindow(hwnd, MonitorDefaultToNearest);
+        if (monitor == IntPtr.Zero)
+        {
+            return;
+        }
+
+        var info = new MonitorInfo { Size = Marshal.SizeOf<MonitorInfo>() };
+        if (!GetMonitorInfo(monitor, ref info))
+        {
+            return;
+        }
+
+        var mmi = Marshal.PtrToStructure<MinMaxInfo>(lParam);
+        NativeRect work = info.Work;
+        NativeRect mon = info.Monitor;
+
+        // Position/size are expressed relative to the monitor's top-left.
+        mmi.MaxPosition.X = work.Left - mon.Left;
+        mmi.MaxPosition.Y = work.Top - mon.Top;
+        mmi.MaxSize.X = work.Right - work.Left;
+        mmi.MaxSize.Y = work.Bottom - work.Top;
+        Marshal.StructureToPtr(mmi, lParam, false);
+    }
+
+    [LibraryImport("user32.dll")]
+    private static partial IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
+
+    // user32 exports GetMonitorInfoW/A; LibraryImport needs the exact entry
+    // point (it does not auto-append the W suffix the way DllImport+CharSet does).
+    [LibraryImport("user32.dll", EntryPoint = "GetMonitorInfoW")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetMonitorInfo(IntPtr hMonitor, ref MonitorInfo lpmi);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NativePoint
+    {
+        public int X;
+        public int Y;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NativeRect
+    {
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MonitorInfo
+    {
+        public int Size;
+        public NativeRect Monitor;
+        public NativeRect Work;
+        public uint Flags;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MinMaxInfo
+    {
+        public NativePoint Reserved;
+        public NativePoint MaxSize;
+        public NativePoint MaxPosition;
+        public NativePoint MinTrackSize;
+        public NativePoint MaxTrackSize;
     }
 
     // Overlay window that shows the update banner above WebView2.

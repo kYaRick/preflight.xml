@@ -160,6 +160,15 @@
   <data name="Landing.Tagline">
     <value>Build your Windows answer file, visually - offline and instantly.</value>
   </data>
+  <data name="Landing.Download.Label">
+    <value>Download app</value>
+  </data>
+  <data name="Landing.Download.Aria">
+    <value>Download the desktop app from GitHub releases</value>
+  </data>
+  <data name="Landing.Download.Toggle">
+    <value>Show desktop app download - drag to move</value>
+  </data>
   <data name="Landing.Status">
     <value>🟧 Pre-alpha - the editor is under active development.</value>
   </data>

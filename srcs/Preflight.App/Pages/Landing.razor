@@ -87,6 +87,28 @@
         </div>
     }
 
+    @*
+        Web-only left-edge dock to grab the native desktop build. A thin, tall
+        handle clings to the viewport edge; tapping it slides the download panel
+        out, and it can be dragged vertically to a comfortable spot (position is
+        remembered). Interaction lives in js/edge-dock.js. Hidden inside the
+        desktop shell via `html.pf-desktop` (set in index.html), so the packaged
+        app never advertises its own download.
+    *@
+    <div class="pf-edge-dock" id="pf-edge-dock">
+        <a class="pf-edge-dock__link"
+           href="https://github.com/kYaRick/preflight.xml/releases/latest"
+           target="_blank" rel="noopener noreferrer"
+           aria-label="@L["Landing.Download.Aria"]">
+            <span class="pf-edge-dock__icon" aria-hidden="true">⬇️</span>
+            <span class="pf-edge-dock__label">@L["Landing.Download.Label"]</span>
+        </a>
+        <button type="button" class="pf-edge-dock__handle"
+                aria-label="@L["Landing.Download.Toggle"]" aria-expanded="false">
+            <span class="pf-edge-dock__chevron" aria-hidden="true">›</span>
+        </button>
+    </div>
+
 </div>
 
 @code {
