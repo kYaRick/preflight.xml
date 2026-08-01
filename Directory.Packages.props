@@ -6,13 +6,13 @@
     </PropertyGroup>
 
     <ItemGroup Label="Blazor WebAssembly">
-        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.9" />
+        <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly" Version="10.0.10" />
         <PackageVersion Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer"
-            Version="10.0.9" />
+            Version="10.0.10" />
     </ItemGroup>
 
     <ItemGroup Label="Localization">
-        <PackageVersion Include="Microsoft.Extensions.Localization" Version="10.0.9" />
+        <PackageVersion Include="Microsoft.Extensions.Localization" Version="10.0.10" />
     </ItemGroup>
 
     <ItemGroup Label="Transitive pins (security)">
@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup Label="UI">
-        <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.14.3" />
+        <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.14.4" />
         <PackageVersion Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.12.1" />
     </ItemGroup>
 
@@ -33,7 +33,7 @@
     </ItemGroup>
 
     <ItemGroup Label="Desktop (WPF + WebView2)">
-        <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.4022.49" />
+        <PackageVersion Include="Microsoft.Web.WebView2" Version="1.0.4078.44" />
         <!--
             Velopack handles desktop packaging + auto-update from GitHub Releases.
             Pinned: pre-1.0 ships breaking changes between minor bumps, so an
@@ -43,7 +43,7 @@
     </ItemGroup>
 
     <ItemGroup Label="Testing">
-        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.7.0" />
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
         <PackageVersion Include="bunit" Version="2.7.2" />
         <PackageVersion Include="coverlet.collector" Version="10.0.1" />
         <PackageVersion Include="xunit" Version="2.9.3" />
